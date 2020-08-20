@@ -1,0 +1,39 @@
+{
+	"parent": "paraglider:item/paraglider",
+	"display": {
+		"thirdperson_righthand": {
+			"scale": [1.5, 1.5, 1.5],
+			"translation": [-6, 0.5, -4],
+			"rotation": [-90, 0, 0]
+		},
+		"thirdperson_lefthand": {
+			"scale": [1.5, 1.5, 1.5],
+			"rotation": [-90, 0, 0],
+			"translation": [-6, 0.5, -4]
+		},
+		"firstperson_lefthand": {
+			"scale": [2, 2, 2],
+			"rotation": [6, 0, 0],
+			"translation": [-9, 14, 0]
+		},
+		"firstperson_righthand": {
+			"scale": [2, 2, 2],
+			"rotation": [6, 0, 0],
+			"translation": [-9, 14, 6]
+		},
+		"gui": {
+			"translation": [1.5, -1.5, 0],
+			"rotation": [45, 45, 0],
+			"scale": [0.8, 0.8, 0.8]
+		},
+		"ground": {
+			"scale": [0.8, 0.8, 0.8],
+			"translation": [0, 0, 2]
+		},
+		"fixed": {
+			"rotation": [-90, 180, 0],
+			"translation": [0, -1.5, 0],
+			"scale": [1, 1, 1]
+		}
+	}
+}
