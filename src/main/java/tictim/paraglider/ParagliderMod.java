@@ -1,7 +1,10 @@
 package tictim.paraglider;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
+import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +26,7 @@ import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.WindEntity;
+import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 
 import javax.annotation.Nullable;
@@ -69,6 +73,13 @@ public class ParagliderMod{
 					return new ResourceLocation("missing");
 				}
 			});
+
+			IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> {
+				return entity instanceof PlayerEntity&&ParagliderItem.hasParaglidingFlag(stack) ? 1 : 0;
+			};
+
+			ItemModelsProperties.func_239418_a_(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+			ItemModelsProperties.func_239418_a_(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 		}
 
 		@SubscribeEvent

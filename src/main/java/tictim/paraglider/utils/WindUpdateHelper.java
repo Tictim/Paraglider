@@ -1,5 +1,6 @@
 package tictim.paraglider.utils;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
@@ -10,8 +11,6 @@ import tictim.paraglider.contents.WindEntity;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.minecraft.block.Block.hasSolidSide;
 
 public final class WindUpdateHelper{
 	private WindUpdateHelper(){}
@@ -31,8 +30,8 @@ public final class WindUpdateHelper{
 	public static void generateWind(PlayerEntity player){
 		World world = player.world;
 		BlockPos origin = player.getPosition();
-		final int yMax = player.onGround ? GROUND_Y_MAX : PARAGLIDING_Y_MAX;
-		final int yMin = player.onGround ? GROUND_Y_MIN : PARAGLIDING_Y_MIN;
+		final int yMax = player.isOnGround() ? GROUND_Y_MAX : PARAGLIDING_Y_MAX;
+		final int yMin = player.isOnGround() ? GROUND_Y_MIN : PARAGLIDING_Y_MIN;
 		windMap.clear();
 		for(WindEntity e : world.getEntitiesWithinAABB(WindEntity.class, new AxisAlignedBB(
 				origin.getX()-XZ_RAD_HALF, origin.getY()+yMin, origin.getZ()-XZ_RAD_HALF,
@@ -57,8 +56,8 @@ public final class WindUpdateHelper{
 						if(height>=10||
 								isFireplace||
 								state.getMaterial().blocksMovement()||
-								hasSolidSide(state, world, mpos, Direction.DOWN)||
-								hasSolidSide(state, world, mpos, Direction.UP)){
+								Block.hasEnoughSolidSide(world, mpos, Direction.DOWN)||
+								Block.hasEnoughSolidSide(world, mpos, Direction.UP)){
 							mpos.setY(fireY);
 							WindEntity existingWind = windMap.remove(mpos);
 

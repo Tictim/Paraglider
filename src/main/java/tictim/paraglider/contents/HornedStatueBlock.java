@@ -14,10 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import tictim.paraglider.capabilities.PlayerMovement;
@@ -72,7 +69,7 @@ public class HornedStatueBlock extends Block{
 	}
 
 	@Override public void addInformation(ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.1").setStyle(new Style().setColor(TextFormatting.GREEN)));
-		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.2").setStyle(new Style().setColor(TextFormatting.YELLOW).setItalic(true)));
+		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.1").setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.GREEN))));
+		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.2").setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW)).setItalic(true)));
 	}
 }

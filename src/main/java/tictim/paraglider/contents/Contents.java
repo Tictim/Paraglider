@@ -5,8 +5,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.item.*;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
@@ -69,7 +69,7 @@ public final class Contents{
 		@Override public List<ItemStack> getCurativeItems(){
 			return new ArrayList<>();
 		}
-	}.addAttributesModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
+	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
 	public static final RegistryObject<EntityType<WindEntity>> WIND = ENTITIES.register("wind", () -> EntityType.Builder.<WindEntity>create(WindEntity::new, EntityClassification.MISC)
 			.size(1, 1)

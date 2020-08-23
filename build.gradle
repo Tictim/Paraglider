@@ -3,15 +3,18 @@ buildscript {
         maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
         mavenCentral()
+	    maven { url = 'https://dist.creeper.host/Sponge/maven' }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+	    classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 version = "${mod_version}"
 group = "tictim.${mod_id}"
@@ -22,7 +25,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200514-1.15.1'
+    mappings channel: 'snapshot', version: mappings_version
     // makeObfSourceJar = false
     
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -30,9 +33,7 @@ minecraft {
 	runs {
 		client {
 			workingDirectory project.file('run')
-
 			property 'forge.logging.console.level', 'debug'
-
 			ideaModule "${project.name}.main"
 
 			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
@@ -43,12 +44,9 @@ minecraft {
 				}
 			}
 		}
-
 		server {
 			workingDirectory project.file('run')
-
 			property 'forge.logging.console.level', 'debug'
-
 			ideaModule "${project.name}.main"
 
 			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
@@ -59,14 +57,10 @@ minecraft {
 				}
 			}
 		}
-
 		data {
 			workingDirectory project.file('run')
-
 			property 'forge.logging.console.level', 'debug'
-
 			args '--mod', 'paraglider', '--all', '--output', file('src/generated/resources/')
-
 			ideaModule "${project.name}.main"
 
 			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
@@ -78,6 +72,10 @@ minecraft {
 			}
 		}
 	}
+}
+
+mixin {
+	add sourceSets.main, "paraglider.refmap.json"
 }
 
 dependencies {
@@ -94,7 +92,8 @@ jar {
 				"Implementation-Title"    : "tictim.${mod_id}",
 				"Implementation-Vendor"   : "Tictim",
 				"Implementation-Version"  : "${version}",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"MixinConnector"          : "tictim.paraglider.MixinConnector"
 		])
 	}
 }

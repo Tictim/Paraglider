@@ -1,12 +1,9 @@
 package tictim.paraglider.item;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.contents.Contents;
@@ -24,9 +21,6 @@ public class ParagliderItem extends Item implements IDyeableArmorItem{
 	public ParagliderItem(int defaultColor){
 		super(new Properties().maxStackSize(1).group(Contents.GROUP));
 		this.defaultColor = defaultColor;
-		this.addPropertyOverride(new ResourceLocation("paragliding"), (stack, world, entity) -> {
-			return entity instanceof PlayerEntity&&hasParaglidingFlag(stack) ? 1 : 0;
-		});
 	}
 
 	@Nullable

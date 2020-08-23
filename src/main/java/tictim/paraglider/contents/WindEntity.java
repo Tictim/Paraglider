@@ -104,6 +104,6 @@ public class WindEntity extends Entity{
 	}
 
 	public static boolean canBePlaced(BlockState state){
-		return state.getBlock()==Blocks.FIRE||(state.has(BlockStateProperties.LIT)&&state.get(BlockStateProperties.LIT));
+		return state.getBlock()==Blocks.FIRE||(state.hasProperty(BlockStateProperties.LIT)&&state.get(BlockStateProperties.LIT));
 	}
 }

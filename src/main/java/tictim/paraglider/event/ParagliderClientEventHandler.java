@@ -1,5 +1,6 @@
 package tictim.paraglider.event;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -131,9 +132,12 @@ public final class ParagliderClientEventHandler{
 					}
 				}
 				MainWindow window = event.getWindow();
+				MatrixStack stack = event.getMatrixStack();
 				staminaWheelRenderer.render(
+						stack,
 						window.getScaledWidth()/2-100,
 						window.getScaledHeight()/2-15,
+						25,
 						WHEEL_SIZE,
 						ModCfg.debugPlayerMovement()&&Minecraft.getInstance().player.getHeldItemOffhand().getCapability(Paraglider.CAP).isPresent());
 			}

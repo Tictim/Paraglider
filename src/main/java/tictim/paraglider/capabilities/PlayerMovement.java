@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -12,7 +12,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.common.Mod;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -111,21 +110,6 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		}
 	}
 
-	protected void updateParagliderInInventory(){
-		boolean isParagliding = isParagliding();
-		for(int i = 0; i<player.inventory.getSizeInventory(); i++){
-			Paraglider cap = player.inventory.getStackInSlot(i).getCapability(Paraglider.CAP).orElse(null);
-			if(cap!=null){
-				if(i==player.inventory.currentItem){
-					if(cap.isParagliding!=isParagliding){
-						cap.isParagliding = isParagliding;
-						ParagliderUtils.resetMainHandItemEquipProgress();
-					}
-				}else cap.isParagliding = false;
-			}
-		}
-	}
-
 	protected void applyMovement(){
 		if(!player.abilities.isCreativeMode&&isDepleted()){
 			player.addPotionEffect(new EffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
@@ -133,13 +117,13 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		if(isParagliding()){
 			player.fallDistance = 1.5f;
 
-			Vec3d m = player.getMotion();
+			Vector3d m = player.getMotion();
 			switch(state){
 			case PARAGLIDING:
-				if(m.y<-0.05) player.setMotion(new Vec3d(m.x, -0.05, m.z));
+				if(m.y<-0.05) player.setMotion(new Vector3d(m.x, -0.05, m.z));
 				break;
 			case ASCENDING:
-				if(m.y<0.25) player.setMotion(new Vec3d(m.x, Math.max(m.y+0.05, 0.25), m.z));
+				if(m.y<0.25) player.setMotion(new Vector3d(m.x, Math.max(m.y+0.05, 0.25), m.z));
 				break;
 			}
 		}

@@ -1,6 +1,7 @@
 package tictim.paraglider.capabilities;
 
 import net.minecraft.entity.player.PlayerEntity;
+import tictim.paraglider.utils.ParagliderUtils;
 
 /**
  * PlayerMovement with no unique action at update. Used as simple data container.
@@ -21,5 +22,20 @@ public class RemotePlayerMovement extends PlayerMovement{
 
 	@Override public void update(){
 		updateParagliderInInventory();
+	}
+
+	protected void updateParagliderInInventory(){
+		boolean isParagliding = isParagliding();
+		for(int i = 0; i<player.inventory.getSizeInventory(); i++){
+			Paraglider cap = player.inventory.getStackInSlot(i).getCapability(Paraglider.CAP).orElse(null);
+			if(cap!=null){
+				if(i==player.inventory.currentItem){
+					if(cap.isParagliding!=isParagliding){
+						cap.isParagliding = isParagliding;
+						ParagliderUtils.resetMainHandItemEquipProgress();
+					}
+				}else cap.isParagliding = false;
+			}
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package tictim.paraglider.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -9,7 +10,7 @@ import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
 import tictim.paraglider.capabilities.PlayerMovement;
 
@@ -39,28 +40,27 @@ public final class StaminaWheelRenderer{
 		}
 	}
 
-	public void render(double x, double y, double size, boolean debug){
+	public void render(MatrixStack stack, double x, double y, double z, double size, boolean debug){
 		RenderSystem.disableDepthTest();
 
 		BufferBuilder b = Tessellator.getInstance().getBuffer();
 		Minecraft mc = Minecraft.getInstance();
 
 		if(debug){
-			int lines = 0;
+			//int lines = 0;
+			float linePos = 10;
 			FontRenderer font = mc.fontRenderer;
 			for(WheelType t : WheelType.values()){
 				Wheel wheel = getWheel(t);
 				if(wheel!=null){
-					font.drawStringWithShadow(t+":", 20, 10+10*lines++, 0xFFFFFFFF);
-					for(String s : font.listFormattedStringToWidth(wheel.toString(), mc.getMainWindow().getScaledWidth()-30)){
-						font.drawStringWithShadow(s, 30, 10+10*lines++, 0xFFFFFFFF);
-					}
+					linePos = font.drawStringWithShadow(stack, t+":", 20, linePos, 0xFFFFFFFF);
+					//for(String s : font.getWordWrappedHeight(wheel.toString(), mc.getMainWindow().getScaledWidth()-30)){
+
+					//}
+					linePos = font.drawStringWithShadow(stack, wheel.toString(), 30, linePos, 0xFFFFFFFF);
 				}
 			}
 		}
-
-		RenderSystem.pushMatrix();
-		RenderSystem.translated(x, y, 0);
 
 		for(WheelType t : WheelType.values()){
 			Wheel wheel = getWheel(t);
@@ -69,11 +69,10 @@ public final class StaminaWheelRenderer{
 				RenderSystem.enableAlphaTest();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
-				wheel.draw(b, size, debug);
+				wheel.draw(stack, b, x, y, z, size, debug);
 			}
 		}
 
-		RenderSystem.popMatrix();
 		RenderSystem.enableDepthTest();
 		wheel.clear();
 	}
@@ -125,26 +124,29 @@ public final class StaminaWheelRenderer{
 
 		private static final double[] renderPoints = {0, 1/8.0, 3/8.0, 5/8.0, 7/8.0, 1};
 
-		public void draw(BufferBuilder b, double size, boolean debug){
-			List<Vec2f> debugVertices = debug ? new ArrayList<>() : null;
+		public void draw(MatrixStack stack, BufferBuilder b, double x, double y, double z, double size, boolean debug){
+			List<Vector2f> debugVertices = debug ? new ArrayList<>() : null;
 			b.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR_TEX);
-			b.pos(0, 0, 0).color(color.red, color.green, color.blue, color.alpha).tex(0.5f, 0.5f).endVertex();
-			drawInternal(b, size, debugVertices, false);
+			b.pos(x, y, z).color(color.red, color.green, color.blue, color.alpha).tex(0.5f, 0.5f).endVertex();
+			drawInternal(b, x, y, z, size, debugVertices, false);
 			b.finishDrawing();
 			WorldVertexBufferUploader.draw(b);
 
 			if(debugVertices!=null){
+				stack.push();
+				stack.translate(x, y, z);
 				FontRenderer font = Minecraft.getInstance().fontRenderer;
-				for(Vec2f vec : debugVertices){
+				for(Vector2f vec : debugVertices){
 					String s = vec.x+" "+vec.y;
-					font.drawStringWithShadow(s,
+					font.drawStringWithShadow(stack, s,
 							vec.x>0 ? vec.x*(float)size+2 : vec.x*(float)size-2-font.getStringWidth(s),
 							vec.y>0 ? vec.y*(float)-size-2-font.FONT_HEIGHT : vec.y*(float)-size+2,
 							0xFF00FF00);
 				}
+				stack.pop();
 			}
 		}
-		private void drawInternal(BufferBuilder b, double size, @Nullable List<Vec2f> debugVertices, boolean skipFirst){
+		private void drawInternal(BufferBuilder b, double x, double y, double z, double size, @Nullable List<Vector2f> debugVertices, boolean skipFirst){
 			for(int i = 0; i<renderPoints.length-1; i++){
 				double currentStart = renderPoints[i];
 				if(currentStart>=end) break;
@@ -152,45 +154,45 @@ public final class StaminaWheelRenderer{
 				if(currentEnd<=start) continue;
 
 				if(currentStart<=start){
-					if(!skipFirst) vert(b, start, size, debugVertices);
+					if(!skipFirst) vert(b, x, y, z, start, size, debugVertices);
 				}
-				vert(b, Math.min(currentEnd, end), size, debugVertices);
+				vert(b, x, y, z, Math.min(currentEnd, end), size, debugVertices);
 			}
-			if(next!=null) next.drawInternal(b, size, debugVertices, end==next.start);
+			if(next!=null) next.drawInternal(b, x, y, z, size, debugVertices, end==next.start);
 		}
 
-		private void vert(BufferBuilder b, double point, double size, @Nullable List<Vec2f> debugVertices){
-			double x, y;
+		private void vert(BufferBuilder b, double x, double y, double z, double point, double size, @Nullable List<Vector2f> debugVertices){
+			double vx, vy;
 			if(point==0||point==1){
-				x = 0;
-				y = 1;
+				vx = 0;
+				vy = 1;
 			}else if(point==1/8.0){
-				x = -1;
-				y = 1;
+				vx = -1;
+				vy = 1;
 			}else if(point==3/8.0){
-				x = -1;
-				y = -1;
+				vx = -1;
+				vy = -1;
 			}else if(point==5/8.0){
-				x = 1;
-				y = -1;
+				vx = 1;
+				vy = -1;
 			}else if(point==7/8.0){
-				x = 1;
-				y = 1;
+				vx = 1;
+				vy = 1;
 			}else if(point<1/8.0||point>7/8.0){
-				x = -Math.tan(point*(2*PI));
-				y = 1;
+				vx = -Math.tan(point*(2*PI));
+				vy = 1;
 			}else if(point<3/8.0){
-				x = -1;
-				y = 1/Math.tan(point*(2*PI));
+				vx = -1;
+				vy = 1/Math.tan(point*(2*PI));
 			}else if(point<5/8.0){
-				x = Math.tan(point*(2*PI));
-				y = -1;
+				vx = Math.tan(point*(2*PI));
+				vy = -1;
 			}else{ // point<7/8.0
-				x = 1;
-				y = -1/Math.tan(point*(2*PI));
+				vx = 1;
+				vy = -1/Math.tan(point*(2*PI));
 			}
-			b.pos(x*size, y*-size, 0).color(color.red, color.green, color.blue, color.alpha).tex((float)(x/2+0.5), (float)(y/2+0.5)).endVertex();
-			if(debugVertices!=null) debugVertices.add(new Vec2f((float)x, (float)y));
+			b.pos(x+vx*size, y+vy*-size, z).color(color.red, color.green, color.blue, color.alpha).tex((float)(vx/2+0.5), (float)(vy/2+0.5)).endVertex();
+			if(debugVertices!=null) debugVertices.add(new Vector2f((float)vx, (float)vy));
 		}
 
 		@Override public String toString(){
