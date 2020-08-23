@@ -1,10 +1,14 @@
 package tictim.paraglider.capabilities;
 
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -120,16 +124,31 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
 		if(player.abilities.isFlying) return PlayerState.IDLE;
+		else if(player.isSwimming()) return PlayerState.SWIMMING;
+		else if(player.isInWater()) return canSwimInfinitely() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.onGround&&isHoldingParaglider&&!player.isElytraFlying()){
 			if(ModCfg.ascendingWinds()&&isInsideWind()) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||player.fallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
-		if(player.isSwimming()) return PlayerState.SWIMMING;
-		else if(player.isInWater()){
-			return player.isPotionActive(Effects.WATER_BREATHING) ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
-		}else if(player.isSprinting()) return PlayerState.RUNNING;
+
+		if(player.isSprinting()) return PlayerState.RUNNING;
 		else if(player.onGround) return PlayerState.IDLE;
 		else return PlayerState.MIDAIR;
+	}
+
+	private boolean canSwimInfinitely(){
+		if(player.isPotionActive(Effects.WATER_BREATHING)) return true;
+
+		ItemStack head = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+		if(!head.isEmpty()){
+			if(head.getItem()==Items.TURTLE_HELMET) return true;
+			else if(EnchantmentHelper.getEnchantmentLevel(Enchantments.AQUA_AFFINITY, head)>0) return true;
+		}
+		ItemStack feet = player.getItemStackFromSlot(EquipmentSlotType.FEET);
+		if(!feet.isEmpty()){
+			if(EnchantmentHelper.getEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0) return true;
+		}
+		return false;
 	}
 
 	@Override protected void updateStamina(){

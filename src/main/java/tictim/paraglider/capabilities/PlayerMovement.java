@@ -12,7 +12,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.common.Mod;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -107,21 +106,6 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 				int max = getMaxStamina();
 				if(stamina+state.staminaAction.change>=max) stamina = max;
 				else stamina += state.staminaAction.change;
-			}
-		}
-	}
-
-	protected void updateParagliderInInventory(){
-		boolean isParagliding = isParagliding();
-		for(int i = 0; i<player.inventory.getSizeInventory(); i++){
-			Paraglider cap = player.inventory.getStackInSlot(i).getCapability(Paraglider.CAP).orElse(null);
-			if(cap!=null){
-				if(i==player.inventory.currentItem){
-					if(cap.isParagliding!=isParagliding){
-						cap.isParagliding = isParagliding;
-						ParagliderUtils.resetMainHandItemEquipProgress();
-					}
-				}else cap.isParagliding = false;
 			}
 		}
 	}
