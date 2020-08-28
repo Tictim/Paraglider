@@ -1,6 +1,6 @@
 modLoader="javafml"
-loaderVersion="[33,)"
-license="GNL General Public License version 3 (GPLv3)"
+loaderVersion="[32,)"
+license="GNU General Public License version 3 (GPLv3)"
 issueTrackerURL="https://github.com/Tictim/Paraglider/issues"
 
 [[mods]]
@@ -16,6 +16,6 @@ description='''
 [[dependencies.paraglider]]
 	modId="forge"
 	mandatory=true
-	versionRange="[33,)"
+	versionRange="[32,)"
 	ordering="NONE"
 	side="BOTH"
