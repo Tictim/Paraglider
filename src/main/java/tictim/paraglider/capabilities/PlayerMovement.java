@@ -32,7 +32,7 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 	public final PlayerEntity player;
 	private PlayerState state = PlayerState.IDLE;
 
-	private int stamina;
+	private int stamina = BASE_STAMINA;
 	private boolean depleted;
 	private int recoveryDelay;
 	private int staminaVessels;

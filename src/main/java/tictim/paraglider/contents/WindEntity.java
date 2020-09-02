@@ -1,7 +1,5 @@
 package tictim.paraglider.contents;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
@@ -14,10 +12,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
+import tictim.paraglider.ModCfg;
 
 import javax.annotation.Nullable;
 
@@ -77,7 +75,7 @@ public class WindEntity extends Entity{
 		if(world.isRemote){
 			if(rand.nextInt(6)==0) world.addOptionalParticle(ParticleTypes.FIREWORK, getPosX()+rand.nextDouble()-0.5, getPosY()+0.5, getPosZ()+rand.nextDouble()-0.5, 0, 1, 0);
 		}else{
-			if(ticksExisted-lastUsedTickCount >= 200||(blockPos!=null&&!canBePlaced(world.getBlockState(blockPos)))) this.remove();
+			if(ticksExisted-lastUsedTickCount >= 200||(blockPos!=null&&!ModCfg.isWindSource(world.getBlockState(blockPos)))) this.remove();
 		}
 	}
 
@@ -101,9 +99,5 @@ public class WindEntity extends Entity{
 			nbt.putInt("lastUsed", lastUsedTickCount);
 			nbt.putFloat("height", dataManager.get(HEIGHT));
 		}
-	}
-
-	public static boolean canBePlaced(BlockState state){
-		return state.getBlock()==Blocks.FIRE||(state.hasProperty(BlockStateProperties.LIT)&&state.get(BlockStateProperties.LIT));
 	}
 }

@@ -7,6 +7,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.WindEntity;
 
 import java.util.HashMap;
@@ -49,12 +50,12 @@ public final class WindUpdateHelper{
 				for(int y = origin.getY()+yMin; true; y++){
 					mpos.setPos(x, y, z);
 					BlockState state = world.getBlockState(mpos);
-					boolean isFireplace = WindEntity.canBePlaced(state);
+					boolean isWindSource = ModCfg.isWindSource(state);
 
 					if(fireY>=0){
 						int height = y-fireY;
 						if(height>=10||
-								isFireplace||
+								isWindSource||
 								state.getMaterial().blocksMovement()||
 								Block.hasEnoughSolidSide(world, mpos, Direction.DOWN)||
 								Block.hasEnoughSolidSide(world, mpos, Direction.UP)){
@@ -85,7 +86,7 @@ public final class WindUpdateHelper{
 						}
 					}
 					if(y<=my){
-						if(isFireplace) fireY = y;
+						if(isWindSource) fireY = y;
 						else{
 							WindEntity existingWind = windMap.remove(mpos);
 							if(existingWind!=null){
