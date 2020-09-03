@@ -46,6 +46,18 @@ public final class ParagliderEventHandler{
 	}
 
 	@SubscribeEvent
+	public static void onClone(PlayerEvent.Clone event){
+		PlayerMovement m1 = event.getOriginal().getCapability(PlayerMovement.CAP).orElse(null);
+		PlayerMovement m2 = event.getPlayer().getCapability(PlayerMovement.CAP).orElse(null);
+		if(m1!=null&&m2!=null){
+			m2.setRecoveryDelay(m1.getRecoveryDelay());
+			m2.setStaminaVessels(m1.getStaminaVessels());
+			m2.setHeartContainers(m1.getHeartContainers());
+			m2.setStamina(m2.getMaxStamina());
+		}
+	}
+
+	@SubscribeEvent
 	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
 		if(event.getEntityLiving().getActiveHand()==Hand.OFF_HAND&&event.getEntityLiving() instanceof PlayerEntity){
 			if(ParagliderItem.hasParaglidingFlag(event.getEntityLiving().getHeldItemMainhand())) event.getEntityLiving().resetActiveHand();
