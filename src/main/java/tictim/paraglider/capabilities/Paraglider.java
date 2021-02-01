@@ -22,6 +22,6 @@ public class Paraglider implements ICapabilityProvider{
 	}
 
 	static boolean isParaglider(ItemStack stack){
-		return CAP!=null&&stack.getCapability(CAP).isPresent();
+		return CAP!=null&&!stack.isEmpty()&&stack.getCapability(CAP).isPresent();
 	}
 }
