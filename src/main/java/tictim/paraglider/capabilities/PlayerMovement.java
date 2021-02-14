@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID)
 public abstract class PlayerMovement implements ICapabilityProvider{
 	@CapabilityInject(PlayerMovement.class)
 	public static final Capability<PlayerMovement> CAP = null;
