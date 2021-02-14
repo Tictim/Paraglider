@@ -124,6 +124,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
 		if(player.abilities.isFlying) return PlayerState.IDLE;
+		else if(player.getRidingEntity()!=null) return PlayerState.RIDING;
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canSwimInfinitely() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
@@ -131,7 +132,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			else if(prevState.isParagliding()||player.fallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
-		if(player.isSprinting()) return PlayerState.RUNNING;
+		if(player.isSprinting()&&!player.isHandActive()) return PlayerState.RUNNING;
 		else if(player.isOnGround()) return PlayerState.IDLE;
 		else return PlayerState.MIDAIR;
 	}

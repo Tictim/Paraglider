@@ -10,6 +10,7 @@ public enum PlayerState{
 	SWIMMING(ParaglidingAction.NONE, StaminaAction.FASTER_CONSUME),
 	UNDERWATER(ParaglidingAction.NONE, StaminaAction.SLOW_CONSUME),
 	BREATHING_UNDERWATER(ParaglidingAction.NONE, StaminaAction.SLOW_RECOVER),
+	RIDING(ParaglidingAction.NONE, StaminaAction.RECOVER),
 	PARAGLIDING(ParaglidingAction.PARAGLIDING, StaminaAction.SLOW_CONSUME),
 	ASCENDING(ParaglidingAction.ASCENDING, StaminaAction.SLOW_CONSUME);
 
