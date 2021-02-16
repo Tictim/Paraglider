@@ -9,14 +9,11 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.common.Mod;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-
-import static tictim.paraglider.ParagliderMod.MODID;
 
 public abstract class PlayerMovement implements ICapabilityProvider{
 	@CapabilityInject(PlayerMovement.class)
@@ -118,12 +115,12 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 
 			Vector3d m = player.getMotion();
 			switch(state){
-			case PARAGLIDING:
-				if(m.y<-0.05) player.setMotion(new Vector3d(m.x, -0.05, m.z));
-				break;
-			case ASCENDING:
-				if(m.y<0.25) player.setMotion(new Vector3d(m.x, Math.max(m.y+0.05, 0.25), m.z));
-				break;
+				case PARAGLIDING:
+					if(m.y<-0.05) player.setMotion(new Vector3d(m.x, -0.05, m.z));
+					break;
+				case ASCENDING:
+					if(m.y<0.25) player.setMotion(new Vector3d(m.x, Math.max(m.y+0.05, 0.25), m.z));
+					break;
 			}
 		}
 	}
