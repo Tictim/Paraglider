@@ -33,6 +33,9 @@ import static tictim.paraglider.ParagliderMod.MODID;
 public final class ParagliderEventHandler{
 	private ParagliderEventHandler(){}
 
+	// PlayerEntity#livingTick(), default value of jumpMovementFactor while sprinting
+	private static final double DEFAULT_PARAGLIDING_SPEED = 0.02+0.005999999865889549;
+
 	@SubscribeEvent
 	public static void serverSetup(FMLServerStartedEvent event){
 		if(ModCfg.forceFlightDisabled()) event.getServer().setAllowFlight(true);
@@ -82,9 +85,16 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-		if(event.phase==TickEvent.Phase.END){
-			PlayerMovement h = event.player.getCapability(PlayerMovement.CAP).orElse(null);
-			if(h!=null) h.update();
+		PlayerMovement h = event.player.getCapability(PlayerMovement.CAP).orElse(null);
+		if(h!=null){
+			if(event.phase==TickEvent.Phase.END){
+				h.update();
+			}else{
+				if(h.isParagliding()){
+					double v = ModCfg.paraglidingSpeed();
+					event.player.jumpMovementFactor = (float)(DEFAULT_PARAGLIDING_SPEED*v);
+				}
+			}
 		}
 	}
 

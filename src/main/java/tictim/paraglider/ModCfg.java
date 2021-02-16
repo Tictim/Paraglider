@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -17,8 +18,13 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +40,8 @@ public final class ModCfg{
 	private static BooleanValue runningConsumesStamina;
 	private static ConfigValue<List<? extends String>> windSources;
 	private static Map<Block, Predicate<BlockState>> windSourcesParsed;
+
+	private static DoubleValue paraglidingSpeed;
 
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue traceMovementPacket;
@@ -55,6 +63,10 @@ public final class ModCfg{
 	public static boolean isWindSource(BlockState state){
 		Predicate<BlockState> p = windSourcesParsed.get(state.getBlock());
 		return p!=null&&p.test(state);
+	}
+
+	public static double paraglidingSpeed(){
+		return paraglidingSpeed.get();
 	}
 
 	public static boolean debugPlayerMovement(){
@@ -80,7 +92,7 @@ public final class ModCfg{
 		windSources = server.comment("You can customize which block produces wind.\n"+
 				"Write each blockstate to one of this format:\n"+
 				"  [block ID]   (Matches all state of the block)\n"+
-				"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n" +
+				"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n"+
 				"Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.")
 				.defineList("windSources",
 						ImmutableList.of("fire",
@@ -89,6 +101,8 @@ public final class ModCfg{
 						o -> MATCH.reset(o.toString()).matches());
 		paraglidingConsumesStamina = server.comment("Paragliding will consume stamina.").define("paraglidingConsumesStamina", true);
 		runningConsumesStamina = server.comment("Actions other than paragliding will consume stamina.").define("runningAndSwimmingConsumesStamina", false);
+
+		paraglidingSpeed = server.comment("Horizontal movement speed while paragliding.").defineInRange("paraglidingSpeed", 1.0, 0.2, 10);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
