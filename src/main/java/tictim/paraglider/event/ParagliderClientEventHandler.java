@@ -3,6 +3,7 @@ package tictim.paraglider.event;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.TextFormatting;
@@ -92,7 +93,10 @@ public final class ParagliderClientEventHandler{
 	@SubscribeEvent
 	public static void renderStamina(RenderGameOverlayEvent.Post event){
 		if(event.getType()==RenderGameOverlayEvent.ElementType.ALL){
-			PlayerMovement h = Minecraft.getInstance().player.getCapability(PlayerMovement.CAP).orElse(null);
+			ClientPlayerEntity player = Minecraft.getInstance().player;
+			if(player==null) return;
+
+			PlayerMovement h = player.getCapability(PlayerMovement.CAP).orElse(null);
 			if(h!=null){
 				int stamina = h.getStamina();
 				int maxStamina = h.getMaxStamina();
@@ -139,7 +143,7 @@ public final class ParagliderClientEventHandler{
 						window.getScaledHeight()/2-15,
 						25,
 						WHEEL_SIZE,
-						ModCfg.debugPlayerMovement()&&Minecraft.getInstance().player.getHeldItemOffhand().getCapability(Paraglider.CAP).isPresent());
+						ModCfg.debugPlayerMovement()&&player.getHeldItemOffhand().getCapability(Paraglider.CAP).isPresent());
 			}
 		}
 	}

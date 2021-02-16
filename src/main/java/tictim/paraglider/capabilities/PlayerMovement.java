@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public abstract class PlayerMovement implements ICapabilityProvider{
 	@CapabilityInject(PlayerMovement.class)
-	public static final Capability<PlayerMovement> CAP = null;
+	public static Capability<PlayerMovement> CAP = null;
 
 	public static final int BASE_STAMINA = 1000;
 	public static final int STAMINA_INCREMENT = BASE_STAMINA/5;

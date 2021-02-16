@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 public class Paraglider implements ICapabilityProvider{
 	@CapabilityInject(Paraglider.class)
-	public static final Capability<Paraglider> CAP = null;
+	public static Capability<Paraglider> CAP = null;
 
 	public boolean isParagliding;
 
