@@ -21,7 +21,7 @@ public class Paraglider implements ICapabilityProvider{
 		return cap==CAP ? self.cast() : LazyOptional.empty();
 	}
 
-	static boolean isParaglider(ItemStack stack){
+	public static boolean isParaglider(ItemStack stack){
 		return CAP!=null&&!stack.isEmpty()&&stack.getCapability(CAP).isPresent();
 	}
 }

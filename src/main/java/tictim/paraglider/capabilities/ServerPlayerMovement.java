@@ -17,12 +17,11 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.WindEntity;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
 import tictim.paraglider.network.SyncParaglidingMsg;
 import tictim.paraglider.network.SyncVesselMsg;
-import tictim.paraglider.utils.WindUpdateHelper;
+import tictim.paraglider.utils.WindUtils;
 
 import java.util.UUID;
 
@@ -82,9 +81,6 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 
 		boolean isHoldingParaglider = Paraglider.isParaglider(player.getHeldItemMainhand());
-		if(ModCfg.ascendingWinds()&&isHoldingParaglider){
-			if(player.world.getGameTime()%4==0) WindUpdateHelper.generateWind(player);
-		}
 		setState(calculatePlayerState(isHoldingParaglider));
 		if(prevState!=getState()) movementNeedsSync = true;
 		updateStamina();
@@ -128,7 +124,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canSwimInfinitely() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
-			if(ModCfg.ascendingWinds()&&isInsideWind()) return PlayerState.ASCENDING;
+			if(ModCfg.ascendingWinds()&&WindUtils.isInsideWind(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||player.fallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
@@ -181,10 +177,6 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			panicParaglidingDuration = PANIC_DURATION;
 			return true;
 		}
-	}
-
-	private boolean isInsideWind(){
-		return !player.world.getEntitiesWithinAABB(WindEntity.class, player.getBoundingBox(), null).isEmpty();
 	}
 
 	@Override public CompoundNBT serializeNBT(){

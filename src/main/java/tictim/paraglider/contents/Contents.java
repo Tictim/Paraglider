@@ -37,7 +37,6 @@ public final class Contents{
 
 	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-	private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
 	private static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
 
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
@@ -71,17 +70,9 @@ public final class Contents{
 		}
 	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
-	public static final RegistryObject<EntityType<WindEntity>> WIND = ENTITIES.register("wind", () -> EntityType.Builder.<WindEntity>create(WindEntity::new, EntityClassification.MISC)
-			.size(1, 1)
-			.immuneToFire()
-			.setTrackingRange(10)
-			.setShouldReceiveVelocityUpdates(false)
-			.build("paraglider_wind"));
-
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
-		ENTITIES.register(eventBus);
 		EFFECTS.register(eventBus);
 	}
 }

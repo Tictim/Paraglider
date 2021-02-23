@@ -122,7 +122,6 @@ public final class ParagliderEventHandler{
 		}
 	}
 
-	// TODO tracking?
 
 	private static final class Client{
 		public static PlayerMovement createPlayerMovement(PlayerEntity player){

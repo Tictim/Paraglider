@@ -19,7 +19,6 @@ import tictim.paraglider.capabilities.PlayerState;
 import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.client.StaminaWheelRenderer.Color;
 import tictim.paraglider.client.StaminaWheelRenderer.WheelType;
-import tictim.paraglider.contents.WindEntity;
 import tictim.paraglider.item.ParagliderItem;
 
 import java.util.ArrayList;
@@ -57,10 +56,11 @@ public final class ParagliderClientEventHandler{
 					arr.add("Paragliding: "+h.isParagliding());
 					if(!right.isEmpty()) arr.add("");
 
-					List<WindEntity> winds = p.world.getEntitiesWithinAABB(WindEntity.class, p.getBoundingBox().grow(5));
-					if(!winds.isEmpty()){
-						arr.add("Winds: "+winds.size()+" entries");
-					}
+					// TODO REDO
+					// List<WindEntity> winds = p.world.getEntitiesWithinAABB(WindEntity.class, p.getBoundingBox().grow(5));
+					// if(!winds.isEmpty()){
+					// 	arr.add("Winds: "+winds.size()+" entries");
+					// }
 					right.addAll(0, arr);
 				}
 			}

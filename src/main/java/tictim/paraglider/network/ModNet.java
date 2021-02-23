@@ -1,6 +1,7 @@
 package tictim.paraglider.network;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -11,6 +12,7 @@ import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
+import tictim.paraglider.capabilities.wind.Wind;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -33,6 +35,9 @@ public final class ModNet{
 		NET.registerMessage(2, SyncVesselMsg.class,
 				SyncVesselMsg::write, SyncVesselMsg::read,
 				Client::handleSetVessel, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NET.registerMessage(3, SyncWindMsg.class,
+				SyncWindMsg::write, SyncWindMsg::read,
+				Client::handleSyncWind, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
 	private static final class Client{
@@ -69,6 +74,14 @@ public final class ModNet{
 				h.setStaminaVessels(msg.staminaVessels);
 				h.setStamina(msg.stamina);
 			}else ParagliderMod.LOGGER.error("Couldn't handle packet {}, capability not found", msg);
+		}
+
+		public static void handleSyncWind(SyncWindMsg msg, Supplier<NetworkEvent.Context> ctx){
+			ctx.get().setPacketHandled(true);
+			ClientWorld world = Minecraft.getInstance().world;
+			if(world==null) return;
+			Wind wind = Wind.of(world);
+			if(wind!=null) wind.put(msg.windChunk);
 		}
 	}
 }

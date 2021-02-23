@@ -1,6 +1,5 @@
 package tictim.paraglider;
 
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.IItemPropertyGetter;
@@ -14,7 +13,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -24,8 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.capabilities.wind.Wind;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.WindEntity;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 
@@ -49,6 +47,7 @@ public class ParagliderMod{
 	public static void setup(FMLCommonSetupEvent event){
 		registerDefaultCapability(PlayerMovement.class);
 		registerDefaultCapability(Paraglider.class);
+		registerDefaultCapability(Wind.class);
 	}
 
 	private static <T> void registerDefaultCapability(Class<T> classOf){
@@ -68,12 +67,6 @@ public class ParagliderMod{
 
 		@SubscribeEvent
 		public static void clientSetup(FMLClientSetupEvent event){
-			RenderingRegistry.registerEntityRenderingHandler(Contents.WIND.get(), m -> new EntityRenderer<WindEntity>(m){
-				@Override public ResourceLocation getEntityTexture(WindEntity entity){
-					return new ResourceLocation("missing");
-				}
-			});
-
 			IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> {
 				return entity instanceof PlayerEntity&&ParagliderItem.hasParaglidingFlag(stack) ? 1 : 0;
 			};
