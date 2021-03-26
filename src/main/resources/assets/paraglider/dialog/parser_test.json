@@ -1,0 +1,114 @@
+{
+	"scenario": [
+		{ "dialog": "Dialog?" },
+		"Dialog? <-- shorthand",
+		"lang:some.dumb.keys",
+		"^^ localization",
+		{
+			"dialog": "shit with choices",
+			"choices": [
+				{
+					"text": "first",
+					"scenario": [
+						"scenario",
+						"optional, empty scenario if unspecified"
+					],
+					"then": "end",
+					"^^": "end, loop, continue or error. error if unspecified"
+				},
+				{
+					"text": "lang:some.more.dumb.keys"
+				}
+			]
+		},
+		{
+			"dialog": "Labelled things",
+			"label": "labelName"
+		},
+		{
+			"error": "All script objects can be labelled",
+			"label": "anotherLabelName"
+		},
+		{ "go": "labelName" },
+		{ "end": "" },
+		"^^ end the dialog",
+		{
+			"do": "action",
+			"if": [
+				"scenario object",
+				"it's optional"
+			],
+			"else": [
+				"scenario object",
+				"it's optional too"
+			]
+		},
+		{
+			"do": "action",
+			"if": [ "if only" ]
+		},
+		{
+			"do": "action",
+			"else": [ "else only" ]
+		},
+		{ "do": "action" },
+		{
+			"dialog": "haha funny choices",
+			"choices": [
+				{
+					"text": "end",
+					"scenario": [ "end" ],
+					"then": "end"
+				},
+				{
+					"text": "continue",
+					"scenario": [ "continue" ],
+					"then": "continue"
+				},
+				{
+					"text": "loop",
+					"scenario": [ "loop" ],
+					"then": "loop"
+				},
+				{
+					"text": "error",
+					"scenario": [ "error" ],
+					"then": "error"
+				},
+				{
+					"text": "unspecified",
+					"scenario": [ "unspecified" ]
+				}
+			]
+		},
+		{
+			"dialog": "FUNNY CHOICES STRIKES AGAIN",
+			"choices": [
+				{
+					"text": "end",
+					"scenario": "end",
+					"then": "end"
+				},
+				{
+					"text": "continue",
+					"scenario": "continue",
+					"then": "continue"
+				},
+				{
+					"text": "loop",
+					"scenario": "loop",
+					"then": "loop"
+				},
+				{
+					"text": "error",
+					"scenario": "error",
+					"then": "error"
+				},
+				{
+					"text": "unspecified",
+					"scenario": "unspecified"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"scenario": [
+		{
+			"label": "start",
+			"dialog": "test2"
+		},
+		"{item:bread} bread {item:bread}, bread {item:bread}",
+		"{time} time is {time}, time is {time}",
+		"{noexist}\nerror item {item:noexist}!\nerror {noexist2}",
+		{ "go": "start" }
+	]
+}

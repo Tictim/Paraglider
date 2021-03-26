@@ -12,6 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
@@ -23,6 +24,7 @@ import tictim.paraglider.network.SyncParaglidingMsg;
 import tictim.paraglider.network.SyncVesselMsg;
 import tictim.paraglider.utils.WindUtils;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public final class ServerPlayerMovement extends PlayerMovement implements INBTSerializable<CompoundNBT>{
@@ -45,9 +47,30 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	private int panicParaglidingDelay = PANIC_INITIAL_DELAY;
 	private int panicParaglidingDuration = 0;
 
+	private int essenceSoldToStatue;
+
 	public ServerPlayerMovement(ServerPlayerEntity player){
 		super(player);
 		serverPlayer = player;
+	}
+
+	public int getEssenceSoldToStatue(){
+		return essenceSoldToStatue;
+	}
+	public void setEssenceSoldToStatue(int essenceSoldToStatue){
+		this.essenceSoldToStatue = Math.max(essenceSoldToStatue, 0);
+	}
+
+	public boolean increaseEssenceSoldToStatue(){
+		if(essenceSoldToStatue==Integer.MAX_VALUE) return false;
+		essenceSoldToStatue++;
+		return true;
+	}
+
+	public boolean decreaseEssenceSoldToStatue(){
+		if(essenceSoldToStatue==0) return false;
+		essenceSoldToStatue--;
+		return true;
 	}
 
 	@Override public void setStaminaVessels(int staminaVessels){
@@ -179,6 +202,13 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 	}
 
+	@Override public void copyTo(PlayerMovement another){
+		super.copyTo(another);
+		if(another instanceof ServerPlayerMovement){
+			((ServerPlayerMovement)another).setEssenceSoldToStatue(getEssenceSoldToStatue());
+		}
+	}
+
 	@Override public CompoundNBT serializeNBT(){
 		CompoundNBT nbt = new CompoundNBT();
 		nbt.putInt("stamina", getStamina());
@@ -187,6 +217,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		nbt.putInt("panicParaglidingDelay", panicParaglidingDelay);
 		nbt.putInt("staminaVessels", getStaminaVessels());
 		nbt.putInt("heartContainers", getHeartContainers());
+		nbt.putInt("essenceSoldToStatue", getEssenceSoldToStatue());
 		return nbt;
 	}
 	@Override public void deserializeNBT(CompoundNBT nbt){
@@ -196,5 +227,11 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		panicParaglidingDelay = nbt.getInt("panicParaglidingDelay");
 		setStaminaVessels(nbt.getInt("staminaVessels"));
 		setHeartContainers(nbt.getInt("heartContainers"));
+		setEssenceSoldToStatue(nbt.getInt("essenceSoldToStatue"));
+	}
+
+	@Nullable public static ServerPlayerMovement of(ICapabilityProvider capabilityProvider){
+		PlayerMovement movement = PlayerMovement.of(capabilityProvider);
+		return movement instanceof ServerPlayerMovement ? (ServerPlayerMovement)movement : null;
 	}
 }

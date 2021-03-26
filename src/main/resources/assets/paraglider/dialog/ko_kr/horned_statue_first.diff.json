@@ -1,0 +1,10 @@
+{
+	"diff": [
+		{
+			"before": "steal",
+			"insert": [
+				"lang:dialog.horned_statue_first.12"
+			]
+		}
+	]
+}

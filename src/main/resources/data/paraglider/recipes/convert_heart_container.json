@@ -1,7 +1,0 @@
-{
-	"type": "minecraft:crafting_shapeless",
-	"ingredients": [
-		{ "item": "paraglider:stamina_vessel" }
-	],
-	"result": { "item": "paraglider:heart_container" }
-}

@@ -7,7 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.contents.Contents;
@@ -26,7 +30,7 @@ public class StaminaVesselItem extends Item{
 
 	@Override public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn){
 		ItemStack stack = player.getHeldItem(handIn);
-		PlayerMovement h = player.getCapability(PlayerMovement.CAP).orElse(null);
+		PlayerMovement h = PlayerMovement.of(player);
 		if(h!=null){
 			int vessels = h.getStaminaVessels();
 			if(vessels<PlayerMovement.MAX_STAMINA_VESSELS){
@@ -41,9 +45,9 @@ public class StaminaVesselItem extends Item{
 	}
 
 	@Override public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-		tooltip.add(new TranslationTextComponent("tooltip.stamina_vessel.1",
-				new StringTextComponent(Integer.toString(PlayerMovement.STAMINA_INCREMENT)).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW))),
-				new StringTextComponent(Integer.toString(PlayerMovement.MAX_STAMINA_VESSELS)).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW)))
-		).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.GREEN))));
+		tooltip.add(new TranslationTextComponent("tooltip.paraglider.stamina_vessel.1",
+				new StringTextComponent(Integer.toString(PlayerMovement.STAMINA_INCREMENT)).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW)),
+				new StringTextComponent(Integer.toString(PlayerMovement.MAX_STAMINA_VESSELS)).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW))
+		).setStyle(Style.EMPTY.setFormatting(TextFormatting.GREEN)));
 	}
 }

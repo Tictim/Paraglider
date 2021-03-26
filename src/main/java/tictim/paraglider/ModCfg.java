@@ -44,6 +44,7 @@ public final class ModCfg{
 	private static DoubleValue paraglidingSpeed;
 
 	private static BooleanValue debugPlayerMovement;
+	private static BooleanValue debugDialogLoading;
 	private static BooleanValue traceMovementPacket;
 	private static BooleanValue traceParaglidingPacket;
 	private static BooleanValue traceVesselPacket;
@@ -71,6 +72,9 @@ public final class ModCfg{
 
 	public static boolean debugPlayerMovement(){
 		return debugPlayerMovement.get();
+	}
+	public static boolean debugDialogLoading(){
+		return debugDialogLoading.get();
 	}
 	public static boolean traceMovementPacket(){
 		return traceMovementPacket.get();
@@ -108,6 +112,7 @@ public final class ModCfg{
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
 		common.push("debug");
 		debugPlayerMovement = common.define("debugPlayerMovement", false);
+		debugDialogLoading = common.define("debugDialogLoading", false);
 		traceMovementPacket = common.define("traceMovementPacket", false);
 		traceParaglidingPacket = common.define("traceParaglidingPacket", false);
 		traceVesselPacket = common.define("traceVesselPacket", false);

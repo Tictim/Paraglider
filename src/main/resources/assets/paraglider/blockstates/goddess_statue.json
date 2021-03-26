@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"facing=north": { "model": "paraglider:block/goddess_statue" },
+		"facing=south": { "model": "paraglider:block/goddess_statue", "y": 180 },
+		"facing=east": { "model": "paraglider:block/goddess_statue", "y": 90 },
+		"facing=west": { "model": "paraglider:block/goddess_statue", "y": 270 }
+	}
+}

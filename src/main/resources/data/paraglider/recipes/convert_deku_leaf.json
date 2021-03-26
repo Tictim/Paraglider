@@ -1,8 +1,0 @@
-{
-	"type": "minecraft:crafting_shapeless",
-	"ingredients": [
-		{"item": "paraglider:paraglider"},
-		{"tag": "minecraft:leaves"}
-	],
-	"result": {"item": "paraglider:deku_leaf"}
-}

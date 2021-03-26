@@ -1,0 +1,26 @@
+{
+	"display": {
+		"icon": {
+			"item": "paraglider:paraglider"
+		},
+		"title": {
+			"translate": "itemGroup.paraglider"
+		},
+		"description": {
+			"translate": "advancement.paraglider.desc"
+		},
+		"show_toast": false,
+		"announce_to_chat": false,
+		"background": "paraglider:textures/gui/advancement_background.png"
+	},
+	"criteria": {
+		"paraglider": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{ "tag": "paraglider:paragliders" }
+				]
+			}
+		}
+	}
+}

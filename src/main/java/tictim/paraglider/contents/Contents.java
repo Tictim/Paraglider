@@ -1,13 +1,17 @@
 package tictim.paraglider.contents;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.item.*;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
@@ -16,6 +20,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import tictim.paraglider.block.GoddessStatueBlock;
+import tictim.paraglider.block.GoronGoddessStatueBlock;
+import tictim.paraglider.block.HornedStatueBlock;
+import tictim.paraglider.block.KakirikoGoddessStatueBlock;
+import tictim.paraglider.item.AntiVesselItem;
 import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
@@ -35,22 +44,38 @@ public final class Contents{
 		}
 	};
 
-	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-	private static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
+	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+	public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
+	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 
+	private static final AbstractBlock.Properties STATUE_PROPERTIES = Block.Properties.create(Material.ROCK)
+			.sound(SoundType.STONE)
+			.harvestTool(ToolType.PICKAXE)
+			.hardnessAndResistance(1.5f, 100f)
+			.notSolid();
+
+	public static final RegistryObject<Block> GODDESS_STATUE = BLOCKS.register("goddess_statue",
+			() -> new GoddessStatueBlock(STATUE_PROPERTIES));
+	public static final RegistryObject<Block> KAKIRIKO_GODDESS_STATUE = BLOCKS.register("kakiriko_goddess_statue",
+			() -> new KakirikoGoddessStatueBlock(STATUE_PROPERTIES));
+	public static final RegistryObject<Block> GORON_GODDESS_STATUE = BLOCKS.register("goron_goddess_statue",
+			() -> new GoronGoddessStatueBlock(STATUE_PROPERTIES));
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
-			() -> new HornedStatueBlock(Block.Properties.create(Material.ROCK)
-					.sound(SoundType.STONE)
-					.harvestTool(ToolType.PICKAXE)
-					.hardnessAndResistance(1.5f, 100f)
-					.notSolid()));
+			() -> new HornedStatueBlock(STATUE_PROPERTIES));
 
 	public static final RegistryObject<Item> PARAGLIDER = ITEMS.register("paraglider", () -> new ParagliderItem(0xA65955));
 	public static final RegistryObject<Item> DEKU_LEAF = ITEMS.register("deku_leaf", () -> new ParagliderItem(0x3FB53F));
 	public static final RegistryObject<Item> HEART_CONTAINER = ITEMS.register("heart_container", HeartContainerItem::new);
 	public static final RegistryObject<Item> STAMINA_VESSEL = ITEMS.register("stamina_vessel", StaminaVesselItem::new);
 	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).group(GROUP)));
+	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC).group(GROUP)));
+	public static final RegistryObject<BlockItem> GODDESS_STATUE_ITEM = ITEMS.register("goddess_statue", () -> new BlockItem(GODDESS_STATUE.get(),
+			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+	public static final RegistryObject<BlockItem> KAKIRIKO_GODDESS_STATUE_ITEM = ITEMS.register("kakiriko_goddess_statue", () -> new BlockItem(KAKIRIKO_GODDESS_STATUE.get(),
+			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+	public static final RegistryObject<BlockItem> GORON_GODDESS_STATUE_ITEM = ITEMS.register("goron_goddess_statue", () -> new BlockItem(GORON_GODDESS_STATUE.get(),
+			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
 	public static final RegistryObject<BlockItem> HORNED_STATUE_ITEM = ITEMS.register("horned_statue", () -> new BlockItem(HORNED_STATUE.get(),
 			new Item.Properties().rarity(Rarity.EPIC).group(GROUP)));
 
@@ -70,9 +95,14 @@ public final class Contents{
 		}
 	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
+	static{
+		Dialogs.init();
+	}
+
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
 		EFFECTS.register(eventBus);
+		CONTAINERS.register(eventBus);
 	}
 }

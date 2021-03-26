@@ -1,0 +1,38 @@
+{
+	"scenario": [
+		"ABCDE",
+		"FUCKING TEST DIALOGS",
+		"I HATE MY LIFE",
+		{
+			"dialog": "DO YOU AGREE",
+			"choices": [
+				{
+					"text": "yeah",
+					"scenario": [
+						"OK"
+					],
+					"then": "end"
+				},
+				{
+					"text": "nah",
+					"scenario": [
+						"WRONG"
+					],
+					"then": "loop"
+				},
+				{
+					"text": "give me error",
+					"scenario": [
+						"OK?"
+					],
+					"then": "continue"
+				},
+				{
+					"text": "this text is lengthy af for testing UI, also it's supposed to produce error",
+					"scenario": [ ]
+				}
+			]
+		},
+		{ "error": "You asked for it" }
+	]
+}
