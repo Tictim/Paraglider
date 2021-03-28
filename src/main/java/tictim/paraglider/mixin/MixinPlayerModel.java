@@ -33,7 +33,7 @@ public abstract class MixinPlayerModel extends BipedModel<LivingEntity>{
 			float headPitch,
 			CallbackInfo ci
 	) {
-		PlayerMovement h = entity.getCapability(PlayerMovement.CAP).orElse(null);
+		PlayerMovement h = PlayerMovement.of(entity);
 		if(h!=null&&h.isParagliding()){
 			bipedLeftArm.rotateAngleX = ARM_ROTATION;
 			bipedLeftArm.rotateAngleZ = 0;

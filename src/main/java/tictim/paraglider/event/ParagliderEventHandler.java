@@ -112,7 +112,7 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-		PlayerMovement h = event.player.getCapability(PlayerMovement.CAP).orElse(null);
+		PlayerMovement h = PlayerMovement.of(event.player);
 		if(h!=null){
 			if(event.phase==TickEvent.Phase.END){
 				h.update();
@@ -127,12 +127,11 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onLogin(PlayerLoggedInEvent event){
-		PlayerMovement h = event.getPlayer().getCapability(PlayerMovement.CAP).orElse(null);
-		if(h instanceof ServerPlayerMovement){
-			ServerPlayerMovement sh = (ServerPlayerMovement)h;
-			sh.movementNeedsSync = true;
-			sh.paraglidingNeedsSync = true;
-			sh.vesselNeedsSync = true;
+		ServerPlayerMovement h = ServerPlayerMovement.of(event.getPlayer());
+		if(h!=null){
+			h.movementNeedsSync = true;
+			h.paraglidingNeedsSync = true;
+			h.vesselNeedsSync = true;
 		}
 	}
 
@@ -140,7 +139,7 @@ public final class ParagliderEventHandler{
 	public static void onStartTracking(PlayerEvent.StartTracking event){
 		PlayerEntity player = event.getPlayer();
 		if(player instanceof ServerPlayerEntity){
-			PlayerMovement h = event.getTarget().getCapability(PlayerMovement.CAP).orElse(null);
+			PlayerMovement h = PlayerMovement.of(event.getTarget());
 			if(h!=null){
 				SyncParaglidingMsg msg = new SyncParaglidingMsg(h);
 				if(ModCfg.traceParaglidingPacket()) ParagliderMod.LOGGER.debug("Sending packet {} from player {} to player {}", msg, h.player, player);

@@ -20,7 +20,7 @@ public final class WindUtils{
 	}
 
 	public static boolean isInsideWind(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
-		Wind wind = world.getCapability(Wind.CAP).orElse(null);
+		Wind wind = Wind.of(world);
 		if(wind==null) return false;
 
 		int chunkXStart = minX >> 4;

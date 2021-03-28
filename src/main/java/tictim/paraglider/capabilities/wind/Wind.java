@@ -61,6 +61,7 @@ public class Wind implements ICapabilityProvider{
 		return cap==CAP ? self.cast() : LazyOptional.empty();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Nullable public static Wind of(ICapabilityProvider capabilityProvider){
 		return capabilityProvider.getCapability(CAP).orElse(null);
 	}

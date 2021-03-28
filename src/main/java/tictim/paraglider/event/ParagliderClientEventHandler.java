@@ -44,7 +44,7 @@ public final class ParagliderClientEventHandler{
 		if(ModCfg.debugPlayerMovement()){
 			PlayerEntity p = Minecraft.getInstance().player;
 			if(p!=null){
-				PlayerMovement h = p.getCapability(PlayerMovement.CAP).orElse(null);
+				PlayerMovement h = PlayerMovement.of(p);
 				if(h!=null){
 					ArrayList<String> right = event.getRight();
 					List<String> arr = new ArrayList<>();
@@ -96,7 +96,7 @@ public final class ParagliderClientEventHandler{
 			ClientPlayerEntity player = Minecraft.getInstance().player;
 			if(player==null) return;
 
-			PlayerMovement h = player.getCapability(PlayerMovement.CAP).orElse(null);
+			PlayerMovement h = PlayerMovement.of(player);
 			if(h!=null){
 				int stamina = h.getStamina();
 				int maxStamina = h.getMaxStamina();

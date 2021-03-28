@@ -1,6 +1,7 @@
 package tictim.paraglider.network;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
@@ -97,7 +98,9 @@ public final class ModNet{
 
 		public static void handleSetMovement(SyncMovementMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			PlayerMovement h = Minecraft.getInstance().player.getCapability(PlayerMovement.CAP).orElse(null);
+			ClientPlayerEntity player = Minecraft.getInstance().player;
+			if(player==null) return;
+			PlayerMovement h = PlayerMovement.of(player);
 			if(h!=null){
 				if(ModCfg.traceMovementPacket()) ParagliderMod.LOGGER.debug("Received {}", msg);
 				msg.copyTo(h);
@@ -106,9 +109,11 @@ public final class ModNet{
 
 		public static void handleSetParagliding(SyncParaglidingMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			PlayerEntity player = Minecraft.getInstance().world.getPlayerByUuid(msg.playerId);
+			ClientWorld world = Minecraft.getInstance().world;
+			if(world==null) return;
+			PlayerEntity player = world.getPlayerByUuid(msg.playerId);
 			if(player!=null){
-				PlayerMovement h = player.getCapability(PlayerMovement.CAP).orElse(null);
+				PlayerMovement h = PlayerMovement.of(player);
 				if(h!=null){
 					if(h instanceof RemotePlayerMovement){
 						if(ModCfg.traceParaglidingPacket()) ParagliderMod.LOGGER.debug("Received {}", msg);
@@ -120,7 +125,9 @@ public final class ModNet{
 
 		public static void handleSetVessel(SyncVesselMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			PlayerMovement h = Minecraft.getInstance().player.getCapability(PlayerMovement.CAP).orElse(null);
+			ClientPlayerEntity player = Minecraft.getInstance().player;
+			if(player==null) return;
+			PlayerMovement h = PlayerMovement.of(player);
 			if(h!=null){
 				h.setHeartContainers(msg.heartContainers);
 				h.setStaminaVessels(msg.staminaVessels);

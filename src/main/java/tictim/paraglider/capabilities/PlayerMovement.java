@@ -171,6 +171,7 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		return cap==CAP ? self.cast() : LazyOptional.empty();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Nullable public static PlayerMovement of(ICapabilityProvider capabilityProvider){
 		return capabilityProvider.getCapability(CAP).orElse(null);
 	}
