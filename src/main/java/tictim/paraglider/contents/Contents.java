@@ -16,6 +16,7 @@ import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
 import net.minecraftforge.common.ToolType;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -29,6 +30,7 @@ import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
+import tictim.paraglider.loot.ParagliderModifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public final class Contents{
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
 
 	private static final AbstractBlock.Properties STATUE_PROPERTIES = Block.Properties.create(Material.ROCK)
 			.sound(SoundType.STONE)
@@ -64,8 +67,8 @@ public final class Contents{
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
 			() -> new HornedStatueBlock(STATUE_PROPERTIES));
 
-	public static final RegistryObject<Item> PARAGLIDER = ITEMS.register("paraglider", () -> new ParagliderItem(0xA65955));
-	public static final RegistryObject<Item> DEKU_LEAF = ITEMS.register("deku_leaf", () -> new ParagliderItem(0x3FB53F));
+	public static final RegistryObject<ParagliderItem> PARAGLIDER = ITEMS.register("paraglider", () -> new ParagliderItem(0xA65955));
+	public static final RegistryObject<ParagliderItem> DEKU_LEAF = ITEMS.register("deku_leaf", () -> new ParagliderItem(0x3FB53F));
 	public static final RegistryObject<Item> HEART_CONTAINER = ITEMS.register("heart_container", HeartContainerItem::new);
 	public static final RegistryObject<Item> STAMINA_VESSEL = ITEMS.register("stamina_vessel", StaminaVesselItem::new);
 	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).group(GROUP)));
@@ -95,6 +98,8 @@ public final class Contents{
 		}
 	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
+	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
+
 	static{
 		Dialogs.init();
 	}
@@ -104,5 +109,6 @@ public final class Contents{
 		ITEMS.register(eventBus);
 		EFFECTS.register(eventBus);
 		CONTAINERS.register(eventBus);
+		LOOT_MODIFIER_SERIALIZERS.register(eventBus);
 	}
 }

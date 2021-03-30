@@ -35,6 +35,7 @@ import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.Dialogs;
 import tictim.paraglider.datagen.BlockTagGen;
 import tictim.paraglider.datagen.ItemTagGen;
+import tictim.paraglider.datagen.LootModifierProvider;
 import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
 import tictim.paraglider.dialog.Dialog;
@@ -87,6 +88,7 @@ public class ParagliderMod{
 			gen.addProvider(blockTagGen);
 			gen.addProvider(new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
 			gen.addProvider(new LootTableGen(gen));
+			gen.addProvider(new LootModifierProvider(gen, MODID));
 		}
 	}
 
