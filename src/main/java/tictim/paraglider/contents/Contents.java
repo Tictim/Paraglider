@@ -63,7 +63,12 @@ public final class Contents{
 	public static final RegistryObject<Block> KAKIRIKO_GODDESS_STATUE = BLOCKS.register("kakiriko_goddess_statue",
 			() -> new KakirikoGoddessStatueBlock(STATUE_PROPERTIES));
 	public static final RegistryObject<Block> GORON_GODDESS_STATUE = BLOCKS.register("goron_goddess_statue",
-			() -> new GoronGoddessStatueBlock(STATUE_PROPERTIES));
+			() -> new GoronGoddessStatueBlock(Block.Properties.create(Material.ROCK)
+					.sound(SoundType.STONE)
+					.harvestTool(ToolType.PICKAXE)
+					.hardnessAndResistance(1.5f, 100f)
+					.notSolid()
+					.setLightLevel(value -> 15)));
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
 			() -> new HornedStatueBlock(STATUE_PROPERTIES));
 
