@@ -2,6 +2,7 @@ package tictim.paraglider.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
@@ -22,9 +23,7 @@ import tictim.paraglider.dialog.Dialog;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
-
-public class GoddessStatueBlock extends Block{
+public class GoddessStatueBlock extends HorizontalBlock{
 	private static final VoxelShape SHAPE_NORTH = VoxelShapes.or(makeCuboidShape(4, 16, 5, 12, 20, 11),
 			makeCuboidShape(4, 16, 11, 12, 19, 12),
 			makeCuboidShape(4, 12, 5, 12, 16, 12),

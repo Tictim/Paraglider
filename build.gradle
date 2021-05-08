@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         jcenter()
         mavenCentral()
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
@@ -27,7 +27,7 @@ minecraft {
     mappings channel: 'snapshot', version: '20201028-1.16.3'
     // makeObfSourceJar = false
 
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         client {

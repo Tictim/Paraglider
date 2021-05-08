@@ -11,6 +11,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.world.gen.settings.StructureSeparationSettings;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -18,6 +24,9 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -30,10 +39,14 @@ import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Dialogs;
+import tictim.paraglider.contents.ModStructures;
 import tictim.paraglider.dialog.Dialog;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncParaglidingMsg;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
@@ -71,6 +84,48 @@ public final class ParagliderEventHandler{
 						})
 				)
 		);
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public static void loadBiome(BiomeLoadingEvent event){
+		switch(event.getCategory()){
+			case NONE:
+			case TAIGA:
+			case EXTREME_HILLS:
+			case MESA:
+			case PLAINS:
+			case SAVANNA:
+			case FOREST:
+			case JUNGLE:
+			case ICY:
+			case BEACH:
+			case DESERT:
+			case RIVER:
+			case MUSHROOM:
+				event.getGeneration().getStructures().add(() -> ModStructures.UNDERGROUND_HORNED_STATUE_CONFIGURED);
+				break;
+			case NETHER:{
+				ResourceLocation name = event.getName();
+				if(name==null||(!name.equals(Biomes.BASALT_DELTAS.getLocation())&&!name.equals(Biomes.CRIMSON_FOREST.getLocation())))
+					event.getGeneration().getStructures().add(() -> ModStructures.NETHER_HORNED_STATUE_CONFIGURED);
+				break;
+			}
+			// case THEEND: case OCEAN: case SWAMP: // no-op
+		}
+	}
+
+	@SubscribeEvent
+	public static void onWorldLoad(WorldEvent.Load event){
+		if(!(event.getWorld() instanceof ServerWorld)) return;
+		ServerWorld world = (ServerWorld)event.getWorld();
+
+		if(world.getChunkProvider().getChunkGenerator() instanceof FlatChunkGenerator&&
+				world.getDimensionKey().equals(World.OVERWORLD)) return;
+
+		Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(world.getChunkProvider().generator.func_235957_b_().func_236195_a_());
+		tempMap.put(ModStructures.UNDERGROUND_HORNED_STATUE, ModStructures.UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS);
+		tempMap.put(ModStructures.NETHER_HORNED_STATUE, ModStructures.NETHER_HORNED_STATUE_SEPARATION_SETTINGS);
+		world.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
 	}
 
 	@SubscribeEvent
