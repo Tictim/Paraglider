@@ -42,8 +42,8 @@ public class StaminaVesselItem extends Item{
 
 	@Override public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn){
 		tooltip.add(new TranslationTextComponent("tooltip.stamina_vessel.1",
-				new StringTextComponent(Integer.toString(PlayerMovement.STAMINA_INCREMENT)).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW))),
-				new StringTextComponent(Integer.toString(PlayerMovement.MAX_STAMINA_VESSELS)).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW)))
-		).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.GREEN))));
+				new StringTextComponent(Integer.toString(PlayerMovement.STAMINA_INCREMENT)).setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.YELLOW))),
+				new StringTextComponent(Integer.toString(PlayerMovement.MAX_STAMINA_VESSELS)).setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.YELLOW)))
+		).setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.GREEN))));
 	}
 }

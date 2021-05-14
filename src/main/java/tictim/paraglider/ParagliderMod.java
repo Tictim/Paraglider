@@ -78,8 +78,8 @@ public class ParagliderMod{
 				return entity instanceof PlayerEntity&&ParagliderItem.hasParaglidingFlag(stack) ? 1 : 0;
 			};
 
-			ItemModelsProperties.func_239418_a_(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
-			ItemModelsProperties.func_239418_a_(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+			ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+			ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 		}
 
 		@SubscribeEvent

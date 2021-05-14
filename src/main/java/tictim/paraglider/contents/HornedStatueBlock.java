@@ -69,7 +69,7 @@ public class HornedStatueBlock extends Block{
 	}
 
 	@Override public void addInformation(ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.1").setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.GREEN))));
-		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.2").setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW)).setItalic(true)));
+		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.1").setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.GREEN))));
+		tooltip.add(new TranslationTextComponent("tooltip.horned_statue.2").setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.YELLOW)).setItalic(true)));
 	}
 }

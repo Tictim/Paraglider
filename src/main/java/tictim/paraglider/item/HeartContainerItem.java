@@ -42,8 +42,8 @@ public class HeartContainerItem extends Item{
 
 	@Override public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
 		tooltip.add(new TranslationTextComponent("tooltip.heart_container.1",
-				new TranslationTextComponent("tooltip.heart_container.1.hearts").setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW))),
-				new StringTextComponent(Integer.toString(PlayerMovement.MAX_HEART_CONTAINERS)).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.YELLOW)))
-		).setStyle(Style.EMPTY.setColor(Color.func_240744_a_(TextFormatting.GREEN))));
+				new TranslationTextComponent("tooltip.heart_container.1.hearts").setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.YELLOW))),
+				new StringTextComponent(Integer.toString(PlayerMovement.MAX_HEART_CONTAINERS)).setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.YELLOW)))
+		).setStyle(Style.EMPTY.setColor(Color.fromTextFormatting(TextFormatting.GREEN))));
 	}
 }

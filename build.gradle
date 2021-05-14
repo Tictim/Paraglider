@@ -1,13 +1,13 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         jcenter()
         mavenCentral()
-	    maven { url = 'https://dist.creeper.host/Sponge/maven' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-	    classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -20,86 +20,80 @@ version = "${mod_version}"
 group = "tictim.${mod_id}"
 archivesBaseName = "${mod_name}-${mc_version}"
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-//Print out JVM information so that we know what version is running. Extreamly useful for people to know when helping you.
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'snapshot', version: mappings_version
+    mappings channel: 'snapshot', version: '20201028-1.16.3'
     // makeObfSourceJar = false
-    
+
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-	
-	runs {
-		client {
-			workingDirectory project.file('run')
-			property 'forge.logging.console.level', 'debug'
-			ideaModule "${project.name}.main"
 
-			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            ideaModule "${project.name}.main"
 
-			mods {
-				paraglider {
-					source sourceSets.main
-				}
-			}
-		}
-		server {
-			workingDirectory project.file('run')
-			property 'forge.logging.console.level', 'debug'
-			ideaModule "${project.name}.main"
+            mods {
+                paraglider {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            ideaModule "${project.name}.main"
 
-			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
+            mods {
+                paraglider {
+                    source sourceSets.main
+                }
+            }
+        }
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'paraglider', '--all', '--output', file('src/generated/resources/')
+            ideaModule "${project.name}.main"
 
-			mods {
-				paraglider {
-					source sourceSets.main
-				}
-			}
-		}
-		data {
-			workingDirectory project.file('run')
-			property 'forge.logging.console.level', 'debug'
-			args '--mod', 'paraglider', '--all', '--output', file('src/generated/resources/')
-			ideaModule "${project.name}.main"
-
-			// environment 'MOD_CLASSES', "${mod_id}%%${project.file("out/production/resources").canonicalPath};${mod_id}%%${project.file("out/production/classes").canonicalPath}"
-
-			mods {
-				paraglider {
-					source sourceSets.main
-				}
-			}
-		}
-	}
+            mods {
+                paraglider {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 mixin {
-	add sourceSets.main, "paraglider.refmap.json"
+    add sourceSets.main, "paraglider.refmap.json"
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
 }
 
 
 jar {
-	manifest {
-		attributes([
-				"Specification-Title"     : project.name,
-				"Specification-Vendor"    : "Tictim",
-				"Specification-Version"   : "${version}",
-				"Implementation-Title"    : "tictim.${mod_id}",
-				"Implementation-Vendor"   : "Tictim",
-				"Implementation-Version"  : "${version}",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-				"MixinConnector"          : "tictim.paraglider.MixinConnector"
-		])
-	}
+    manifest {
+        attributes([
+                "Specification-Title"     : project.name,
+                "Specification-Vendor"    : "Tictim",
+                "Specification-Version"   : "${version}",
+                "Implementation-Title"    : "tictim.${mod_id}",
+                "Implementation-Vendor"   : "Tictim",
+                "Implementation-Version"  : "${version}",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConnector"          : "tictim.paraglider.MixinConnector"
+        ])
+    }
 }
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar') 
+jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 //publish.dependsOn('reobfJar')
