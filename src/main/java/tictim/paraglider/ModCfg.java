@@ -3,7 +3,9 @@ package tictim.paraglider;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.BlockStateMatcher;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.Property;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -98,11 +101,11 @@ public final class ModCfg{
 				"  [block ID]   (Matches all state of the block)\n"+
 				"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n"+
 				"Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.")
-				.defineList("windSources",
-						ImmutableList.of("fire",
+				.defineListAllowEmpty(Collections.singletonList("windSources"),
+						() -> ImmutableList.of("fire",
 								"campfire#lit=true",
 								"soul_campfire#lit=true"),
-						o -> MATCH.reset(o.toString()).matches());
+						o -> true);
 		paraglidingConsumesStamina = server.comment("Paragliding will consume stamina.").define("paraglidingConsumesStamina", true);
 		runningConsumesStamina = server.comment("Actions other than paragliding will consume stamina.").define("runningAndSwimmingConsumesStamina", false);
 
@@ -122,53 +125,76 @@ public final class ModCfg{
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
 	}
 
-
 	@SubscribeEvent
-	public static void onLoad(ModConfig.ModConfigEvent event){
+	public static void onLoad(ModConfig.Loading event){
 		ModConfig cfg = event.getConfig();
 		if(cfg.getModId().equals(MODID)&&cfg.getType()==ModConfig.Type.SERVER){
 			windSourcesParsed = Collections.unmodifiableMap(parseWindSources());
 		}
 	}
 
+	@SubscribeEvent
+	public static void onReload(ModConfig.Reloading event){
+		ModConfig cfg = event.getConfig();
+		if(cfg.getModId().equals(MODID)&&cfg.getType()==ModConfig.Type.SERVER){
+			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+			if(server!=null) server.execute(() -> windSourcesParsed = Collections.unmodifiableMap(parseWindSources()));
+		}
+	}
+
 	// ((?:[a-z0-9_.-]+:)?[a-z0-9_.-]+)(?:\s*#\s*([A-Za-z0-9_.-]+\s*=\s*[A-Za-z0-9_.-]+(?:\s*,\s*[A-Za-z0-9_.-]+\s*=\s*[A-Za-z0-9_.-]+)*))?
 	private static final Pattern REGEX = Pattern.compile("^((?:[a-z0-9_.-]+:)?[a-z0-9_.-]+)(?:\\s*#\\s*([A-Za-z0-9_.-]+\\s*=\\s*[A-Za-z0-9_.-]+(?:\\s*,\\s*[A-Za-z0-9_.-]+\\s*=\\s*[A-Za-z0-9_.-]+)*))?$");
-	private static final Matcher MATCH = REGEX.matcher("");
 
 	private static Map<Block, Predicate<BlockState>> parseWindSources(){
 		IdentityHashMap<Block, Predicate<BlockState>> map = new IdentityHashMap<>();
+		Matcher m = REGEX.matcher("");
 		for(String s : windSources.get()){
-			if(MATCH.reset(s).matches()){
-				Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(MATCH.group(1)));
-				if(block!=null){
-					Predicate<BlockState> p = parsePredicate(block);
-					if(p!=null) map.compute(block, (k, v) -> v==null ? p : v.or(p));
-				}
+			if(!m.reset(s).matches()){
+				warnIgnoredWindSource(s, "input pattern is incorrect");
+				continue;
 			}
+			Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(m.group(1)));
+			if(block==null||block==Blocks.AIR){
+				warnIgnoredWindSource(s, "no such block exists");
+				continue;
+			}
+			Predicate<BlockState> p = parsePredicate(s, m, block);
+			if(p!=null) map.compute(block, (k, v) -> v==null ? p : v.or(p));
 		}
 		return map;
 	}
 
 	@Nullable
-	private static Predicate<BlockState> parsePredicate(Block block){
-		String match = MATCH.group(2);
-		if(match==null) return s -> true;
+	private static Predicate<BlockState> parsePredicate(String input, Matcher matcher, Block block){
+		String blockState = matcher.group(2);
+		if(blockState==null) return s -> true;
 
 		Map<String, String> properties = new HashMap<>();
-		for(String s : match.split(",")){
+		for(String s : blockState.split(",")){
 			int i = s.indexOf('=');
 			String key = s.substring(0, i);
-			if(properties.containsKey(key)) return null;
-			else properties.put(key, s.substring(i+1));
+			if(properties.containsKey(key)){
+				warnIgnoredWindSource(input, "same property '{}' was defined twice", key);
+				return null;
+			}else properties.put(key, s.substring(i+1));
 		}
 
 		Map<Property<?>, Object> parsedProperties = new IdentityHashMap<>();
 		for(Entry<String, String> e : properties.entrySet()){
 			String key = e.getKey();
 			Property<?> property = block.getStateContainer().getProperty(key);
-			if(property==null||parsedProperties.containsKey(property)) return null;
+			if(property==null){
+				warnIgnoredWindSource(input, "property '{}' doesn't exist on that block", key);
+				return null;
+			}else if(parsedProperties.containsKey(property)){
+				warnIgnoredWindSource(input, "same property '{}' was defined twice", key);
+				return null;
+			}
 			Optional<?> o = property.parseValue(e.getValue());
-			if(!o.isPresent()) return null;
+			if(!o.isPresent()){
+				warnIgnoredWindSource(input, "property '{}' doesn't contain value '{}'", key, e.getValue());
+				return null;
+			}
 			parsedProperties.put(property, o.get());
 		}
 		BlockStateMatcher m = BlockStateMatcher.forBlock(block);
@@ -177,5 +203,9 @@ public final class ModCfg{
 			m.where(e.getKey(), o -> o!=null&&o.equals(v));
 		}
 		return m;
+	}
+
+	private static void warnIgnoredWindSource(String input, String cause, Object... args){
+		ParagliderMod.LOGGER.warn("Wind source '"+input+"' was ignored, because "+cause, args);
 	}
 }
