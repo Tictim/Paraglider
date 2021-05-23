@@ -33,6 +33,7 @@ import tictim.paraglider.capabilities.wind.Wind;
 import tictim.paraglider.client.DialogScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.Dialogs;
+import tictim.paraglider.contents.ModVillageStructures;
 import tictim.paraglider.datagen.BlockTagGen;
 import tictim.paraglider.datagen.ItemTagGen;
 import tictim.paraglider.datagen.LootModifierProvider;
@@ -66,6 +67,8 @@ public class ParagliderMod{
 		registerDefaultCapability(PlayerMovement.class);
 		registerDefaultCapability(Paraglider.class);
 		registerDefaultCapability(Wind.class);
+
+		ModVillageStructures.addVillageStructures();
 	}
 
 	private static <T> void registerDefaultCapability(Class<T> classOf){
