@@ -12,6 +12,7 @@
 	"item.paraglider.spirit_orb": "극복의 증표",
 	"item.paraglider.anti_vessel": "반물질 그릇",
 
+	"tooltip.paraglider.paraglider_broken": "고장남",
 	"tooltip.paraglider.heart_container.1": "최대 생명력을 %s만큼, 최대 %s번까지 올립니다.",
 	"tooltip.paraglider.heart_container.1.hearts": "하트 1개",
 	"tooltip.paraglider.stamina_vessel.1": "최대 스태미나를 %s만큼, 최대 %s번까지 올립니다.",

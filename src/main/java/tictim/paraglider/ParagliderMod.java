@@ -98,9 +98,7 @@ public class ParagliderMod{
 
 		@SubscribeEvent
 		public static void clientSetup(FMLClientSetupEvent event){
-			IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> {
-				return entity instanceof PlayerEntity&&ParagliderItem.hasParaglidingFlag(stack) ? 1 : 0;
-			};
+			IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> entity instanceof PlayerEntity&&ParagliderItem.isItemParagliding(stack) ? 1 : 0;
 
 			ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 			ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);

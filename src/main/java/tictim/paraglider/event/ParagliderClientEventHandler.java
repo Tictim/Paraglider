@@ -19,7 +19,6 @@ import tictim.paraglider.capabilities.PlayerState;
 import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.client.StaminaWheelRenderer.Color;
 import tictim.paraglider.client.StaminaWheelRenderer.WheelType;
-import tictim.paraglider.item.ParagliderItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +30,12 @@ public final class ParagliderClientEventHandler{
 	private ParagliderClientEventHandler(){}
 
 	@SubscribeEvent
-	public static void onRenderOffHand(RenderHandEvent event){ // It looks so hacky lol
-		if(event.getHand()==Hand.MAIN_HAND){
-			if(ParagliderItem.hasParaglidingFlag(event.getItemStack())){
-				Minecraft.getInstance().gameRenderer.itemRenderer.resetEquippedProgress(Hand.OFF_HAND);
-			}
-		}
+	public static void onRenderOffHand(RenderHandEvent event){
+		if(event.getHand()!=Hand.OFF_HAND) return;
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if(player==null) return;
+		PlayerMovement m = PlayerMovement.of(player);
+		if(m!=null&&m.isParagliding()) event.setCanceled(true);
 	}
 
 	@SubscribeEvent

@@ -4,7 +4,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
 import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
@@ -29,15 +29,11 @@ public class RecipeGen extends RecipeProvider{
 				.addCriterion("has_stick", hasItem(Tags.Items.RODS_WOODEN))
 				.build(consumer);
 
-		ShapelessRecipeBuilder.shapelessRecipe(Contents.DEKU_LEAF.get())
-				.addIngredient(Contents.PARAGLIDER.get())
-				.addIngredient(ItemTags.LEAVES)
+		new ParagliderCosmeticRecipeBuilder(Contents.DEKU_LEAF.get(), Ingredient.fromTag(ItemTags.LEAVES))
 				.addCriterion("has_paragliders", hasItem(ModTags.PARAGLIDERS))
-				.build(consumer, new ResourceLocation(ParagliderMod.MODID, "convert_deku_leaf"));
-		ShapelessRecipeBuilder.shapelessRecipe(Contents.PARAGLIDER.get())
-				.addIngredient(Contents.DEKU_LEAF.get())
-				.addIngredient(Tags.Items.RODS_WOODEN)
+				.build(consumer, new ResourceLocation(ParagliderMod.MODID, "cosmetic/deku_leaf"));
+		new ParagliderCosmeticRecipeBuilder(Contents.PARAGLIDER.get(), Ingredient.fromTag(Tags.Items.RODS_WOODEN))
 				.addCriterion("has_paragliders", hasItem(ModTags.PARAGLIDERS))
-				.build(consumer, new ResourceLocation(ParagliderMod.MODID, "convert_paraglider"));
+				.build(consumer, new ResourceLocation(ParagliderMod.MODID, "cosmetic/paraglider"));
 	}
 }

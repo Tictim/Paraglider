@@ -1,7 +1,8 @@
 {
 	"textures": {
 		"0": "paraglider:item/deku_leaf",
-		"1": "paraglider:item/deku_leaf_offset"
+		"1": "paraglider:item/deku_leaf_offset",
+		"particle": "paraglider:item/deku_leaf"
 	},
 	"elements": [
 		{

@@ -1,20 +1,12 @@
 package tictim.paraglider.utils;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 
 public final class ParagliderUtils{
 	private ParagliderUtils(){}
-
-	public static void resetMainHandItemEquipProgress(){
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> Client::resetMainHandItemEquipProgress);
-	}
 
 	public static int count(PlayerEntity player, Item item){
 		return count(player.inventory, item);
@@ -68,13 +60,5 @@ public final class ParagliderUtils{
 			}
 		}
 		return false;
-	}
-
-	public static final class Client{
-		private Client(){}
-
-		public static void resetMainHandItemEquipProgress(){
-			Minecraft.getInstance().gameRenderer.itemRenderer.resetEquippedProgress(Hand.MAIN_HAND);
-		}
 	}
 }

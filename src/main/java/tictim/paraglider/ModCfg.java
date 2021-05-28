@@ -12,6 +12,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +46,7 @@ public final class ModCfg{
 	private static Map<Block, Predicate<BlockState>> windSourcesParsed;
 
 	private static DoubleValue paraglidingSpeed;
+	private static IntValue paragliderDurability;
 
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue debugDialogLoading;
@@ -71,6 +73,9 @@ public final class ModCfg{
 
 	public static double paraglidingSpeed(){
 		return paraglidingSpeed.get();
+	}
+	public static int paragliderDurability(){
+		return paragliderDurability.get();
 	}
 
 	public static boolean debugPlayerMovement(){
@@ -110,6 +115,7 @@ public final class ModCfg{
 		runningConsumesStamina = server.comment("Actions other than paragliding will consume stamina.").define("runningAndSwimmingConsumesStamina", false);
 
 		paraglidingSpeed = server.comment("Horizontal movement speed while paragliding.").defineInRange("paraglidingSpeed", 1.0, 0.2, 10);
+		paragliderDurability = server.comment("Durability of Paragliders. Set to zero to disable durability.").defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();

@@ -12,6 +12,7 @@
 	"item.paraglider.spirit_orb": "Spirit Orb",
 	"item.paraglider.anti_vessel": "Anti-Vessel",
 
+	"tooltip.paraglider.paraglider_broken": "Broken",
 	"tooltip.paraglider.heart_container.1": "Increases maximum health by %s, up to %s times.",
 	"tooltip.paraglider.heart_container.1.hearts": "1 heart",
 	"tooltip.paraglider.stamina_vessel.1": "Increases maximum stamina by %s, up to %s times.",

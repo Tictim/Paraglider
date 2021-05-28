@@ -41,7 +41,6 @@ import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Dialogs;
 import tictim.paraglider.contents.ModStructures;
 import tictim.paraglider.dialog.Dialog;
-import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncParaglidingMsg;
 
@@ -131,7 +130,8 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent
 	public static void onPlayerInteract(PlayerInteractEvent event){
 		if(event.isCancelable()&&event.getHand()==Hand.OFF_HAND){
-			if(ParagliderItem.hasParaglidingFlag(event.getPlayer().getHeldItemMainhand())) event.setCanceled(true);
+			ServerPlayerMovement m = ServerPlayerMovement.of(event.getPlayer());
+			if(m!=null&&m.isParagliding()) event.setCanceled(true);
 		}
 	}
 
@@ -145,7 +145,8 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent
 	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
 		if(event.getEntityLiving().getActiveHand()==Hand.OFF_HAND&&event.getEntityLiving() instanceof PlayerEntity){
-			if(ParagliderItem.hasParaglidingFlag(event.getEntityLiving().getHeldItemMainhand())) event.getEntityLiving().resetActiveHand();
+			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntityLiving());
+			if(m!=null&&m.isParagliding()) event.getEntityLiving().resetActiveHand();
 		}
 	}
 

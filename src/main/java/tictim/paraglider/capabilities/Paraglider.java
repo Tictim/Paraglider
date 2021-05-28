@@ -13,8 +13,6 @@ public class Paraglider implements ICapabilityProvider{
 	@CapabilityInject(Paraglider.class)
 	public static Capability<Paraglider> CAP = null;
 
-	public boolean isParagliding;
-
 	private final LazyOptional<Paraglider> self = LazyOptional.of(() -> this);
 
 	@Override public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side){
@@ -22,6 +20,6 @@ public class Paraglider implements ICapabilityProvider{
 	}
 
 	public static boolean isParaglider(ItemStack stack){
-		return CAP!=null&&!stack.isEmpty()&&stack.getCapability(CAP).isPresent();
+		return CAP!=null&&!stack.isEmpty()&&stack.getDamage()<stack.getMaxDamage()&&stack.getCapability(CAP).isPresent();
 	}
 }

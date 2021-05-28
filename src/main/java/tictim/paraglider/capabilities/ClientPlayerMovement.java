@@ -18,7 +18,6 @@ public class ClientPlayerMovement extends RemotePlayerMovement{
 		}else if(prevState.isParagliding()!=getState().isParagliding()) player.setSprinting(getState().isParagliding());
 
 		applyMovement();
-		updateParagliderInInventory();
 
 		prevState = getState();
 	}

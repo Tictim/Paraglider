@@ -5,6 +5,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.Hand;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -26,6 +28,7 @@ import tictim.paraglider.utils.WindUtils;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class ServerPlayerMovement extends PlayerMovement implements INBTSerializable<CompoundNBT>{
 	public static final int PANIC_INITIAL_DELAY = 10;
@@ -169,6 +172,33 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			if(EnchantmentHelper.getEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0) return true;
 		}
 		return false;
+	}
+
+	@Override protected void applyMovement(){
+		super.applyMovement();
+		if(isParagliding()){
+			ItemStack stack = player.getHeldItemMainhand();
+			if(Paraglider.isParaglider(stack)){
+				damageParagliderWithoutBreaking(player, stack);
+			}
+		}
+	}
+
+	/**
+	 * Fuck you, seriously
+	 */
+	private static void damageParagliderWithoutBreaking(PlayerEntity player, ItemStack stack){
+		AtomicBoolean fuck = new AtomicBoolean();
+		int count = stack.getCount();
+		stack.damageItem(1, player, p -> {
+			p.sendBreakAnimation(Hand.MAIN_HAND);
+			stack.setCount(count+1);
+			fuck.set(true);
+		});
+		if(fuck.get()){
+			stack.setCount(count);
+			stack.setDamage(stack.getMaxDamage());
+		}
 	}
 
 	@Override protected void updateStamina(){

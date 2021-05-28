@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
@@ -31,6 +32,7 @@ import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
 import tictim.paraglider.loot.ParagliderModifier;
+import tictim.paraglider.recipe.ParagliderCosmeticRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public final class Contents{
 	public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
+	public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
 	private static final AbstractBlock.Properties STATUE_PROPERTIES = Block.Properties.create(Material.ROCK)
 			.sound(SoundType.STONE)
@@ -105,6 +108,8 @@ public final class Contents{
 
 	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
 
+	public static final RegistryObject<ParagliderCosmeticRecipe.Serializer> PARAGLIDER_COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("paraglider_cosmetic", ParagliderCosmeticRecipe.Serializer::new);
+
 	static{
 		Dialogs.init();
 	}
@@ -115,5 +120,6 @@ public final class Contents{
 		EFFECTS.register(eventBus);
 		CONTAINERS.register(eventBus);
 		LOOT_MODIFIER_SERIALIZERS.register(eventBus);
+		RECIPE_SERIALIZERS.register(eventBus);
 	}
 }
