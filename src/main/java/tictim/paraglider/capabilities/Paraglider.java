@@ -20,6 +20,6 @@ public class Paraglider implements ICapabilityProvider{
 	}
 
 	public static boolean isParaglider(ItemStack stack){
-		return CAP!=null&&!stack.isEmpty()&&stack.getDamage()<stack.getMaxDamage()&&stack.getCapability(CAP).isPresent();
+		return CAP!=null&&!stack.isEmpty()&&(!stack.isDamageable()||stack.getDamage()<stack.getMaxDamage())&&stack.getCapability(CAP).isPresent();
 	}
 }

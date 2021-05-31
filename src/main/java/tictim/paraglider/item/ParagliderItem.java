@@ -62,7 +62,7 @@ public class ParagliderItem extends Item implements IDyeableArmorItem{
 	}
 
 	@Override public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag){
-		if(stack.getMaxDamage()<=stack.getDamage()){
+		if(stack.isDamageable()&&stack.getMaxDamage()<=stack.getDamage()){
 			tooltip.add(new TranslationTextComponent("tooltip.paraglider.paraglider_broken").setStyle(Style.EMPTY.setFormatting(TextFormatting.RED)));
 		}
 	}
