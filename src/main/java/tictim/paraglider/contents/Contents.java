@@ -35,6 +35,7 @@ import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
+import tictim.paraglider.loot.ItemModifier;
 import tictim.paraglider.loot.ParagliderModifier;
 import tictim.paraglider.recipe.ParagliderCosmeticRecipe;
 import tictim.paraglider.recipe.bargain.SimpleStatueBargain;
@@ -117,6 +118,7 @@ public final class Contents{
 	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
 	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
+	public static final RegistryObject<ItemModifier.Serializer> ITEM_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("item", ItemModifier.Serializer::new);
 
 	public static final RegistryObject<ParagliderCosmeticRecipe.Serializer> PARAGLIDER_COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("paraglider_cosmetic", ParagliderCosmeticRecipe.Serializer::new);
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
