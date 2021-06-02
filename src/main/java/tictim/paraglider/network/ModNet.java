@@ -11,20 +11,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
 import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.client.DialogScreen;
-import tictim.paraglider.dialog.Dialog;
-import tictim.paraglider.dialog.DialogAction;
-import tictim.paraglider.dialog.DialogActionArgs;
-import tictim.paraglider.dialog.DialogActionException;
-import tictim.paraglider.dialog.DialogContainer;
+import tictim.paraglider.client.StatueBargainScreen;
+import tictim.paraglider.recipe.bargain.StatueBargain;
+import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -49,47 +46,33 @@ public final class ModNet{
 		NET.registerMessage(3, SyncWindMsg.class,
 				SyncWindMsg::write, SyncWindMsg::read,
 				Client::handleSyncWind, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NET.registerMessage(4, DialogActionRequestMsg.class,
-				DialogActionRequestMsg::write, DialogActionRequestMsg::read,
-				ModNet::handleDialogActionRequest, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-		NET.registerMessage(5, DialogActionResponseMsg.class,
-				DialogActionResponseMsg::write, DialogActionResponseMsg::read,
-				Client::handleDialogActionResponse, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-		NET.registerMessage(6, DialogActionErrorMsg.class,
-				DialogActionErrorMsg::write, DialogActionErrorMsg::read,
-				Client::handleDialogActionError, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NET.registerMessage(4, BargainMsg.class,
+				BargainMsg::write, BargainMsg::read,
+				ModNet::handleBargain, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+		NET.registerMessage(5, UpdateBargainPreviewMsg.class,
+				UpdateBargainPreviewMsg::write, UpdateBargainPreviewMsg::read,
+				Client::handleUpdateBargainPreview, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NET.registerMessage(6, StatueDialogMsg.class,
+				StatueDialogMsg::write, StatueDialogMsg::read,
+				Client::handleStatueDialog, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
-	public static void handleDialogActionRequest(DialogActionRequestMsg msg, Supplier<NetworkEvent.Context> ctx){
+	private static void handleBargain(BargainMsg msg, Supplier<NetworkEvent.Context> ctx){
 		ctx.get().setPacketHandled(true);
-		ServerPlayerEntity sender = ctx.get().getSender();
-		if(sender==null){
-			ParagliderMod.LOGGER.error("Cannot handle packet {}, sender is null", msg);
-			return;
-		}
 		ctx.get().enqueueWork(() -> {
-			Container container = sender.openContainer;
-			if(!(container instanceof DialogContainer)){
-				ParagliderMod.LOGGER.error("Cannot handle packet {}, DialogContainer not open", msg);
+			ServerPlayerEntity player = ctx.get().getSender();
+			if(player==null){
+				ParagliderMod.LOGGER.error("Cannot handle BargainMsg: Wrong side");
 				return;
 			}
-			DialogContainer dialogContainer = (DialogContainer)container;
-			Dialog dialog = dialogContainer.getDialog();
-			DialogAction dialogAction = dialog.getDialogAction(msg.id);
-			if(dialogAction==null){
-				ParagliderMod.LOGGER.error("Cannot handle packet {}, invalid dialog action ID {}", msg, msg.id);
-				NET.send(PacketDistributor.PLAYER.with(() -> sender), new DialogActionErrorMsg(msg.id, "invalid dialog action ID "+msg.id));
+			if(!(player.openContainer instanceof StatueBargainContainer)) return; // Should be ignored
+			StatueBargainContainer c = (StatueBargainContainer)player.openContainer;
+			for(StatueBargain bargain : c.getBargains()){
+				if(!bargain.getId().equals(msg.bargain)) continue;
+				c.sendDialog(bargain, bargain.bargain(player, false));
 				return;
 			}
-			DialogActionArgs args = new DialogActionArgs(dialogAction, sender, dialogContainer);
-			try{
-				dialogAction.getAction().perform(args);
-			}catch(DialogActionException ex){
-				args.respond(ex);
-			}catch(RuntimeException ex){
-				ParagliderMod.LOGGER.error("Unexpected error during execution of DialogAction {}", dialogAction.getId(), ex);
-				args.respond(ex);
-			}
+			ParagliderMod.LOGGER.info("Ignoring invalid bargain {}", msg.bargain);
 		});
 	}
 
@@ -143,29 +126,28 @@ public final class ModNet{
 			if(wind!=null) wind.put(msg.windChunk);
 		}
 
-		public static void handleDialogActionResponse(DialogActionResponseMsg msg, Supplier<NetworkEvent.Context> ctx){
-			NetworkEvent.Context context = ctx.get();
-			context.setPacketHandled(true);
-			context.enqueueWork(() -> {
-				Screen currentScreen = Minecraft.getInstance().currentScreen;
-				if(currentScreen instanceof DialogScreen){
-					((DialogScreen)currentScreen).processResponse(msg.id, msg.result);
-				}else{
-					ParagliderMod.LOGGER.warn("DialogAction response {} {} was ignored.", msg.id, msg.result);
+		public static void handleUpdateBargainPreview(UpdateBargainPreviewMsg msg, Supplier<NetworkEvent.Context> ctx){
+			ctx.get().setPacketHandled(true);
+			ctx.get().enqueueWork(() -> {
+				ClientPlayerEntity player = Minecraft.getInstance().player;
+				if(player==null) return;
+				Container container = player.openContainer;
+				if(!(container instanceof StatueBargainContainer)) return;
+				StatueBargainContainer c = (StatueBargainContainer)container;
+				for(Map.Entry<ResourceLocation, UpdateBargainPreviewMsg.Data> e : msg.getUpdated().entrySet()){
+					c.setCanBargain(e.getKey(), e.getValue().canBargain());
+					if(e.getValue().getDemands()!=null) c.setDemandPreview(e.getKey(), e.getValue().getDemands());
 				}
 			});
 		}
 
-		public static void handleDialogActionError(DialogActionErrorMsg msg, Supplier<NetworkEvent.Context> ctx){
-			NetworkEvent.Context context = ctx.get();
-			context.setPacketHandled(true);
-			context.enqueueWork(() -> {
-				Screen currentScreen = Minecraft.getInstance().currentScreen;
-				if(currentScreen instanceof DialogScreen){
-					((DialogScreen)currentScreen).setError(msg.error);
-				}else{
-					ParagliderMod.LOGGER.warn("DialogAction error {} {} was ignored.", msg.id, msg.error);
-				}
+		public static void handleStatueDialog(StatueDialogMsg msg, Supplier<NetworkEvent.Context> ctx){
+			ctx.get().setPacketHandled(true);
+			ctx.get().enqueueWork(() -> {
+				Screen screen = Minecraft.getInstance().currentScreen;
+				if(!(screen instanceof StatueBargainScreen)) return;
+				StatueBargainScreen s = (StatueBargainScreen)screen;
+				s.setDialog(msg.text);
 			});
 		}
 	}

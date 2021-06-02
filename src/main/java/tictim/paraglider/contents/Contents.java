@@ -13,9 +13,12 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,12 +30,16 @@ import tictim.paraglider.block.GoronGoddessStatueBlock;
 import tictim.paraglider.block.HornedStatueBlock;
 import tictim.paraglider.block.KakirikoGoddessStatueBlock;
 import tictim.paraglider.item.AntiVesselItem;
+import tictim.paraglider.item.EssenceItem;
 import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
 import tictim.paraglider.loot.ParagliderModifier;
 import tictim.paraglider.recipe.ParagliderCosmeticRecipe;
+import tictim.paraglider.recipe.bargain.SimpleStatueBargain;
+import tictim.paraglider.recipe.bargain.StatueBargain;
+import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +61,8 @@ public final class Contents{
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
 	public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+
+	public static final IRecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), new IRecipeType<StatueBargain>(){});
 
 	private static final AbstractBlock.Properties STATUE_PROPERTIES = Block.Properties.create(Material.ROCK)
 			.sound(SoundType.STONE)
@@ -81,6 +90,7 @@ public final class Contents{
 	public static final RegistryObject<Item> STAMINA_VESSEL = ITEMS.register("stamina_vessel", StaminaVesselItem::new);
 	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).group(GROUP)));
 	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC).group(GROUP)));
+	public static final RegistryObject<Item> ESSENCE = ITEMS.register("essence", () -> new EssenceItem(new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
 	public static final RegistryObject<BlockItem> GODDESS_STATUE_ITEM = ITEMS.register("goddess_statue", () -> new BlockItem(GODDESS_STATUE.get(),
 			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
 	public static final RegistryObject<BlockItem> KAKIRIKO_GODDESS_STATUE_ITEM = ITEMS.register("kakiriko_goddess_statue", () -> new BlockItem(KAKIRIKO_GODDESS_STATUE.get(),
@@ -109,10 +119,12 @@ public final class Contents{
 	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
 
 	public static final RegistryObject<ParagliderCosmeticRecipe.Serializer> PARAGLIDER_COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("paraglider_cosmetic", ParagliderCosmeticRecipe.Serializer::new);
+	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
 
-	static{
-		Dialogs.init();
-	}
+	public static final RegistryObject<ContainerType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = CONTAINERS.register(
+			"goddess_statue", () -> new ContainerType<>(ModContainers::goddessStatue));
+	public static final RegistryObject<ContainerType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = CONTAINERS.register(
+			"horned_statue", () -> new ContainerType<>(ModContainers::hornedStatue));
 
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);

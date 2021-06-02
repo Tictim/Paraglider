@@ -13,13 +13,9 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import tictim.paraglider.ParagliderMod;
-import tictim.paraglider.capabilities.PlayerMovement;
-import tictim.paraglider.contents.Dialogs;
-import tictim.paraglider.dialog.Dialog;
+import tictim.paraglider.contents.ModContainers;
 
 import javax.annotation.Nullable;
 
@@ -75,19 +71,7 @@ public class GoddessStatueBlock extends HorizontalBlock{
 	}
 
 	@SuppressWarnings("deprecation") @Override public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit){
-		if(!world.isRemote){
-			Dialog dialog;
-			PlayerMovement movement = PlayerMovement.of(player);
-			if(movement==null){
-				ParagliderMod.LOGGER.warn("Player {} have no PlayerMovement attached", player);
-				return ActionResultType.SUCCESS;
-			}
-			if(movement.getStaminaVessels()<PlayerMovement.MAX_STAMINA_VESSELS||
-					movement.getHeartContainers()<PlayerMovement.MAX_HEART_CONTAINERS){
-				dialog = Dialogs.GODDESS_STATUE;
-			}else dialog = Dialogs.GODDESS_STATUE_FULL;
-			player.openContainer(dialog.getContainerProvider(new Vector3f(pos.getX()+0.5f, pos.getY()+1, pos.getZ()+0.5f)));
-		}
+		if(!world.isRemote) ModContainers.openContainer(player, ModContainers::goddessStatue, pos.getX()+0.5f, pos.getY()+1, pos.getZ()+0.5f);
 		return ActionResultType.SUCCESS;
 	}
 }

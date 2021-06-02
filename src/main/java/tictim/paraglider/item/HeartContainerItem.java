@@ -15,6 +15,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,18 +31,10 @@ public class HeartContainerItem extends Item{
 
 	@Override public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn){
 		ItemStack stack = player.getHeldItem(handIn);
-		PlayerMovement h = PlayerMovement.of(player);
-		if(h!=null){
-			int heartContainers = h.getHeartContainers();
-			if(heartContainers<PlayerMovement.MAX_HEART_CONTAINERS){
-				if(!world.isRemote){
-					h.setHeartContainers(heartContainers+1);
-					stack.shrink(1);
-				}
-				return ActionResult.resultConsume(stack);
-			}
-		}
-		return ActionResult.resultFail(stack);
+		if(ParagliderUtils.giveHeartContainers(player, 1, false, true)){
+			if(!world.isRemote) stack.shrink(1);
+			return ActionResult.func_233538_a_(stack, world.isRemote);
+		}else return ActionResult.resultFail(stack);
 	}
 
 	@Override public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){

@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
@@ -16,18 +15,13 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import tictim.paraglider.ParagliderMod;
-import tictim.paraglider.capabilities.ServerPlayerMovement;
-import tictim.paraglider.contents.Dialogs;
-import tictim.paraglider.contents.ModAdvancements;
-import tictim.paraglider.dialog.Dialog;
+import tictim.paraglider.contents.ModContainers;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -72,24 +66,7 @@ public class HornedStatueBlock extends HorizontalBlock{
 	}
 
 	@SuppressWarnings("deprecation") @Override public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit){
-		if(!world.isRemote){
-			if(player instanceof ServerPlayerEntity){
-				Dialog dialogToOpen;
-				ServerPlayerEntity serverPlayer = (ServerPlayerEntity)player;
-				if(ModAdvancements.has(serverPlayer, ModAdvancements.STATUES_BARGAIN)) dialogToOpen = Dialogs.HORNED_STATUE;
-				else{
-					ServerPlayerMovement m = ServerPlayerMovement.of(serverPlayer);
-					if(m==null){
-						ParagliderMod.LOGGER.warn("Player {} have no ServerPlayerMovement attached", serverPlayer);
-						return ActionResultType.SUCCESS;
-					}else if(m.getEssenceSoldToStatue()>0) dialogToOpen = Dialogs.HORNED_STATUE_SECOND;
-					else if(m.getHeartContainers()>0||m.getStaminaVessels()>0) dialogToOpen = Dialogs.HORNED_STATUE_FIRST;
-					else dialogToOpen = Dialogs.HORNED_STATUE_FIRST_NO_VESSEL;
-				}
-
-				player.openContainer(dialogToOpen.getContainerProvider(new Vector3f(pos.getX()+0.5f, pos.getY()+0.5f, pos.getZ()+0.5f)));
-			}
-		}
+		if(!world.isRemote) ModContainers.openContainer(player, ModContainers::hornedStatue, pos.getX()+0.5f, pos.getY()+0.5f, pos.getZ()+0.5f);
 		return ActionResultType.SUCCESS;
 	}
 

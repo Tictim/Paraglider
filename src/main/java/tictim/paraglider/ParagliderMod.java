@@ -1,6 +1,5 @@
 package tictim.paraglider;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.data.DataGenerator;
@@ -9,8 +8,6 @@ import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.nbt.INBT;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,22 +24,18 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.client.DialogScreen;
+import tictim.paraglider.client.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.Dialogs;
 import tictim.paraglider.contents.ModVillageStructures;
 import tictim.paraglider.datagen.BlockTagGen;
 import tictim.paraglider.datagen.ItemTagGen;
 import tictim.paraglider.datagen.LootModifierProvider;
 import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
-import tictim.paraglider.dialog.Dialog;
-import tictim.paraglider.dialog.DialogContainer;
-import tictim.paraglider.dialog.DialogReloadListener;
-import tictim.paraglider.dialog.parser.DialogJson;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 
@@ -106,27 +99,9 @@ public class ParagliderMod{
 			ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 			ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 
-			IScreenFactory<DialogContainer, DialogScreen> f = (container, playerInventory, title) -> new DialogScreen(container);
-			for(Dialog dialog : Dialogs.DIALOGS_BY_NAME.values()){
-				ScreenManager.registerFactory(dialog.getContainerType(), f);
-			}
-
-			if(ModCfg.debugDialogLoading())
-				DialogJson.Client.readFromResource(new ResourceLocation(MODID, "parser_test"));
-
-			IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-			if(resourceManager instanceof IReloadableResourceManager){
-				IReloadableResourceManager manager = (IReloadableResourceManager)resourceManager;
-				for(Dialog dialog : Dialogs.DIALOGS_BY_NAME.values()){
-					addListener(manager, dialog);
-				}
-			}
-		}
-
-		private static void addListener(IReloadableResourceManager manager, Dialog dialog){
-			DialogReloadListener listener = new DialogReloadListener(dialog, MODID);
-			listener.loadScenario();
-			manager.addReloadListener(listener);
+			IScreenFactory<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
+			ScreenManager.registerFactory(Contents.GODDESS_STATUE_CONTAINER.get(), f);
+			ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
 		}
 
 		@SubscribeEvent

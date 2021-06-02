@@ -77,39 +77,6 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		this.heartContainers = MathHelper.clamp(heartContainers, 0, MAX_HEART_CONTAINERS);
 	}
 
-	public boolean isHeartFullyUpgraded(){
-		return heartContainers>=MAX_HEART_CONTAINERS;
-	}
-	public boolean isStaminaFullyUpgraded(){
-		return staminaVessels>=MAX_STAMINA_VESSELS;
-	}
-
-	public boolean increaseHeartContainer(){
-		if(getHeartContainers()<MAX_HEART_CONTAINERS){
-			setHeartContainers(getHeartContainers()+1);
-			return true;
-		}else return false;
-	}
-	public boolean decreaseHeartContainer(){
-		if(getHeartContainers()>0){
-			setHeartContainers(getHeartContainers()-1);
-			return true;
-		}else return false;
-	}
-
-	public boolean increaseStaminaVessel(){
-		if(getStaminaVessels()<MAX_STAMINA_VESSELS){
-			setStaminaVessels(getStaminaVessels()+1);
-			return true;
-		}else return false;
-	}
-	public boolean decreaseStaminaVessel(){
-		if(getStaminaVessels()>0){
-			setStaminaVessels(getStaminaVessels()-1);
-			return true;
-		}else return false;
-	}
-
 	public int getMaxStamina(){
 		return BASE_STAMINA+staminaVessels*STAMINA_INCREMENT;
 	}
