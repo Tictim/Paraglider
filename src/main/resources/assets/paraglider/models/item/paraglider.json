@@ -2,7 +2,7 @@
 	"textures": {
 		"0": "paraglider:item/paraglider",
 		"1": "paraglider:item/paraglider_offset",
-		"particle": "paraglider:item/paraglider"
+		"particle": "paraglider:item/paraglider_particle"
 	},
 	"elements": [
 		{
