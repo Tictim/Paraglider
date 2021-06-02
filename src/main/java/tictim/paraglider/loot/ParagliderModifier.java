@@ -11,7 +11,6 @@ import net.minecraftforge.common.loot.LootModifier;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.item.ParagliderItem;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Random;
 
@@ -26,7 +25,7 @@ public class ParagliderModifier extends LootModifier{
 		this.dekuLeaf = dekuLeaf;
 	}
 
-	@Nonnull @Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
+	@Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
 		ParagliderItem item = (dekuLeaf ? Contents.DEKU_LEAF : Contents.PARAGLIDER).get();
 		ItemStack stack = new ItemStack(item);
 
