@@ -18,6 +18,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.registries.IForgeRegistry;
 import tictim.paraglider.contents.worldgen.NetherHornedStatuePiece;
 import tictim.paraglider.contents.worldgen.NetherHornedStatueStructure;
+import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatuePiece;
+import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatueStructure;
 import tictim.paraglider.contents.worldgen.UndergroundHornedStatuePiece;
 import tictim.paraglider.contents.worldgen.UndergroundHornedStatueStructure;
 
@@ -46,6 +48,15 @@ public final class ModStructures{
 			1973135446
 	);
 
+	public static final TarreyTownGoddessStatueStructure TARREY_TOWN_GODDESS_STATUE = new TarreyTownGoddessStatueStructure();
+	public static final IStructurePieceType TARREY_TOWN_GODDESS_STATUE_PIECE_TYPE = TarreyTownGoddessStatuePiece::new;
+	public static final StructureFeature<?, ?> TARREY_TOWN_GODDESS_STATUE_CONFIGURED = TARREY_TOWN_GODDESS_STATUE.withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
+	public static final StructureSeparationSettings TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS = new StructureSeparationSettings(
+			64, // spacing
+			8, // separation
+			850796625
+	);
+
 	@SubscribeEvent
 	public static void registerStructure(RegistryEvent.Register<Structure<?>> event){
 		IForgeRegistry<Structure<?>> registry = event.getRegistry();
@@ -61,6 +72,12 @@ public final class ModStructures{
 				NETHER_HORNED_STATUE_CONFIGURED,
 				NETHER_HORNED_STATUE_SEPARATION_SETTINGS,
 				"nether_horned_statue");
+		register(registry,
+				TARREY_TOWN_GODDESS_STATUE,
+				TARREY_TOWN_GODDESS_STATUE_PIECE_TYPE,
+				TARREY_TOWN_GODDESS_STATUE_CONFIGURED,
+				TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS,
+				"tarrey_town_goddess_statue");
 	}
 
 	private static void register(IForgeRegistry<Structure<?>> registry,

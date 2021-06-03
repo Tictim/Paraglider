@@ -56,12 +56,13 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void loadBiome(BiomeLoadingEvent event){
 		switch(event.getCategory()){
-			case NONE:
-			case TAIGA:
 			case EXTREME_HILLS:
 			case MESA:
 			case PLAINS:
 			case SAVANNA:
+				event.getGeneration().getStructures().add(() -> ModStructures.TARREY_TOWN_GODDESS_STATUE_CONFIGURED);
+			case NONE:
+			case TAIGA:
 			case FOREST:
 			case JUNGLE:
 			case ICY:
@@ -92,6 +93,7 @@ public final class ParagliderEventHandler{
 		Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(world.getChunkProvider().generator.func_235957_b_().func_236195_a_());
 		tempMap.put(ModStructures.UNDERGROUND_HORNED_STATUE, ModStructures.UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS);
 		tempMap.put(ModStructures.NETHER_HORNED_STATUE, ModStructures.NETHER_HORNED_STATUE_SEPARATION_SETTINGS);
+		tempMap.put(ModStructures.TARREY_TOWN_GODDESS_STATUE, ModStructures.TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS);
 		world.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
 	}
 
@@ -171,7 +173,6 @@ public final class ParagliderEventHandler{
 			}
 		}
 	}
-
 
 	private static final class Client{
 		public static PlayerMovement createPlayerMovement(PlayerEntity player){
