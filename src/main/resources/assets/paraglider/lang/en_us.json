@@ -2,8 +2,9 @@
 	"itemGroup.paraglider": "Paraglider",
 
 	"block.paraglider.goddess_statue": "Goddess Statue",
-	"block.paraglider.kakiriko_goddess_statue": "Goddess Statue",
+	"block.paraglider.kakariko_goddess_statue": "Goddess Statue",
 	"block.paraglider.goron_goddess_statue": "Goddess Statue",
+	"block.paraglider.rito_goddess_statue": "Goddess Statue",
 	"block.paraglider.horned_statue": "Horned Statue",
 	"item.paraglider.paraglider": "Paraglider",
 	"item.paraglider.deku_leaf": "Deku Leaf",
@@ -19,8 +20,9 @@
 	"tooltip.paraglider.stamina_vessel.1": "Increases maximum stamina by %s, up to %s times.",
 	"tooltip.paraglider.anti_vessel.0": "Retrieves all Heart Containers and Stamina Vessels you consumed.",
 	"tooltip.paraglider.anti_vessel.1": "§5§k§oasdfasdfasdfas dfasdfasdfasfd sfn §c§k§o가나다§5§k§ofdadff§r",
-	"tooltip.paraglider.kakiriko_goddess_statue.0": "Kakiriko style",
+	"tooltip.paraglider.kakariko_goddess_statue.0": "Kakariko style",
 	"tooltip.paraglider.goron_goddess_statue.0": "Goron style",
+	"tooltip.paraglider.rito_goddess_statue.0": "Rito style",
 	"tooltip.paraglider.horned_statue.0": "Cursed",
 	"tooltip.paraglider.essence.0": "Vessel lost form",
 

@@ -30,14 +30,14 @@ public final class ModVillageStructures{
 			a.append(JigsawPiece.func_242849_a(MODID+":plains_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/savanna/houses"), a -> {
-			// TODO rito
+			a.append(JigsawPiece.func_242849_a(MODID+":rito_village_goddess_statue"), 3);
 			a.append(JigsawPiece.func_242849_a(MODID+":savanna_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/snowy/houses"), a -> {
 			a.append(JigsawPiece.func_242849_a(MODID+":snowy_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/taiga/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":kakiriko_village_goddess_statue"), 3);
+			a.append(JigsawPiece.func_242849_a(MODID+":kakariko_village_goddess_statue"), 3);
 			a.append(JigsawPiece.func_242849_a(MODID+":taiga_village_horned_statue"), 1);
 		});
 		ParagliderMod.LOGGER.debug("Finished adding village structures");

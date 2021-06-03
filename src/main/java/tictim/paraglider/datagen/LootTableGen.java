@@ -37,7 +37,8 @@ public class LootTableGen extends LootTableProvider{
 		@Override protected void addTables(){
 			registerDropSelfLootTable(Contents.GODDESS_STATUE.get());
 			registerDropSelfLootTable(Contents.GORON_GODDESS_STATUE.get());
-			registerDropSelfLootTable(Contents.KAKIRIKO_GODDESS_STATUE.get());
+			registerDropSelfLootTable(Contents.KAKARIKO_GODDESS_STATUE.get());
+			registerDropSelfLootTable(Contents.RITO_GODDESS_STATUE.get());
 			registerDropSelfLootTable(Contents.HORNED_STATUE.get());
 		}
 

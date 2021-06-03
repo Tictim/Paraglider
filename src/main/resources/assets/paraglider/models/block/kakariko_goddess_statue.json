@@ -1,13 +1,13 @@
 {
 	"textures": {
 		"front2": "paraglider:block/goddess_statue/front2",
-		"particle": "paraglider:block/goddess_statue/kakiriko/front",
-		"front": "paraglider:block/goddess_statue/kakiriko/front",
+		"particle": "paraglider:block/goddess_statue/kakariko/front",
+		"front": "paraglider:block/goddess_statue/kakariko/front",
 		"side2": "paraglider:block/goddess_statue/side2",
-		"side": "paraglider:block/goddess_statue/kakiriko/side",
+		"side": "paraglider:block/goddess_statue/kakariko/side",
 		"back2": "paraglider:block/goddess_statue/back2",
-		"back": "paraglider:block/goddess_statue/kakiriko/back",
-		"top": "paraglider:block/goddess_statue/kakiriko/top",
+		"back": "paraglider:block/goddess_statue/kakariko/back",
+		"top": "paraglider:block/goddess_statue/kakariko/top",
 		"bottom": "paraglider:block/goddess_statue/bottom",
 		"wings": "paraglider:block/goddess_statue/wings",
 		"inner_wings": "paraglider:block/goddess_statue/inner_wings"

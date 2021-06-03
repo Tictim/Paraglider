@@ -31,12 +31,25 @@ public class RecipeGen extends RecipeProvider{
 				.addCriterion("has_stick", hasItem(Tags.Items.RODS_WOODEN))
 				.build(consumer);
 
-		new ParagliderCosmeticRecipeBuilder(Contents.DEKU_LEAF.get(), Ingredient.fromTag(ItemTags.LEAVES))
+		new CosmeticRecipeBuilder(Contents.DEKU_LEAF.get(), Ingredient.fromTag(ModTags.PARAGLIDERS), Ingredient.fromTag(ItemTags.LEAVES))
 				.addCriterion("has_paragliders", hasItem(ModTags.PARAGLIDERS))
 				.build(consumer, new ResourceLocation(MODID, "cosmetic/deku_leaf"));
-		new ParagliderCosmeticRecipeBuilder(Contents.PARAGLIDER.get(), Ingredient.fromTag(Tags.Items.RODS_WOODEN))
+		new CosmeticRecipeBuilder(Contents.PARAGLIDER.get(), Ingredient.fromTag(ModTags.PARAGLIDERS), Ingredient.fromTag(Tags.Items.RODS_WOODEN))
 				.addCriterion("has_paragliders", hasItem(ModTags.PARAGLIDERS))
 				.build(consumer, new ResourceLocation(MODID, "cosmetic/paraglider"));
+
+		new CosmeticRecipeBuilder(Contents.GODDESS_STATUE_ITEM.get(), Ingredient.fromTag(ModTags.STATUES_GODDESS), Ingredient.fromTag(Tags.Items.COBBLESTONE))
+				.addCriterion("has_goddess_statue", hasItem(ModTags.STATUES_GODDESS))
+				.build(consumer, new ResourceLocation(MODID, "cosmetic/goddess_statue"));
+		new CosmeticRecipeBuilder(Contents.KAKARIKO_GODDESS_STATUE_ITEM.get(), Ingredient.fromTag(ModTags.STATUES_GODDESS), Ingredient.fromTag(ItemTags.PLANKS))
+				.addCriterion("has_goddess_statue", hasItem(ModTags.STATUES_GODDESS))
+				.build(consumer, new ResourceLocation(MODID, "cosmetic/kakariko_goddess_statue"));
+		new CosmeticRecipeBuilder(Contents.GORON_GODDESS_STATUE_ITEM.get(), Ingredient.fromTag(ModTags.STATUES_GODDESS), Ingredient.fromTag(Tags.Items.INGOTS_GOLD))
+				.addCriterion("has_goddess_statue", hasItem(ModTags.STATUES_GODDESS))
+				.build(consumer, new ResourceLocation(MODID, "cosmetic/goron_goddess_statue"));
+		new CosmeticRecipeBuilder(Contents.RITO_GODDESS_STATUE_ITEM.get(), Ingredient.fromTag(ModTags.STATUES_GODDESS), Ingredient.fromTag(ItemTags.FLOWERS))
+				.addCriterion("has_goddess_statue", hasItem(ModTags.STATUES_GODDESS))
+				.build(consumer, new ResourceLocation(MODID, "cosmetic/rito_goddess_statue"));
 
 		ResourceLocation goddessStatue = Contents.GODDESS_STATUE_CONTAINER.getId();
 		new StatueBargainBuilder(goddessStatue)

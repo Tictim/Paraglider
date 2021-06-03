@@ -18,23 +18,25 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ParagliderCosmeticRecipeBuilder{
+public class CosmeticRecipeBuilder{
 	private final Item result;
+	private final Ingredient input;
 	private final Ingredient reagent;
 	private final Advancement.Builder advancementBuilder = Advancement.Builder.builder();
 	private String group;
 
-	public ParagliderCosmeticRecipeBuilder(Item result, Ingredient reagent){
+	public CosmeticRecipeBuilder(Item result, Ingredient input, Ingredient reagent){
 		this.result = result;
+		this.input = input;
 		this.reagent = reagent;
 	}
 
-	public ParagliderCosmeticRecipeBuilder addCriterion(String name, ICriterionInstance criterionIn){
+	public CosmeticRecipeBuilder addCriterion(String name, ICriterionInstance criterionIn){
 		this.advancementBuilder.withCriterion(name, criterionIn);
 		return this;
 	}
 
-	public ParagliderCosmeticRecipeBuilder setGroup(String group){
+	public CosmeticRecipeBuilder setGroup(String group){
 		this.group = group;
 		return this;
 	}
@@ -59,6 +61,7 @@ public class ParagliderCosmeticRecipeBuilder{
 		consumerIn.accept(new Result(id,
 				this.result,
 				this.group==null ? "" : this.group,
+				this.input,
 				this.reagent,
 				this.advancementBuilder,
 				new ResourceLocation(id.getNamespace(), "recipes/"+Objects.requireNonNull(this.result.getGroup()).getPath()+"/"+id.getPath())));
@@ -73,14 +76,16 @@ public class ParagliderCosmeticRecipeBuilder{
 		private final ResourceLocation id;
 		private final Item result;
 		private final String group;
+		private final Ingredient input;
 		private final Ingredient reagent;
 		private final Advancement.Builder advancementBuilder;
 		private final ResourceLocation advancementId;
 
-		public Result(ResourceLocation idIn, Item resultIn, String groupIn, Ingredient reagent, Advancement.Builder advancementBuilderIn, ResourceLocation advancementIdIn){
+		public Result(ResourceLocation idIn, Item resultIn, String groupIn, Ingredient input, Ingredient reagent, Advancement.Builder advancementBuilderIn, ResourceLocation advancementIdIn){
 			this.id = idIn;
 			this.result = resultIn;
 			this.group = groupIn;
+			this.input = input;
 			this.reagent = reagent;
 			this.advancementBuilder = advancementBuilderIn;
 			this.advancementId = advancementIdIn;
@@ -88,12 +93,13 @@ public class ParagliderCosmeticRecipeBuilder{
 
 		@Override public void serialize(JsonObject json){
 			if(!this.group.isEmpty()) json.addProperty("group", this.group);
+			json.add("input", this.input.serialize());
 			json.add("reagent", this.reagent.serialize());
 			json.addProperty("result", Objects.requireNonNull(this.result.getRegistryName()).toString());
 		}
 
 		@Override public IRecipeSerializer<?> getSerializer(){
-			return Contents.PARAGLIDER_COSMETIC_RECIPE.get();
+			return Contents.COSMETIC_RECIPE.get();
 		}
 		@Override public ResourceLocation getID(){
 			return this.id;

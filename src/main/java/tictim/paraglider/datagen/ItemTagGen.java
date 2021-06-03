@@ -17,6 +17,7 @@ public class ItemTagGen extends ItemTagsProvider{
 
 	@Override protected void registerTags(){
 		copy(ModTags.Blocks.STATUES, ModTags.STATUES);
+		copy(ModTags.Blocks.STATUES_GODDESS, ModTags.STATUES_GODDESS);
 
 		getOrCreateBuilder(ModTags.PARAGLIDERS).add(Contents.PARAGLIDER.get(), Contents.DEKU_LEAF.get());
 	}

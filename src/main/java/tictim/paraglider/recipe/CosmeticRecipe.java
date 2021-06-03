@@ -16,20 +16,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.ModTags;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Objects;
 
-public class ParagliderCosmeticRecipe implements ICraftingRecipe{
+public class CosmeticRecipe implements ICraftingRecipe{
 	private final ResourceLocation id;
 	private final String group;
+	private final Ingredient input;
 	private final Ingredient reagent;
 	private final Item recipeOut;
 
-	public ParagliderCosmeticRecipe(ResourceLocation id, String group, Ingredient reagent, Item recipeOut){
+	public CosmeticRecipe(ResourceLocation id, String group, Ingredient input, Ingredient reagent, Item recipeOut){
 		this.id = id;
 		this.group = group;
+		this.input = input;
 		this.reagent = reagent;
 		this.recipeOut = recipeOut;
 	}
@@ -42,7 +44,7 @@ public class ParagliderCosmeticRecipe implements ICraftingRecipe{
 			if(reagent.test(stack)){
 				if(reagentSeen) return false;
 				else reagentSeen = true;
-			}else if(ModTags.PARAGLIDERS.contains(stack.getItem())&&stack.getItem()!=recipeOut){
+			}else if(input.test(stack)&&stack.getItem()!=recipeOut){
 				if(paragliderSeen) return false;
 				else paragliderSeen = true;
 			}else return false;
@@ -55,7 +57,7 @@ public class ParagliderCosmeticRecipe implements ICraftingRecipe{
 		for(int i = 0; i<inv.getSizeInventory(); i++){
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack.isEmpty()) continue;
-			if(!reagent.test(stack)&&ModTags.PARAGLIDERS.contains(stack.getItem())){
+			if(!reagent.test(stack)&&input.test(stack)){
 				if(stack.hasTag()) paraglider.setTag(stack.getTag());
 				return paraglider;
 			}
@@ -87,7 +89,7 @@ public class ParagliderCosmeticRecipe implements ICraftingRecipe{
 
 	@Override public NonNullList<Ingredient> getIngredients(){
 		NonNullList<Ingredient> list = NonNullList.create();
-		list.add(Ingredient.fromItems(ModTags.PARAGLIDERS.getAllElements().stream().filter(it -> it!=recipeOut).toArray(Item[]::new)));
+		list.add(Ingredient.fromStacks(Arrays.stream(input.getMatchingStacks()).filter(it -> it.getItem()!=recipeOut).toArray(ItemStack[]::new)));
 		list.add(reagent);
 		return list;
 	}
@@ -98,29 +100,32 @@ public class ParagliderCosmeticRecipe implements ICraftingRecipe{
 		return id;
 	}
 	@Override public IRecipeSerializer<?> getSerializer(){
-		return Contents.PARAGLIDER_COSMETIC_RECIPE.get();
+		return Contents.COSMETIC_RECIPE.get();
 	}
 
-	public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ParagliderCosmeticRecipe>{
-		@Override public ParagliderCosmeticRecipe read(ResourceLocation recipeId, JsonObject json){
+	public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CosmeticRecipe>{
+		@Override public CosmeticRecipe read(ResourceLocation recipeId, JsonObject json){
 			String group = JSONUtils.getString(json, "group", "");
 			ResourceLocation itemName = new ResourceLocation(JSONUtils.getString(json, "result"));
 			Item item = ForgeRegistries.ITEMS.getValue(itemName);
 			if(item==null||!Objects.equals(item.getRegistryName(), itemName))
 				throw new JsonSyntaxException("Unknown item '"+group+"'");
+			Ingredient input = Ingredient.deserialize(json.get("input"));
 			Ingredient reagent = Ingredient.deserialize(json.get("reagent"));
-			return new ParagliderCosmeticRecipe(recipeId, group, reagent, item);
+			return new CosmeticRecipe(recipeId, group, input, reagent, item);
 		}
 
-		@Nullable @Override public ParagliderCosmeticRecipe read(ResourceLocation recipeId, PacketBuffer buffer){
+		@Nullable @Override public CosmeticRecipe read(ResourceLocation recipeId, PacketBuffer buffer){
 			String group = buffer.readString(32767);
+			Ingredient input = Ingredient.read(buffer);
 			Ingredient reagent = Ingredient.read(buffer);
 			Item out = Item.getItemById(buffer.readVarInt());
-			return new ParagliderCosmeticRecipe(recipeId, group, reagent, out);
+			return new CosmeticRecipe(recipeId, group, input, reagent, out);
 		}
 
-		@Override public void write(PacketBuffer buffer, ParagliderCosmeticRecipe recipe){
+		@Override public void write(PacketBuffer buffer, CosmeticRecipe recipe){
 			buffer.writeString(recipe.group);
+			recipe.input.write(buffer);
 			recipe.reagent.write(buffer);
 			buffer.writeVarInt(Item.getIdFromItem(recipe.recipeOut));
 		}

@@ -15,9 +15,13 @@ public class BlockTagGen extends BlockTagsProvider{
 	}
 
 	@Override protected void registerTags(){
-		getOrCreateBuilder(ModTags.Blocks.STATUES).add(
+		getOrCreateBuilder(ModTags.Blocks.STATUES_GODDESS).add(
 				Contents.GODDESS_STATUE.get(),
-				Contents.HORNED_STATUE.get(),
-				Contents.KAKIRIKO_GODDESS_STATUE.get());
+				Contents.KAKARIKO_GODDESS_STATUE.get(),
+				Contents.GORON_GODDESS_STATUE.get(),
+				Contents.RITO_GODDESS_STATUE.get());
+		getOrCreateBuilder(ModTags.Blocks.STATUES)
+				.add(Contents.HORNED_STATUE.get())
+				.addTag(ModTags.Blocks.STATUES_GODDESS);
 	}
 }

@@ -2,6 +2,8 @@ package tictim.paraglider;
 
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
@@ -24,7 +26,6 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.wind.Wind;
@@ -38,6 +39,7 @@ import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
+import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 
 import javax.annotation.Nullable;
 import javax.naming.OperationNotSupportedException;
@@ -102,6 +104,8 @@ public class ParagliderMod{
 			IScreenFactory<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
 			ScreenManager.registerFactory(Contents.GODDESS_STATUE_CONTAINER.get(), f);
 			ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
+
+			RenderTypeLookup.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.getCutout());
 		}
 
 		@SubscribeEvent

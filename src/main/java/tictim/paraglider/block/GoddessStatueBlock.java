@@ -3,8 +3,10 @@ package tictim.paraglider.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -13,11 +15,13 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import tictim.paraglider.contents.ModContainers;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class GoddessStatueBlock extends HorizontalBlock{
 	private static final VoxelShape SHAPE_NORTH = VoxelShapes.or(makeCuboidShape(4, 16, 5, 12, 20, 11),
@@ -45,8 +49,14 @@ public class GoddessStatueBlock extends HorizontalBlock{
 			makeCuboidShape(4, 12, 5, 5, 16, 11),
 			makeCuboidShape(3, 0, 3, 13, 12, 13)).simplify();
 
+	@Nullable private final ITextComponent tooltip;
+
 	public GoddessStatueBlock(Properties properties){
+		this(properties, null);
+	}
+	public GoddessStatueBlock(Properties properties, @Nullable ITextComponent tooltip){
 		super(properties);
+		this.tooltip = tooltip;
 	}
 
 	@Override protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder){
@@ -73,5 +83,9 @@ public class GoddessStatueBlock extends HorizontalBlock{
 	@SuppressWarnings("deprecation") @Override public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit){
 		if(!world.isRemote) ModContainers.openContainer(player, ModContainers::goddessStatue, pos.getX()+0.5f, pos.getY()+1, pos.getZ()+0.5f);
 		return ActionResultType.SUCCESS;
+	}
+
+	@Override public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+		if(this.tooltip!=null) tooltip.add(this.tooltip);
 	}
 }

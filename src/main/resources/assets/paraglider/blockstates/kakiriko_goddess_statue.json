@@ -1,8 +1,0 @@
-{
-	"variants": {
-		"facing=north": { "model": "paraglider:block/kakiriko_goddess_statue" },
-		"facing=south": { "model": "paraglider:block/kakiriko_goddess_statue", "y": 180 },
-		"facing=east": { "model": "paraglider:block/kakiriko_goddess_statue", "y": 90 },
-		"facing=west": { "model": "paraglider:block/kakiriko_goddess_statue", "y": 270 }
-	}
-}

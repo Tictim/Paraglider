@@ -2,8 +2,9 @@
 	"itemGroup.paraglider": "패러세일",
 
 	"block.paraglider.goddess_statue": "여신상",
-	"block.paraglider.kakiriko_goddess_statue": "여신상",
+	"block.paraglider.kakariko_goddess_statue": "여신상",
 	"block.paraglider.goron_goddess_statue": "여신상",
+	"block.paraglider.rito_goddess_statue": "여신상",
 	"block.paraglider.horned_statue": "악마상",
 	"item.paraglider.paraglider": "패러세일",
 	"item.paraglider.deku_leaf": "데크나무 잎",
@@ -18,8 +19,9 @@
 	"tooltip.paraglider.heart_container.1.hearts": "하트 1개",
 	"tooltip.paraglider.stamina_vessel.1": "최대 스태미나를 %s만큼, 최대 %s번까지 올립니다.",
 	"tooltip.paraglider.anti_vessel.0": "소모한 모든 생명과 스태미나의 그릇을 아이템으로 돌려줍니다.",
-	"tooltip.paraglider.kakiriko_goddess_statue.0": "카키리코 스타일",
+	"tooltip.paraglider.kakariko_goddess_statue.0": "카카리코 스타일",
 	"tooltip.paraglider.goron_goddess_statue.0": "고론 스타일",
+	"tooltip.paraglider.rito_goddess_statue.0": "리토 스타일",
 	"tooltip.paraglider.horned_statue.0": "저주받음",
 	"tooltip.paraglider.essence.0": "형태 잃은 그릇",
 
