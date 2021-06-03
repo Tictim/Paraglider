@@ -3,73 +3,86 @@ package tictim.paraglider.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
+import tictim.paraglider.ModCfg;
+import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.utils.Color;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static java.lang.Math.PI;
 import static tictim.paraglider.ParagliderMod.MODID;
+import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_SIZE;
 
-public final class StaminaWheelRenderer{
-	private final Map<WheelType, Wheel> wheel = new EnumMap<>(WheelType.class);
+public abstract class StaminaWheelRenderer{
+	private final Map<WheelLevel, Wheel> wheel = new EnumMap<>(WheelLevel.class);
 
-	@Nullable public Wheel getWheel(WheelType type){
+	public void renderStamina(MatrixStack matrixStack, double x, double y, double z){
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if(player==null) return;
+		PlayerMovement h = PlayerMovement.of(player);
+		if(h==null) return;
+		makeWheel(h);
+
+		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&player.getHeldItemOffhand().getCapability(Paraglider.CAP).isPresent());
+	}
+
+	protected abstract void makeWheel(PlayerMovement h);
+
+	@Nullable protected Wheel getWheel(WheelLevel type){
 		return wheel.get(type);
 	}
 
-	public void addWheel(WheelType wheelType, double start, double end, Color color){
+	protected void addWheel(WheelLevel wheelLevel, double start, double end, Color color){
 		start = Math.max(0, start);
 		end = Math.min(1, end);
 		if(start>=end) return;
 
-		Wheel wheel = this.wheel.get(wheelType);
-		if(wheel!=null){
-			this.wheel.put(wheelType, wheel.insert(new Wheel(start, end, color)));
-		}else{
-			this.wheel.put(wheelType, new Wheel(start, end, color));
-		}
+		Wheel wheel = this.wheel.get(wheelLevel);
+		this.wheel.put(wheelLevel, wheel!=null ? wheel.insert(new Wheel(start, end, color)) : new Wheel(start, end, color));
 	}
 
-	public void render(MatrixStack stack, double x, double y, double z, double size, boolean debug){
+	protected void render(MatrixStack stack, double x, double y, double z, boolean debug){
 		RenderSystem.disableDepthTest();
 
 		BufferBuilder b = Tessellator.getInstance().getBuffer();
 		Minecraft mc = Minecraft.getInstance();
 
 		if(debug){
-			//int lines = 0;
 			float linePos = 10;
 			FontRenderer font = mc.fontRenderer;
-			for(WheelType t : WheelType.values()){
+			for(WheelLevel t : WheelLevel.values()){
 				Wheel wheel = getWheel(t);
 				if(wheel!=null){
 					linePos = font.drawStringWithShadow(stack, t+":", 20, linePos, 0xFFFFFFFF);
-					//for(String s : font.getWordWrappedHeight(wheel.toString(), mc.getMainWindow().getScaledWidth()-30)){
-
-					//}
 					linePos = font.drawStringWithShadow(stack, wheel.toString(), 30, linePos, 0xFFFFFFFF);
 				}
 			}
 		}
 
-		for(WheelType t : WheelType.values()){
+		for(WheelLevel t : WheelLevel.values()){
 			Wheel wheel = getWheel(t);
 			if(wheel!=null){
 				mc.getTextureManager().bindTexture(t.texture);
+				//noinspection deprecation
 				RenderSystem.enableAlphaTest();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
-				wheel.draw(stack, b, x, y, z, size, debug);
+				wheel.draw(stack, b, x, y, z, WHEEL_SIZE, debug);
 			}
 		}
 
@@ -202,60 +215,7 @@ public final class StaminaWheelRenderer{
 		}
 	}
 
-	public static final class Color{
-		public static Color of(int red, int green, int blue){
-			return new Color(MathHelper.clamp(red, 0, 255)/255.0f,
-					MathHelper.clamp(green, 0, 255)/255.0f,
-					MathHelper.clamp(blue, 0, 255)/255.0f);
-		}
-		public static Color of(int red, int green, int blue, int alpha){
-			return new Color(MathHelper.clamp(red, 0, 255)/255.0f,
-					MathHelper.clamp(green, 0, 255)/255.0f,
-					MathHelper.clamp(blue, 0, 255)/255.0f,
-					MathHelper.clamp(alpha, 0, 255)/255.0f);
-		}
-
-		public float red;
-		public float green;
-		public float blue;
-		public float alpha;
-
-		public Color(float red, float green, float blue){
-			this(red, green, blue, 1);
-		}
-		public Color(float red, float green, float blue, float alpha){
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
-		}
-
-		public void set(Color other){
-			this.red = other.red;
-			this.green = other.green;
-			this.blue = other.blue;
-			this.alpha = other.alpha;
-		}
-
-		@Override public boolean equals(Object o){
-			if(this==o) return true;
-			if(o==null||getClass()!=o.getClass()) return false;
-			Color color = (Color)o;
-			return Double.compare(color.red, red)==0&&
-					Double.compare(color.green, green)==0&&
-					Double.compare(color.blue, blue)==0&&
-					Double.compare(color.alpha, alpha)==0;
-		}
-		@Override public int hashCode(){
-			return Objects.hash(red, green, blue, alpha);
-		}
-
-		@Override public String toString(){
-			return String.format("[R: %f, G: %f, B: %f, A: %f]", red, green, blue, alpha);
-		}
-	}
-
-	public enum WheelType{
+	public enum WheelLevel{
 		FIRST(new ResourceLocation(MODID, "textures/stamina/first.png"), 0, PlayerMovement.BASE_STAMINA),
 		SECOND(new ResourceLocation(MODID, "textures/stamina/second.png"), PlayerMovement.BASE_STAMINA, PlayerMovement.BASE_STAMINA*2),
 		THIRD(new ResourceLocation(MODID, "textures/stamina/third.png"), PlayerMovement.BASE_STAMINA*2, PlayerMovement.BASE_STAMINA*3);
@@ -264,7 +224,7 @@ public final class StaminaWheelRenderer{
 		public final int start;
 		public final int end;
 
-		WheelType(ResourceLocation texture, int start, int end){
+		WheelLevel(ResourceLocation texture, int start, int end){
 			this.texture = Objects.requireNonNull(texture);
 			this.start = start;
 			this.end = end;

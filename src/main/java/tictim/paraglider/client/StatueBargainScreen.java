@@ -2,7 +2,6 @@ package tictim.paraglider.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +17,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.network.BargainMsg;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.recipe.bargain.BargainPreview;
@@ -29,13 +29,17 @@ import tictim.paraglider.utils.TooltipFactory;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_SIZE;
+
 public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>{
 	private static final ResourceLocation MERCHANT_GUI_TEXTURE = new ResourceLocation("textures/gui/container/villager2.png");
 	private static final long ITEM_CYCLE_TIME = 1000;
 	private static final long DIALOG_FADEOUT_START = 1750;
 	private static final long DIALOG_FADEOUT_END = 2000;
 
-	private final boolean hideGui;
+	private static final int SCROLL_BOX_THING_WIDTH = 97;
+	private static final int SCROLL_BOX_THING_HEIGHT = 142;
+
 	private final BargainButton[] buttons = new BargainButton[7];
 
 	private int buttonIndexOffset;
@@ -47,16 +51,19 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 	private long dialogTimestamp;
 	private boolean dialogUpdated;
 
+	private StaminaWheelRenderer staminaWheelRenderer;
+
 	public StatueBargainScreen(StatueBargainContainer screenContainer, PlayerInventory inv, ITextComponent titleIn){
 		super(screenContainer, inv, titleIn);
-		this.hideGui = Minecraft.getInstance().gameSettings.hideGUI;
-		Minecraft.getInstance().gameSettings.hideGUI = true;
 	}
 
 	@Override protected void init(){
 		xSize = width;
 		ySize = height;
 		currentTickTimestamp = createdTime = System.currentTimeMillis();
+		//noinspection ConstantConditions
+		PlayerMovement m = PlayerMovement.of(minecraft.player);
+		staminaWheelRenderer = new BargainScreenStaminaWheelRenderer(m==null ? 0 : m.getMaxStamina());
 		super.init();
 
 		int y = getTop()+1;
@@ -75,10 +82,10 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		return 30;
 	}
 	public int getTop(){
-		return (height-142)/2;
+		return (height-SCROLL_BOX_THING_HEIGHT)/2;
 	}
 	public int getBottom(){
-		return getTop()+142;
+		return getTop()+SCROLL_BOX_THING_HEIGHT;
 	}
 
 	public void setDialog(@Nullable ITextComponent dialog){
@@ -150,6 +157,8 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			}
 		}
 
+		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_SIZE, 0);
+
 		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
 		lookAtStatue(partialTicks);
 	}
@@ -165,7 +174,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		matrixStack.push();
 		matrixStack.translate(0, 0, 200);
 
-		int left = getLeft()+97+20, top = getTop();
+		int left = getLeft()+SCROLL_BOX_THING_WIDTH+20, top = getTop();
 
 		for(int i = 0; i<demands.length; i++){
 			ItemDemand demand = demands[i];
@@ -237,7 +246,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		//noinspection ConstantConditions
 		this.minecraft.getTextureManager().bindTexture(MERCHANT_GUI_TEXTURE);
-		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, 97, 142, 256, 512);
+		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT, 256, 512);
 	}
 
 	@Override protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y){}
@@ -272,11 +281,6 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x70101010, 0xa0101010);
 			MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
 		}else this.renderDirtBackground(vOffset);
-	}
-
-	@Override public void onClose(){
-		super.onClose();
-		Minecraft.getInstance().gameSettings.hideGUI = hideGui;
 	}
 
 	private static final int BUTTON_INPUT_X_OFFSET_START = 2;
