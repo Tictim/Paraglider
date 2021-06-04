@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import tictim.paraglider.recipe.bargain.BargainResult;
@@ -79,11 +79,11 @@ public final class ModContainers{ // TODO complete the dialog
 		return new StatueBargainContainer(Contents.HORNED_STATUE_CONTAINER.get(), windowId, playerInventory, HORNED_STATUE_DIALOG);
 	}
 
-	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, float lookAtX, float lookAtY, float lookAtZ){
-		openContainer(player, containerFactory, new Vector3f(lookAtX, lookAtY, lookAtZ));
+	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, double lookAtX, double lookAtY, double lookAtZ){
+		openContainer(player, containerFactory, new Vector3d(lookAtX, lookAtY, lookAtZ));
 	}
 
-	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, @Nullable Vector3f lookAt){
+	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, @Nullable Vector3d lookAt){
 		player.openContainer(new INamedContainerProvider(){
 			@Override public ITextComponent getDisplayName(){
 				return StringTextComponent.EMPTY;

@@ -55,6 +55,9 @@ public final class ModNet{
 		NET.registerMessage(6, StatueDialogMsg.class,
 				StatueDialogMsg::write, StatueDialogMsg::read,
 				Client::handleStatueDialog, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+		NET.registerMessage(7, SyncLookAtMsg.class,
+				SyncLookAtMsg::write, SyncLookAtMsg::read,
+				Client::handleSyncLookAt, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
 	}
 
 	private static void handleBargain(BargainMsg msg, Supplier<NetworkEvent.Context> ctx){
@@ -148,6 +151,18 @@ public final class ModNet{
 				if(!(screen instanceof StatueBargainScreen)) return;
 				StatueBargainScreen s = (StatueBargainScreen)screen;
 				s.setDialog(msg.text);
+			});
+		}
+
+		public static void handleSyncLookAt(SyncLookAtMsg msg, Supplier<NetworkEvent.Context> ctx){
+			ctx.get().setPacketHandled(true);
+			ctx.get().enqueueWork(() -> {
+				ClientPlayerEntity player = Minecraft.getInstance().player;
+				if(player==null) return;
+				Container container = player.openContainer;
+				if(!(container instanceof StatueBargainContainer)) return;
+				StatueBargainContainer c = (StatueBargainContainer)container;
+				c.setLookAt(msg.lookAt);
 			});
 		}
 	}

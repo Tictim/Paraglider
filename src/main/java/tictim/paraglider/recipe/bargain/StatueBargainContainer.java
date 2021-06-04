@@ -7,16 +7,16 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.StatueDialogMsg;
+import tictim.paraglider.network.SyncLookAtMsg;
 import tictim.paraglider.network.UpdateBargainPreviewMsg;
 import tictim.paraglider.utils.StatueDialog;
 
@@ -37,8 +37,7 @@ public class StatueBargainContainer extends Container{
 	private final Preview[] previousBargainTest;
 	private final NonNullList<ItemStack> inventoryCache;
 
-	private boolean hasLookAt = false;
-	private final Vector3f lookAt = new Vector3f();
+	@Nullable private Vector3d lookAt, prevLookAt;
 
 	private boolean redoBargainTest = true;
 	private boolean sendInitMessage = true;
@@ -56,39 +55,6 @@ public class StatueBargainContainer extends Container{
 				.sorted(Comparator.comparing(IRecipe::getId))
 				.collect(Collectors.toList());
 		this.dialog = dialog;
-
-		trackInt(new IntReferenceHolder(){
-			@Override public int get(){
-				return hasLookAt ? 1 : 0;
-			}
-			@Override public void set(int value){
-				hasLookAt = value!=0;
-			}
-		});
-		trackInt(new IntReferenceHolder(){
-			@Override public int get(){
-				return Float.floatToIntBits(lookAt.getX());
-			}
-			@Override public void set(int value){
-				lookAt.setX(Float.intBitsToFloat(value));
-			}
-		});
-		trackInt(new IntReferenceHolder(){
-			@Override public int get(){
-				return Float.floatToIntBits(lookAt.getY());
-			}
-			@Override public void set(int value){
-				lookAt.setY(Float.intBitsToFloat(value));
-			}
-		});
-		trackInt(new IntReferenceHolder(){
-			@Override public int get(){
-				return Float.floatToIntBits(lookAt.getZ());
-			}
-			@Override public void set(int value){
-				lookAt.setZ(Float.intBitsToFloat(value));
-			}
-		});
 
 		this.playerInventory = playerInventory;
 
@@ -121,13 +87,12 @@ public class StatueBargainContainer extends Container{
 		return previousBargainTest.length>bargainIndex ? previousBargainTest[bargainIndex].demands : new ItemDemand[0];
 	}
 
-	@Nullable public Vector3f getLookAt(){
-		return hasLookAt ? lookAt : null;
+	@Nullable public Vector3d getLookAt(){
+		return lookAt;
 	}
 
-	public void setLookAt(@Nullable Vector3f lookAt){
-		if(this.hasLookAt = lookAt!=null)
-			this.lookAt.set(lookAt.getX(), lookAt.getY(), lookAt.getZ());
+	public void setLookAt(@Nullable Vector3d lookAt){
+		this.lookAt = lookAt;
 	}
 
 	@Override public boolean canInteractWith(PlayerEntity playerIn){
@@ -155,6 +120,10 @@ public class StatueBargainContainer extends Container{
 		if(sendInitMessage){
 			sendInitMessage = false;
 			sendDialog(StatueDialog.Case.INITIAL, null, null);
+		}
+		if(prevLookAt!=lookAt){
+			prevLookAt = lookAt;
+			sendToPlayer(new SyncLookAtMsg(lookAt));
 		}
 		super.detectAndSendChanges();
 	}

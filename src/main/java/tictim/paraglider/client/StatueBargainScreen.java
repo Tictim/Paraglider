@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -213,28 +212,39 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 	}
 
 	private void lookAtStatue(float partialTicks){
-		Vector3f lookAt = container.getLookAt();
-		if(lookAt!=null){
-			PlayerEntity player = playerInventory.player;
-			Vector3d eyePosition = player.getEyePosition(partialTicks);
+		Vector3d lookAt = container.getLookAt();
+		if(lookAt==null) return;
+		PlayerEntity player = playerInventory.player;
+		Vector3d eyePosition = player.getEyePosition(partialTicks);
 
-			// stolen from Entity#lookAt
-			double lookX = lookAt.getX()-eyePosition.x;
-			double lookY = lookAt.getY()-eyePosition.y;
-			double lookZ = lookAt.getZ()-eyePosition.z;
-			double xzLength = MathHelper.sqrt(lookX*lookX+lookZ*lookZ);
-			double rotationPitch = MathHelper.wrapDegrees((float)(-MathHelper.atan2(lookY, xzLength)*(180/Math.PI)));
-			double rotationYaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(lookZ, lookX)*(180/Math.PI))-90);
+		// stolen from Entity#lookAt
+		double lookX = lookAt.getX()-eyePosition.x;
+		double lookY = lookAt.getY()-eyePosition.y;
+		double lookZ = lookAt.getZ()-eyePosition.z;
+		double xzLength = MathHelper.sqrt(lookX*lookX+lookZ*lookZ);
+		double rotationPitch = MathHelper.wrapDegrees((float)(-MathHelper.atan2(lookY, xzLength)*(180/Math.PI)));
+		double rotationYaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(lookZ, lookX)*(180/Math.PI))-90);
 
-			double lerpPercentage = partialTicks*0.3;
-			player.rotationPitch = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationPitch), rotationPitch);
-			player.rotationYaw = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationYaw), rotationYaw);
-			player.setRotationYawHead(player.rotationYaw);
-			player.prevRotationPitch = player.rotationPitch;
-			player.prevRotationYaw = player.rotationYaw;
-			player.prevRotationYawHead = player.rotationYawHead;
-			player.prevRenderYawOffset = player.renderYawOffset = player.rotationYawHead;
-		}
+		double lerpPercentage = partialTicks*0.3;
+		player.rotationPitch = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationPitch), rotationPitch);
+		player.rotationYaw = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationYaw), rotationYaw);
+		player.setRotationYawHead(player.rotationYaw);
+		player.prevRotationPitch = player.rotationPitch;
+		player.prevRotationYaw = player.rotationYaw;
+		player.prevRotationYawHead = player.rotationYawHead;
+		player.prevRenderYawOffset = player.renderYawOffset = player.rotationYawHead;
+
+		/*drawCenteredString(new MatrixStack(),
+				font,
+				String.format("Look At:[%s %s %s], Pitch: %s, Yaw: %s",
+						lookAt.getX(),
+						lookAt.getY(),
+						lookAt.getZ(),
+						rotationPitch,
+						rotationYaw),
+				width/2,
+				getBottom()+18,
+				-1);*/
 	}
 
 	private static float lerpAngle(double percentage, double start, double end){

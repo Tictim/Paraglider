@@ -81,7 +81,7 @@ public class GoddessStatueBlock extends HorizontalBlock{
 	}
 
 	@SuppressWarnings("deprecation") @Override public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit){
-		if(!world.isRemote) ModContainers.openContainer(player, ModContainers::goddessStatue, pos.getX()+0.5f, pos.getY()+1, pos.getZ()+0.5f);
+		if(!world.isRemote) ModContainers.openContainer(player, ModContainers::goddessStatue, pos.getX()+0.5, pos.getY()+1, pos.getZ()+0.5);
 		return ActionResultType.SUCCESS;
 	}
 
