@@ -111,7 +111,7 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 			player.addPotionEffect(new EffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
 		}
 		if(isParagliding()){
-			player.fallDistance = 1.5f;
+			player.fallDistance = 0;
 
 			Vector3d m = player.getMotion();
 			switch(state){

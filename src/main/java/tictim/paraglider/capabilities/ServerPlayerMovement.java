@@ -47,6 +47,9 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	public boolean movementNeedsSync;
 	public boolean paraglidingNeedsSync;
 
+	private double prevY;
+	private double accumulatedFallDistance;
+
 	private int panicParaglidingDelay = PANIC_INITIAL_DELAY;
 	private int panicParaglidingDuration = 0;
 
@@ -94,6 +97,9 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			healthNeedsUpdate = false;
 		}
 
+		if(player.isOnGround()||player.getPosY()>prevY) accumulatedFallDistance = 0;
+		else accumulatedFallDistance += prevY-player.getPosY();
+
 		boolean isHoldingParaglider = Paraglider.isParaglider(player.getHeldItemMainhand());
 		setState(calculatePlayerState(isHoldingParaglider));
 		if(prevState!=getState()) movementNeedsSync = true;
@@ -130,6 +136,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 
 		prevState = getState();
+		prevY = player.getPosY();
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
@@ -139,7 +146,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else if(player.isInWater()) return canSwimInfinitely() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
 			if(ModCfg.ascendingWinds()&&WindUtils.isInsideWind(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
-			else if(prevState.isParagliding()||player.fallDistance>=1.45f) return PlayerState.PARAGLIDING;
+			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
 		if(player.isSprinting()&&!player.isHandActive()) return PlayerState.RUNNING;
