@@ -49,6 +49,7 @@ public final class ModCfg{
 	private static IntValue paragliderDurability;
 
 	private static BooleanValue enderDragonDropsHeartContainer;
+	private static BooleanValue raidGivesHeartContainer;
 
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue traceMovementPacket;
@@ -81,6 +82,9 @@ public final class ModCfg{
 
 	public static boolean enderDragonDropsHeartContainer(){
 		return enderDragonDropsHeartContainer.get();
+	}
+	public static boolean raidGivesHeartContainer(){
+		return raidGivesHeartContainer.get();
 	}
 
 	public static boolean debugPlayerMovement(){
@@ -121,6 +125,7 @@ public final class ModCfg{
 
 		server.push("spiritOrbs");
 		enderDragonDropsHeartContainer = server.comment("If true, Ender Dragon will drop heart container upon death.").define("enderDragonDropsHeartContainer", true);
+		raidGivesHeartContainer = server.comment("If true, Raids will give heart container upon victory.").define("raidGivesHeartContainer", true);
 		server.pop();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 

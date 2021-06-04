@@ -6,7 +6,8 @@
 	"refmap": "paraglider.refmap.json",
 	"client": [
 		"MixinPlayerModel",
-		"MixinDragonFightManager"
+		"MixinDragonFightManager",
+		"MixinRaid"
 	],
 	"injectors": {
 		"defaultRequire": 1
