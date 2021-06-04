@@ -83,6 +83,7 @@ public class RecipeGen extends RecipeProvider{
 				.offerStaminaVessel(1)
 				.build(consumer, new ResourceLocation(MODID, "horned_statue/buy_stamina_vessel"));
 
+		/*
 		new StatueBargainBuilder(hornedStatue)
 				.demandStaminaVessel(1)
 				.offer(Items.EMERALD, 5)
@@ -227,5 +228,6 @@ public class RecipeGen extends RecipeProvider{
 				.offer(Items.BOWL, 1)
 				.offer(Items.BOWL, 1)
 				.build(consumer, new ResourceLocation(MODID, "bargain_test/fuckit"));
+				*/
 	}
 }
