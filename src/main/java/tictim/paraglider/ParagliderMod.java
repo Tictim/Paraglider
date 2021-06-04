@@ -59,11 +59,13 @@ public class ParagliderMod{
 
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event){
-		registerDefaultCapability(PlayerMovement.class);
-		registerDefaultCapability(Paraglider.class);
-		registerDefaultCapability(Wind.class);
+		event.enqueueWork(() -> {
+			registerDefaultCapability(PlayerMovement.class);
+			registerDefaultCapability(Paraglider.class);
+			registerDefaultCapability(Wind.class);
 
-		ModVillageStructures.addVillageStructures();
+			ModVillageStructures.addVillageStructures();
+		});
 	}
 
 	private static <T> void registerDefaultCapability(Class<T> classOf){
@@ -96,16 +98,18 @@ public class ParagliderMod{
 
 		@SubscribeEvent
 		public static void clientSetup(FMLClientSetupEvent event){
-			IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> entity instanceof PlayerEntity&&ParagliderItem.isItemParagliding(stack) ? 1 : 0;
+			event.enqueueWork(() -> {
+				IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> entity instanceof PlayerEntity&&ParagliderItem.isItemParagliding(stack) ? 1 : 0;
 
-			ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
-			ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+				ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+				ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 
-			IScreenFactory<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
-			ScreenManager.registerFactory(Contents.GODDESS_STATUE_CONTAINER.get(), f);
-			ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
+				IScreenFactory<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
+				ScreenManager.registerFactory(Contents.GODDESS_STATUE_CONTAINER.get(), f);
+				ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
 
-			RenderTypeLookup.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.getCutout());
+				RenderTypeLookup.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.getCutout());
+			});
 		}
 
 		@SubscribeEvent
