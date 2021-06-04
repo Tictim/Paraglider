@@ -5,7 +5,8 @@
 	"package": "tictim.paraglider.mixin",
 	"refmap": "paraglider.refmap.json",
 	"client": [
-		"MixinPlayerModel"
+		"MixinPlayerModel",
+		"MixinDragonFightManager"
 	],
 	"injectors": {
 		"defaultRequire": 1

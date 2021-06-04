@@ -48,6 +48,8 @@ public final class ModCfg{
 	private static DoubleValue paraglidingSpeed;
 	private static IntValue paragliderDurability;
 
+	private static BooleanValue enderDragonDropsHeartContainer;
+
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue traceMovementPacket;
 	private static BooleanValue traceParaglidingPacket;
@@ -75,6 +77,10 @@ public final class ModCfg{
 	}
 	public static int paragliderDurability(){
 		return paragliderDurability.get();
+	}
+
+	public static boolean enderDragonDropsHeartContainer(){
+		return enderDragonDropsHeartContainer.get();
 	}
 
 	public static boolean debugPlayerMovement(){
@@ -112,6 +118,10 @@ public final class ModCfg{
 
 		paraglidingSpeed = server.comment("Horizontal movement speed while paragliding.").defineInRange("paraglidingSpeed", 1.0, 0.2, 10);
 		paragliderDurability = server.comment("Durability of Paragliders. Set to zero to disable durability.").defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
+
+		server.push("spiritOrbs");
+		enderDragonDropsHeartContainer = server.comment("If true, Ender Dragon will drop heart container upon death.").define("enderDragonDropsHeartContainer", true);
+		server.pop();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
