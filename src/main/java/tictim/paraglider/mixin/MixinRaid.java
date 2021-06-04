@@ -45,8 +45,7 @@ public class MixinRaid{
 			Entity entity = world.getEntityByUuid(uuid);
 			if(entity instanceof PlayerEntity&&!entity.isSpectator()){
 				PlayerEntity player = (PlayerEntity)entity;
-				if(!ParagliderUtils.giveHeartContainers(player, 1, false, true))
-					ParagliderUtils.giveItem(player, new ItemStack(Contents.HEART_CONTAINER.get()));
+				ParagliderUtils.giveItem(player, new ItemStack(Contents.HEART_CONTAINER.get()));
 			}
 		}
 	}
