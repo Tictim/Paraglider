@@ -1,7 +1,6 @@
 package tictim.paraglider.item;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +14,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.Paraglider;
-import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nullable;
@@ -41,16 +39,6 @@ public class ParagliderItem extends Item implements IDyeableArmorItem{
 
 	@Nullable @Override public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt){
 		return new Paraglider();
-	}
-
-	@Override public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected){
-		if(world.isRemote) return;
-		boolean paragliding;
-		if(isSelected){
-			ServerPlayerMovement m = ServerPlayerMovement.of(entity);
-			paragliding = m!=null&&m.isParagliding();
-		}else paragliding = false;
-		setItemParagliding(stack, paragliding);
 	}
 
 	@Override public boolean updateItemStackNBT(CompoundNBT nbt){

@@ -20,6 +20,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
 import tictim.paraglider.network.SyncParaglidingMsg;
@@ -137,6 +138,13 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 		prevState = getState();
 		prevY = player.getPosY();
+
+		for(int i = 0; i<player.inventory.getSizeInventory(); i++){
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if(stack.getItem() instanceof ParagliderItem){ // TODO improve?
+				ParagliderItem.setItemParagliding(stack, i==player.inventory.currentItem&&isParagliding);
+			}
+		}
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
