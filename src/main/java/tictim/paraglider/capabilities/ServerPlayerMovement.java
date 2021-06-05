@@ -1,5 +1,6 @@
 package tictim.paraglider.capabilities;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -13,7 +14,9 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -157,7 +160,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		if(player.abilities.isFlying) return PlayerState.IDLE;
 		else if(player.getRidingEntity()!=null) return PlayerState.RIDING;
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
-		else if(player.isInWater()) return canSwimInfinitely() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
+		else if(player.isInWater()) return canBreathe() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
 			if(ModCfg.ascendingWinds()&&WindUtils.isInsideWind(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
@@ -168,8 +171,13 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else return PlayerState.MIDAIR;
 	}
 
-	private boolean canSwimInfinitely(){
+	private boolean canBreathe(){
 		if(player.isPotionActive(Effects.WATER_BREATHING)) return true;
+		if(player.isOnGround()&&(
+				!player.areEyesInFluid(FluidTags.WATER)||
+						player.world.getBlockState(new BlockPos(player.getPosX(), player.getPosYEye(), player.getPosZ())).isIn(Blocks.BUBBLE_COLUMN))){
+			return true;
+		}
 
 		ItemStack head = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
 		if(!head.isEmpty()){
@@ -177,10 +185,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			else if(EnchantmentHelper.getEnchantmentLevel(Enchantments.AQUA_AFFINITY, head)>0) return true;
 		}
 		ItemStack feet = player.getItemStackFromSlot(EquipmentSlotType.FEET);
-		if(!feet.isEmpty()){
-			if(EnchantmentHelper.getEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0) return true;
-		}
-		return false;
+		return !feet.isEmpty()&&EnchantmentHelper.getEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0;
 	}
 
 	@Override protected void applyMovement(){
