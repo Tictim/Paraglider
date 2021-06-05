@@ -122,6 +122,7 @@ public final class ParagliderUtils{
 		if(PlayerMovement.MAX_HEART_CONTAINERS-m.getHeartContainers()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setHeartContainers(m.getHeartContainers()+quantity);
+			player.setHealth(player.getMaxHealth()+quantity);
 			if(effect) spawnParticle(player, ParticleTypes.HEART, 5+5*quantity);
 		}
 		return true;
@@ -143,6 +144,7 @@ public final class ParagliderUtils{
 		if(PlayerMovement.MAX_STAMINA_VESSELS-m.getStaminaVessels()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setStaminaVessels(m.getStaminaVessels()+quantity);
+			m.setStamina(m.getMaxStamina());
 			if(effect) spawnParticle(player, ParticleTypes.HAPPY_VILLAGER, 7+7*quantity);
 		}
 		return true;
