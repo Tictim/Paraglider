@@ -32,6 +32,7 @@ import tictim.paraglider.capabilities.wind.Wind;
 import tictim.paraglider.client.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModVillageStructures;
+import tictim.paraglider.datagen.AdvancementGen;
 import tictim.paraglider.datagen.BlockTagGen;
 import tictim.paraglider.datagen.ItemTagGen;
 import tictim.paraglider.datagen.LootModifierProvider;
@@ -89,6 +90,7 @@ public class ParagliderMod{
 			gen.addProvider(new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
 			gen.addProvider(new LootTableGen(gen));
 			gen.addProvider(new LootModifierProvider(gen, MODID));
+			gen.addProvider(new AdvancementGen(gen));
 		}
 	}
 

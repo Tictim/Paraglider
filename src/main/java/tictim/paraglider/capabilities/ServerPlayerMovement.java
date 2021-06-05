@@ -20,6 +20,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.contents.ModAdvancements;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
@@ -133,6 +134,11 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			SyncVesselMsg msg = new SyncVesselMsg(getStamina(), getHeartContainers(), getStaminaVessels());
 			if(ModCfg.traceVesselPacket()) ParagliderMod.LOGGER.debug("Sending packet {} to player {}", msg, player);
 			ModNet.NET.send(PacketDistributor.PLAYER.with(() -> serverPlayer), msg);
+
+			if(MAX_HEART_CONTAINERS<=getHeartContainers()&&MAX_STAMINA_VESSELS<=getStaminaVessels()){
+				ModAdvancements.give(serverPlayer, ModAdvancements.ALL_VESSELS, "code_triggered");
+			}
+
 			vesselNeedsSync = false;
 		}
 

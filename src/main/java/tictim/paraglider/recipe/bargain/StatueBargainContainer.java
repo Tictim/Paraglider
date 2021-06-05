@@ -31,6 +31,8 @@ public class StatueBargainContainer extends Container{
 	private final List<StatueBargain> bargains;
 	@Nullable private final StatueDialog dialog;
 
+	@Nullable private ResourceLocation advancement;
+
 	private int heartContainerCache;
 	private int staminaVesselCache;
 	private int essenceCache;
@@ -43,20 +45,19 @@ public class StatueBargainContainer extends Container{
 	private boolean sendInitMessage = true;
 
 	public StatueBargainContainer(@Nullable ContainerType<?> type, int id, PlayerInventory playerInventory){
-		this(type, id, playerInventory, null);
+		this(type, id, playerInventory, null, null);
 	}
-	public StatueBargainContainer(@Nullable ContainerType<?> type, int id, PlayerInventory playerInventory, @Nullable StatueDialog dialog){
+	public StatueBargainContainer(@Nullable ContainerType<?> type, int id, PlayerInventory playerInventory, @Nullable StatueDialog dialog, @Nullable ResourceLocation advancement){
 		super(type, id);
-
+		this.playerInventory = playerInventory;
+		this.dialog = dialog;
+		this.advancement = advancement;
 		this.bargains = playerInventory.player.world.getRecipeManager()
 				.getRecipesForType(Contents.STATUE_BARGAIN_RECIPE_TYPE)
 				.stream()
 				.filter(b -> type==null||b.getBargainOwner().equals(type.getRegistryName()))
 				.sorted(Comparator.comparing(IRecipe::getId))
 				.collect(Collectors.toList());
-		this.dialog = dialog;
-
-		this.playerInventory = playerInventory;
 
 		this.previousBargainTest = new Preview[bargains.size()];
 		for(int i = 0; i<previousBargainTest.length; i++)
@@ -93,6 +94,13 @@ public class StatueBargainContainer extends Container{
 
 	public void setLookAt(@Nullable Vector3d lookAt){
 		this.lookAt = lookAt;
+	}
+
+	@Nullable public ResourceLocation getAdvancement(){
+		return advancement;
+	}
+	public void setAdvancement(@Nullable ResourceLocation advancement){
+		this.advancement = advancement;
 	}
 
 	@Override public boolean canInteractWith(PlayerEntity playerIn){

@@ -26,9 +26,16 @@
 	"tooltip.paraglider.horned_statue.0": "Cursed",
 	"tooltip.paraglider.essence.0": "Vessel lost form",
 
+	"advancement.paraglider": "Paraglider",
 	"advancement.paraglider.desc": "Advancements for the Paraglider mod!",
+	"advancement.paraglider.paraglider": "Half a flight",
+	"advancement.paraglider.paraglider.desc": "Obtain Paraglider",
+	"advancement.paraglider.pray_to_the_goddess": "Pray to the Goddess",
+	"advancement.paraglider.pray_to_the_goddess.desc": "Exchange 4 Spirit Orbs for something good",
 	"advancement.paraglider.statues_bargain": "Statue's Bargain",
-	"advancement.paraglider.statues_bargain.desc": "Complete the first bargain",
+	"advancement.paraglider.statues_bargain.desc": "Complete your first bargain",
+	"advancement.paraglider.all_vessels": "Hero of Hyrule",
+	"advancement.paraglider.all_vessels.desc": "Obtain maximum amount of Heart Containers and Stamina Vessels",
 
 	"bargain.paraglider.heart_container": "Heart Container",
 	"bargain.paraglider.heart_container.s": "%s Heart Containers",

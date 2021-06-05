@@ -11,7 +11,9 @@ import static tictim.paraglider.ParagliderMod.MODID;
 public final class ModAdvancements{
 	private ModAdvancements(){}
 
+	public static final ResourceLocation PRAY_TO_THE_GODDESS = new ResourceLocation(MODID, "pray_to_the_goddess");
 	public static final ResourceLocation STATUES_BARGAIN = new ResourceLocation(MODID, "statues_bargain");
+	public static final ResourceLocation ALL_VESSELS = new ResourceLocation(MODID, "all_vessels");
 
 	public static boolean give(ServerPlayerEntity player, ResourceLocation advancementName, String criterion){
 		PlayerAdvancements advancements = player.getAdvancements();

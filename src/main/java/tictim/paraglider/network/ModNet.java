@@ -18,6 +18,8 @@ import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
 import tictim.paraglider.capabilities.wind.Wind;
 import tictim.paraglider.client.StatueBargainScreen;
+import tictim.paraglider.contents.ModAdvancements;
+import tictim.paraglider.recipe.bargain.BargainResult;
 import tictim.paraglider.recipe.bargain.StatueBargain;
 import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 
@@ -72,7 +74,14 @@ public final class ModNet{
 			StatueBargainContainer c = (StatueBargainContainer)player.openContainer;
 			for(StatueBargain bargain : c.getBargains()){
 				if(!bargain.getId().equals(msg.bargain)) continue;
-				c.sendDialog(bargain, bargain.bargain(player, false));
+				BargainResult result = bargain.bargain(player, false);
+				if(result.isSuccess()){
+					ResourceLocation a = c.getAdvancement();
+					if(a!=null){
+						ModAdvancements.give(player, a, "bargain");
+					}
+				}
+				c.sendDialog(bargain, result);
 				return;
 			}
 			ParagliderMod.LOGGER.info("Ignoring invalid bargain {}", msg.bargain);

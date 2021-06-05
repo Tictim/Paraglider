@@ -73,10 +73,18 @@ public final class ModContainers{ // TODO complete the dialog
 			.atFailureFallback("bargain.dialog.horned_statue.failure.fallback.0");
 
 	public static StatueBargainContainer goddessStatue(int windowId, PlayerInventory playerInventory){
-		return new StatueBargainContainer(Contents.GODDESS_STATUE_CONTAINER.get(), windowId, playerInventory, GODDESS_STATUE_DIALOG);
+		return new StatueBargainContainer(Contents.GODDESS_STATUE_CONTAINER.get(),
+				windowId,
+				playerInventory,
+				GODDESS_STATUE_DIALOG,
+				ModAdvancements.PRAY_TO_THE_GODDESS);
 	}
 	public static StatueBargainContainer hornedStatue(int windowId, PlayerInventory playerInventory){
-		return new StatueBargainContainer(Contents.HORNED_STATUE_CONTAINER.get(), windowId, playerInventory, HORNED_STATUE_DIALOG);
+		return new StatueBargainContainer(Contents.HORNED_STATUE_CONTAINER.get(),
+				windowId,
+				playerInventory,
+				HORNED_STATUE_DIALOG,
+				ModAdvancements.STATUES_BARGAIN);
 	}
 
 	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, double lookAtX, double lookAtY, double lookAtZ){
