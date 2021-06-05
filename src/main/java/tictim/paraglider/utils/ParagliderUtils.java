@@ -140,7 +140,7 @@ public final class ParagliderUtils{
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
-		if(PlayerMovement.MAX_STAMINA_VESSELS-m.getHeartContainers()<quantity) return false;
+		if(PlayerMovement.MAX_STAMINA_VESSELS-m.getStaminaVessels()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setStaminaVessels(m.getStaminaVessels()+quantity);
 			if(effect) spawnParticle(player, ParticleTypes.HAPPY_VILLAGER, 7+7*quantity);
@@ -161,7 +161,7 @@ public final class ParagliderUtils{
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
-		if(Integer.MAX_VALUE-m.getHeartContainers()<quantity) return false;
+		if(Integer.MAX_VALUE-m.getEssence()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setEssence(m.getEssence()+quantity);
 			// if(effect){}
