@@ -69,7 +69,7 @@
 	"bargain.dialog.horned_statue.success.consumes_heart.1": "I wouldn't object if you wanted to give me more §bHeart Containers§r.",
 	"bargain.dialog.horned_statue.success.consumes_stamina.0": "I'll gladly pay for your §bStamina Vessels§r.",
 	"bargain.dialog.horned_statue.success.consumes_stamina.1": "I wouldn't object if you wanted to give me more §bStamina Vessels§r.",
-	"bargain.dialog.horned_statue.failure.not_enough_items.0": "I know from swindles, boy, and I can plainly tell that you don't have the items required.",
+	"bargain.dialog.horned_statue.failure.not_enough_items.0": "I know from swindles, boy, and I can plainly tell that you don't have the money required.",
 	"bargain.dialog.horned_statue.failure.not_enough_heart.0": "I don't see how you can reduce your §bHeart Containers§r any further.",
 	"bargain.dialog.horned_statue.failure.not_enough_heart.1": "Careful... Give away any more of your §bHeart Containers§r, and it could have a fatal effect on your health.",
 	"bargain.dialog.horned_statue.failure.not_enough_stamina.0": "I don't see how you can reduce your §bStamina Vessels§r any further.",
