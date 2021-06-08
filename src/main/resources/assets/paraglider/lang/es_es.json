@@ -1,0 +1,16 @@
+{
+	"itemGroup.paraglider": "Paravela",
+
+	"block.paraglider.horned_statue": "Estatua maligna",
+	"item.paraglider.paraglider": "Paravela",
+	"item.paraglider.deku_leaf": "Hoja Deku",
+	"item.paraglider.heart_container": "Contenedor de corazón",
+	"item.paraglider.stamina_vessel": "Contenedor de vigor",
+	"item.paraglider.spirit_orb": "Símbolo de valía",
+
+	"tooltip.heart_container.1": "Aumenta la salud máxima en %s, hasta %s veces.",
+	"tooltip.heart_container.1.hearts": "1 corazón",
+	"tooltip.stamina_vessel.1": "Aumenta la resistencia máxima en %s, hasta %s veces.",
+	"tooltip.horned_statue.1": "Recupera todos los contenedor de corazón y de vigor consumidos.",
+	"tooltip.horned_statue.2": "¡PRECIO ESPECIAL! ¡No se requieren rupias! Adorable como el infierno."
+}
