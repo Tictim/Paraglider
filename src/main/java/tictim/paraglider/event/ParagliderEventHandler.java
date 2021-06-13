@@ -24,7 +24,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
@@ -47,11 +46,6 @@ public final class ParagliderEventHandler{
 
 	// PlayerEntity#livingTick(), default value of jumpMovementFactor while sprinting
 	private static final double DEFAULT_PARAGLIDING_SPEED = 0.02+0.005999999865889549;
-
-	@SubscribeEvent
-	public static void serverSetup(FMLServerStartedEvent event){
-		if(ModCfg.forceFlightDisabled()) event.getServer().setAllowFlight(true);
-	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void loadBiome(BiomeLoadingEvent event){

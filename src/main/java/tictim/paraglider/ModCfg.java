@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
+import tictim.paraglider.capabilities.PlayerState;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -51,12 +52,17 @@ public final class ModCfg{
 	private static BooleanValue enderDragonDropsHeartContainer;
 	private static BooleanValue raidGivesHeartContainer;
 
+	private static IntValue startingHearts;
+	private static IntValue maxHeartContainers;
+
+	private static IntValue maxStamina;
+	private static IntValue startingStamina;
+	private static IntValue maxStaminaVessels;
+
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue traceMovementPacket;
 	private static BooleanValue traceParaglidingPacket;
 	private static BooleanValue traceVesselPacket;
-
-	private static BooleanValue forceFlightDisabled;
 
 	public static boolean ascendingWinds(){
 		return ascendingWinds.get();
@@ -87,6 +93,31 @@ public final class ModCfg{
 		return raidGivesHeartContainer.get();
 	}
 
+	public static int startingHearts(){
+		return startingHearts.get();
+	}
+	public static int maxHeartContainers(){
+		return maxHeartContainers.get();
+	}
+
+	public static int maxStamina(){
+		return maxStamina.get();
+	}
+	public static int startingStamina(){
+		return Math.min(maxStamina(), startingStamina.get());
+	}
+	public static int maxStaminaVessels(){
+		return maxStaminaVessels.get();
+	}
+
+	public static int maxStamina(int staminaVessels){
+		int maxStaminaVessels = maxStaminaVessels();
+		int startingStamina = startingStamina();
+		if(maxStaminaVessels<=0) return startingStamina;
+		if(maxStaminaVessels<=staminaVessels) maxStamina();
+		return startingStamina+(int)((double)staminaVessels/maxStaminaVessels*(maxStamina()-startingStamina));
+	}
+
 	public static boolean debugPlayerMovement(){
 		return debugPlayerMovement.get();
 	}
@@ -98,10 +129,6 @@ public final class ModCfg{
 	}
 	public static boolean traceVesselPacket(){
 		return traceVesselPacket.get();
-	}
-
-	public static boolean forceFlightDisabled(){
-		return forceFlightDisabled.get();
 	}
 
 	public static void init(){
@@ -117,8 +144,6 @@ public final class ModCfg{
 								"campfire#lit=true",
 								"soul_campfire#lit=true"),
 						o -> true);
-		paraglidingConsumesStamina = server.comment("Paragliding will consume stamina.").define("paraglidingConsumesStamina", true);
-		runningConsumesStamina = server.comment("Actions other than paragliding will consume stamina.").define("runningAndSwimmingConsumesStamina", false);
 
 		paraglidingSpeed = server.comment("Horizontal movement speed while paragliding.").defineInRange("paraglidingSpeed", 1.0, 0.2, 10);
 		paragliderDurability = server.comment("Durability of Paragliders. Set to zero to disable durability.").defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
@@ -127,6 +152,32 @@ public final class ModCfg{
 		enderDragonDropsHeartContainer = server.comment("If true, Ender Dragon will drop heart container upon death.").define("enderDragonDropsHeartContainer", true);
 		raidGivesHeartContainer = server.comment("If true, Raids will give heart container upon victory.").define("raidGivesHeartContainer", true);
 		server.pop();
+
+		server.push("vessels");
+		startingHearts = server.comment("Starting health points.").defineInRange("startingHearts", 10, 1, 512);
+		maxHeartContainers = server.comment("Maximum amount of Heart Containers one player can consume.\n" +
+				"Do note that the maximum health point is capped at 1024 (512 hearts).").defineInRange("maxHeartContainers", 20, 0, 512);
+
+		maxStamina = server.comment("Maximum amount of stamina Player can get. Do note that one third of this value is equal to one stamina wheel.")
+				.defineInRange("maxStamina", 3000, 0, Integer.MAX_VALUE);
+		startingStamina = server.comment("Amount of stamina Player starts with. Values higher than maxStamina doesn't work.\n"+
+				"If you want to make this value displayed as exactly one stamina wheel, you have to make this value one third of maxStamina.")
+				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
+		maxStaminaVessels = server.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
+				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
+		server.pop();
+
+		server.push("stamina");
+		paraglidingConsumesStamina = server.comment("Paragliding and ascending will consume stamina.").define("paraglidingConsumesStamina", true);
+		runningConsumesStamina = server.comment("Actions other than paragliding or ascending will consume stamina.").define("runningAndSwimmingConsumesStamina", false);
+
+		server.push("consumptions");
+		for(PlayerState state : PlayerState.values()){
+			state.setConfig(server.defineInRange(state.id+"StaminaConsumption", state.defaultChange, Integer.MIN_VALUE, Integer.MAX_VALUE));
+		}
+		server.pop();
+		server.pop();
+
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
@@ -136,8 +187,6 @@ public final class ModCfg{
 		traceParaglidingPacket = common.define("traceParaglidingPacket", false);
 		traceVesselPacket = common.define("traceVesselPacket", false);
 		common.pop();
-		forceFlightDisabled = common.worldRestart().comment("Forces the server to not kick the shit out of 'cheaters' who also happened to be using paraglider.\n"+
-				"Feel free to disable it if you hate 'cheaters'. Or paraglider. If disabled, 'allow-flight' inside server.properties will be used.").define("forceFlightDisabled", true);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
 	}
 

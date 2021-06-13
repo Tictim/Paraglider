@@ -17,7 +17,7 @@
 	"tooltip.paraglider.paraglider_broken": "Broken",
 	"tooltip.paraglider.heart_container.1": "Increases maximum health by %s, up to %s times.",
 	"tooltip.paraglider.heart_container.1.hearts": "1 heart",
-	"tooltip.paraglider.stamina_vessel.1": "Increases maximum stamina by %s, up to %s times.",
+	"tooltip.paraglider.stamina_vessel.1": "Increases maximum stamina up to %s times.",
 	"tooltip.paraglider.anti_vessel.0": "Retrieves all Heart Containers and Stamina Vessels you consumed.",
 	"tooltip.paraglider.anti_vessel.1": "§5§k§oasdfasdfasdfas dfasdfasdfasfd sfn §c§k§o가나다§5§k§ofdadff§r",
 	"tooltip.paraglider.kakariko_goddess_statue.0": "Kakariko style",

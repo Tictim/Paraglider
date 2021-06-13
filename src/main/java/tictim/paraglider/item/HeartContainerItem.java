@@ -13,6 +13,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.ParagliderUtils;
@@ -40,7 +41,7 @@ public class HeartContainerItem extends Item{
 	@Override public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
 		tooltip.add(new TranslationTextComponent("tooltip.paraglider.heart_container.1",
 				new TranslationTextComponent("tooltip.paraglider.heart_container.1.hearts").setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW)),
-				new StringTextComponent(Integer.toString(PlayerMovement.MAX_HEART_CONTAINERS)).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW))
+				new StringTextComponent(Integer.toString(ModCfg.maxHeartContainers())).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW))
 		).setStyle(Style.EMPTY.setFormatting(TextFormatting.GREEN)));
 	}
 }

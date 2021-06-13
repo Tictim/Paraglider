@@ -29,15 +29,15 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer{
 		}else{
 			prevStamina = stamina;
 			Color color = DEPLETED_1.blend(DEPLETED_2, cycle(System.currentTimeMillis(), h.isDepleted() ? DEPLETED_BLINK : BLINK));
-			PlayerState.StaminaAction staminaAction = h.getState().staminaAction;
+			PlayerState state = h.getState();
 			for(WheelLevel t : WheelLevel.values()){
 				addWheel(t, 0, t.getProportion(maxStamina), EMPTY);
 				if(h.isDepleted()){
 					addWheel(t, 0, t.getProportion(stamina), color);
 				}else{
 					addWheel(t, 0, t.getProportion(stamina), IDLE);
-					if(staminaAction.isConsume&&(h.getState().isParagliding() ? ModCfg.paraglidingConsumesStamina() : ModCfg.runningConsumesStamina())){
-						addWheel(t, t.getProportion(stamina-staminaAction.change*10), t.getProportion(stamina), color);
+					if(state.isConsume()&&(state.isParagliding() ? ModCfg.paraglidingConsumesStamina() : ModCfg.runningConsumesStamina())){
+						addWheel(t, t.getProportion(stamina+state.change()*10), t.getProportion(stamina), color);
 					}
 				}
 			}

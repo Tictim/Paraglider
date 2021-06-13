@@ -8,7 +8,7 @@ import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.server.ServerWorld;
-import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 
 public final class ParagliderUtils{
@@ -119,7 +119,7 @@ public final class ParagliderUtils{
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
-		if(PlayerMovement.MAX_HEART_CONTAINERS-m.getHeartContainers()<quantity) return false;
+		if(ModCfg.maxHeartContainers()-m.getHeartContainers()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setHeartContainers(m.getHeartContainers()+quantity);
 			player.setHealth(player.getMaxHealth()+quantity);
@@ -141,7 +141,7 @@ public final class ParagliderUtils{
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
-		if(PlayerMovement.MAX_STAMINA_VESSELS-m.getStaminaVessels()<quantity) return false;
+		if(ModCfg.maxStaminaVessels()-m.getStaminaVessels()<quantity) return false;
 		if(!simulate&&!player.world.isRemote){
 			m.setStaminaVessels(m.getStaminaVessels()+quantity);
 			m.setStamina(m.getMaxStamina());

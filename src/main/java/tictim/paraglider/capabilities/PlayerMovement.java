@@ -3,7 +3,6 @@ package tictim.paraglider.capabilities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -19,16 +18,12 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 	@CapabilityInject(PlayerMovement.class)
 	public static Capability<PlayerMovement> CAP = null;
 
-	public static final int BASE_STAMINA = 1000;
-	public static final int STAMINA_INCREMENT = BASE_STAMINA/5;
 	public static final int RECOVERY_DELAY = 10;
-	public static final int MAX_STAMINA_VESSELS = 10;
-	public static final int MAX_HEART_CONTAINERS = 20;
 
 	public final PlayerEntity player;
 	private PlayerState state = PlayerState.IDLE;
 
-	private int stamina = BASE_STAMINA;
+	private int stamina = ModCfg.startingStamina();
 	private boolean depleted;
 	private int recoveryDelay;
 	private int staminaVessels;
@@ -68,17 +63,17 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		return staminaVessels;
 	}
 	public void setStaminaVessels(int staminaVessels){
-		this.staminaVessels = MathHelper.clamp(staminaVessels, 0, MAX_STAMINA_VESSELS);
+		this.staminaVessels = Math.max(0, staminaVessels);
 	}
 	public int getHeartContainers(){
 		return heartContainers;
 	}
 	public void setHeartContainers(int heartContainers){
-		this.heartContainers = MathHelper.clamp(heartContainers, 0, MAX_HEART_CONTAINERS);
+		this.heartContainers = Math.max(0, heartContainers);
 	}
 
 	public int getMaxStamina(){
-		return BASE_STAMINA+staminaVessels*STAMINA_INCREMENT;
+		return ModCfg.maxStamina(staminaVessels);
 	}
 	public boolean canUseParaglider(){
 		return player.abilities.isCreativeMode||!depleted;
@@ -89,21 +84,12 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 	public abstract void update();
 
 	protected void updateStamina(){
-		if(state.staminaAction.isConsume){
+		if(state.isConsume()){
 			recoveryDelay = RECOVERY_DELAY;
-			if(!depleted&&(state.isParagliding() ? ModCfg.paraglidingConsumesStamina() : ModCfg.runningConsumesStamina())){
-				if(stamina<state.staminaAction.change) stamina = 0;
-				else stamina -= state.staminaAction.change;
-			}
-		}else{
-			if(state.staminaAction==PlayerState.StaminaAction.FAST_RECOVER) recoveryDelay = 0;
-			if(recoveryDelay>0) recoveryDelay--;
-			else if(state.staminaAction.change>0){
-				int max = getMaxStamina();
-				if(stamina+state.staminaAction.change>=max) stamina = max;
-				else stamina += state.staminaAction.change;
-			}
-		}
+			if(!depleted&&(state.isParagliding() ? ModCfg.paraglidingConsumesStamina() : ModCfg.runningConsumesStamina()))
+				stamina = Math.max(0, stamina+state.change());
+		}else if(recoveryDelay>0) recoveryDelay--;
+		else if(state.change()>0) stamina = Math.min(getMaxStamina(), stamina+state.change());
 	}
 
 	protected void applyMovement(){

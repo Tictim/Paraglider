@@ -1,5 +1,6 @@
 package tictim.paraglider.client;
 
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.PlayerMovement;
 
 import static tictim.paraglider.client.StaminaWheelConstants.*;
@@ -43,9 +44,10 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer{
 			for(WheelLevel t : WheelLevel.values())
 				addWheel(t, 0, t.getProportion(internalStamina), IDLE);
 		}else if(gainedStamina&&timeSinceFull<GLOW_FADE){
+			int stamina = ModCfg.maxStamina(h.getStaminaVessels()-1);
 			for(WheelLevel t : WheelLevel.values()){
-				addWheel(t, 0, t.getProportion(maxStamina-PlayerMovement.STAMINA_INCREMENT), IDLE);
-				addWheel(t, t.getProportion(maxStamina-PlayerMovement.STAMINA_INCREMENT), t.getProportion(maxStamina), GLOW.blend(IDLE, (float)(timeSinceFull)/GLOW_FADE));
+				addWheel(t, 0, t.getProportion(stamina), IDLE);
+				addWheel(t, t.getProportion(stamina), t.getProportion(maxStamina), GLOW.blend(IDLE, (float)(timeSinceFull)/GLOW_FADE));
 			}
 		}else{
 			for(WheelLevel t : WheelLevel.values())
@@ -54,6 +56,6 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer{
 	}
 
 	private int getStaminaChange(long timePassed){
-		return (int)(timePassed*(PlayerMovement.STAMINA_INCREMENT/500.0));
+		return (int)(timePassed*(0.4));
 	}
 }

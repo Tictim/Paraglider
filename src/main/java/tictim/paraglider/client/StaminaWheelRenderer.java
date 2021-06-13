@@ -216,22 +216,29 @@ public abstract class StaminaWheelRenderer{
 	}
 
 	public enum WheelLevel{
-		FIRST(new ResourceLocation(MODID, "textures/stamina/first.png"), 0, PlayerMovement.BASE_STAMINA),
-		SECOND(new ResourceLocation(MODID, "textures/stamina/second.png"), PlayerMovement.BASE_STAMINA, PlayerMovement.BASE_STAMINA*2),
-		THIRD(new ResourceLocation(MODID, "textures/stamina/third.png"), PlayerMovement.BASE_STAMINA*2, PlayerMovement.BASE_STAMINA*3);
+		FIRST(new ResourceLocation(MODID, "textures/stamina/first.png")),
+		SECOND(new ResourceLocation(MODID, "textures/stamina/second.png")),
+		THIRD(new ResourceLocation(MODID, "textures/stamina/third.png"));
 
 		public final ResourceLocation texture;
-		public final int start;
-		public final int end;
 
-		WheelLevel(ResourceLocation texture, int start, int end){
+		WheelLevel(ResourceLocation texture){
 			this.texture = Objects.requireNonNull(texture);
-			this.start = start;
-			this.end = end;
+		}
+
+		private int start(){
+			return ModCfg.startingStamina()*ordinal();
+		}
+		private int end(){
+			return ModCfg.startingStamina()*(1+ordinal());
 		}
 
 		public double getProportion(int value){
-			return start>=value ? 0 : end<=value ? 1 : (double)(value-start)/(end-start);
+			int start = start();
+			if(start>=value) return 0;
+			int end = end();
+			if(end<=value) return 1;
+			return (double)(value-start)/(end-start);
 		}
 	}
 }

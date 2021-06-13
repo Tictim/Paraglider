@@ -16,8 +16,8 @@ public final class SyncVesselMsg{
 
 	public void write(PacketBuffer buffer){
 		buffer.writeInt(stamina);
-		buffer.writeByte(heartContainers);
-		buffer.writeByte(staminaVessels);
+		buffer.writeVarInt(heartContainers);
+		buffer.writeVarInt(staminaVessels);
 	}
 
 	@Override public String toString(){
@@ -31,8 +31,8 @@ public final class SyncVesselMsg{
 	public static SyncVesselMsg read(PacketBuffer buffer){
 		return new SyncVesselMsg(
 				buffer.readInt(),
-				buffer.readUnsignedByte(),
-				buffer.readUnsignedByte()
+				buffer.readVarInt(),
+				buffer.readVarInt()
 		);
 	}
 }

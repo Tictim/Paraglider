@@ -94,8 +94,13 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			ModifiableAttributeInstance attrib = player.getAttribute(Attributes.MAX_HEALTH);
 			if(attrib!=null){
 				attrib.removeModifier(HEART_CONTAINER_UUID);
-				if(getHeartContainers()>0)
-					attrib.applyNonPersistentModifier(new AttributeModifier(HEART_CONTAINER_UUID, () -> "Heart Containers", getHeartContainers()*2, AttributeModifier.Operation.ADDITION));
+				int heart = ModCfg.startingHearts()-10+Math.min(ModCfg.maxHeartContainers(), getHeartContainers());
+				if(heart!=0)
+					attrib.applyPersistentModifier(new AttributeModifier(
+							HEART_CONTAINER_UUID,
+							() -> "Heart Containers",
+							heart*2,
+							AttributeModifier.Operation.ADDITION));
 				double mhp = attrib.getValue();
 				if(player.getHealth()>mhp) player.setHealth((float)mhp);
 			}
@@ -138,7 +143,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			if(ModCfg.traceVesselPacket()) ParagliderMod.LOGGER.debug("Sending packet {} to player {}", msg, player);
 			ModNet.NET.send(PacketDistributor.PLAYER.with(() -> serverPlayer), msg);
 
-			if(MAX_HEART_CONTAINERS<=getHeartContainers()&&MAX_STAMINA_VESSELS<=getStaminaVessels()){
+			if(ModCfg.maxHeartContainers()<=getHeartContainers()&&ModCfg.maxStaminaVessels()<=getStaminaVessels()){
 				ModAdvancements.give(serverPlayer, ModAdvancements.ALL_VESSELS, "code_triggered");
 			}
 
@@ -191,6 +196,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	@Override protected void applyMovement(){
 		super.applyMovement();
 		if(isParagliding()){
+			serverPlayer.connection.floatingTickCount = 0;
 			ItemStack stack = player.getHeldItemMainhand();
 			if(Paraglider.isParaglider(stack)){
 				damageParagliderWithoutBreaking(player, stack);

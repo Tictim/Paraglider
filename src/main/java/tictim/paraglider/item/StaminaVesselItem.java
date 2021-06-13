@@ -13,7 +13,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.ParagliderUtils;
 
@@ -39,8 +39,7 @@ public class StaminaVesselItem extends Item{
 
 	@Override public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn){
 		tooltip.add(new TranslationTextComponent("tooltip.paraglider.stamina_vessel.1",
-				new StringTextComponent(Integer.toString(PlayerMovement.STAMINA_INCREMENT)).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW)),
-				new StringTextComponent(Integer.toString(PlayerMovement.MAX_STAMINA_VESSELS)).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW))
+				new StringTextComponent(Integer.toString(ModCfg.maxStaminaVessels())).setStyle(Style.EMPTY.setFormatting(TextFormatting.YELLOW))
 		).setStyle(Style.EMPTY.setFormatting(TextFormatting.GREEN)));
 	}
 }
