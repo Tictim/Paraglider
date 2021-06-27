@@ -12,7 +12,7 @@
 			}
 		},
 		{
-			"weight": 9,
+			"weight": 5,
 			"element": {
 				"location": "paraglider:horned_statue/no",
 				"processors": "minecraft:empty",

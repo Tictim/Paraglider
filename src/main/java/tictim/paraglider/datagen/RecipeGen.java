@@ -11,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModTags;
+import tictim.paraglider.recipe.ConfigConditionSerializer;
 
 import java.util.function.Consumer;
 
@@ -55,10 +56,12 @@ public class RecipeGen extends RecipeProvider{
 		new StatueBargainBuilder(goddessStatue)
 				.demand(Contents.SPIRIT_ORB.get(), 4)
 				.offerHeartContainer(1)
+				.condition(ConfigConditionSerializer.HEART_CONTAINER_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "goddess_statue/heart_container"));
 		new StatueBargainBuilder(goddessStatue)
 				.demand(Contents.SPIRIT_ORB.get(), 4)
 				.offerStaminaVessel(1)
+				.condition(ConfigConditionSerializer.STAMINA_VESSEL_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "goddess_statue/stamina_vessel"));
 
 		ResourceLocation hornedStatue = Contents.HORNED_STATUE_CONTAINER.getId();
@@ -66,21 +69,25 @@ public class RecipeGen extends RecipeProvider{
 				.demandHeartContainer(1)
 				.offer(Items.EMERALD, 5)
 				.offerEssence(1)
+				.condition(ConfigConditionSerializer.HEART_CONTAINER_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "horned_statue/sell_heart_container"));
 		new StatueBargainBuilder(hornedStatue)
 				.demandStaminaVessel(1)
 				.offer(Items.EMERALD, 5)
 				.offerEssence(1)
+				.condition(ConfigConditionSerializer.STAMINA_VESSEL_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "horned_statue/sell_stamina_vessel"));
 		new StatueBargainBuilder(hornedStatue)
 				.demand(Tags.Items.GEMS_EMERALD, 6)
 				.demandEssence(1)
 				.offerHeartContainer(1)
+				.condition(ConfigConditionSerializer.HEART_CONTAINER_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "horned_statue/buy_heart_container"));
 		new StatueBargainBuilder(hornedStatue)
 				.demand(Tags.Items.GEMS_EMERALD, 6)
 				.demandEssence(1)
 				.offerStaminaVessel(1)
+				.condition(ConfigConditionSerializer.STAMINA_VESSEL_ENABLED.create())
 				.build(consumer, new ResourceLocation(MODID, "horned_statue/buy_stamina_vessel"));
 
 		/*

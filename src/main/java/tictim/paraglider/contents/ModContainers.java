@@ -96,8 +96,9 @@ public final class ModContainers{ // TODO complete the dialog
 			@Override public ITextComponent getDisplayName(){
 				return StringTextComponent.EMPTY;
 			}
-			@Override public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity){
+			@Nullable @Override public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity){
 				StatueBargainContainer container = containerFactory.create(windowId, playerInventory);
+				if(container.getBargains().isEmpty()) return null;
 				if(lookAt!=null) container.setLookAt(lookAt);
 				return container;
 			}

@@ -49,8 +49,8 @@ public final class ModCfg{
 	private static DoubleValue paraglidingSpeed;
 	private static IntValue paragliderDurability;
 
-	private static BooleanValue enderDragonDropsHeartContainer;
-	private static BooleanValue raidGivesHeartContainer;
+	private static BooleanValue enderDragonDropsVessel;
+	private static BooleanValue raidGivesVessel;
 
 	private static IntValue startingHearts;
 	private static IntValue maxHeartContainers;
@@ -58,6 +58,11 @@ public final class ModCfg{
 	private static IntValue maxStamina;
 	private static IntValue startingStamina;
 	private static IntValue maxStaminaVessels;
+
+	private static BooleanValue enableSpiritOrbGens;
+	private static BooleanValue enableHeartContainers;
+	private static BooleanValue enableStaminaVessels;
+	private static BooleanValue enableStructures;
 
 	private static BooleanValue debugPlayerMovement;
 	private static BooleanValue traceMovementPacket;
@@ -86,11 +91,11 @@ public final class ModCfg{
 		return paragliderDurability.get();
 	}
 
-	public static boolean enderDragonDropsHeartContainer(){
-		return enderDragonDropsHeartContainer.get();
+	public static boolean enderDragonDropsVessel(){
+		return enderDragonDropsVessel.get();
 	}
-	public static boolean raidGivesHeartContainer(){
-		return raidGivesHeartContainer.get();
+	public static boolean raidGivesVessel(){
+		return raidGivesVessel.get();
 	}
 
 	public static int startingHearts(){
@@ -116,6 +121,19 @@ public final class ModCfg{
 		if(maxStaminaVessels<=0) return startingStamina;
 		if(maxStaminaVessels<=staminaVessels) maxStamina();
 		return startingStamina+(int)((double)staminaVessels/maxStaminaVessels*(maxStamina()-startingStamina));
+	}
+
+	public static boolean enableSpiritOrbGens(){
+		return enableSpiritOrbGens.get();
+	}
+	public static boolean enableHeartContainers(){
+		return enableHeartContainers.get();
+	}
+	public static boolean enableStaminaVessels(){
+		return enableStaminaVessels.get();
+	}
+	public static boolean enableStructures(){
+		return enableStructures.get();
 	}
 
 	public static boolean debugPlayerMovement(){
@@ -149,13 +167,13 @@ public final class ModCfg{
 		paragliderDurability = server.comment("Durability of Paragliders. Set to zero to disable durability.").defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
 
 		server.push("spiritOrbs");
-		enderDragonDropsHeartContainer = server.comment("If true, Ender Dragon will drop heart container upon death.").define("enderDragonDropsHeartContainer", true);
-		raidGivesHeartContainer = server.comment("If true, Raids will give heart container upon victory.").define("raidGivesHeartContainer", true);
+		enderDragonDropsVessel = server.comment("If true, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon death.").define("enderDragonDropsVessel", true);
+		raidGivesVessel = server.comment("If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.").define("raidGivesVessel", true);
 		server.pop();
 
 		server.push("vessels");
 		startingHearts = server.comment("Starting health points.").defineInRange("startingHearts", 10, 1, 512);
-		maxHeartContainers = server.comment("Maximum amount of Heart Containers one player can consume.\n" +
+		maxHeartContainers = server.comment("Maximum amount of Heart Containers one player can consume.\n"+
 				"Do note that the maximum health point is capped at 1024 (512 hearts).").defineInRange("maxHeartContainers", 20, 0, 512);
 
 		maxStamina = server.comment("Maximum amount of stamina Player can get. Do note that one third of this value is equal to one stamina wheel.")
@@ -181,6 +199,25 @@ public final class ModCfg{
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
+		common.comment("Easy to access switches to toggle newer features on and off.\n"+
+				"Most of them requires server restart or datapack reload. All of them, actually.").push("features");
+		enableSpiritOrbGens = common.comment("For those who wants to remove entirety of Spirit Orbs generated from chests, more specifically...\n"+
+				"  * Spirit Orbs generated in various chests\n"+
+				"  * Spirit Orbs dropped by spawners and such\n"+
+				"Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.")
+				.define("spiritOrbGens", true);
+		enableHeartContainers = common.comment("For those who wants to remove entirety of Heart Containers from the game, more specifically...\n"+
+				"  * Heart Containers obtained by \"challenges\" (i.e. Killing dragon, wither, raid)\n"+
+				"  * Bargains using Heart Containers (custom recipes won't be affected)\n"+
+				"Note that if this option is disabled while staminaVessels is enabled, \"challenges\" will drop stamina vessels instead.")
+				.define("heartContainers", true);
+		enableStaminaVessels = common.comment("For those who wants to remove entirety of Stamina Vessels from the game, more specifically...\n"+
+				"  * Bargains using Stamina Vessels (custom recipes won't be affected)")
+				.define("staminaVessels", true);
+		enableStructures = common.comment("For those who wants to remove all structures added by this mod. Requires restart.")
+				.define("structures", true);
+		common.pop();
+
 		common.push("debug");
 		debugPlayerMovement = common.define("debugPlayerMovement", false);
 		traceMovementPacket = common.define("traceMovementPacket", false);

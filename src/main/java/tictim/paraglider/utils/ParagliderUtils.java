@@ -3,6 +3,7 @@ package tictim.paraglider.utils;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.particles.IParticleData;
@@ -10,6 +11,9 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.server.ServerWorld;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
+import tictim.paraglider.contents.Contents;
+
+import javax.annotation.Nullable;
 
 public final class ParagliderUtils{
 	private ParagliderUtils(){}
@@ -171,10 +175,18 @@ public final class ParagliderUtils{
 		return true;
 	}
 
-
 	private static void spawnParticle(PlayerEntity player, IParticleData particle, int count){
 		ServerWorld world = player.world instanceof ServerWorld ? ((ServerWorld)player.world) : null;
 		if(world==null) return;
 		world.spawnParticle(particle, player.getPosX(), player.getPosYHeight(.5), player.getPosZ(), count, 1, 2, 1, 0);
+	}
+
+	/**
+	 * Returns Heart Container, Stamina Vessel or nothing based on config value.
+	 */
+	@Nullable public static Item getAppropriateVessel(){
+		return ModCfg.enableHeartContainers() ? Contents.HEART_CONTAINER.get() :
+				ModCfg.enableSpiritOrbGens() ? Contents.SPIRIT_ORB.get() :
+						null;
 	}
 }

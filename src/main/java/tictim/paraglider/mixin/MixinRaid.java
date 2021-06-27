@@ -2,6 +2,7 @@ package tictim.paraglider.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.raid.Raid;
 import net.minecraft.world.server.ServerWorld;
@@ -14,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.ParagliderUtils;
 
 import java.util.Set;
@@ -40,12 +40,14 @@ public class MixinRaid{
 			}
 	)
 	public void tick(CallbackInfo info){
-		if(!ModCfg.raidGivesHeartContainer()) return;
+		if(!ModCfg.raidGivesVessel()) return;
+		Item item = ParagliderUtils.getAppropriateVessel();
+		if(item==null) return;
 		for(UUID uuid : heroes){
 			Entity entity = world.getEntityByUuid(uuid);
 			if(entity instanceof PlayerEntity&&!entity.isSpectator()){
 				PlayerEntity player = (PlayerEntity)entity;
-				ParagliderUtils.giveItem(player, new ItemStack(Contents.HEART_CONTAINER.get()));
+				ParagliderUtils.giveItem(player, new ItemStack(item));
 			}
 		}
 	}

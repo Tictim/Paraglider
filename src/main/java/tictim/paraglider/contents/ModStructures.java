@@ -33,7 +33,7 @@ public final class ModStructures{
 	public static final IStructurePieceType UNDERGROUND_HORNED_STATUE_PIECE_TYPE = UndergroundHornedStatuePiece::new;
 	public static final StructureFeature<?, ?> UNDERGROUND_HORNED_STATUE_CONFIGURED = UNDERGROUND_HORNED_STATUE.withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
 	public static final StructureSeparationSettings UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS = new StructureSeparationSettings(
-			32, // spacing
+			16, // spacing
 			8, // separation
 			49788929 // chosen by fair nextInt(Integer.MAX_VALUE) roll.
 			// guaranteed to be random.
@@ -43,7 +43,7 @@ public final class ModStructures{
 	public static final IStructurePieceType NETHER_HORNED_STATUE_PIECE_TYPE = NetherHornedStatuePiece::new;
 	public static final StructureFeature<?, ?> NETHER_HORNED_STATUE_CONFIGURED = NETHER_HORNED_STATUE.withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
 	public static final StructureSeparationSettings NETHER_HORNED_STATUE_SEPARATION_SETTINGS = new StructureSeparationSettings(
-			64, // spacing
+			32, // spacing
 			8, // separation
 			1973135446
 	);
@@ -52,7 +52,7 @@ public final class ModStructures{
 	public static final IStructurePieceType TARREY_TOWN_GODDESS_STATUE_PIECE_TYPE = TarreyTownGoddessStatuePiece::new;
 	public static final StructureFeature<?, ?> TARREY_TOWN_GODDESS_STATUE_CONFIGURED = TARREY_TOWN_GODDESS_STATUE.withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
 	public static final StructureSeparationSettings TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS = new StructureSeparationSettings(
-			64, // spacing
+			32, // spacing
 			8, // separation
 			850796625
 	);

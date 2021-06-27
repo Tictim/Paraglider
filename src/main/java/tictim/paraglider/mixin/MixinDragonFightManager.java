@@ -2,6 +2,7 @@ package tictim.paraglider.mixin;
 
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.end.DragonFightManager;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.contents.Contents;
+import tictim.paraglider.utils.ParagliderUtils;
 
 @Mixin(DragonFightManager.class)
 public class MixinDragonFightManager{
@@ -30,14 +31,16 @@ public class MixinDragonFightManager{
 			}
 	)
 	public void processDragonDeath(EnderDragonEntity entity, CallbackInfo info){
-		if(!ModCfg.enderDragonDropsHeartContainer()) return;
+		if(!ModCfg.enderDragonDropsVessel()) return;
+		Item item = ParagliderUtils.getAppropriateVessel();
+		if(item==null) return;
 		BlockPos endPodium = this.world.getHeight(Heightmap.Type.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION);
-		ItemEntity item = new ItemEntity(world, endPodium.getX()+.5, endPodium.getY()+1, endPodium.getZ()+.5, new ItemStack(Contents.HEART_CONTAINER.get()));
-		item.setInvulnerable(true);
-		item.setNoDespawn();
-		item.setNoGravity(true);
-		item.setPickupDelay(40);
-		item.setMotion(0, 0, 0);
-		this.world.addEntity(item);
+		ItemEntity itemEntity = new ItemEntity(world, endPodium.getX()+.5, endPodium.getY()+1, endPodium.getZ()+.5, new ItemStack(item));
+		itemEntity.setInvulnerable(true);
+		itemEntity.setNoDespawn();
+		itemEntity.setNoGravity(true);
+		itemEntity.setPickupDelay(40);
+		itemEntity.setMotion(0, 0, 0);
+		this.world.addEntity(itemEntity);
 	}
 }

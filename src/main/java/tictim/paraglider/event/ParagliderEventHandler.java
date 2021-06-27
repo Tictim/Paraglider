@@ -85,9 +85,15 @@ public final class ParagliderEventHandler{
 				world.getDimensionKey().equals(World.OVERWORLD)) return;
 
 		Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(world.getChunkProvider().generator.func_235957_b_().func_236195_a_());
-		tempMap.put(ModStructures.UNDERGROUND_HORNED_STATUE, ModStructures.UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS);
-		tempMap.put(ModStructures.NETHER_HORNED_STATUE, ModStructures.NETHER_HORNED_STATUE_SEPARATION_SETTINGS);
-		tempMap.put(ModStructures.TARREY_TOWN_GODDESS_STATUE, ModStructures.TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS);
+		if(ModCfg.enableStructures()){
+			tempMap.put(ModStructures.UNDERGROUND_HORNED_STATUE, ModStructures.UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS);
+			tempMap.put(ModStructures.NETHER_HORNED_STATUE, ModStructures.NETHER_HORNED_STATUE_SEPARATION_SETTINGS);
+			tempMap.put(ModStructures.TARREY_TOWN_GODDESS_STATUE, ModStructures.TARREY_TOWN_GODDESS_STATUE_SEPARATION_SETTINGS);
+		}else{
+			tempMap.remove(ModStructures.UNDERGROUND_HORNED_STATUE);
+			tempMap.remove(ModStructures.NETHER_HORNED_STATUE);
+			tempMap.remove(ModStructures.TARREY_TOWN_GODDESS_STATUE);
+		}
 		world.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
 	}
 

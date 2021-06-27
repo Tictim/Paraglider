@@ -11,6 +11,8 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.QuantifiedIngredient;
@@ -33,6 +35,8 @@ public class StatueBargainBuilder{
 	protected int heartContainerOffers;
 	protected int staminaVesselOffers;
 	protected int essenceOffers;
+
+	protected final List<ICondition> conditions = new ArrayList<>();
 
 	public StatueBargainBuilder(ResourceLocation bargainOwner){
 		this.bargainOwner = Objects.requireNonNull(bargainOwner);
@@ -78,6 +82,11 @@ public class StatueBargainBuilder{
 		return this;
 	}
 
+	public StatueBargainBuilder condition(ICondition condition){
+		this.conditions.add(Objects.requireNonNull(condition));
+		return this;
+	}
+
 	public void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id){
 		consumerIn.accept(new Result(id,
 				bargainOwner,
@@ -88,7 +97,8 @@ public class StatueBargainBuilder{
 				itemOffers,
 				heartContainerOffers,
 				staminaVesselOffers,
-				essenceOffers));
+				essenceOffers,
+				conditions));
 	}
 
 	public static class Result implements IFinishedRecipe{
@@ -104,6 +114,7 @@ public class StatueBargainBuilder{
 		protected final int heartContainerOffers;
 		protected final int staminaVesselOffers;
 		protected final int essenceOffers;
+		protected final List<ICondition> conditions;
 
 		public Result(ResourceLocation id,
 		              ResourceLocation bargainOwner,
@@ -114,7 +125,7 @@ public class StatueBargainBuilder{
 		              List<Object2IntMap.Entry<Item>> itemOffers,
 		              int heartContainerOffers,
 		              int staminaVesselOffers,
-		              int essenceOffers){
+		              int essenceOffers, List<ICondition> conditions){
 			this.id = id;
 			this.bargainOwner = bargainOwner;
 			this.itemDemands = itemDemands;
@@ -125,6 +136,7 @@ public class StatueBargainBuilder{
 			this.heartContainerOffers = heartContainerOffers;
 			this.staminaVesselOffers = staminaVesselOffers;
 			this.essenceOffers = essenceOffers;
+			this.conditions = conditions;
 		}
 
 		@Override public void serialize(JsonObject json){
@@ -151,6 +163,13 @@ public class StatueBargainBuilder{
 				if(staminaVesselOffers>0) offers.addProperty("staminaVessels", staminaVesselOffers);
 				if(essenceOffers>0) offers.addProperty("essences", essenceOffers);
 				json.add("offers", offers);
+			}
+			if(!conditions.isEmpty()){
+				JsonArray a = new JsonArray();
+				for(ICondition c : conditions){
+					a.add(CraftingHelper.serialize(c));
+				}
+				json.add("conditions", a);
 			}
 		}
 		@Override public ResourceLocation getID(){

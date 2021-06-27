@@ -16,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +41,7 @@ import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
+import tictim.paraglider.recipe.ConfigConditionSerializer;
 import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 
 import javax.annotation.Nullable;
@@ -56,6 +58,7 @@ public class ParagliderMod{
 		Contents.registerEventHandlers(eventBus);
 		ModCfg.init();
 		ModNet.init();
+		for(ConfigConditionSerializer c : ConfigConditionSerializer.values()) CraftingHelper.register(c);
 	}
 
 	@SubscribeEvent
