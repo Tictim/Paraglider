@@ -10,6 +10,7 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraft.world.server.ServerWorld;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +22,7 @@ import tictim.paraglider.utils.ParagliderUtils;
 
 @Mixin(DragonFightManager.class)
 public class MixinDragonFightManager{
-	@Shadow
+	@Shadow @Final
 	private ServerWorld world;
 
 	@Inject(
