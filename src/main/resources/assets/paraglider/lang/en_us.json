@@ -59,7 +59,7 @@
 	"bargain.dialog.goddess_statue.failure.heart_full.1": "There is no need to increase your §bHeart Containers§r further.",
 	"bargain.dialog.goddess_statue.failure.stamina_full.0": "Your being overflows with vigor.",
 	"bargain.dialog.goddess_statue.failure.stamina_full.1": "There is no need to increase your §bStamina Wheel§r further.",
-	"bargain.dialog.goddess_statue.failure.fallback.0": "TODO",
+	"bargain.dialog.goddess_statue.failure.fallback.0": "I can't do that.",
 
 	"bargain.dialog.horned_statue.initial.0": "You...",
 	"bargain.dialog.horned_statue.initial.1": "Come to tamper with your §bessence§r, yes?",
@@ -79,5 +79,5 @@
 	"bargain.dialog.horned_statue.failure.heart_full.0": "No, no... I'm afraid you already have all the §bHeart Containers§r you possibly can.",
 	"bargain.dialog.horned_statue.failure.stamina_full.0": "No, no... I'm afraid you already have all the §bStamina Vessels§r you possibly can.",
 	"bargain.dialog.horned_statue.failure.essence_full.0": "You can't sell any more of your vessels. Consider getting a life.",
-	"bargain.dialog.horned_statue.failure.fallback.0": "TODO"
+	"bargain.dialog.horned_statue.failure.fallback.0": "No you can't."
 }
