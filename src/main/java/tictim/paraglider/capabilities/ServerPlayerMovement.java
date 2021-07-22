@@ -3,6 +3,7 @@ package tictim.paraglider.capabilities;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
@@ -40,12 +41,14 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	public static final int PANIC_DELAY = 30;
 	public static final int PANIC_DURATION = 15;
 	public static final UUID HEART_CONTAINER_UUID = UUID.fromString("a0f1c25b-c4f9-4413-9619-7841cd7982a3");
+	public static final UUID STAMINA_CONTAINER_UUID = UUID.fromString("8eb77123-6306-4188-9227-56082ba4887a");
 
 	private final ServerPlayerEntity serverPlayer;
 
 	private PlayerState prevState = PlayerState.IDLE;
 
-	private boolean healthNeedsUpdate;
+	private boolean healthNeedsUpdate = true;
+	private boolean staminaNeedsUpdate = true;
 	private boolean prevIsParagliding;
 
 	public boolean vesselNeedsSync;
@@ -75,14 +78,19 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	@Override public void setStaminaVessels(int staminaVessels){
 		int cache = this.getStaminaVessels();
 		super.setStaminaVessels(staminaVessels);
-		if(cache!=staminaVessels) vesselNeedsSync = true;
+		if(cache!=staminaVessels){
+			vesselNeedsSync = true;
+			staminaNeedsUpdate = true;
+		}
 
 	}
 	@Override public void setHeartContainers(int heartContainers){
 		int cache = this.getHeartContainers();
 		super.setHeartContainers(heartContainers);
-		if(cache!=heartContainers) vesselNeedsSync = true;
-		healthNeedsUpdate = true;
+		if(cache!=heartContainers){
+			vesselNeedsSync = true;
+			healthNeedsUpdate = true;
+		}
 	}
 
 	@Override public boolean isParagliding(){
@@ -91,20 +99,15 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 	@Override public void update(){
 		if(healthNeedsUpdate){
-			ModifiableAttributeInstance attrib = player.getAttribute(Attributes.MAX_HEALTH);
-			if(attrib!=null){
-				attrib.removeModifier(HEART_CONTAINER_UUID);
-				int heart = ModCfg.startingHearts()-10+Math.min(ModCfg.maxHeartContainers(), getHeartContainers());
-				if(heart!=0)
-					attrib.applyPersistentModifier(new AttributeModifier(
-							HEART_CONTAINER_UUID,
-							() -> "Heart Containers",
-							heart*2,
-							AttributeModifier.Operation.ADDITION));
-				double mhp = attrib.getValue();
-				if(player.getHealth()>mhp) player.setHealth((float)mhp);
-			}
+			applyAttribute(Attributes.MAX_HEALTH, HEART_CONTAINER_UUID, "Heart Containers", ModCfg.additionalMaxHealth(getHeartContainers()));
+			float mhp = player.getMaxHealth();
+			if(player.getHealth()>mhp) player.setHealth(mhp);
 			healthNeedsUpdate = false;
+		}
+		if(staminaNeedsUpdate){
+			applyAttribute(Contents.MAX_STAMINA.get(), STAMINA_CONTAINER_UUID, "Stamina Vessels", ModCfg.maxStamina(getStaminaVessels()));
+			setStamina(Math.min(getStamina(), getMaxStamina()));
+			staminaNeedsUpdate = false;
 		}
 
 		if(player.isOnGround()||player.getPosY()>prevY) accumulatedFallDistance = 0;
@@ -159,6 +162,18 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 				ParagliderItem.setItemParagliding(stack, i==player.inventory.currentItem&&isParagliding);
 			}
 		}
+	}
+
+	private void applyAttribute(Attribute attribute, UUID uuid, String name, double value){
+		ModifiableAttributeInstance attrib = player.getAttribute(attribute);
+		if(attrib==null) return;
+		attrib.removeModifier(uuid);
+		if(value>0)
+			attrib.applyPersistentModifier(new AttributeModifier(
+					uuid,
+					() -> name,
+					value,
+					AttributeModifier.Operation.ADDITION));
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){

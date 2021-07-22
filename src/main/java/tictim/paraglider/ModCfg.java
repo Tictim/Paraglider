@@ -115,6 +115,10 @@ public final class ModCfg{
 		return maxStaminaVessels.get();
 	}
 
+	public static int additionalMaxHealth(int heartContainers){
+		return (startingHearts()-10+Math.min(maxHeartContainers(), heartContainers))*2;
+	}
+
 	public static int maxStamina(int staminaVessels){
 		int maxStaminaVessels = maxStaminaVessels();
 		int startingStamina = startingStamina();

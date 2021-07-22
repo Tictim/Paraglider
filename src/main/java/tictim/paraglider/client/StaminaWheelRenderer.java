@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.capabilities.Paraglider;
+import tictim.paraglider.capabilities.Caps;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.utils.Color;
 
@@ -38,7 +38,7 @@ public abstract class StaminaWheelRenderer{
 		if(h==null) return;
 		makeWheel(h);
 
-		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&player.getHeldItemOffhand().getCapability(Paraglider.CAP).isPresent());
+		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&player.getHeldItemOffhand().getCapability(Caps.paraglider).isPresent());
 	}
 
 	protected abstract void makeWheel(PlayerMovement h);

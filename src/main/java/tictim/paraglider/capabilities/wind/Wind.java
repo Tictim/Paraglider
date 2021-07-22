@@ -5,17 +5,15 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import tictim.paraglider.capabilities.Caps;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class Wind implements ICapabilityProvider{
-	@CapabilityInject(Wind.class)
-	public static Capability<Wind> CAP = null;
-
 	private final Long2ObjectMap<WindChunk> windChunks = new Long2ObjectOpenHashMap<>();
 
 	public void put(WindChunk windChunk){
@@ -57,12 +55,12 @@ public class Wind implements ICapabilityProvider{
 
 	private final LazyOptional<Wind> self = LazyOptional.of(() -> this);
 
-	@Override public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side){
-		return cap==CAP ? self.cast() : LazyOptional.empty();
+	@Nonnull @Override public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side){
+		return cap==Caps.wind ? self.cast() : LazyOptional.empty();
 	}
 
 	@SuppressWarnings("ConstantConditions")
 	@Nullable public static Wind of(ICapabilityProvider capabilityProvider){
-		return capabilityProvider.getCapability(CAP).orElse(null);
+		return capabilityProvider.getCapability(Caps.wind).orElse(null);
 	}
 }

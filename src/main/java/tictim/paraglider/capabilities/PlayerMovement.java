@@ -1,23 +1,22 @@
 package tictim.paraglider.capabilities;
 
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import tictim.paraglider.ModCfg;
+import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class PlayerMovement implements ICapabilityProvider{
-	@CapabilityInject(PlayerMovement.class)
-	public static Capability<PlayerMovement> CAP = null;
-
+public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	public static final int RECOVERY_DELAY = 10;
 
 	public final PlayerEntity player;
@@ -40,18 +39,36 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		this.state = Objects.requireNonNull(state);
 	}
 
-	public int getStamina(){
+	@Override public int getStamina(){
 		return stamina;
 	}
 	public void setStamina(int stamina){
 		this.stamina = stamina;
 	}
-	public boolean isDepleted(){
+	@Override public boolean isDepleted(){
 		return depleted;
 	}
-	public void setDepleted(boolean depleted){
+	@Override public void setDepleted(boolean depleted){
 		this.depleted = depleted;
 	}
+
+	@Override public int giveStamina(int amount, boolean simulate){
+		if(amount<=0) return 0;
+		int maxStamina = getMaxStamina();
+		int staminaToGive = Math.min(amount, maxStamina-stamina);
+		if(staminaToGive<=0) return 0;
+		if(!simulate) stamina += staminaToGive;
+		return staminaToGive;
+	}
+
+	@Override public int takeStamina(int amount, boolean simulate, boolean ignoreDepletion){
+		if(amount<=0||(isDepleted()&&!ignoreDepletion)) return 0;
+		int staminaToTake = Math.min(amount, stamina);
+		if(staminaToTake<=0) return 0;
+		if(!simulate) stamina -= staminaToTake;
+		return staminaToTake;
+	}
+
 	public int getRecoveryDelay(){
 		return recoveryDelay;
 	}
@@ -72,9 +89,13 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 		this.heartContainers = Math.max(0, heartContainers);
 	}
 
-	public int getMaxStamina(){
+	@Override public int getMaxStamina(){
+		ModifiableAttributeInstance attribute = player.getAttribute(Contents.MAX_STAMINA.get());
+		if(attribute!=null) return (int)attribute.getValue();
+		ParagliderMod.LOGGER.error("Player {} doesn't have max stamina attribute", player);
 		return ModCfg.maxStamina(staminaVessels);
 	}
+
 	public boolean canUseParaglider(){
 		return player.abilities.isCreativeMode||!depleted;
 	}
@@ -120,12 +141,12 @@ public abstract class PlayerMovement implements ICapabilityProvider{
 
 	private final LazyOptional<PlayerMovement> self = LazyOptional.of(() -> this);
 
-	@Override public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side){
-		return cap==CAP ? self.cast() : LazyOptional.empty();
+	@Nonnull @Override public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side){
+		return cap==Caps.playerMovement||cap==Caps.stamina ? self.cast() : LazyOptional.empty();
 	}
 
 	@SuppressWarnings("ConstantConditions")
 	@Nullable public static PlayerMovement of(ICapabilityProvider capabilityProvider){
-		return capabilityProvider.getCapability(CAP).orElse(null);
+		return capabilityProvider.getCapability(Caps.playerMovement).orElse(null);
 	}
 }

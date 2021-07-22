@@ -4,8 +4,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -36,8 +38,8 @@ import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
-import tictim.paraglider.loot.SpiritOrbLootModifier;
 import tictim.paraglider.loot.ParagliderModifier;
+import tictim.paraglider.loot.SpiritOrbLootModifier;
 import tictim.paraglider.loot.VesselLootModifier;
 import tictim.paraglider.recipe.CosmeticRecipe;
 import tictim.paraglider.recipe.bargain.SimpleStatueBargain;
@@ -64,6 +66,7 @@ public final class Contents{
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
 	public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
 
 	public static final IRecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), new IRecipeType<StatueBargain>(){});
 
@@ -138,6 +141,8 @@ public final class Contents{
 	public static final RegistryObject<ContainerType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = CONTAINERS.register(
 			"horned_statue", () -> new ContainerType<>(ModContainers::hornedStatue));
 
+	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setShouldWatch(true));
+
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
@@ -145,5 +150,6 @@ public final class Contents{
 		CONTAINERS.register(eventBus);
 		LOOT_MODIFIER_SERIALIZERS.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);
+		ATTRIBUTES.register(eventBus);
 	}
 }

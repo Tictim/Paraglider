@@ -5,6 +5,7 @@ import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
 import net.minecraft.item.IItemPropertyGetter;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.capabilities.Stamina;
 import tictim.paraglider.capabilities.wind.Wind;
 import tictim.paraglider.client.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
@@ -67,6 +70,7 @@ public class ParagliderMod{
 			registerDefaultCapability(PlayerMovement.class);
 			registerDefaultCapability(Paraglider.class);
 			registerDefaultCapability(Wind.class);
+			registerDefaultCapability(Stamina.class);
 
 			ModVillageStructures.addVillageStructures();
 		});
@@ -95,6 +99,11 @@ public class ParagliderMod{
 			gen.addProvider(new LootModifierProvider(gen, MODID));
 			gen.addProvider(new AdvancementGen(gen));
 		}
+	}
+
+	@SubscribeEvent
+	public static void onEntityAttributeModification(EntityAttributeModificationEvent event){
+		event.add(EntityType.PLAYER, Contents.MAX_STAMINA.get());
 	}
 
 	@Mod.EventBusSubscriber(modid = ParagliderMod.MODID, bus = Bus.MOD, value = Dist.CLIENT)
