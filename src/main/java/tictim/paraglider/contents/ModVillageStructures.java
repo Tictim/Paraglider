@@ -7,6 +7,7 @@ import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPatternRegistry;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public final class ModVillageStructures{
 	private ModVillageStructures(){}
 
 	public static void addVillageStructures(){
+		if(!ModCfg.enableStructures()) return;
 		ParagliderMod.LOGGER.debug("Start adding village structures");
 		appendPool(new ResourceLocation("village/desert/houses"), a -> {
 			a.append(JigsawPiece.func_242849_a(MODID+":gerudo_village_goddess_statue"), 1);
