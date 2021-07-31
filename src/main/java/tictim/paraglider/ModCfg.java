@@ -12,6 +12,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -21,6 +22,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.capabilities.PlayerState;
+import tictim.paraglider.loot.ParagliderModifier;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -58,6 +60,8 @@ public final class ModCfg{
 	private static IntValue maxStamina;
 	private static IntValue startingStamina;
 	private static IntValue maxStaminaVessels;
+
+	private static EnumValue<ParagliderModifier.ConfigOption> paragliderInTowersOfTheWild;
 
 	private static BooleanValue enableSpiritOrbGens;
 	private static BooleanValue enableHeartContainers;
@@ -127,6 +131,10 @@ public final class ModCfg{
 		return startingStamina+(int)((double)staminaVessels/maxStaminaVessels*(maxStamina()-startingStamina));
 	}
 
+	public static ParagliderModifier.ConfigOption paragliderInTowersOfTheWild(){
+		return paragliderInTowersOfTheWild.get();
+	}
+
 	public static boolean enableSpiritOrbGens(){
 		return enableSpiritOrbGens.get();
 	}
@@ -187,6 +195,13 @@ public final class ModCfg{
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
 		maxStaminaVessels = server.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
 				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
+
+		paragliderInTowersOfTheWild = server.comment("Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.\n" +
+				"DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests\n" +
+				"DISABLE: Don't spawn anything\n" +
+				"PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests\n" +
+				"DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss")
+				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
 		server.pop();
 
 		server.push("stamina");

@@ -8,9 +8,11 @@ import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
+import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.item.ParagliderItem;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Random;
 
@@ -25,13 +27,15 @@ public class ParagliderModifier extends LootModifier{
 		this.dekuLeaf = dekuLeaf;
 	}
 
-	@Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
-		ParagliderItem item = (dekuLeaf ? Contents.DEKU_LEAF : Contents.PARAGLIDER).get();
-		ItemStack stack = new ItemStack(item);
-
-		if(context.getRandom().nextBoolean()) item.setColor(stack, getRandomDyeColor(context.getRandom()));
-
-		generatedLoot.add(stack);
+	@Nonnull @Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
+		ConfigOption configOption = ModCfg.paragliderInTowersOfTheWild();
+		if(configOption!=ConfigOption.DISABLE){
+			ParagliderItem item = (configOption==ConfigOption.DEKU_LEAF_ONLY||(configOption!=ConfigOption.PARAGLIDER_ONLY&&dekuLeaf) ?
+					Contents.DEKU_LEAF : Contents.PARAGLIDER).get();
+			ItemStack stack = new ItemStack(item);
+			if(context.getRandom().nextBoolean()) item.setColor(stack, getRandomDyeColor(context.getRandom()));
+			generatedLoot.add(stack);
+		}
 		return generatedLoot;
 	}
 
@@ -76,5 +80,24 @@ public class ParagliderModifier extends LootModifier{
 			jsonObject.addProperty("dekuLeaf", instance.dekuLeaf);
 			return jsonObject;
 		}
+	}
+
+	public enum ConfigOption{
+		/**
+		 * Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests
+		 */
+		DEFAULT,
+		/**
+		 * Don't spawn anything
+		 */
+		DISABLE,
+		/**
+		 * Spawn paraglider in both ocean and normal tower chests
+		 */
+		PARAGLIDER_ONLY,
+		/**
+		 * Spawn deku leaf in both ocean and normal tower chests, like a boss
+		 */
+		DEKU_LEAF_ONLY
 	}
 }
