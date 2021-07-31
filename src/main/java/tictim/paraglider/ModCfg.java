@@ -195,6 +195,7 @@ public final class ModCfg{
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
 		maxStaminaVessels = server.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
 				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
+		server.pop();
 
 		paragliderInTowersOfTheWild = server.comment("Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.\n" +
 				"DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests\n" +
@@ -202,7 +203,6 @@ public final class ModCfg{
 				"PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests\n" +
 				"DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss")
 				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
-		server.pop();
 
 		server.push("stamina");
 		paraglidingConsumesStamina = server.comment("Paragliding and ascending will consume stamina.").define("paraglidingConsumesStamina", true);
