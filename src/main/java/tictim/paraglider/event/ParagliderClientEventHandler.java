@@ -63,7 +63,8 @@ public final class ParagliderClientEventHandler{
 	@SubscribeEvent
 	public static void afterGameOverlayRender(RenderGameOverlayEvent.Post event){
 		if(Minecraft.getInstance().currentScreen instanceof StatueBargainScreen||
-				event.getType()!=RenderGameOverlayEvent.ElementType.ALL) return;
+				event.getType()!=RenderGameOverlayEvent.ElementType.ALL||
+				!(ModCfg.paraglidingConsumesStamina()||ModCfg.runningConsumesStamina())) return;
 		MainWindow window = event.getWindow();
 		//noinspection IntegerDivisionInFloatingPointContext
 		STAMINA_WHEEL_RENDERER.renderStamina(event.getMatrixStack(),
