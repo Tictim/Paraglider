@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package tictim.paraglider.capabilities.wind;
+package tictim.paraglider.wind;
 
 import mcp.MethodsReturnNonnullByDefault;
 

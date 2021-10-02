@@ -2,7 +2,7 @@ package tictim.paraglider.capabilities;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import tictim.paraglider.capabilities.wind.Wind;
+import tictim.paraglider.wind.Wind;
 
 public final class Caps{
 	private Caps(){}

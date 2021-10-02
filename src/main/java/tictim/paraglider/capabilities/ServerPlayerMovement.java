@@ -30,7 +30,7 @@ import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
 import tictim.paraglider.network.SyncParaglidingMsg;
 import tictim.paraglider.network.SyncVesselMsg;
-import tictim.paraglider.utils.WindUtils;
+import tictim.paraglider.wind.Wind;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -182,7 +182,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canBreathe() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
-			if(ModCfg.ascendingWinds()&&WindUtils.isInsideWind(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
+			if(ModCfg.ascendingWinds()&&Wind.isInside(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 

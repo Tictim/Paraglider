@@ -1,7 +1,7 @@
 package tictim.paraglider.network;
 
 import net.minecraft.network.PacketBuffer;
-import tictim.paraglider.capabilities.wind.WindChunk;
+import tictim.paraglider.wind.WindChunk;
 
 public class SyncWindMsg{
 	public static SyncWindMsg read(PacketBuffer buf){

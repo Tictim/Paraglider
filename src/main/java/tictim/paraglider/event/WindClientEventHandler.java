@@ -8,9 +8,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import tictim.paraglider.ParagliderMod;
-import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.capabilities.wind.WindChunk;
-import tictim.paraglider.capabilities.wind.WindNode;
+import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindChunk;
+import tictim.paraglider.wind.WindNode;
 
 import java.util.Random;
 

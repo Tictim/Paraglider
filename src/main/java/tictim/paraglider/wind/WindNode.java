@@ -1,4 +1,4 @@
-package tictim.paraglider.capabilities.wind;
+package tictim.paraglider.wind;
 
 import net.minecraft.network.PacketBuffer;
 

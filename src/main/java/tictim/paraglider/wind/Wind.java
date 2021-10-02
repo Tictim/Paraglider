@@ -1,9 +1,12 @@
-package tictim.paraglider.capabilities.wind;
+package tictim.paraglider.wind;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -62,5 +65,32 @@ public class Wind implements ICapabilityProvider{
 	@SuppressWarnings("ConstantConditions")
 	@Nullable public static Wind of(ICapabilityProvider capabilityProvider){
 		return capabilityProvider.getCapability(Caps.wind).orElse(null);
+	}
+
+	public static boolean isInside(World world, AxisAlignedBB boundingBox){
+		return isInside(world,
+				MathHelper.floor(boundingBox.minX),
+				MathHelper.floor(boundingBox.minY),
+				MathHelper.floor(boundingBox.minZ),
+				MathHelper.ceil(boundingBox.maxX),
+				MathHelper.ceil(boundingBox.maxY),
+				MathHelper.ceil(boundingBox.maxZ));
+	}
+	public static boolean isInside(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
+		Wind wind = of(world);
+		if(wind==null) return false;
+
+		int chunkXStart = minX >> 4;
+		int chunkXEnd = maxX >> 4;
+		int chunkZStart = minZ >> 4;
+		int chunkZEnd = maxZ >> 4;
+
+		for(int x = chunkXStart; x<=chunkXEnd; x++){
+			for(int z = chunkZStart; z<=chunkZEnd; z++){
+				WindChunk windChunk = wind.get(x, z);
+				if(windChunk!=null&&windChunk.isInsideWind(minX, minY, minZ, maxX, maxY, maxZ)) return true;
+			}
+		}
+		return false;
 	}
 }

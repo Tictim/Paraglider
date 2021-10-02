@@ -1,7 +1,4 @@
-package tictim.paraglider.utils;
-
-import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.capabilities.wind.WindChunk;
+package tictim.paraglider.wind;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;

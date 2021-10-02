@@ -16,11 +16,11 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.network.PacketDistributor;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.Paraglider;
-import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.capabilities.wind.WindChunk;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncWindMsg;
-import tictim.paraglider.utils.WindUpdater;
+import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindChunk;
+import tictim.paraglider.wind.WindUpdater;
 
 import java.util.List;
 

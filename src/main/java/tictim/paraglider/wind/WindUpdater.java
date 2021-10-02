@@ -1,4 +1,4 @@
-package tictim.paraglider.utils;
+package tictim.paraglider.wind;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,9 +9,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
-import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.capabilities.wind.WindChunk;
-import tictim.paraglider.capabilities.wind.WindNode;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

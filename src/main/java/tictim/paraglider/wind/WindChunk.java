@@ -1,4 +1,4 @@
-package tictim.paraglider.capabilities.wind;
+package tictim.paraglider.wind;
 
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
