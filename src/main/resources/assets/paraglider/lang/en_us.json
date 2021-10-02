@@ -79,5 +79,18 @@
 	"bargain.dialog.horned_statue.failure.heart_full.0": "No, no... I'm afraid you already have all the §bHeart Containers§r you possibly can.",
 	"bargain.dialog.horned_statue.failure.stamina_full.0": "No, no... I'm afraid you already have all the §bStamina Vessels§r you possibly can.",
 	"bargain.dialog.horned_statue.failure.essence_full.0": "You can't sell any more of your vessels. Consider getting a life.",
-	"bargain.dialog.horned_statue.failure.fallback.0": "No you can't."
+	"bargain.dialog.horned_statue.failure.fallback.0": "No you can't.",
+
+	"key.paraglider.paragliderSettings": "Paraglider Settings",
+
+	"paragliderSettings.staminaWheelSettings": "Stamina Wheel Settings",
+	"paragliderSettings.saving": "Saving...",
+	"paragliderSettings.saving.success": "Saved!",
+	"paragliderSettings.saving.failure": "Save Failed.",
+
+	"adjustStamina.guide.0": "Drag Stamina Wheel to adjust its position.",
+	"adjustStamina.guide.1": "1~3: Change Stamina Wheel size.",
+	"adjustStamina.guide.2": "Esc, %s or %s: Quit without saving.",
+	"adjustStamina.save": "Save",
+	"adjustStamina.cancel": "Cancel"
 }

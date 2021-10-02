@@ -20,7 +20,7 @@ public final class StaminaWheelConstants{
 	public static final long BLINK = 300;
 	public static final long DEPLETED_BLINK = 600;
 
-	public static final double WHEEL_SIZE = 10;
+	public static final int WHEEL_RADIUS = 10;
 
 	/**
 	 * Helper functions for calculating color when stamina wheel glows and fades out.

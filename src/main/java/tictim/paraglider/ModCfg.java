@@ -5,9 +5,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.BlockStateMatcher;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.Property;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -19,12 +22,19 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.capabilities.PlayerState;
 import tictim.paraglider.loot.ParagliderModifier;
 
 import javax.annotation.Nullable;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -72,6 +82,12 @@ public final class ModCfg{
 	private static BooleanValue traceMovementPacket;
 	private static BooleanValue traceParaglidingPacket;
 	private static BooleanValue traceVesselPacket;
+
+	private static final double DEFAULT_STAMINA_WHEEL_X = (427-100)/854.0;
+	private static final double DEFAULT_STAMINA_WHEEL_Y = (240-15)/480.0;
+
+	private static double staminaWheelX = DEFAULT_STAMINA_WHEEL_X;
+	private static double staminaWheelY = DEFAULT_STAMINA_WHEEL_Y;
 
 	public static boolean ascendingWinds(){
 		return ascendingWinds.get();
@@ -161,14 +177,37 @@ public final class ModCfg{
 		return traceVesselPacket.get();
 	}
 
+	public static double staminaWheelX(){
+		return staminaWheelX;
+	}
+	public static void setStaminaWheelX(double staminaWheelX){
+		ModCfg.staminaWheelX = filterBadValue(staminaWheelX, DEFAULT_STAMINA_WHEEL_X);
+	}
+	public static double staminaWheelY(){
+		return staminaWheelY;
+	}
+	public static void setStaminaWheelY(double staminaWheelY){
+		ModCfg.staminaWheelY = filterBadValue(staminaWheelY, DEFAULT_STAMINA_WHEEL_Y);
+	}
+
+	public static void setStaminaWheel(double x, double y){
+		setStaminaWheelX(x);
+		setStaminaWheelY(y);
+	}
+
+	private static double filterBadValue(double d, double defaultValue){
+		if(Double.isNaN(d)) return defaultValue;
+		return MathHelper.clamp(d, 0, 1);
+	}
+
 	public static void init(){
 		ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
 		ascendingWinds = server.comment("Fire will float you upward.").define("ascendingWinds", true);
 		windSources = server.comment("You can customize which block produces wind.\n"+
-				"Write each blockstate to one of this format:\n"+
-				"  [block ID]   (Matches all state of the block)\n"+
-				"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n"+
-				"Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.")
+						"Write each blockstate to one of this format:\n"+
+						"  [block ID]   (Matches all state of the block)\n"+
+						"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n"+
+						"Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.")
 				.defineListAllowEmpty(Collections.singletonList("windSources"),
 						() -> ImmutableList.of("fire",
 								"campfire#lit=true",
@@ -191,17 +230,17 @@ public final class ModCfg{
 		maxStamina = server.comment("Maximum amount of stamina Player can get. Do note that one third of this value is equal to one stamina wheel.")
 				.defineInRange("maxStamina", 3000, 0, Integer.MAX_VALUE);
 		startingStamina = server.comment("Amount of stamina Player starts with. Values higher than maxStamina doesn't work.\n"+
-				"If you want to make this value displayed as exactly one stamina wheel, you have to make this value one third of maxStamina.")
+						"If you want to make this value displayed as exactly one stamina wheel, you have to make this value one third of maxStamina.")
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
 		maxStaminaVessels = server.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
 				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
 		server.pop();
 
-		paragliderInTowersOfTheWild = server.comment("Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.\n" +
-				"DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests\n" +
-				"DISABLE: Don't spawn anything\n" +
-				"PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests\n" +
-				"DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss")
+		paragliderInTowersOfTheWild = server.comment("Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.\n"+
+						"DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests\n"+
+						"DISABLE: Don't spawn anything\n"+
+						"PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests\n"+
+						"DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss")
 				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
 
 		server.push("stamina");
@@ -221,17 +260,17 @@ public final class ModCfg{
 		common.comment("Easy to access switches to toggle newer features on and off.\n"+
 				"Most of them requires server restart or datapack reload. All of them, actually.").push("features");
 		enableSpiritOrbGens = common.comment("For those who wants to remove entirety of Spirit Orbs generated from chests, more specifically...\n"+
-				"  * Spirit Orbs generated in various chests\n"+
-				"  * Spirit Orbs dropped by spawners and such\n"+
-				"Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.")
+						"  * Spirit Orbs generated in various chests\n"+
+						"  * Spirit Orbs dropped by spawners and such\n"+
+						"Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.")
 				.define("spiritOrbGens", true);
 		enableHeartContainers = common.comment("For those who wants to remove entirety of Heart Containers from the game, more specifically...\n"+
-				"  * Heart Containers obtained by \"challenges\" (i.e. Killing dragon, wither, raid)\n"+
-				"  * Bargains using Heart Containers (custom recipes won't be affected)\n"+
-				"Note that if this option is disabled while staminaVessels is enabled, \"challenges\" will drop stamina vessels instead.")
+						"  * Heart Containers obtained by \"challenges\" (i.e. Killing dragon, wither, raid)\n"+
+						"  * Bargains using Heart Containers (custom recipes won't be affected)\n"+
+						"Note that if this option is disabled while staminaVessels is enabled, \"challenges\" will drop stamina vessels instead.")
 				.define("heartContainers", true);
 		enableStaminaVessels = common.comment("For those who wants to remove entirety of Stamina Vessels from the game, more specifically...\n"+
-				"  * Bargains using Stamina Vessels (custom recipes won't be affected)")
+						"  * Bargains using Stamina Vessels (custom recipes won't be affected)")
 				.define("staminaVessels", true);
 		enableStructures = common.comment("For those who wants to remove all structures added by this mod. Requires restart.")
 				.define("structures", true);
@@ -244,6 +283,49 @@ public final class ModCfg{
 		traceVesselPacket = common.define("traceVesselPacket", false);
 		common.pop();
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, common.build());
+
+		loadParagliderSettings();
+	}
+
+	private static void loadParagliderSettings(){
+		try{
+			Path file = FMLPaths.GAMEDIR.get().resolve("paragliderSettings.nbt");
+			if(Files.exists(file)){
+				try(DataInputStream dis = new DataInputStream(Files.newInputStream(file))){
+					CompoundNBT nbt = CompressedStreamTools.read(dis);
+					CompoundNBT staminaWheel = nbt.getCompound("staminaWheel");
+					setStaminaWheelX(staminaWheel.getDouble("x"));
+					setStaminaWheelY(staminaWheel.getDouble("y"));
+				}
+			}else{
+				staminaWheelX = DEFAULT_STAMINA_WHEEL_X;
+				staminaWheelY = DEFAULT_STAMINA_WHEEL_Y;
+			}
+		}catch(RuntimeException|IOException ex){
+			ParagliderMod.LOGGER.error("Error occurred while loading paraglider settings: ", ex);
+			staminaWheelX = DEFAULT_STAMINA_WHEEL_X;
+			staminaWheelY = DEFAULT_STAMINA_WHEEL_Y;
+		}
+	}
+
+	public static boolean saveParagliderSettings(){
+		try{
+			CompoundNBT nbt = new CompoundNBT();
+			CompoundNBT staminaWheel = new CompoundNBT();
+			staminaWheel.putDouble("x", staminaWheelX);
+			staminaWheel.putDouble("y", staminaWheelY);
+			nbt.put("staminaWheel", staminaWheel);
+
+			Path file = FMLPaths.GAMEDIR.get().resolve("paragliderSettings.nbt");
+			try(DataOutputStream dos = new DataOutputStream(Files.newOutputStream(file, StandardOpenOption.CREATE))){
+				CompressedStreamTools.write(nbt, dos);
+			}
+			ParagliderMod.LOGGER.debug("Saved paraglider settings.");
+			return true;
+		}catch(RuntimeException|IOException ex){
+			ParagliderMod.LOGGER.error("Error occurred while saving paraglider settings: ", ex);
+			return false;
+		}
 	}
 
 	@SubscribeEvent

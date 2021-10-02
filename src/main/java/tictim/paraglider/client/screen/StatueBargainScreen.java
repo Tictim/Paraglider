@@ -1,4 +1,4 @@
-package tictim.paraglider.client;
+package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,6 +17,9 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
+import tictim.paraglider.client.BargainScreenStaminaWheelRenderer;
+import tictim.paraglider.client.DisableStaminaRender;
+import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.network.BargainMsg;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.recipe.bargain.BargainPreview;
@@ -28,9 +31,9 @@ import tictim.paraglider.utils.TooltipFactory;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_SIZE;
+import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
-public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>{
+public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer> implements DisableStaminaRender{
 	private static final ResourceLocation MERCHANT_GUI_TEXTURE = new ResourceLocation("textures/gui/container/villager2.png");
 	private static final long ITEM_CYCLE_TIME = 1000;
 	private static final long DIALOG_FADEOUT_START = 1750;
@@ -156,7 +159,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			}
 		}
 
-		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_SIZE, 0);
+		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_RADIUS, 0);
 
 		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
 		lookAtStatue(partialTicks);

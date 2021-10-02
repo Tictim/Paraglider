@@ -4,6 +4,8 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,12 +17,15 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -29,11 +34,12 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.Stamina;
 import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.client.StatueBargainScreen;
+import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModVillageStructures;
 import tictim.paraglider.datagen.AdvancementGen;
@@ -42,6 +48,7 @@ import tictim.paraglider.datagen.ItemTagGen;
 import tictim.paraglider.datagen.LootModifierProvider;
 import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
+import tictim.paraglider.event.ParagliderClientEventHandler;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.recipe.ConfigConditionSerializer;
@@ -123,6 +130,15 @@ public class ParagliderMod{
 				ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
 
 				RenderTypeLookup.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.getCutout());
+
+				KeyBinding paragliderSettingsKey = new KeyBinding(
+						"key.paraglider.paragliderSettings",
+						KeyConflictContext.IN_GAME,
+						KeyModifier.CONTROL,
+						InputMappings.Type.KEYSYM,
+						GLFW.GLFW_KEY_P, "key.categories.misc");
+				ClientRegistry.registerKeyBinding(paragliderSettingsKey);
+				ParagliderClientEventHandler.setParagliderSettingsKey(paragliderSettingsKey);
 			});
 		}
 

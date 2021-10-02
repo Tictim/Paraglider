@@ -17,7 +17,7 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
 import tictim.paraglider.capabilities.wind.Wind;
-import tictim.paraglider.client.StatueBargainScreen;
+import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.ModAdvancements;
 import tictim.paraglider.recipe.bargain.BargainResult;
 import tictim.paraglider.recipe.bargain.StatueBargain;

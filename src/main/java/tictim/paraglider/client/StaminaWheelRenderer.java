@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector2f;
 import org.lwjgl.opengl.GL11;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.capabilities.Caps;
+import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.utils.Color;
 
@@ -26,11 +26,14 @@ import java.util.Objects;
 
 import static java.lang.Math.PI;
 import static tictim.paraglider.ParagliderMod.MODID;
-import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_SIZE;
+import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
 public abstract class StaminaWheelRenderer{
 	private final Map<WheelLevel, Wheel> wheel = new EnumMap<>(WheelLevel.class);
 
+	/**
+	 * Draw stamina wheel with center at (x, y).
+	 */
 	public void renderStamina(MatrixStack matrixStack, double x, double y, double z){
 		ClientPlayerEntity player = Minecraft.getInstance().player;
 		if(player==null) return;
@@ -38,7 +41,7 @@ public abstract class StaminaWheelRenderer{
 		if(h==null) return;
 		makeWheel(h);
 
-		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&player.getHeldItemOffhand().getCapability(Caps.paraglider).isPresent());
+		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&Paraglider.isParaglider(player.getHeldItemOffhand()));
 	}
 
 	protected abstract void makeWheel(PlayerMovement h);
@@ -82,7 +85,7 @@ public abstract class StaminaWheelRenderer{
 				RenderSystem.enableAlphaTest();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
-				wheel.draw(stack, b, x, y, z, WHEEL_SIZE, debug);
+				wheel.draw(stack, b, x, y, z, WHEEL_RADIUS, debug);
 			}
 		}
 
@@ -137,11 +140,11 @@ public abstract class StaminaWheelRenderer{
 
 		private static final double[] renderPoints = {0, 1/8.0, 3/8.0, 5/8.0, 7/8.0, 1};
 
-		public void draw(MatrixStack stack, BufferBuilder b, double x, double y, double z, double size, boolean debug){
+		public void draw(MatrixStack stack, BufferBuilder b, double x, double y, double z, double radius, boolean debug){
 			List<Vector2f> debugVertices = debug ? new ArrayList<>() : null;
 			b.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR_TEX);
 			b.pos(x, y, z).color(color.red, color.green, color.blue, color.alpha).tex(0.5f, 0.5f).endVertex();
-			drawInternal(b, x, y, z, size, debugVertices, false);
+			drawInternal(b, x, y, z, radius, debugVertices, false);
 			b.finishDrawing();
 			WorldVertexBufferUploader.draw(b);
 
@@ -152,14 +155,14 @@ public abstract class StaminaWheelRenderer{
 				for(Vector2f vec : debugVertices){
 					String s = vec.x+" "+vec.y;
 					font.drawStringWithShadow(stack, s,
-							vec.x>0 ? vec.x*(float)size+2 : vec.x*(float)size-2-font.getStringWidth(s),
-							vec.y>0 ? vec.y*(float)-size-2-font.FONT_HEIGHT : vec.y*(float)-size+2,
+							vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.getStringWidth(s),
+							vec.y>0 ? vec.y*(float)-radius-2-font.FONT_HEIGHT : vec.y*(float)-radius+2,
 							0xFF00FF00);
 				}
 				stack.pop();
 			}
 		}
-		private void drawInternal(BufferBuilder b, double x, double y, double z, double size, @Nullable List<Vector2f> debugVertices, boolean skipFirst){
+		private void drawInternal(BufferBuilder b, double x, double y, double z, double radius, @Nullable List<Vector2f> debugVertices, boolean skipFirst){
 			for(int i = 0; i<renderPoints.length-1; i++){
 				double currentStart = renderPoints[i];
 				if(currentStart>=end) break;
@@ -167,14 +170,15 @@ public abstract class StaminaWheelRenderer{
 				if(currentEnd<=start) continue;
 
 				if(currentStart<=start){
-					if(!skipFirst) vert(b, x, y, z, start, size, debugVertices);
+					if(!skipFirst) vert(b, x, y, z, start, radius, debugVertices);
 				}
-				vert(b, x, y, z, Math.min(currentEnd, end), size, debugVertices);
+				vert(b, x, y, z, Math.min(currentEnd, end), radius, debugVertices);
 			}
-			if(next!=null) next.drawInternal(b, x, y, z, size, debugVertices, end==next.start);
+			if(next!=null) next.drawInternal(b, x, y, z, radius, debugVertices, end==next.start);
 		}
 
-		private void vert(BufferBuilder b, double x, double y, double z, double point, double size, @Nullable List<Vector2f> debugVertices){
+		@SuppressWarnings("ConstantConditions")
+		private void vert(BufferBuilder b, double x, double y, double z, double point, double radius, @Nullable List<Vector2f> debugVertices){
 			double vx, vy;
 			if(point==0||point==1){
 				vx = 0;
@@ -204,7 +208,7 @@ public abstract class StaminaWheelRenderer{
 				vx = 1;
 				vy = -1/Math.tan(point*(2*PI));
 			}
-			b.pos(x+vx*size, y+vy*-size, z).color(color.red, color.green, color.blue, color.alpha).tex((float)(vx/2+0.5), (float)(vy/2+0.5)).endVertex();
+			b.pos(x+vx*radius, y+vy*-radius, z).color(color.red, color.green, color.blue, color.alpha).tex((float)(vx/2+0.5), (float)(vy/2+0.5)).endVertex();
 			if(debugVertices!=null) debugVertices.add(new Vector2f((float)vx, (float)vy));
 		}
 
