@@ -14,7 +14,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.ParagliderUtils;
 

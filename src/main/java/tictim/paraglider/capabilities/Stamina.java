@@ -28,7 +28,8 @@ public interface Stamina{
 
 	/**
 	 * Tries to add stamina by specific {@code amount} without exceeding {@link Stamina#getMaxStamina() maxStamina}.
-	 * @param amount Amount of stamina to be given
+	 *
+	 * @param amount   Amount of stamina to be given
 	 * @param simulate Simulation only if {@code true}
 	 * @return Amount of stamina given
 	 */
@@ -36,8 +37,9 @@ public interface Stamina{
 
 	/**
 	 * Subtract stamina by specific {@code amount}. If stamina is currently in depleted state, unless {@code ignoreDepletion} is {@code true}, no stamina will be subtracted.
-	 * @param amount Amount of stamina to be taken
-	 * @param simulate Simulation only if {@code true}
+	 *
+	 * @param amount          Amount of stamina to be taken
+	 * @param simulate        Simulation only if {@code true}
 	 * @param ignoreDepletion Bypasses depleted state check if {@code true}
 	 * @return Amount of stamina taken
 	 */
