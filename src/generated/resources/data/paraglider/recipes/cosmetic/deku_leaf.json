@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:cosmetic",
+  "input": {
+    "tag": "paraglider:paragliders"
+  },
+  "reagent": {
+    "tag": "minecraft:leaves"
+  },
+  "result": "paraglider:deku_leaf"
+}

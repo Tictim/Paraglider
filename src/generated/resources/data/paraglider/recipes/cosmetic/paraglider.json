@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:cosmetic",
+  "input": {
+    "tag": "paraglider:paragliders"
+  },
+  "reagent": {
+    "tag": "forge:rods/wooden"
+  },
+  "result": "paraglider:paraglider"
+}

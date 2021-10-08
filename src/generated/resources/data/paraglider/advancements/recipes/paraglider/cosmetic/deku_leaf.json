@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "paraglider:cosmetic/deku_leaf"
+    ]
+  },
+  "criteria": {
+    "has_paragliders": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "paraglider:paragliders"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "paraglider:cosmetic/deku_leaf"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_paragliders",
+      "has_the_recipe"
+    ]
+  ]
+}

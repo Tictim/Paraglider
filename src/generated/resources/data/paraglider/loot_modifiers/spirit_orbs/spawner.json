@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:spawner"
+    }
+  ],
+  "count": 2,
+  "type": "paraglider:spirit_orb"
+}

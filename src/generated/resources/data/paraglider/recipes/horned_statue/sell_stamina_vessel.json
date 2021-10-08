@@ -1,0 +1,21 @@
+{
+  "type": "paraglider:statue_bargain",
+  "owner": "paraglider:horned_statue",
+  "demands": {
+    "staminaVessels": 1
+  },
+  "offers": {
+    "items": [
+      {
+        "item": "minecraft:emerald",
+        "count": 5
+      }
+    ],
+    "essences": 1
+  },
+  "conditions": [
+    {
+      "type": "paraglider:stamina_vessel_enabled"
+    }
+  ]
+}

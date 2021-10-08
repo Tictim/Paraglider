@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "paraglider:cosmetic/rito_goddess_statue"
+    ]
+  },
+  "criteria": {
+    "has_goddess_statue": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "paraglider:statues/goddess"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "paraglider:cosmetic/rito_goddess_statue"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_goddess_statue",
+      "has_the_recipe"
+    ]
+  ]
+}

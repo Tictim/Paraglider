@@ -1,0 +1,22 @@
+{
+  "type": "paraglider:statue_bargain",
+  "owner": "paraglider:goddess_statue",
+  "demands": {
+    "items": [
+      {
+        "ingredient": {
+          "item": "paraglider:spirit_orb"
+        },
+        "quantity": 4
+      }
+    ]
+  },
+  "offers": {
+    "staminaVessels": 1
+  },
+  "conditions": [
+    {
+      "type": "paraglider:stamina_vessel_enabled"
+    }
+  ]
+}
