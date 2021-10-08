@@ -1,14 +1,14 @@
 package tictim.paraglider.utils;
 
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SSetSlotPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
@@ -24,26 +24,27 @@ public final class ParagliderUtils{
 	 *
 	 * @param player Who will receive the item
 	 * @param stack  The item to be given
+	 * @see net.minecraft.world.entity.player.Inventory#placeItemBackInInventory(ItemStack, boolean)
 	 */
-	public static void giveItem(PlayerEntity player, ItemStack stack){
-		if(player.world.isRemote) return;
+	public static void giveItem(Player player, ItemStack stack){
+		if(player.level.isClientSide) return;
 		while(!stack.isEmpty()){
-			int slot = player.inventory.storeItemStack(stack);
-			if(slot==-1) slot = player.inventory.getFirstEmptyStack();
+			int slot = player.getInventory().getSlotWithRemainingSpace(stack);
+			if(slot==-1) slot = player.getInventory().getFreeSlot();
 
 			if(slot==-1){
 				while(!stack.isEmpty()){
-					ItemEntity itemEntity = new ItemEntity(player.world, player.getPosX(), player.getPosYHeight(.5), player.getPosZ(), stack.split(stack.getMaxStackSize()));
-					itemEntity.setPickupDelay(40);
-					itemEntity.setMotion(0, 0, 0);
-					player.world.addEntity(itemEntity);
+					ItemEntity itemEntity = new ItemEntity(player.level, player.getX(), player.getY(.5), player.getZ(), stack.split(stack.getMaxStackSize()));
+					itemEntity.setPickUpDelay(40);
+					itemEntity.setDeltaMovement(0, 0, 0);
+					player.level.addFreshEntity(itemEntity);
 				}
 				break;
 			}
 
-			int count = stack.getMaxStackSize()-player.inventory.getStackInSlot(slot).getCount();
-			if(player.inventory.add(slot, stack.split(count)))
-				((ServerPlayerEntity)player).connection.sendPacket(new SSetSlotPacket(-2, slot, player.inventory.getStackInSlot(slot)));
+			int count = stack.getMaxStackSize()-player.getInventory().getItem(slot).getCount();
+			if(player.getInventory().add(slot, stack.split(count)))
+				((ServerPlayer)player).connection.send(new ClientboundContainerSetSlotPacket(-2, 0, slot, player.getInventory().getItem(slot)));
 		}
 	}
 
@@ -56,12 +57,12 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean takeHeartContainers(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean takeHeartContainers(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getHeartContainers()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setHeartContainers(m.getHeartContainers()-quantity);
 			// if(effect){}
 		}
@@ -77,12 +78,12 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean takeStaminaVessels(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean takeStaminaVessels(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getStaminaVessels()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setStaminaVessels(m.getStaminaVessels()-quantity);
 			// if(effect){}
 		}
@@ -98,12 +99,12 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean takeEssences(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean takeEssences(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getEssence()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setEssence(m.getEssence()-quantity);
 			// if(effect){}
 		}
@@ -119,12 +120,12 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean giveHeartContainers(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean giveHeartContainers(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(ModCfg.maxHeartContainers()-m.getHeartContainers()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setHeartContainers(m.getHeartContainers()+quantity);
 			player.setHealth(player.getMaxHealth()+quantity);
 			if(effect) spawnParticle(player, ParticleTypes.HEART, 5+5*quantity);
@@ -141,12 +142,12 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean giveStaminaVessels(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean giveStaminaVessels(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(ModCfg.maxStaminaVessels()-m.getStaminaVessels()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setStaminaVessels(m.getStaminaVessels()+quantity);
 			m.setStamina(m.getMaxStamina());
 			if(effect) spawnParticle(player, ParticleTypes.HAPPY_VILLAGER, 7+7*quantity);
@@ -163,22 +164,22 @@ public final class ParagliderUtils{
 	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
-	public static boolean giveEssences(PlayerEntity player, int quantity, boolean simulate, boolean effect){
+	public static boolean giveEssences(Player player, int quantity, boolean simulate, boolean effect){
 		if(quantity<=0) return true;
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(Integer.MAX_VALUE-m.getEssence()<quantity) return false;
-		if(!simulate&&!player.world.isRemote){
+		if(!simulate&&!player.level.isClientSide){
 			m.setEssence(m.getEssence()+quantity);
 			// if(effect){}
 		}
 		return true;
 	}
 
-	private static void spawnParticle(PlayerEntity player, IParticleData particle, int count){
-		ServerWorld world = player.world instanceof ServerWorld ? ((ServerWorld)player.world) : null;
+	private static void spawnParticle(Player player, ParticleOptions particle, int count){
+		ServerLevel world = player.level instanceof ServerLevel ? ((ServerLevel)player.level) : null;
 		if(world==null) return;
-		world.spawnParticle(particle, player.getPosX(), player.getPosYHeight(.5), player.getPosZ(), count, 1, 2, 1, 0);
+		world.sendParticles(particle, player.getX(), player.getY(.5), player.getZ(), count, 1, 2, 1, 0);
 	}
 
 	/**

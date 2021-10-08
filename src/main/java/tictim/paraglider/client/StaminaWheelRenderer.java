@@ -1,17 +1,17 @@
 package tictim.paraglider.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector2f;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec2;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
@@ -34,14 +34,14 @@ public abstract class StaminaWheelRenderer{
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void renderStamina(MatrixStack matrixStack, double x, double y, double z){
-		ClientPlayerEntity player = Minecraft.getInstance().player;
+	public void renderStamina(PoseStack matrixStack, double x, double y, double z){
+		LocalPlayer player = Minecraft.getInstance().player;
 		if(player==null) return;
 		PlayerMovement h = PlayerMovement.of(player);
 		if(h==null) return;
 		makeWheel(h);
 
-		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&Paraglider.isParaglider(player.getHeldItemOffhand()));
+		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&Paraglider.isParaglider(player.getOffhandItem()));
 	}
 
 	protected abstract void makeWheel(PlayerMovement h);
@@ -59,20 +59,16 @@ public abstract class StaminaWheelRenderer{
 		this.wheel.put(wheelLevel, wheel!=null ? wheel.insert(new Wheel(start, end, color)) : new Wheel(start, end, color));
 	}
 
-	protected void render(MatrixStack stack, double x, double y, double z, boolean debug){
+	protected void render(PoseStack stack, double x, double y, double z, boolean debug){
 		RenderSystem.disableDepthTest();
-
-		BufferBuilder b = Tessellator.getInstance().getBuffer();
-		Minecraft mc = Minecraft.getInstance();
-
 		if(debug){
 			float linePos = 10;
-			FontRenderer font = mc.fontRenderer;
+			Font font = Minecraft.getInstance().font;
 			for(WheelLevel t : WheelLevel.values()){
 				Wheel wheel = getWheel(t);
 				if(wheel!=null){
-					linePos = font.drawStringWithShadow(stack, t+":", 20, linePos, 0xFFFFFFFF);
-					linePos = font.drawStringWithShadow(stack, wheel.toString(), 30, linePos, 0xFFFFFFFF);
+					linePos = font.drawShadow(stack, t+":", 20, linePos, 0xFFFFFFFF);
+					linePos = font.drawShadow(stack, wheel.toString(), 30, linePos, 0xFFFFFFFF);
 				}
 			}
 		}
@@ -80,17 +76,13 @@ public abstract class StaminaWheelRenderer{
 		for(WheelLevel t : WheelLevel.values()){
 			Wheel wheel = getWheel(t);
 			if(wheel!=null){
-				mc.getTextureManager().bindTexture(t.texture);
-				//noinspection deprecation
-				RenderSystem.enableAlphaTest();
-				RenderSystem.enableBlend();
-				RenderSystem.defaultBlendFunc();
-				wheel.draw(stack, b, x, y, z, WHEEL_RADIUS, debug);
+				RenderSystem.setShaderTexture(0, t.texture);
+				wheel.draw(stack, x, y, z, WHEEL_RADIUS, debug);
 			}
 		}
 
-		RenderSystem.enableDepthTest();
 		wheel.clear();
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	public static final class Wheel{
@@ -140,45 +132,51 @@ public abstract class StaminaWheelRenderer{
 
 		private static final double[] renderPoints = {0, 1/8.0, 3/8.0, 5/8.0, 7/8.0, 1};
 
-		public void draw(MatrixStack stack, BufferBuilder b, double x, double y, double z, double radius, boolean debug){
-			List<Vector2f> debugVertices = debug ? new ArrayList<>() : null;
-			b.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR_TEX);
-			b.pos(x, y, z).color(color.red, color.green, color.blue, color.alpha).tex(0.5f, 0.5f).endVertex();
-			drawInternal(b, x, y, z, radius, debugVertices, false);
-			b.finishDrawing();
-			WorldVertexBufferUploader.draw(b);
+		public void draw(PoseStack stack, double x, double y, double z, double radius, boolean debug){
+			List<Vec2> debugVertices = debug ? new ArrayList<>() : null;
+			drawInternal(x, y, z, radius, debugVertices);
 
 			if(debugVertices!=null){
-				stack.push();
+				stack.pushPose();
 				stack.translate(x, y, z);
-				FontRenderer font = Minecraft.getInstance().fontRenderer;
-				for(Vector2f vec : debugVertices){
+				Font font = Minecraft.getInstance().font;
+				for(Vec2 vec : debugVertices){
 					String s = vec.x+" "+vec.y;
-					font.drawStringWithShadow(stack, s,
-							vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.getStringWidth(s),
-							vec.y>0 ? vec.y*(float)-radius-2-font.FONT_HEIGHT : vec.y*(float)-radius+2,
+					font.drawShadow(stack, s,
+							vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.width(s),
+							vec.y>0 ? vec.y*(float)-radius-2-font.lineHeight : vec.y*(float)-radius+2,
 							0xFF00FF00);
 				}
-				stack.pop();
+				stack.popPose();
 			}
 		}
-		private void drawInternal(BufferBuilder b, double x, double y, double z, double radius, @Nullable List<Vector2f> debugVertices, boolean skipFirst){
+
+		private void drawInternal(double x, double y, double z, double radius, @Nullable List<Vec2> debugVertices){
+			RenderSystem.setShaderColor(color.red, color.green, color.blue, color.alpha);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			Tesselator tesselator = Tesselator.getInstance();
+			BufferBuilder b = tesselator.getBuilder();
+			b.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_TEX);
+			b.vertex(x, y, z).uv(0.5f, 0.5f).endVertex();
 			for(int i = 0; i<renderPoints.length-1; i++){
 				double currentStart = renderPoints[i];
 				if(currentStart>=end) break;
 				double currentEnd = renderPoints[i+1];
 				if(currentEnd<=start) continue;
 
-				if(currentStart<=start){
-					if(!skipFirst) vert(b, x, y, z, start, radius, debugVertices);
-				}
-				vert(b, x, y, z, Math.min(currentEnd, end), radius, debugVertices);
+				if(currentStart<=start)
+					vert(b, x, y, z, start, radius, debugVertices);
+				if(currentEnd>=end) break;
+				vert(b, x, y, z, currentEnd, radius, debugVertices);
 			}
-			if(next!=null) next.drawInternal(b, x, y, z, radius, debugVertices, end==next.start);
+			vert(b, x, y, z, end, radius, debugVertices);
+			tesselator.end();
+			if(next!=null) next.drawInternal(x, y, z, radius, debugVertices);
 		}
 
-		@SuppressWarnings("ConstantConditions")
-		private void vert(BufferBuilder b, double x, double y, double z, double point, double radius, @Nullable List<Vector2f> debugVertices){
+		private void vert(BufferBuilder b, double x, double y, double z, double point, double radius, @Nullable List<Vec2> debugVertices){
 			double vx, vy;
 			if(point==0||point==1){
 				vx = 0;
@@ -208,8 +206,8 @@ public abstract class StaminaWheelRenderer{
 				vx = 1;
 				vy = -1/Math.tan(point*(2*PI));
 			}
-			b.pos(x+vx*radius, y+vy*-radius, z).color(color.red, color.green, color.blue, color.alpha).tex((float)(vx/2+0.5), (float)(vy/2+0.5)).endVertex();
-			if(debugVertices!=null) debugVertices.add(new Vector2f((float)vx, (float)vy));
+			b.vertex(x+vx*radius, y+vy*-radius, z).uv((float)(vx/2+0.5), (float)(vy/2+0.5)).endVertex();
+			if(debugVertices!=null) debugVertices.add(new Vec2((float)vx, (float)vy));
 		}
 
 		@Override public String toString(){

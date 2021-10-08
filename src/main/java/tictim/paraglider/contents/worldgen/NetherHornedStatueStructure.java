@@ -1,79 +1,65 @@
 package tictim.paraglider.contents.worldgen;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.registry.DynamicRegistries;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
-import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.feature.structure.StructureStart;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.EmptyBlockGetter;
+import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 
-public class NetherHornedStatueStructure extends Structure<NoFeatureConfig>{
+public class NetherHornedStatueStructure extends StructureFeature<NoneFeatureConfiguration>{
 	public NetherHornedStatueStructure(){
-		super(NoFeatureConfig.field_236558_a_);
+		super(NoneFeatureConfiguration.CODEC);
 	}
 
-	@Override public IStartFactory<NoFeatureConfig> getStartFactory(){
+	@Override public StructureStartFactory<NoneFeatureConfiguration> getStartFactory(){
 		return Start::new;
 	}
-	@Override public GenerationStage.Decoration getDecorationStage(){
-		return GenerationStage.Decoration.SURFACE_STRUCTURES;
+	@Override public GenerationStep.Decoration step(){
+		return GenerationStep.Decoration.SURFACE_STRUCTURES;
 	}
 
-	public static final class Start extends StructureStart<NoFeatureConfig>{
-		public Start(Structure<NoFeatureConfig> structure,
-		             int chunkX,
-		             int chunkZ,
-		             MutableBoundingBox bounds,
-		             int references,
-		             long seed){
-			super(structure, chunkX, chunkZ, bounds, references, seed);
+	public static final class Start extends StructureStart<NoneFeatureConfiguration>{
+		public Start(StructureFeature<NoneFeatureConfiguration> pFeature, ChunkPos pChunkPos, int pReferences, long pSeed){
+			super(pFeature, pChunkPos, pReferences, pSeed);
 		}
 
-		@Override
-		public void func_230364_a_(DynamicRegistries dynamicRegistries,
-		                           ChunkGenerator chunkGenerator,
-		                           TemplateManager templateManager,
-		                           int chunkX,
-		                           int chunkZ,
-		                           Biome biome,
-		                           NoFeatureConfig config){
-			Rotation rotation = Util.getRandomObject(Rotation.values(), this.rand);
+		@Override public void generatePieces(RegistryAccess registry,
+		                                     ChunkGenerator chunkGenerator,
+		                                     StructureManager structureManager,
+		                                     ChunkPos chunkPos,
+		                                     Biome biome,
+		                                     NoneFeatureConfiguration config,
+		                                     LevelHeightAccessor level){
+			Rotation rotation = Util.getRandom(Rotation.values(), this.random);
 
-			ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
-			int x = chunkPos.getXStart()+this.rand.nextInt(16), z = chunkPos.getZStart()+this.rand.nextInt(16);
+			int x = chunkPos.getMinBlockX()+this.random.nextInt(16), z = chunkPos.getMinBlockZ()+this.random.nextInt(16);
 
 			int seaLevel = chunkGenerator.getSeaLevel();
-			int y = seaLevel+this.rand.nextInt(chunkGenerator.getMaxBuildHeight()-2-seaLevel);
-			IBlockReader reader = chunkGenerator.func_230348_a_(x, z);
+			int y = seaLevel+this.random.nextInt(chunkGenerator.getGenDepth()-2-seaLevel);
+			NoiseColumn baseColumn = chunkGenerator.getBaseColumn(x, z, level);
 
-			for(BlockPos.Mutable mpos = new BlockPos.Mutable(x, y, z); y>seaLevel; --y){
-				BlockState state = reader.getBlockState(mpos);
+			for(BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos(x, y, z); y>seaLevel; --y){
+				BlockState state = baseColumn.getBlockState(mpos);
 				mpos.move(Direction.DOWN);
-				BlockState downState = reader.getBlockState(mpos);
-				//noinspection deprecation
-				if(state.isAir(reader, mpos)&&(downState.isIn(Blocks.SOUL_SAND)||downState.isSolidSide(reader, mpos, Direction.UP))){
-					break;
-				}
+				BlockState downState = baseColumn.getBlockState(mpos);
+				if(state.isAir()&&(downState.is(Blocks.SOUL_SAND)||downState.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos, Direction.UP))) break;
 			}
 
-			if(y>seaLevel){
-				BlockPos pos = new BlockPos(-2, -1, -2).rotate(rotation).add(x, y, z);
-
-				components.add(new NetherHornedStatuePiece(templateManager, pos, rotation));
-
-				recalculateStructureSize();
-			}
+			if(y>seaLevel)
+				addPiece(new NetherHornedStatuePiece(structureManager, rotation, new BlockPos(-2, -1, -2).rotate(rotation).offset(x, y, z)));
 		}
 	}
 }

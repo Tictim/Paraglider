@@ -1,16 +1,16 @@
 package tictim.paraglider;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.pattern.BlockStateMatcher;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.Property;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -22,8 +22,9 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.capabilities.PlayerState;
 import tictim.paraglider.loot.ParagliderModifier;
@@ -197,17 +198,18 @@ public final class ModCfg{
 
 	private static double filterBadValue(double d, double defaultValue){
 		if(Double.isNaN(d)) return defaultValue;
-		return MathHelper.clamp(d, 0, 1);
+		return Mth.clamp(d, 0, 1);
 	}
 
 	public static void init(){
 		ForgeConfigSpec.Builder server = new ForgeConfigSpec.Builder();
 		ascendingWinds = server.comment("Fire will float you upward.").define("ascendingWinds", true);
-		windSources = server.comment("You can customize which block produces wind.\n"+
-						"Write each blockstate to one of this format:\n"+
-						"  [block ID]   (Matches all state of the block)\n"+
-						"  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)\n"+
-						"Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.")
+		windSources = server.comment("""
+						You can customize which block produces wind.
+						Write each blockstate to one of this format:
+						  [block ID]   (Matches all state of the block)
+						  [block ID]#[property1=value],[property2=value],[property3=value]   (Matches state of the block that has specified properties)
+						Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.""")
 				.defineListAllowEmpty(Collections.singletonList("windSources"),
 						() -> ImmutableList.of("fire",
 								"campfire#lit=true",
@@ -224,23 +226,27 @@ public final class ModCfg{
 
 		server.push("vessels");
 		startingHearts = server.comment("Starting health points.").defineInRange("startingHearts", 10, 1, 512);
-		maxHeartContainers = server.comment("Maximum amount of Heart Containers one player can consume.\n"+
-				"Do note that the maximum health point is capped at 1024 (512 hearts).").defineInRange("maxHeartContainers", 20, 0, 512);
+		maxHeartContainers = server.comment("""
+						Maximum amount of Heart Containers one player can consume.
+						Do note that the maximum health point is capped at 1024 (512 hearts).""")
+				.defineInRange("maxHeartContainers", 20, 0, 512);
 
 		maxStamina = server.comment("Maximum amount of stamina Player can get. Do note that one third of this value is equal to one stamina wheel.")
 				.defineInRange("maxStamina", 3000, 0, Integer.MAX_VALUE);
-		startingStamina = server.comment("Amount of stamina Player starts with. Values higher than maxStamina doesn't work.\n"+
-						"If you want to make this value displayed as exactly one stamina wheel, you have to make this value one third of maxStamina.")
+		startingStamina = server.comment("""
+						Amount of stamina Player starts with. Values higher than maxStamina doesn't work.
+						If you want to make this value displayed as exactly one stamina wheel, you have to make this value one third of maxStamina.""")
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
 		maxStaminaVessels = server.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
 				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
 		server.pop();
 
-		paragliderInTowersOfTheWild = server.comment("Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.\n"+
-						"DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests\n"+
-						"DISABLE: Don't spawn anything\n"+
-						"PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests\n"+
-						"DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss")
+		paragliderInTowersOfTheWild = server.comment("""
+						Configurable option for Towers of the Wild compat feature. Can be ignored if Towers of the Wild is not installed.
+						DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests
+						DISABLE: Don't spawn anything
+						PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests
+						DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss""")
 				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
 
 		server.push("stamina");
@@ -257,20 +263,25 @@ public final class ModCfg{
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
-		common.comment("Easy to access switches to toggle newer features on and off.\n"+
-				"Most of them requires server restart or datapack reload. All of them, actually.").push("features");
-		enableSpiritOrbGens = common.comment("For those who wants to remove entirety of Spirit Orbs generated from chests, more specifically...\n"+
-						"  * Spirit Orbs generated in various chests\n"+
-						"  * Spirit Orbs dropped by spawners and such\n"+
-						"Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.")
+		common.comment("""
+						Easy to access switches to toggle newer features on and off.
+						Most of them requires server restart or datapack reload. All of them, actually.""")
+				.push("features");
+		enableSpiritOrbGens = common.comment("""
+						For those who wants to remove entirety of Spirit Orbs generated from chests, more specifically...
+						  * Spirit Orbs generated in various chests
+						  * Spirit Orbs dropped by spawners and such
+						Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.""")
 				.define("spiritOrbGens", true);
-		enableHeartContainers = common.comment("For those who wants to remove entirety of Heart Containers from the game, more specifically...\n"+
-						"  * Heart Containers obtained by \"challenges\" (i.e. Killing dragon, wither, raid)\n"+
-						"  * Bargains using Heart Containers (custom recipes won't be affected)\n"+
-						"Note that if this option is disabled while staminaVessels is enabled, \"challenges\" will drop stamina vessels instead.")
+		enableHeartContainers = common.comment("""
+						For those who wants to remove entirety of Heart Containers from the game, more specifically...
+						  * Heart Containers obtained by "challenges" (i.e. Killing dragon, wither, raid)
+						  * Bargains using Heart Containers (custom recipes won't be affected)
+						Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop stamina vessels instead.""")
 				.define("heartContainers", true);
-		enableStaminaVessels = common.comment("For those who wants to remove entirety of Stamina Vessels from the game, more specifically...\n"+
-						"  * Bargains using Stamina Vessels (custom recipes won't be affected)")
+		enableStaminaVessels = common.comment("""
+						For those who wants to remove entirety of Stamina Vessels from the game, more specifically...
+						  * Bargains using Stamina Vessels (custom recipes won't be affected)""")
 				.define("staminaVessels", true);
 		enableStructures = common.comment("For those who wants to remove all structures added by this mod. Requires restart.")
 				.define("structures", true);
@@ -292,8 +303,8 @@ public final class ModCfg{
 			Path file = FMLPaths.GAMEDIR.get().resolve("paragliderSettings.nbt");
 			if(Files.exists(file)){
 				try(DataInputStream dis = new DataInputStream(Files.newInputStream(file))){
-					CompoundNBT nbt = CompressedStreamTools.read(dis);
-					CompoundNBT staminaWheel = nbt.getCompound("staminaWheel");
+					CompoundTag nbt = NbtIo.read(dis);
+					CompoundTag staminaWheel = nbt.getCompound("staminaWheel");
 					setStaminaWheelX(staminaWheel.getDouble("x"));
 					setStaminaWheelY(staminaWheel.getDouble("y"));
 				}
@@ -310,15 +321,15 @@ public final class ModCfg{
 
 	public static boolean saveParagliderSettings(){
 		try{
-			CompoundNBT nbt = new CompoundNBT();
-			CompoundNBT staminaWheel = new CompoundNBT();
+			CompoundTag nbt = new CompoundTag();
+			CompoundTag staminaWheel = new CompoundTag();
 			staminaWheel.putDouble("x", staminaWheelX);
 			staminaWheel.putDouble("y", staminaWheelY);
 			nbt.put("staminaWheel", staminaWheel);
 
 			Path file = FMLPaths.GAMEDIR.get().resolve("paragliderSettings.nbt");
 			try(DataOutputStream dos = new DataOutputStream(Files.newOutputStream(file, StandardOpenOption.CREATE))){
-				CompressedStreamTools.write(nbt, dos);
+				NbtIo.write(nbt, dos);
 			}
 			ParagliderMod.LOGGER.debug("Saved paraglider settings.");
 			return true;
@@ -329,7 +340,7 @@ public final class ModCfg{
 	}
 
 	@SubscribeEvent
-	public static void onLoad(ModConfig.Loading event){
+	public static void onLoad(ModConfigEvent.Loading event){
 		ModConfig cfg = event.getConfig();
 		if(cfg.getModId().equals(MODID)&&cfg.getType()==ModConfig.Type.SERVER){
 			windSourcesParsed = Collections.unmodifiableMap(parseWindSources());
@@ -337,7 +348,7 @@ public final class ModCfg{
 	}
 
 	@SubscribeEvent
-	public static void onReload(ModConfig.Reloading event){
+	public static void onReload(ModConfigEvent.Reloading event){
 		ModConfig cfg = event.getConfig();
 		if(cfg.getModId().equals(MODID)&&cfg.getType()==ModConfig.Type.SERVER){
 			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -385,7 +396,7 @@ public final class ModCfg{
 		Map<Property<?>, Object> parsedProperties = new IdentityHashMap<>();
 		for(Entry<String, String> e : properties.entrySet()){
 			String key = e.getKey();
-			Property<?> property = block.getStateContainer().getProperty(key);
+			Property<?> property = block.getStateDefinition().getProperty(key);
 			if(property==null){
 				warnIgnoredWindSource(input, "property '{}' doesn't exist on that block", key);
 				return null;
@@ -393,14 +404,14 @@ public final class ModCfg{
 				warnIgnoredWindSource(input, "same property '{}' was defined twice", key);
 				return null;
 			}
-			Optional<?> o = property.parseValue(e.getValue());
+			Optional<?> o = property.getValue(e.getValue());
 			if(!o.isPresent()){
 				warnIgnoredWindSource(input, "property '{}' doesn't contain value '{}'", key, e.getValue());
 				return null;
 			}
 			parsedProperties.put(property, o.get());
 		}
-		BlockStateMatcher m = BlockStateMatcher.forBlock(block);
+		BlockStatePredicate m = BlockStatePredicate.forBlock(block);
 		for(Entry<Property<?>, Object> e : parsedProperties.entrySet()){
 			Object v = e.getValue();
 			m.where(e.getKey(), o -> o!=null&&o.equals(v));

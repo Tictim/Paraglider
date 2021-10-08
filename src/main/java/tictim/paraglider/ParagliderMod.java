@@ -1,37 +1,34 @@
 package tictim.paraglider;
 
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.gui.ScreenManager.IScreenFactory;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IDyeableArmorItem;
-import net.minecraft.item.IItemPropertyGetter;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -54,9 +51,6 @@ import tictim.paraglider.recipe.ConfigConditionSerializer;
 import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.wind.Wind;
 
-import javax.annotation.Nullable;
-import javax.naming.OperationNotSupportedException;
-
 @Mod(ParagliderMod.MODID)
 @Mod.EventBusSubscriber(modid = ParagliderMod.MODID, bus = Bus.MOD)
 public class ParagliderMod{
@@ -73,25 +67,15 @@ public class ParagliderMod{
 
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event){
-		event.enqueueWork(() -> {
-			registerDefaultCapability(PlayerMovement.class);
-			registerDefaultCapability(Paraglider.class);
-			registerDefaultCapability(Wind.class);
-			registerDefaultCapability(Stamina.class);
-
-			ModVillageStructures.addVillageStructures();
-		});
+		event.enqueueWork(() -> ModVillageStructures.addVillageStructures());
 	}
 
-	private static <T> void registerDefaultCapability(Class<T> classOf){
-		CapabilityManager.INSTANCE.register(classOf, new Capability.IStorage<T>(){
-			@Nullable @Override public INBT writeNBT(Capability<T> capability, T instance, Direction side){
-				return null;
-			}
-			@Override public void readNBT(Capability<T> capability, T instance, Direction side, INBT nbt){}
-		}, () -> {
-			throw new OperationNotSupportedException();
-		});
+	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event){
+		event.register(PlayerMovement.class);
+		event.register(Paraglider.class);
+		event.register(Wind.class);
+		event.register(Stamina.class);
 	}
 
 	@SubscribeEvent
@@ -104,7 +88,7 @@ public class ParagliderMod{
 			gen.addProvider(new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
 			gen.addProvider(new LootTableGen(gen));
 			gen.addProvider(new LootModifierProvider(gen, MODID));
-			gen.addProvider(new AdvancementGen(gen));
+			gen.addProvider(new AdvancementGen(gen, event.getExistingFileHelper()));
 		}
 	}
 
@@ -120,22 +104,23 @@ public class ParagliderMod{
 		@SubscribeEvent
 		public static void clientSetup(FMLClientSetupEvent event){
 			event.enqueueWork(() -> {
-				IItemPropertyGetter itemPropertyGetter = (stack, world, entity) -> entity instanceof PlayerEntity&&ParagliderItem.isItemParagliding(stack) ? 1 : 0;
+				@SuppressWarnings("deprecation") ItemPropertyFunction itemPropertyGetter =
+						(stack, world, entity, i) -> entity instanceof Player&&ParagliderItem.isItemParagliding(stack) ? 1 : 0;
 
-				ItemModelsProperties.registerProperty(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
-				ItemModelsProperties.registerProperty(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+				ItemProperties.register(Contents.PARAGLIDER.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
+				ItemProperties.register(Contents.DEKU_LEAF.get(), new ResourceLocation("paragliding"), itemPropertyGetter);
 
-				IScreenFactory<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
-				ScreenManager.registerFactory(Contents.GODDESS_STATUE_CONTAINER.get(), f);
-				ScreenManager.registerFactory(Contents.HORNED_STATUE_CONTAINER.get(), f);
+				ScreenConstructor<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
+				MenuScreens.register(Contents.GODDESS_STATUE_CONTAINER.get(), f);
+				MenuScreens.register(Contents.HORNED_STATUE_CONTAINER.get(), f);
 
-				RenderTypeLookup.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.getCutout());
+				ItemBlockRenderTypes.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.cutout());
 
-				KeyBinding paragliderSettingsKey = new KeyBinding(
+				KeyMapping paragliderSettingsKey = new KeyMapping(
 						"key.paraglider.paragliderSettings",
 						KeyConflictContext.IN_GAME,
 						KeyModifier.CONTROL,
-						InputMappings.Type.KEYSYM,
+						InputConstants.Type.KEYSYM,
 						GLFW.GLFW_KEY_P, "key.categories.misc");
 				ClientRegistry.registerKeyBinding(paragliderSettingsKey);
 				ParagliderClientEventHandler.setParagliderSettingsKey(paragliderSettingsKey);
@@ -144,7 +129,7 @@ public class ParagliderMod{
 
 		@SubscribeEvent
 		public static void addColorHandler(ColorHandlerEvent.Item event){
-			event.getItemColors().register((stack, tint) -> tint>0 ? -1 : ((IDyeableArmorItem)stack.getItem()).getColor(stack),
+			event.getItemColors().register((stack, tint) -> tint>0 ? -1 : ((DyeableLeatherItem)stack.getItem()).getColor(stack),
 					Contents.PARAGLIDER.get(),
 					Contents.DEKU_LEAF.get());
 		}

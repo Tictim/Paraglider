@@ -1,6 +1,6 @@
 package tictim.paraglider.wind;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +28,7 @@ public final class WindNode{
 		this.createdTime = createdTime;
 		this.updatedTime = updatedTime;
 	}
-	public WindNode(PacketBuffer buf, int trailingSizeIncludingItself){
+	public WindNode(FriendlyByteBuf buf, int trailingSizeIncludingItself){
 		this.x = buf.readInt();
 		this.y = buf.readVarInt();
 		this.z = buf.readInt();
@@ -74,7 +74,7 @@ public final class WindNode{
 		}
 	}
 
-	public void write(PacketBuffer buf){
+	public void write(FriendlyByteBuf buf){
 		int w = buf.writerIndex();
 		buf.writeByte(0);
 		int size = 0;
@@ -85,7 +85,7 @@ public final class WindNode{
 		buf.setByte(w, size);
 	}
 
-	private void writeThis(PacketBuffer buf){
+	private void writeThis(FriendlyByteBuf buf){
 		buf.writeInt(x);
 		buf.writeVarInt(y);
 		buf.writeInt(z);

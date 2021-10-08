@@ -1,17 +1,17 @@
 package tictim.paraglider.recipe.bargain;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.network.ModNet;
@@ -25,8 +25,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StatueBargainContainer extends Container{
-	private final PlayerInventory playerInventory;
+public class StatueBargainContainer extends AbstractContainerMenu{
+	private final Inventory playerInventory;
 
 	private final List<StatueBargain> bargains;
 	@Nullable private final StatueDialog dialog;
@@ -39,32 +39,32 @@ public class StatueBargainContainer extends Container{
 	private final Preview[] previousBargainTest;
 	private final NonNullList<ItemStack> inventoryCache;
 
-	@Nullable private Vector3d lookAt, prevLookAt;
+	@Nullable private Vec3 lookAt, prevLookAt;
 
 	private boolean redoBargainTest = true;
 	private boolean sendInitMessage = true;
 
-	public StatueBargainContainer(@Nullable ContainerType<?> type, int id, PlayerInventory playerInventory){
+	public StatueBargainContainer(@Nullable MenuType<?> type, int id, Inventory playerInventory){
 		this(type, id, playerInventory, null, null);
 	}
-	public StatueBargainContainer(@Nullable ContainerType<?> type, int id, PlayerInventory playerInventory, @Nullable StatueDialog dialog, @Nullable ResourceLocation advancement){
+	public StatueBargainContainer(@Nullable MenuType<?> type, int id, Inventory playerInventory, @Nullable StatueDialog dialog, @Nullable ResourceLocation advancement){
 		super(type, id);
 		this.playerInventory = playerInventory;
 		this.dialog = dialog;
 		this.advancement = advancement;
-		this.bargains = playerInventory.player.world.getRecipeManager()
-				.getRecipesForType(Contents.STATUE_BARGAIN_RECIPE_TYPE)
+		this.bargains = playerInventory.player.level.getRecipeManager()
+				.getAllRecipesFor(Contents.STATUE_BARGAIN_RECIPE_TYPE)
 				.stream()
 				.filter(b -> type==null||b.getBargainOwner().equals(type.getRegistryName()))
-				.sorted(Comparator.comparing(IRecipe::getId))
+				.sorted(Comparator.comparing(Recipe::getId))
 				.collect(Collectors.toList());
 
 		this.previousBargainTest = new Preview[bargains.size()];
 		for(int i = 0; i<previousBargainTest.length; i++)
 			this.previousBargainTest[i] = new Preview();
-		this.inventoryCache = NonNullList.withSize(playerInventory.getSizeInventory(), ItemStack.EMPTY);
-		for(int i = 0; i<playerInventory.getSizeInventory(); i++){
-			ItemStack stack = playerInventory.getStackInSlot(i);
+		this.inventoryCache = NonNullList.withSize(playerInventory.getContainerSize(), ItemStack.EMPTY);
+		for(int i = 0; i<playerInventory.getContainerSize(); i++){
+			ItemStack stack = playerInventory.getItem(i);
 			if(!stack.isEmpty()) inventoryCache.set(i, stack.copy());
 		}
 	}
@@ -88,11 +88,11 @@ public class StatueBargainContainer extends Container{
 		return previousBargainTest.length>bargainIndex ? previousBargainTest[bargainIndex].demands : new ItemDemand[0];
 	}
 
-	@Nullable public Vector3d getLookAt(){
+	@Nullable public Vec3 getLookAt(){
 		return lookAt;
 	}
 
-	public void setLookAt(@Nullable Vector3d lookAt){
+	public void setLookAt(@Nullable Vec3 lookAt){
 		this.lookAt = lookAt;
 	}
 
@@ -103,11 +103,11 @@ public class StatueBargainContainer extends Container{
 		this.advancement = advancement;
 	}
 
-	@Override public boolean canInteractWith(PlayerEntity playerIn){
+	@Override public boolean stillValid(Player playerIn){
 		return true;
 	}
 
-	@Override public void detectAndSendChanges(){
+	@Override public void broadcastChanges(){
 		ServerPlayerMovement m = ServerPlayerMovement.of(playerInventory.player);
 		if(m!=null){
 			if(heartContainerCache!=m.getHeartContainers()){
@@ -133,15 +133,15 @@ public class StatueBargainContainer extends Container{
 			prevLookAt = lookAt;
 			sendToPlayer(new SyncLookAtMsg(lookAt));
 		}
-		super.detectAndSendChanges();
+		super.broadcastChanges();
 	}
 
 	private boolean inventoryChanged(){
 		boolean changed = false;
-		for(int i = 0; i<playerInventory.getSizeInventory(); ++i){
-			ItemStack s1 = this.playerInventory.getStackInSlot(i);
+		for(int i = 0; i<playerInventory.getContainerSize(); ++i){
+			ItemStack s1 = this.playerInventory.getItem(i);
 			ItemStack s2 = this.inventoryCache.get(i);
-			if(!ItemStack.areItemStacksEqual(s2, s1)){
+			if(!ItemStack.matches(s2, s1)){
 				ItemStack copy = s1.copy();
 				this.inventoryCache.set(i, copy);
 				changed = true;
@@ -174,14 +174,14 @@ public class StatueBargainContainer extends Container{
 
 	private void sendDialog(StatueDialog.Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
 		if(this.dialog==null) return;
-		ITextComponent dialog = this.dialog.getDialog(playerInventory.player.getRNG(), dialogCase, bargain, result);
+		Component dialog = this.dialog.getDialog(playerInventory.player.getRandom(), dialogCase, bargain, result);
 		if(dialog!=null) sendToPlayer(new StatueDialogMsg(dialog));
 	}
 
 	private void sendToPlayer(Object message){
-		PlayerEntity player = playerInventory.player;
-		if(player instanceof ServerPlayerEntity)
-			ModNet.NET.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), message);
+		Player player = playerInventory.player;
+		if(player instanceof ServerPlayer)
+			ModNet.NET.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer)player), message);
 	}
 
 	/**
@@ -228,17 +228,16 @@ public class StatueBargainContainer extends Container{
 			this.demands = demands;
 		}
 
-		public boolean updateCanBargain(StatueBargain bargain, PlayerEntity player){
+		public boolean updateCanBargain(StatueBargain bargain, Player player){
 			boolean canBargain = bargain.bargain(player, true).isSuccess();
 			if(this.canBargain==canBargain) return false;
 			this.canBargain = canBargain;
 			return true;
 		}
 
-		public boolean updateDemandPreview(StatueBargain bargain, PlayerEntity player){
+		public boolean updateDemandPreview(StatueBargain bargain, Player player){
 			ItemDemand[] demands = bargain
-					.getPreview()
-					.getDemands()
+					.getPreview().demands()
 					.stream()
 					.map(demand -> new ItemDemand(
 							demand.getPreviewItems(),

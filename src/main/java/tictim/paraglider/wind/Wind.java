@@ -2,11 +2,11 @@ package tictim.paraglider.wind;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -20,14 +20,14 @@ public class Wind implements ICapabilityProvider{
 	private final Long2ObjectMap<WindChunk> windChunks = new Long2ObjectOpenHashMap<>();
 
 	public void put(WindChunk windChunk){
-		this.windChunks.put(windChunk.getChunkPos().asLong(), windChunk);
+		this.windChunks.put(windChunk.getChunkPos().toLong(), windChunk);
 	}
 
 	@Nullable public WindChunk get(int chunkX, int chunkZ){
 		return windChunks.get(ChunkPos.asLong(chunkX, chunkZ));
 	}
 	@Nullable public WindChunk get(ChunkPos chunkPos){
-		return windChunks.get(chunkPos.asLong());
+		return windChunks.get(chunkPos.toLong());
 	}
 
 	public WindChunk getOrCreate(int chunkX, int chunkZ){
@@ -49,7 +49,7 @@ public class Wind implements ICapabilityProvider{
 		return windChunks.remove(ChunkPos.asLong(chunkX, chunkZ));
 	}
 	@Nullable public WindChunk remove(ChunkPos chunkPos){
-		return windChunks.remove(chunkPos.asLong());
+		return windChunks.remove(chunkPos.toLong());
 	}
 
 	public Collection<WindChunk> getWindChunks(){
@@ -67,16 +67,16 @@ public class Wind implements ICapabilityProvider{
 		return capabilityProvider.getCapability(Caps.wind).orElse(null);
 	}
 
-	public static boolean isInside(World world, AxisAlignedBB boundingBox){
+	public static boolean isInside(Level world, AABB boundingBox){
 		return isInside(world,
-				MathHelper.floor(boundingBox.minX),
-				MathHelper.floor(boundingBox.minY),
-				MathHelper.floor(boundingBox.minZ),
-				MathHelper.ceil(boundingBox.maxX),
-				MathHelper.ceil(boundingBox.maxY),
-				MathHelper.ceil(boundingBox.maxZ));
+				Mth.floor(boundingBox.minX),
+				Mth.floor(boundingBox.minY),
+				Mth.floor(boundingBox.minZ),
+				Mth.ceil(boundingBox.maxX),
+				Mth.ceil(boundingBox.maxY),
+				Mth.ceil(boundingBox.maxZ));
 	}
-	public static boolean isInside(World world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
+	public static boolean isInside(Level world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
 		Wind wind = of(world);
 		if(wind==null) return false;
 

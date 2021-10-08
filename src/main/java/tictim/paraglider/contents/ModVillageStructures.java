@@ -1,12 +1,12 @@
 package tictim.paraglider.contents;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.WorldGenRegistries;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPatternRegistry;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.data.worldgen.Pools;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 
@@ -24,30 +24,30 @@ public final class ModVillageStructures{
 		if(!ModCfg.enableStructures()) return;
 		ParagliderMod.LOGGER.debug("Start adding village structures");
 		appendPool(new ResourceLocation("village/desert/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":gerudo_village_goddess_statue"), 1);
-			a.append(JigsawPiece.func_242849_a(MODID+":desert_village_horned_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":gerudo_village_goddess_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":desert_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/plains/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":hateno_village_goddess_statue"), 1);
-			a.append(JigsawPiece.func_242849_a(MODID+":plains_village_horned_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":hateno_village_goddess_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":plains_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/savanna/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":rito_village_goddess_statue"), 3);
-			a.append(JigsawPiece.func_242849_a(MODID+":savanna_village_horned_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":rito_village_goddess_statue"), 3);
+			a.append(StructurePoolElement.legacy(MODID+":savanna_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/snowy/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":snowy_village_horned_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":snowy_village_horned_statue"), 1);
 		});
 		appendPool(new ResourceLocation("village/taiga/houses"), a -> {
-			a.append(JigsawPiece.func_242849_a(MODID+":kakariko_village_goddess_statue"), 3);
-			a.append(JigsawPiece.func_242849_a(MODID+":taiga_village_horned_statue"), 1);
+			a.append(StructurePoolElement.legacy(MODID+":kakariko_village_goddess_statue"), 3);
+			a.append(StructurePoolElement.legacy(MODID+":taiga_village_horned_statue"), 1);
 		});
 		ParagliderMod.LOGGER.debug("Finished adding village structures");
 	}
 
 	private static void appendPool(ResourceLocation pool, Consumer<PoolAppender> c){
-		JigsawPattern old = WorldGenRegistries.JIGSAW_POOL.getOrDefault(pool);
-		if(old==null||old==JigsawPatternRegistry.func_244093_a()){
+		StructureTemplatePool old = BuiltinRegistries.TEMPLATE_POOL.get(pool);
+		if(old==null||old==Pools.bootstrap()){
 			ParagliderMod.LOGGER.warn("Jigsaw pool '{}' doesn't exists", pool);
 			return;
 		}
@@ -57,19 +57,19 @@ public final class ModVillageStructures{
 
 		if(appender.structureToWeight.isEmpty()) return;
 
-		List<Pair<JigsawPiece, Integer>> newWeightedPool = new ArrayList<>();
+		List<Pair<StructurePoolElement, Integer>> newWeightedPool = new ArrayList<>();
 		newWeightedPool.addAll(old.rawTemplates);
 		newWeightedPool.addAll(appender.structureToWeight);
 
-		Registry.register(WorldGenRegistries.JIGSAW_POOL, pool, new JigsawPattern(pool, old.getName(), newWeightedPool));
+		Registry.register(BuiltinRegistries.TEMPLATE_POOL, pool, new StructureTemplatePool(pool, old.getName(), newWeightedPool));
 		ParagliderMod.LOGGER.debug("Added {} elements to jigsaw pool '{}'", appender.structureToWeight.size(), pool);
 	}
 
 	private static final class PoolAppender{
-		private final List<Pair<JigsawPiece, Integer>> structureToWeight = new ArrayList<>();
+		private final List<Pair<StructurePoolElement, Integer>> structureToWeight = new ArrayList<>();
 
-		public void append(Function<JigsawPattern.PlacementBehaviour, ? extends JigsawPiece> factory, int weight){
-			structureToWeight.add(new Pair<>(factory.apply(JigsawPattern.PlacementBehaviour.RIGID), weight));
+		public void append(Function<StructureTemplatePool.Projection, ? extends StructurePoolElement> factory, int weight){
+			structureToWeight.add(new Pair<>(factory.apply(StructureTemplatePool.Projection.RIGID), weight));
 		}
 	}
 }

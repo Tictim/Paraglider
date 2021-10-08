@@ -1,23 +1,24 @@
 package tictim.paraglider.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent;
-import net.minecraftforge.fml.client.gui.GuiUtils;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fmlclient.gui.GuiUtils;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.client.DisableStaminaRender;
@@ -40,60 +41,60 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	private Button saveButton;
 	private Button cancelButton;
 
-	private TextComponent[] fuckingText;
+	private BaseComponent[] fuckingText;
 
 	private double initialStaminaWheelX = ModCfg.staminaWheelX();
 	private double initialStaminaWheelY = ModCfg.staminaWheelY();
 
 	protected StaminaWheelSettingScreen(@Nullable ParagliderSettingScreen parent){
-		super(StringTextComponent.EMPTY);
+		super(TextComponent.EMPTY);
 		this.parent = parent;
 	}
 
 	@Override protected void init(){
-		this.staminaWheel = addButton(new StaminaWheel(initialStaminaWheelX, initialStaminaWheelY));
-		this.saveButton = addButton(new Button(0, 0, 48, 20, new TranslationTextComponent("adjustStamina.save"), button -> {
+		this.staminaWheel = addRenderableWidget(new StaminaWheel(initialStaminaWheelX, initialStaminaWheelY));
+		this.saveButton = addRenderableWidget(new Button(0, 0, 48, 20, new TranslatableComponent("adjustStamina.save"), button -> {
 			ParagliderMod.LOGGER.debug("Save?");
 			ModCfg.setStaminaWheel(staminaWheel.getStaminaWheelX(), staminaWheel.getStaminaWheelY());
 			if(parent!=null) parent.saveSettings();
-			closeScreen();
+			onClose();
 		}));
-		this.cancelButton = addButton(new Button(0, 0, 48, 20, new TranslationTextComponent("adjustStamina.cancel"), button -> closeScreen()));
+		this.cancelButton = addRenderableWidget(new Button(0, 0, 48, 20, new TranslatableComponent("adjustStamina.cancel"), button -> onClose()));
 		//noinspection ConstantConditions
-		this.fuckingText = new TextComponent[]{
-				new TranslationTextComponent("adjustStamina.guide.0"),
-				new TranslationTextComponent("adjustStamina.guide.1"),
-				new TranslationTextComponent("adjustStamina.guide.2",
-						this.minecraft.gameSettings.keyBindInventory.func_238171_j_(),
-						ParagliderClientEventHandler.paragliderSettingsKey().func_238171_j_())
+		this.fuckingText = new BaseComponent[]{
+				new TranslatableComponent("adjustStamina.guide.0"),
+				new TranslatableComponent("adjustStamina.guide.1"),
+				new TranslatableComponent("adjustStamina.guide.2",
+						this.minecraft.options.keyInventory.getTranslatedKeyMessage(),
+						ParagliderClientEventHandler.paragliderSettingsKey().getTranslatedKeyMessage())
 		};
 	}
 
-	@Override public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-		int textWidth = Arrays.stream(fuckingText).mapToInt(e -> font.getStringPropertyWidth(e)).max().orElse(0)+6+48;
-		int textHeight = Math.max(fuckingText.length*font.FONT_HEIGHT, 40+2)+4;
+	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+		int textWidth = Arrays.stream(fuckingText).mapToInt(e -> font.width(e)).max().orElse(0)+6+48;
+		int textHeight = Math.max(fuckingText.length*font.lineHeight, 40+2)+4;
 		int textX = staminaWheel.x>=this.width/2 ? 0 : this.width-textWidth;
 		int textY = staminaWheel.y>=this.height/2 ? 0 : this.height-textHeight;
 
 		this.saveButton.x = textX+textWidth-this.saveButton.getWidth()-2;
-		this.saveButton.y = textY+textHeight-this.saveButton.getHeightRealms()-2; // height realms? what?
+		this.saveButton.y = textY+textHeight-this.saveButton.getHeight()-2; // height realms? what?
 		this.cancelButton.x = textX+textWidth-this.cancelButton.getWidth()-2;
-		this.cancelButton.y = textY+textHeight-this.saveButton.getHeightRealms()-this.cancelButton.getHeightRealms()-4;
+		this.cancelButton.y = textY+textHeight-this.saveButton.getHeight()-this.cancelButton.getHeight()-4;
 
 		renderBackground(matrixStack);
-		GuiUtils.drawGradientRect(matrixStack.getLast().getMatrix(), 0, textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
+		GuiUtils.drawGradientRect(matrixStack.last().pose(), 0, textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		int y = textY+2;
-		for(TextComponent t : fuckingText){
-			font.func_243248_b(matrixStack, t, textX+2, y, 0xFF00DF53);
-			y += font.FONT_HEIGHT;
+		for(BaseComponent t : fuckingText){
+			font.draw(matrixStack, t, textX+2, y, 0xFF00DF53);
+			y += font.lineHeight;
 		}
 	}
 
-	@Override public void renderBackground(MatrixStack matrixStack, int vOffset){
+	@Override public void renderBackground(PoseStack matrixStack, int vOffset){
 		//noinspection ConstantConditions
-		if(this.minecraft.world!=null){
+		if(this.minecraft.level!=null){
 			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x10101010, 0x30101010);
 			EVENT_BUS.post(new BackgroundDrawnEvent(this, matrixStack));
 		}else this.renderDirtBackground(vOffset);
@@ -102,13 +103,13 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	@SuppressWarnings("ConstantConditions")
 	@Override public boolean keyPressed(int keyCode, int scanCode, int modifiers){
 		if(super.keyPressed(keyCode, scanCode, modifiers)) return true;
-		InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-		if(this.minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey)||
+		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
+		if(this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey)||
 				ParagliderClientEventHandler.paragliderSettingsKey().getKey().equals(mouseKey)){
-			this.closeScreen();
+			this.onClose();
 			return true;
 		}else for(int i = 0; i<3; i++){
-			if(!this.minecraft.gameSettings.keyBindsHotbar[i].matchesKey(keyCode, scanCode)) continue;
+			if(!this.minecraft.options.keyHotbarSlots[i].matches(keyCode, scanCode)) continue;
 			this.staminaWheel.wheel.setWheels(i+1);
 			return true;
 		}
@@ -122,8 +123,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	@Override public void closeScreen(){
-		this.minecraft.displayGuiScreen(parent);
+	@Override public void onClose(){
+		this.minecraft.setScreen(parent);
 	}
 
 	private int screenWidth(){
@@ -133,7 +134,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		return this.height;
 	}
 
-	public class StaminaWheel extends Widget{
+	public class StaminaWheel extends AbstractWidget{
 		private final SettingsWidgetStaminaWheelRenderer wheel = new SettingsWidgetStaminaWheelRenderer();
 
 		private boolean dragging;
@@ -143,7 +144,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		public StaminaWheel(double x, double y){
 			super((int)Math.round(x*(double)screenWidth())-WHEEL_RADIUS,
 					(int)Math.round(y*(double)screenHeight())-WHEEL_RADIUS,
-					WHEEL_RADIUS*2, WHEEL_RADIUS*2, StringTextComponent.EMPTY);
+					WHEEL_RADIUS*2, WHEEL_RADIUS*2, TextComponent.EMPTY);
 		}
 
 		public double getStaminaWheelX(){
@@ -153,32 +154,32 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			return (y+WHEEL_RADIUS)/(double)screenHeight();
 		}
 
-		@Override public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-			this.x = MathHelper.clamp(this.x, 1, screenWidth()-2-WHEEL_RADIUS*2);
-			this.y = MathHelper.clamp(this.y, 1, screenHeight()-2-WHEEL_RADIUS*2);
+		@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+			this.x = Mth.clamp(this.x, 1, screenWidth()-2-WHEEL_RADIUS*2);
+			this.y = Mth.clamp(this.y, 1, screenHeight()-2-WHEEL_RADIUS*2);
 			if(this.visible)
 				this.wheel.renderStamina(matrixStack, this.x+WHEEL_RADIUS, this.y+WHEEL_RADIUS, 0);
 
 			RenderSystem.disableTexture();
 
-			Tessellator t = Tessellator.getInstance();
-			BufferBuilder b = t.getBuffer();
-			b.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			b.pos(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.pos(this.x+this.width, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.pos(this.x+this.width, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.pos(this.x, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.pos(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			t.draw();
+			Tesselator t = Tesselator.getInstance();
+			BufferBuilder b = t.getBuilder();
+			b.begin(VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+			b.vertex(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.x+this.width, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.x+this.width, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.x, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			t.end();
 			RenderSystem.enableTexture();
 
 			String s = (this.x)+", "+(this.y)+
 					" ("+PERCENTAGE.format(this.getStaminaWheelX())+" :: "+PERCENTAGE.format(this.getStaminaWheelY())+")";
-			int sw = font.getStringWidth(s);
+			int sw = font.width(s);
 
 			int textX = Math.min(this.x, screenWidth()-sw-3);
-			int textY = this.y>=screenHeight()/2 ? this.y-1-font.FONT_HEIGHT : this.y+this.height+1;
-			font.drawString(matrixStack, s, textX, textY, 0xFF00DF53);
+			int textY = this.y>=screenHeight()/2 ? this.y-1-font.lineHeight : this.y+this.height+1;
+			font.draw(matrixStack, s, textX, textY, 0xFF00DF53);
 		}
 
 		@Override public boolean mouseClicked(double mouseX, double mouseY, int button){
@@ -214,6 +215,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			}
 		}
 
-		@Override public void playDownSound(SoundHandler handler){}
+		@Override public void playDownSound(SoundManager handler){}
+		@Override public void updateNarration(NarrationElementOutput pNarrationElementOutput){}
 	}
 }

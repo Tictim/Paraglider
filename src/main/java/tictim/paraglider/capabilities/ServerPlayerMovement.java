@@ -1,26 +1,26 @@
 package tictim.paraglider.capabilities;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
@@ -36,14 +36,14 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class ServerPlayerMovement extends PlayerMovement implements INBTSerializable<CompoundNBT>{
+public final class ServerPlayerMovement extends PlayerMovement implements INBTSerializable<CompoundTag>{
 	public static final int PANIC_INITIAL_DELAY = 10;
 	public static final int PANIC_DELAY = 30;
 	public static final int PANIC_DURATION = 15;
 	public static final UUID HEART_CONTAINER_UUID = UUID.fromString("a0f1c25b-c4f9-4413-9619-7841cd7982a3");
 	public static final UUID STAMINA_CONTAINER_UUID = UUID.fromString("8eb77123-6306-4188-9227-56082ba4887a");
 
-	private final ServerPlayerEntity serverPlayer;
+	private final ServerPlayer serverPlayer;
 
 	private PlayerState prevState = PlayerState.IDLE;
 
@@ -63,7 +63,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 	private int essence;
 
-	public ServerPlayerMovement(ServerPlayerEntity player){
+	public ServerPlayerMovement(ServerPlayer player){
 		super(player);
 		serverPlayer = player;
 	}
@@ -110,10 +110,10 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			staminaNeedsUpdate = false;
 		}
 
-		if(player.isOnGround()||player.getPosY()>prevY) accumulatedFallDistance = 0;
-		else accumulatedFallDistance += prevY-player.getPosY();
+		if(player.isOnGround()||player.getY()>prevY) accumulatedFallDistance = 0;
+		else accumulatedFallDistance += prevY-player.getY();
 
-		boolean isHoldingParaglider = Paraglider.isParaglider(player.getHeldItemMainhand());
+		boolean isHoldingParaglider = Paraglider.isParaglider(player.getMainHandItem());
 		setState(calculatePlayerState(isHoldingParaglider));
 		if(prevState!=getState()) movementNeedsSync = true;
 		updateStamina();
@@ -123,8 +123,8 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			paraglidingNeedsSync = true;
 			prevIsParagliding = isParagliding;
 		}
-		if(!player.abilities.isCreativeMode&&isDepleted()){
-			player.addPotionEffect(new EffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
+		if(!player.isCreative()&&isDepleted()){
+			player.addEffect(new MobEffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
 		}
 		applyMovement();
 
@@ -154,22 +154,22 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 
 		prevState = getState();
-		prevY = player.getPosY();
+		prevY = player.getY();
 
-		for(int i = 0; i<player.inventory.getSizeInventory(); i++){
-			ItemStack stack = player.inventory.getStackInSlot(i);
+		for(int i = 0; i<player.getInventory().getContainerSize(); i++){
+			ItemStack stack = player.getInventory().getItem(i);
 			if(stack.getItem() instanceof ParagliderItem){ // TODO improve?
-				ParagliderItem.setItemParagliding(stack, i==player.inventory.currentItem&&isParagliding);
+				ParagliderItem.setItemParagliding(stack, i==player.getInventory().selected&&isParagliding);
 			}
 		}
 	}
 
 	private void applyAttribute(Attribute attribute, UUID uuid, String name, double value){
-		ModifiableAttributeInstance attrib = player.getAttribute(attribute);
+		AttributeInstance attrib = player.getAttribute(attribute);
 		if(attrib==null) return;
 		attrib.removeModifier(uuid);
 		if(value>0)
-			attrib.applyPersistentModifier(new AttributeModifier(
+			attrib.addPermanentModifier(new AttributeModifier(
 					uuid,
 					() -> name,
 					value,
@@ -177,42 +177,42 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
-		if(player.abilities.isFlying) return PlayerState.IDLE;
-		else if(player.getRidingEntity()!=null) return PlayerState.RIDING;
+		if(player.getAbilities().flying) return PlayerState.IDLE;
+		else if(player.getVehicle()!=null) return PlayerState.RIDING;
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canBreathe() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
-		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isElytraFlying()){
-			if(ModCfg.ascendingWinds()&&Wind.isInside(player.world, player.getBoundingBox())) return PlayerState.ASCENDING;
+		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isFallFlying()){
+			if(ModCfg.ascendingWinds()&&Wind.isInside(player.level, player.getBoundingBox())) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
-		if(player.isSprinting()&&!player.isHandActive()) return PlayerState.RUNNING;
+		if(player.isSprinting()&&!player.isUsingItem()) return PlayerState.RUNNING;
 		else if(player.isOnGround()) return PlayerState.IDLE;
 		else return PlayerState.MIDAIR;
 	}
 
 	private boolean canBreathe(){
-		if(player.isPotionActive(Effects.WATER_BREATHING)) return true;
+		if(player.hasEffect(MobEffects.WATER_BREATHING)) return true;
 		if(player.isOnGround()&&(
-				!player.areEyesInFluid(FluidTags.WATER)||
-						player.world.getBlockState(new BlockPos(player.getPosX(), player.getPosYEye(), player.getPosZ())).isIn(Blocks.BUBBLE_COLUMN))){
+				!player.isEyeInFluid(FluidTags.WATER)||
+						player.level.getBlockState(new BlockPos(player.getX(), player.getEyeY(), player.getZ())).is(Blocks.BUBBLE_COLUMN))){
 			return true;
 		}
 
-		ItemStack head = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+		ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
 		if(!head.isEmpty()){
 			if(head.getItem()==Items.TURTLE_HELMET) return true;
-			else if(EnchantmentHelper.getEnchantmentLevel(Enchantments.AQUA_AFFINITY, head)>0) return true;
+			else if(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.AQUA_AFFINITY, head)>0) return true;
 		}
-		ItemStack feet = player.getItemStackFromSlot(EquipmentSlotType.FEET);
-		return !feet.isEmpty()&&EnchantmentHelper.getEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0;
+		ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
+		return !feet.isEmpty()&&EnchantmentHelper.getItemEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0;
 	}
 
 	@Override protected void applyMovement(){
 		super.applyMovement();
 		if(isParagliding()){
-			serverPlayer.connection.floatingTickCount = 0;
-			ItemStack stack = player.getHeldItemMainhand();
+			serverPlayer.connection.aboveGroundTickCount = 0;
+			ItemStack stack = player.getMainHandItem();
 			if(Paraglider.isParaglider(stack)){
 				damageParagliderWithoutBreaking(player, stack);
 			}
@@ -222,17 +222,17 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	/**
 	 * Fuck you, seriously
 	 */
-	private static void damageParagliderWithoutBreaking(PlayerEntity player, ItemStack stack){
+	private static void damageParagliderWithoutBreaking(Player player, ItemStack stack){
 		AtomicBoolean fuck = new AtomicBoolean();
 		int count = stack.getCount();
-		stack.damageItem(1, player, p -> {
-			p.sendBreakAnimation(Hand.MAIN_HAND);
+		stack.hurtAndBreak(1, player, p -> {
+			p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
 			stack.setCount(count+1);
 			fuck.set(true);
 		});
 		if(fuck.get()){
 			stack.setCount(count);
-			stack.setDamage(stack.getMaxDamage());
+			stack.setDamageValue(stack.getMaxDamage());
 		}
 	}
 
@@ -274,8 +274,8 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 	}
 
-	@Override public CompoundNBT serializeNBT(){
-		CompoundNBT nbt = new CompoundNBT();
+	@Override public CompoundTag serializeNBT(){
+		CompoundTag nbt = new CompoundTag();
 		nbt.putInt("stamina", getStamina());
 		nbt.putBoolean("depleted", isDepleted());
 		nbt.putInt("recoveryDelay", getRecoveryDelay());
@@ -285,7 +285,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		nbt.putInt("essence", getEssence());
 		return nbt;
 	}
-	@Override public void deserializeNBT(CompoundNBT nbt){
+	@Override public void deserializeNBT(CompoundTag nbt){
 		setStamina(nbt.getInt("stamina"));
 		setDepleted(nbt.getBoolean("depleted"));
 		setRecoveryDelay(nbt.getInt("recoveryDelay"));

@@ -1,16 +1,17 @@
 package tictim.paraglider.event;
 
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.platform.Window;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -33,20 +34,20 @@ import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 public final class ParagliderClientEventHandler{
 	private ParagliderClientEventHandler(){}
 
-	private static KeyBinding paragliderSettingsKey;
+	private static KeyMapping paragliderSettingsKey;
 
-	public static KeyBinding paragliderSettingsKey(){
+	public static KeyMapping paragliderSettingsKey(){
 		return paragliderSettingsKey;
 	}
-	public static void setParagliderSettingsKey(KeyBinding keyBinding){
+	public static void setParagliderSettingsKey(KeyMapping keyBinding){
 		if(paragliderSettingsKey!=null) throw new IllegalStateException("no");
 		paragliderSettingsKey = keyBinding;
 	}
 
 	@SubscribeEvent
 	public static void onOffHandRender(RenderHandEvent event){
-		if(event.getHand()!=Hand.OFF_HAND) return;
-		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if(event.getHand()!=InteractionHand.OFF_HAND) return;
+		LocalPlayer player = Minecraft.getInstance().player;
 		if(player==null) return;
 		PlayerMovement m = PlayerMovement.of(player);
 		if(m!=null&&m.isParagliding()) event.setCanceled(true);
@@ -57,7 +58,7 @@ public final class ParagliderClientEventHandler{
 	@SubscribeEvent
 	public static void onGameOverlayTextRender(RenderGameOverlayEvent.Text event){
 		if(ModCfg.debugPlayerMovement()){
-			PlayerEntity p = Minecraft.getInstance().player;
+			Player p = Minecraft.getInstance().player;
 			if(p!=null){
 				PlayerMovement h = PlayerMovement.of(p);
 				if(h!=null){
@@ -65,7 +66,7 @@ public final class ParagliderClientEventHandler{
 					List<String> arr = new ArrayList<>();
 
 					arr.add("State: "+h.getState());
-					arr.add((h.isDepleted() ? TextFormatting.RED : "")+"Stamina: "+h.getStamina()+" / "+h.getMaxStamina());
+					arr.add((h.isDepleted() ? ChatFormatting.RED : "")+"Stamina: "+h.getStamina()+" / "+h.getMaxStamina());
 					arr.add(h.getStaminaVessels()+" Stamina Vessels, "+h.getHeartContainers()+" Heart Containers");
 					arr.add(h.getRecoveryDelay()+" Recovery Delay");
 					arr.add("Paragliding: "+h.isParagliding());
@@ -82,28 +83,28 @@ public final class ParagliderClientEventHandler{
 
 	@SubscribeEvent
 	public static void afterGameOverlayRender(RenderGameOverlayEvent.Post event){
-		if(Minecraft.getInstance().currentScreen instanceof DisableStaminaRender||
+		if(Minecraft.getInstance().screen instanceof DisableStaminaRender||
 				event.getType()!=RenderGameOverlayEvent.ElementType.ALL||
 				!(ModCfg.paraglidingConsumesStamina()||ModCfg.runningConsumesStamina())) return;
-		MainWindow window = event.getWindow();
+		Window window = event.getWindow();
 
-		int x = MathHelper.clamp((int)Math.round(ModCfg.staminaWheelX()*window.getScaledWidth()), 1+WHEEL_RADIUS, window.getScaledWidth()-2-WHEEL_RADIUS);
-		int y = MathHelper.clamp((int)Math.round(ModCfg.staminaWheelY()*window.getScaledHeight()), 1+WHEEL_RADIUS, window.getScaledHeight()-2-WHEEL_RADIUS);
+		int x = Mth.clamp((int)Math.round(ModCfg.staminaWheelX()*window.getGuiScaledWidth()), 1+WHEEL_RADIUS, window.getGuiScaledWidth()-2-WHEEL_RADIUS);
+		int y = Mth.clamp((int)Math.round(ModCfg.staminaWheelY()*window.getGuiScaledHeight()), 1+WHEEL_RADIUS, window.getGuiScaledHeight()-2-WHEEL_RADIUS);
 
 		STAMINA_WHEEL_RENDERER.renderStamina(event.getMatrixStack(), x, y, 25);
 	}
 
 	@SubscribeEvent
-	public static void beforeGameOverlayRender(RenderGameOverlayEvent.Pre event){
-		if(event.getType()==RenderGameOverlayEvent.ElementType.CROSSHAIRS&&Minecraft.getInstance().currentScreen instanceof StatueBargainScreen)
+	public static void beforeGameOverlayLayerRender(RenderGameOverlayEvent.PreLayer event){
+		if(event.getOverlay()==ForgeIngameGui.CROSSHAIR_ELEMENT&&Minecraft.getInstance().screen instanceof StatueBargainScreen)
 			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public static void onClientTick(TickEvent.ClientTickEvent event){
 		if(event.phase!=TickEvent.Phase.END) return;
-		if(Minecraft.getInstance().currentScreen==null&&paragliderSettingsKey().isPressed()){
-			Minecraft.getInstance().displayGuiScreen(new ParagliderSettingScreen());
+		if(Minecraft.getInstance().screen==null&&paragliderSettingsKey().consumeClick()){
+			Minecraft.getInstance().setScreen(new ParagliderSettingScreen());
 		}
 	}
 }

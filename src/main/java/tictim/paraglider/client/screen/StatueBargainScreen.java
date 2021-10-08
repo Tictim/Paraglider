@@ -1,18 +1,20 @@
 package tictim.paraglider.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import tictim.paraglider.ParagliderMod;
@@ -33,7 +35,7 @@ import java.util.List;
 
 import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
-public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer> implements DisableStaminaRender{
+public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainContainer> implements DisableStaminaRender{
 	private static final ResourceLocation MERCHANT_GUI_TEXTURE = new ResourceLocation("textures/gui/container/villager2.png");
 	private static final long ITEM_CYCLE_TIME = 1000;
 	private static final long DIALOG_FADEOUT_START = 1750;
@@ -49,19 +51,19 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 	private long createdTime;
 	private long currentTickTimestamp;
 
-	@Nullable private ITextComponent dialog;
+	@Nullable private Component dialog;
 	private long dialogTimestamp;
 	private boolean dialogUpdated;
 
 	private StaminaWheelRenderer staminaWheelRenderer;
 
-	public StatueBargainScreen(StatueBargainContainer screenContainer, PlayerInventory inv, ITextComponent titleIn){
+	public StatueBargainScreen(StatueBargainContainer screenContainer, Inventory inv, Component titleIn){
 		super(screenContainer, inv, titleIn);
 	}
 
 	@Override protected void init(){
-		xSize = width;
-		ySize = height;
+		imageWidth = width;
+		imageHeight = height;
 		currentTickTimestamp = createdTime = System.currentTimeMillis();
 		//noinspection ConstantConditions
 		PlayerMovement m = PlayerMovement.of(minecraft.player);
@@ -71,12 +73,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		int y = getTop()+1;
 
 		for(int i = 0; i<7; ++i){
-			this.buttons[i] = this.addButton(new BargainButton(31, y+20*i, i, b -> {
-				if(!(b instanceof BargainButton)) return;
-				BargainButton button = (BargainButton)b;
-				StatueBargain bargain = button.getBargain();
-				if(bargain!=null) ModNet.NET.sendToServer(new BargainMsg(bargain.getId()));
-			}));
+			this.buttons[i] = this.addRenderableWidget(new BargainButton(31, y+20*i, i));
 		}
 	}
 
@@ -90,13 +87,13 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		return getTop()+SCROLL_BOX_THING_HEIGHT;
 	}
 
-	public void setDialog(@Nullable ITextComponent dialog){
+	public void setDialog(@Nullable Component dialog){
 		this.dialog = dialog;
 		this.dialogUpdated = dialog!=null;
 	}
 
-	private void renderScroller(MatrixStack matrixStack, int left, int top){
-		int offScreenBargains = container.getBargains().size()+1-7;
+	private void renderScroller(PoseStack matrixStack, int left, int top){
+		int offScreenBargains = menu.getBargains().size()+1-7;
 		int yOffset;
 		if(offScreenBargains>1){
 			int j = 139-(27+(offScreenBargains-1)*139/offScreenBargains);
@@ -107,7 +104,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 		blit(matrixStack, left+90, top+1+yOffset, this.getBlitOffset(), 0, 199, 6, 27, 256, 512);
 	}
 
-	@Override public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
 		this.renderBackground(matrixStack);
 
 		long newTimestamp = System.currentTimeMillis();
@@ -116,32 +113,16 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-		List<StatueBargain> bargains = container.getBargains();
-		if(!bargains.isEmpty()){
-			//noinspection deprecation
-			RenderSystem.pushMatrix();
-			//noinspection deprecation
-			RenderSystem.enableRescaleNormal();
-			//noinspection ConstantConditions
-			this.minecraft.getTextureManager().bindTexture(MERCHANT_GUI_TEXTURE);
-			this.renderScroller(matrixStack, getLeft(), getTop());
+		this.renderTooltip(matrixStack, mouseX, mouseY);
+		lookAtStatue(partialTicks);
+	}
 
-			itemRenderer.zLevel = 100;
-			for(BargainButton button : this.buttons)
-				button.renderItems(matrixStack);
-			itemRenderer.zLevel = 0;
+	@Override protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y){
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+		RenderSystem.setShaderTexture(0, MERCHANT_GUI_TEXTURE);
+		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT, 256, 512);
 
-			for(BargainButton button : this.buttons){
-				if(button.isHovered()) renderPreview(matrixStack, button.getActualIndex());
-
-				button.renderToolTip(matrixStack, mouseX, mouseY);
-				button.visible = button.index<this.container.getBargains().size();
-			}
-
-			//noinspection deprecation
-			RenderSystem.popMatrix();
-			RenderSystem.enableDepthTest();
-		}
+		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_RADIUS, 0);
 
 		if(dialog!=null){
 			if(dialogUpdated){
@@ -152,148 +133,131 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			int alpha;
 			if(t>=DIALOG_FADEOUT_END) alpha = 0;
 			else if(t<=DIALOG_FADEOUT_START) alpha = 0xFF;
-			else alpha = MathHelper.clamp((int)((DIALOG_FADEOUT_END-t)*0xFF/(DIALOG_FADEOUT_END-DIALOG_FADEOUT_START)), 0, 0xFF);
+			else alpha = Mth.clamp((int)((DIALOG_FADEOUT_END-t)*0xFF/(DIALOG_FADEOUT_END-DIALOG_FADEOUT_START)), 0, 0xFF);
 
 			if(alpha>4){ // Don't fucking question me, question FontRenderer#fixAlpha() instead
 				drawCenteredString(matrixStack, font, dialog, width/2, getBottom()+9, alpha<<24|0xFFFFFF);
 			}
 		}
 
-		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_RADIUS, 0);
+		List<StatueBargain> bargains = menu.getBargains();
+		if(!bargains.isEmpty()){
+			RenderSystem.setShaderTexture(0, MERCHANT_GUI_TEXTURE);
+			this.renderScroller(matrixStack, getLeft(), getTop());
 
-		this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
-		lookAtStatue(partialTicks);
+			itemRenderer.blitOffset = 100;
+			for(BargainButton button : this.buttons)
+				button.renderItems();
+			itemRenderer.blitOffset = 0;
+
+			for(BargainButton button : this.buttons){
+				if(button.isHovered()) renderPreview(button.getActualIndex());
+				button.visible = button.index<this.menu.getBargains().size();
+			}
+
+			RenderSystem.enableDepthTest();
+		}
 	}
 
-	private void renderPreview(MatrixStack matrixStack, int bargainIndex){
-		ItemDemand[] demands = container.getDemandPreview(bargainIndex);
+	@Override protected void renderTooltip(PoseStack poseStack, int x, int y){
+		for(BargainButton button : this.buttons)
+			button.renderToolTip(poseStack, x, y);
+	}
+
+	@Override protected void renderLabels(PoseStack matrixStack, int x, int y){}
+
+	@Override public void renderBackground(PoseStack matrixStack, int vOffset){
+		//noinspection ConstantConditions
+		if(this.minecraft.level!=null){
+			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x70101010, 0xa0101010);
+			MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
+		}else this.renderDirtBackground(vOffset);
+	}
+
+	private void renderPreview(int bargainIndex){
+		ItemDemand[] demands = menu.getDemandPreview(bargainIndex);
 		if(demands.length==0) return;
 
 		final int mag = demands.length<=2 ? 8 : demands.length<=8 ? 4 : 2;
 		final int textMag = demands.length<=8 ? 2 : 1;
 		final int rows = demands.length<=2 ? 2 : demands.length<=8 ? 4 : 8;
 
-		matrixStack.push();
-		matrixStack.translate(0, 0, 200);
-
 		int left = getLeft()+SCROLL_BOX_THING_WIDTH+20, top = getTop();
 
 		for(int i = 0; i<demands.length; i++){
 			ItemDemand demand = demands[i];
-			ItemStack stack = cycle(demand.getPreviewItems());
 
-			//noinspection deprecation
-			RenderSystem.pushMatrix();
+			int xOff = left+i%rows*(16*mag), yOff = top+(i/rows)*(16*mag);
+			PoseStack modelViewStack = RenderSystem.getModelViewStack();
+			modelViewStack.pushPose();
+			modelViewStack.translate(xOff, yOff, 0);
+			modelViewStack.scale(mag, mag, 1);
+			RenderSystem.applyModelViewMatrix();
+			itemRenderer.renderAndDecorateFakeItem(cycle(demand.getPreviewItems()), 0, 0);
+			modelViewStack.popPose();
+			RenderSystem.applyModelViewMatrix();
 
-			//noinspection deprecation,IntegerDivisionInFloatingPointContext
-			RenderSystem.translated(left+i%rows*(16*mag), top+(i/rows)*(16*mag), 0);
+			String s = (demand.getCount()>=demand.getQuantity() ? demand.getCount() : ChatFormatting.RED+""+demand.getCount()+ChatFormatting.RESET)+"/"+demand.getQuantity();
 
-			//noinspection deprecation
-			RenderSystem.pushMatrix();
-			//noinspection deprecation
-			RenderSystem.scaled(mag, mag, 1);
-			itemRenderer.renderItemAndEffectIntoGuiWithoutEntity(stack, 0, 0);
-			itemRenderer.renderItemOverlayIntoGUI(font, stack, 0, 0, "");
-			//noinspection deprecation
-			RenderSystem.popMatrix();
-
-			//noinspection deprecation
-			RenderSystem.pushMatrix();
-			//noinspection deprecation
-			RenderSystem.translated(15*mag+2*textMag, 16*mag-7*textMag, 0);
-			//noinspection deprecation
-			RenderSystem.scaled(textMag, textMag, 1);
-			String s = (demand.getCount()>=demand.getQuantity() ? demand.getCount() : TextFormatting.RED+""+demand.getCount()+TextFormatting.RESET)+"/"+demand.getQuantity();
-			drawString(matrixStack, font, s, -font.getStringWidth(s), 0, 0xFFFFFFFF);
-			//noinspection deprecation
-			RenderSystem.popMatrix();
-
-			//noinspection deprecation
-			RenderSystem.popMatrix();
+			PoseStack pose = new PoseStack();
+			pose.translate(xOff, yOff, 0);
+			pose.translate(15*mag+2*textMag, 16*mag-7*textMag, itemRenderer.blitOffset+200);
+			pose.scale(textMag, textMag, 1);
+			drawString(pose, font, s, -font.width(s), 0, 0xFFFFFFFF);
 		}
-		matrixStack.pop();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private void lookAtStatue(float partialTicks){
-		Vector3d lookAt = container.getLookAt();
+		Vec3 lookAt = menu.getLookAt();
 		if(lookAt==null) return;
-		PlayerEntity player = playerInventory.player;
-		Vector3d eyePosition = player.getEyePosition(partialTicks);
+		Player player = minecraft.player;
+		Vec3 eyePosition = player.getEyePosition(partialTicks);
 
 		// stolen from Entity#lookAt
-		double lookX = lookAt.getX()-eyePosition.x;
-		double lookY = lookAt.getY()-eyePosition.y;
-		double lookZ = lookAt.getZ()-eyePosition.z;
-		double xzLength = MathHelper.sqrt(lookX*lookX+lookZ*lookZ);
-		double rotationPitch = MathHelper.wrapDegrees((float)(-MathHelper.atan2(lookY, xzLength)*(180/Math.PI)));
-		double rotationYaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(lookZ, lookX)*(180/Math.PI))-90);
+		double lookX = lookAt.x()-eyePosition.x;
+		double lookY = lookAt.y()-eyePosition.y;
+		double lookZ = lookAt.z()-eyePosition.z;
+		double xzLength = Math.sqrt(lookX*lookX+lookZ*lookZ);
+		double rotationPitch = Mth.wrapDegrees((float)(-Mth.atan2(lookY, xzLength)*(180/Math.PI)));
+		double rotationYaw = Mth.wrapDegrees((float)(Mth.atan2(lookZ, lookX)*(180/Math.PI))-90);
 
 		double lerpPercentage = partialTicks*0.3;
-		player.rotationPitch = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationPitch), rotationPitch);
-		player.rotationYaw = lerpAngle(lerpPercentage, MathHelper.wrapDegrees(player.rotationYaw), rotationYaw);
-		player.setRotationYawHead(player.rotationYaw);
-		player.prevRotationPitch = player.rotationPitch;
-		player.prevRotationYaw = player.rotationYaw;
-		player.prevRotationYawHead = player.rotationYawHead;
-		player.prevRenderYawOffset = player.renderYawOffset = player.rotationYawHead;
-
-		/*drawCenteredString(new MatrixStack(),
-				font,
-				String.format("Look At:[%s %s %s], Pitch: %s, Yaw: %s",
-						lookAt.getX(),
-						lookAt.getY(),
-						lookAt.getZ(),
-						rotationPitch,
-						rotationYaw),
-				width/2,
-				getBottom()+18,
-				-1);*/
+		player.setXRot(lerpAngle(lerpPercentage, Mth.wrapDegrees(player.getXRot()), rotationPitch));
+		player.setYRot(lerpAngle(lerpPercentage, Mth.wrapDegrees(player.getYRot()), rotationYaw));
+		player.setYHeadRot(player.getYRot());
+		player.xRotO = player.getXRot();
+		player.yRotO = player.getYRot();
+		player.yHeadRotO = player.yHeadRot;
+		player.yBodyRotO = player.yBodyRot = player.yHeadRot;
 	}
 
 	private static float lerpAngle(double percentage, double start, double end){
-		return (float)MathHelper.lerp(percentage, start<end ? (end-start>180 ? start+360 : start) : (start-end>180 ? start-360 : start), end);
+		return (float)Mth.lerp(percentage, start<end ? (end-start>180 ? start+360 : start) : (start-end>180 ? start-360 : start), end);
 	}
-
-	@Override protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y){
-		//noinspection deprecation
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//noinspection ConstantConditions
-		this.minecraft.getTextureManager().bindTexture(MERCHANT_GUI_TEXTURE);
-		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT, 256, 512);
-	}
-
-	@Override protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y){}
 
 	@Override public boolean mouseScrolled(double mouseX, double mouseY, double delta){
-		int bargainSize = this.container.getBargains().size();
+		int bargainSize = this.menu.getBargains().size();
 		if(bargainSize>7){
-			this.buttonIndexOffset = MathHelper.clamp((int)((double)this.buttonIndexOffset-delta), 0, bargainSize-7);
+			this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset-delta), 0, bargainSize-7);
 		}
 		return true;
 	}
 
 	@Override public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY){
 		if(!this.isDragging) return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-		int offScreenBargains = this.container.getBargains().size()-7;
-		this.buttonIndexOffset = MathHelper.clamp((int)((mouseY-getTop()+1-13.5)/(139-27)*offScreenBargains+.5), 0, offScreenBargains);
+		int offScreenBargains = this.menu.getBargains().size()-7;
+		this.buttonIndexOffset = Mth.clamp((int)((mouseY-getTop()+1-13.5)/(139-27)*offScreenBargains+.5), 0, offScreenBargains);
 		return true;
 	}
 
 	@Override public boolean mouseClicked(double mouseX, double mouseY, int button){
 		this.isDragging = false;
 		int left = getLeft(), top = getTop();
-		if(this.container.getBargains().size()>7&&mouseX>left+90&&mouseX<left+90+6&&mouseY>top+1&&mouseY<=top+1+139+1)
+		if(this.menu.getBargains().size()>7&&mouseX>left+90&&mouseX<left+90+6&&mouseY>top+1&&mouseY<=top+1+139+1)
 			this.isDragging = true;
 
 		return super.mouseClicked(mouseX, mouseY, button);
-	}
-
-	@Override public void renderBackground(MatrixStack matrixStack, int vOffset){
-		//noinspection ConstantConditions
-		if(this.minecraft.world!=null){
-			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x70101010, 0xa0101010);
-			MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.BackgroundDrawnEvent(this, matrixStack));
-		}else this.renderDirtBackground(vOffset);
 	}
 
 	private static final int BUTTON_INPUT_X_OFFSET_START = 2;
@@ -302,13 +266,18 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 	private static final int BUTTON_OUTPUT_X_OFFSET_START = 39+10+1;
 	private static final int BUTTON_OUTPUT_X_OFFSET_END = 88-2-16;
 
-	private final class BargainButton extends Button{
+	private final class BargainButton extends AbstractButton{
 		private final int index;
 
-		public BargainButton(int x, int y, int index, Button.IPressable pressedAction){
-			super(x, y, 89, 20, StringTextComponent.EMPTY, pressedAction);
+		public BargainButton(int x, int y, int index){
+			super(x, y, 89, 20, TextComponent.EMPTY);
 			this.index = index;
 			this.visible = false;
+		}
+
+		@Override public void onPress(){
+			StatueBargain bargain = getBargain();
+			if(bargain!=null) ModNet.NET.sendToServer(new BargainMsg(bargain.getId()));
 		}
 
 		public int getIndex(){
@@ -318,18 +287,29 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			return index+buttonIndexOffset;
 		}
 		@Nullable public StatueBargain getBargain(){
-			return container.getBargain(getActualIndex());
+			return menu.getBargain(getActualIndex());
 		}
 
 		@Override protected int getYImage(boolean isHovered){
-			return !container.canBargain(getActualIndex()) ? 0 : isHovered ? 2 : 1;
+			return !menu.canBargain(getActualIndex()) ? 0 : isHovered ? 2 : 1;
 		}
 
-		@Override public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-			super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+		@Override protected void renderBg(PoseStack pose, Minecraft mc, int mouseX, int mouseY){
+			RenderSystem.enableBlend();
+			RenderSystem.setShaderTexture(0, MERCHANT_GUI_TEXTURE);
+			blit(pose,
+					x+39,
+					y+5,
+					this.getBlitOffset(),
+					menu.canBargain(getActualIndex()) ? 15 : 25,
+					171,
+					10,
+					9,
+					256,
+					512);
 		}
 
-		public void renderItems(MatrixStack matrixStack){
+		public void renderItems(){
 			if(!this.visible) return;
 			StatueBargain bargain = getBargain();
 			if(bargain==null) return;
@@ -337,7 +317,7 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 			BargainPreview preview = bargain.getPreview();
 			int buttonElementTop = y+2;
 
-			List<BargainPreview.Demand> demands = preview.getDemands();
+			List<BargainPreview.Demand> demands = preview.demands();
 			for(int i = demands.size()-1; i>=0; i--){
 				BargainPreview.Demand demand = demands.get(i);
 				ItemStack[] stacks = demand.getPreviewItems();
@@ -351,14 +331,12 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 					continue;
 				}
 				int itemX = x+determinePosition(i, demands.size(), BUTTON_INPUT_X_OFFSET_START, BUTTON_INPUT_X_OFFSET_END);
-				itemRenderer.renderItemAndEffectIntoGuiWithoutEntity(stack, itemX, buttonElementTop);
+				itemRenderer.renderAndDecorateFakeItem(stack, itemX, buttonElementTop);
 				if(demand.getQuantity()!=1)
-					itemRenderer.renderItemOverlayIntoGUI(font, stack, itemX, buttonElementTop, String.valueOf(demand.getQuantity()));
+					itemRenderer.renderGuiItemDecorations(font, stack, itemX, buttonElementTop, String.valueOf(demand.getQuantity()));
 			}
 
-			renderButtonArrows(matrixStack);
-
-			List<BargainPreview.Offer> offers = preview.getOffers();
+			List<BargainPreview.Offer> offers = preview.offers();
 			for(int i = offers.size()-1; i>=0; i--){
 				BargainPreview.Offer offer = offers.get(i);
 				ItemStack stack = offer.getPreview();
@@ -367,36 +345,20 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 					continue;
 				}
 				int itemX = x+determinePosition(i, offers.size(), BUTTON_OUTPUT_X_OFFSET_START, BUTTON_OUTPUT_X_OFFSET_END);
-				itemRenderer.renderItemAndEffectIntoGuiWithoutEntity(stack, itemX, buttonElementTop);
+				itemRenderer.renderAndDecorateFakeItem(stack, itemX, buttonElementTop);
 				if(offer.getQuantity()!=1)
-					itemRenderer.renderItemOverlayIntoGUI(font, stack, itemX, buttonElementTop, String.valueOf(offer.getQuantity()));
+					itemRenderer.renderGuiItemDecorations(font, stack, itemX, buttonElementTop, String.valueOf(offer.getQuantity()));
 			}
 		}
 
-		private void renderButtonArrows(MatrixStack matrixStack){
-			RenderSystem.enableBlend();
-			//noinspection ConstantConditions
-			minecraft.getTextureManager().bindTexture(MERCHANT_GUI_TEXTURE);
-			blit(matrixStack,
-					x+39,
-					y+5,
-					this.getBlitOffset(),
-					container.canBargain(getActualIndex()) ? 15 : 25,
-					171,
-					10,
-					9,
-					256,
-					512);
-		}
-
-		@Override public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY){
+		@Override public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY){
 			if(!this.isHovered) return;
 			StatueBargain bargain = getBargain();
 			if(bargain==null) return;
 
 			BargainPreview preview = bargain.getPreview();
 
-			List<BargainPreview.Demand> demands = preview.getDemands();
+			List<BargainPreview.Demand> demands = preview.demands();
 			BargainPreview.Demand closestDemand = null;
 			int closestDemandDistance = Integer.MAX_VALUE;
 			for(int i = 0; i<demands.size(); i++){
@@ -412,12 +374,12 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 
 			if(closestDemand!=null){
 				TooltipFactory tf = closestDemand.getTooltipFactory();
-				if(tf!=null) func_243308_b(matrixStack, tf.getTooltip(), mouseX, mouseY);
+				if(tf!=null) renderComponentTooltip(matrixStack, tf.getTooltip(), mouseX, mouseY);
 				else renderTooltip(matrixStack, cycle(closestDemand.getPreviewItems()), mouseX, mouseY);
 				return;
 			}
 
-			List<BargainPreview.Offer> offers = preview.getOffers();
+			List<BargainPreview.Offer> offers = preview.offers();
 			BargainPreview.Offer closestOffer = null;
 			int closestOfferDistance = Integer.MAX_VALUE;
 			for(int i = 0; i<offers.size(); i++){
@@ -433,10 +395,12 @@ public class StatueBargainScreen extends ContainerScreen<StatueBargainContainer>
 
 			if(closestOffer!=null){
 				TooltipFactory tf = closestOffer.getTooltipFactory();
-				if(tf!=null) func_243308_b(matrixStack, tf.getTooltip(), mouseX, mouseY);
+				if(tf!=null) renderComponentTooltip(matrixStack, tf.getTooltip(), mouseX, mouseY);
 				else renderTooltip(matrixStack, closestOffer.getPreview(), mouseX, mouseY);
 			}
 		}
+
+		@Override public void updateNarration(NarrationElementOutput pNarrationElementOutput){}
 	}
 
 	private ItemStack cycle(ItemStack[] stacks){

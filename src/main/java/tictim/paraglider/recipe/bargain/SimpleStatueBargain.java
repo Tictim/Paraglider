@@ -4,16 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
@@ -108,12 +108,12 @@ public class SimpleStatueBargain implements StatueBargain{
 
 			for(QuantifiedIngredient itemDemand : itemDemands)
 				demands.add(new BargainPreview.Demand(
-						itemDemand.getIngredient().getMatchingStacks(),
-						itemDemand.getQuantity(),
+						itemDemand.ingredient().getItems(),
+						itemDemand.quantity(),
 						p -> {
 							int count = 0;
-							for(int i = 0; i<p.inventory.getSizeInventory(); i++){
-								ItemStack stack = p.inventory.getStackInSlot(i);
+							for(int i = 0; i<p.getInventory().getContainerSize(); i++){
+								ItemStack stack = p.getInventory().getItem(i);
 								if(stack.isEmpty()||!itemDemand.test(stack)) continue;
 								count += stack.getCount();
 							}
@@ -148,7 +148,7 @@ public class SimpleStatueBargain implements StatueBargain{
 						TooltipFactory.essence(essenceDemands)));
 
 			for(QuantifiedItem itemOffer : itemOffers)
-				offers.add(new BargainPreview.Offer(new ItemStack(itemOffer.getItem()), itemOffer.getQuantity()));
+				offers.add(new BargainPreview.Offer(new ItemStack(itemOffer.item()), itemOffer.quantity()));
 			if(heartContainerOffers>0)
 				offers.add(new BargainPreview.Offer(
 						new ItemStack(Contents.HEART_CONTAINER.get()),
@@ -174,14 +174,14 @@ public class SimpleStatueBargain implements StatueBargain{
 		this.preview = null;
 	}
 
-	@Override public BargainResult bargain(PlayerEntity player, boolean simulate){
+	@Override public BargainResult bargain(Player player, boolean simulate){
 		if(ServerPlayerMovement.of(player)==null)
 			return BargainResult.failure(FailedReason.OTHER);
 
 		Set<FailedReason> reasons = new HashSet<>();
 
-		PlayerInventory inventory = player.inventory;
-		int[] consumptions = new int[inventory.getSizeInventory()];
+		Inventory inventory = player.getInventory();
+		int[] consumptions = new int[inventory.getContainerSize()];
 		for(QuantifiedIngredient i : itemDemands)
 			if(!test(i, inventory, consumptions))
 				reasons.add(FailedReason.NOT_ENOUGH_ITEMS);
@@ -203,17 +203,17 @@ public class SimpleStatueBargain implements StatueBargain{
 				int c = consumptions[i];
 				if(c==0) continue;
 
-				ItemStack stack = inventory.getStackInSlot(i);
+				ItemStack stack = inventory.getItem(i);
 				if(stack.getCount()>c) stack.shrink(c);
 				else{
 					if(stack.getCount()!=c)
 						ParagliderMod.LOGGER.error("Quantity of item {} (slot number {}) differs from simulation.", stack, i);
-					inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+					inventory.setItem(i, ItemStack.EMPTY);
 				}
 			}
 
 			for(QuantifiedItem item : itemOffers)
-				ParagliderUtils.giveItem(player, new ItemStack(item.getItem(), item.getQuantity()));
+				ParagliderUtils.giveItem(player, new ItemStack(item.item(), item.quantity()));
 			if(heartContainerDemands!=heartContainerOffers&&!(heartContainerDemands<heartContainerOffers ?
 					ParagliderUtils.giveHeartContainers(player, heartContainerOffers-heartContainerDemands, false, true) :
 					ParagliderUtils.takeHeartContainers(player, heartContainerDemands-heartContainerOffers, false, true)))
@@ -230,10 +230,10 @@ public class SimpleStatueBargain implements StatueBargain{
 		return BargainResult.success();
 	}
 
-	private static boolean test(QuantifiedIngredient quantifiedIngredient, IInventory inventory, int[] consumptions){
-		int amountLeft = quantifiedIngredient.getQuantity();
-		for(int i = 0; amountLeft>0&&i<inventory.getSizeInventory(); i++){
-			ItemStack stack = inventory.getStackInSlot(i);
+	private static boolean test(QuantifiedIngredient quantifiedIngredient, Container inventory, int[] consumptions){
+		int amountLeft = quantifiedIngredient.quantity();
+		for(int i = 0; amountLeft>0&&i<inventory.getContainerSize(); i++){
+			ItemStack stack = inventory.getItem(i);
 			if(stack.getCount()<=consumptions[i]||!quantifiedIngredient.test(stack)) continue;
 			int amountToConsume = Math.min(amountLeft, stack.getCount()-consumptions[i]);
 			amountLeft -= amountToConsume;
@@ -270,10 +270,10 @@ public class SimpleStatueBargain implements StatueBargain{
 	@Override public ResourceLocation getId(){
 		return id;
 	}
-	@Override public IRecipeSerializer<?> getSerializer(){
+	@Override public RecipeSerializer<?> getSerializer(){
 		return Contents.STATUE_BARGAIN_RECIPE.get();
 	}
-	@Override public IRecipeType<?> getType(){
+	@Override public RecipeType<?> getType(){
 		return Contents.STATUE_BARGAIN_RECIPE_TYPE;
 	}
 
@@ -292,9 +292,9 @@ public class SimpleStatueBargain implements StatueBargain{
 				'}';
 	}
 
-	public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<SimpleStatueBargain>{
-		@Override public SimpleStatueBargain read(ResourceLocation recipeId, JsonObject json){
-			final ResourceLocation bargainOwner = new ResourceLocation(JSONUtils.getString(json, "owner"));
+	public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SimpleStatueBargain>{
+		@Override public SimpleStatueBargain fromJson(ResourceLocation recipeId, JsonObject json){
+			final ResourceLocation bargainOwner = new ResourceLocation(GsonHelper.getAsString(json, "owner"));
 			final List<QuantifiedIngredient> itemDemands;
 			final int heartContainerDemands;
 			final int staminaVesselDemands;
@@ -305,19 +305,19 @@ public class SimpleStatueBargain implements StatueBargain{
 			final int essenceOffers;
 
 			@SuppressWarnings("ConstantConditions")
-			JsonObject demands = JSONUtils.getJsonObject(json, "demands", null);
+			JsonObject demands = GsonHelper.getAsJsonObject(json, "demands", null);
 			//noinspection ConstantConditions
 			if(demands!=null){
-				JsonArray items = JSONUtils.getJsonArray(demands, "items", null);
+				JsonArray items = GsonHelper.getAsJsonArray(demands, "items", null);
 				if(items==null||items.size()==0) itemDemands = Collections.emptyList();
 				else{
 					itemDemands = new ArrayList<>();
 					for(JsonElement i : items)
-						itemDemands.add(new QuantifiedIngredient(JSONUtils.getJsonObject(i, "item")));
+						itemDemands.add(new QuantifiedIngredient(GsonHelper.convertToJsonObject(i, "item")));
 				}
-				heartContainerDemands = Math.max(0, JSONUtils.getInt(demands, "heartContainers", 0));
-				staminaVesselDemands = Math.max(0, JSONUtils.getInt(demands, "staminaVessels", 0));
-				essenceDemands = Math.max(0, JSONUtils.getInt(demands, "essences", 0));
+				heartContainerDemands = Math.max(0, GsonHelper.getAsInt(demands, "heartContainers", 0));
+				staminaVesselDemands = Math.max(0, GsonHelper.getAsInt(demands, "staminaVessels", 0));
+				essenceDemands = Math.max(0, GsonHelper.getAsInt(demands, "essences", 0));
 			}else{
 				itemDemands = Collections.emptyList();
 				heartContainerDemands = 0;
@@ -326,21 +326,21 @@ public class SimpleStatueBargain implements StatueBargain{
 			}
 
 			@SuppressWarnings("ConstantConditions")
-			JsonObject offers = JSONUtils.getJsonObject(json, "offers", null);
+			JsonObject offers = GsonHelper.getAsJsonObject(json, "offers", null);
 			//noinspection ConstantConditions
 			if(offers!=null){
-				JsonArray items = JSONUtils.getJsonArray(offers, "items", null);
+				JsonArray items = GsonHelper.getAsJsonArray(offers, "items", null);
 				if(items==null||items.size()==0) itemOffers = Collections.emptyList();
 				else{
 					itemOffers = new ArrayList<>();
 					for(JsonElement i : items){
-						ItemStack stack = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(i, "item"));
+						ItemStack stack = ShapedRecipe.itemStackFromJson(GsonHelper.convertToJsonObject(i, "item"));
 						itemOffers.add(new QuantifiedItem(stack.getItem(), stack.getCount()));
 					}
 				}
-				heartContainerOffers = Math.max(0, JSONUtils.getInt(offers, "heartContainers", 0));
-				staminaVesselOffers = Math.max(0, JSONUtils.getInt(offers, "staminaVessels", 0));
-				essenceOffers = Math.max(0, JSONUtils.getInt(offers, "essences", 0));
+				heartContainerOffers = Math.max(0, GsonHelper.getAsInt(offers, "heartContainers", 0));
+				staminaVesselOffers = Math.max(0, GsonHelper.getAsInt(offers, "staminaVessels", 0));
+				essenceOffers = Math.max(0, GsonHelper.getAsInt(offers, "essences", 0));
 			}else{
 				itemOffers = Collections.emptyList();
 				heartContainerOffers = 0;
@@ -360,7 +360,7 @@ public class SimpleStatueBargain implements StatueBargain{
 					essenceOffers);
 		}
 
-		@Nullable @Override public SimpleStatueBargain read(ResourceLocation recipeId, PacketBuffer buffer){
+		@Nullable @Override public SimpleStatueBargain fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer){
 			ResourceLocation owner = buffer.readResourceLocation();
 
 			List<QuantifiedIngredient> itemDemands = new ArrayList<>();
@@ -391,7 +391,7 @@ public class SimpleStatueBargain implements StatueBargain{
 					essenceOffers);
 		}
 
-		@Override public void write(PacketBuffer buffer, SimpleStatueBargain recipe){
+		@Override public void toNetwork(FriendlyByteBuf buffer, SimpleStatueBargain recipe){
 			buffer.writeResourceLocation(recipe.getBargainOwner());
 
 			List<QuantifiedIngredient> itemDemands = recipe.getItemDemands();

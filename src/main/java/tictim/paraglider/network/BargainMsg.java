@@ -1,20 +1,14 @@
 package tictim.paraglider.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
-public class BargainMsg{
-	public static BargainMsg read(PacketBuffer buf){
+public record BargainMsg(ResourceLocation bargain){
+	public static BargainMsg read(FriendlyByteBuf buf){
 		return new BargainMsg(buf.readResourceLocation());
 	}
 
-	public final ResourceLocation bargain;
-
-	public BargainMsg(ResourceLocation bargain){
-		this.bargain = bargain;
-	}
-
-	public void write(PacketBuffer buf){
+	public void write(FriendlyByteBuf buf){
 		buf.writeResourceLocation(bargain);
 	}
 }

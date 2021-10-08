@@ -1,8 +1,8 @@
 package tictim.paraglider.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +24,7 @@ public final class WindClientEventHandler{
 	public static void onClientTick(TickEvent.ClientTickEvent event){
 		if(event.phase!=TickEvent.Phase.START) return;
 
-		ClientWorld world = Minecraft.getInstance().world;
+		ClientLevel world = Minecraft.getInstance().level;
 		if(world==null) return;
 		Wind wind = Wind.of(world);
 		if(wind==null) return;
@@ -33,7 +33,7 @@ public final class WindClientEventHandler{
 			for(WindNode node : windChunk.getAllRootNodes()){
 				do{
 					if(PARTICLE_RNG.nextInt(6)==0)
-						world.addOptionalParticle(ParticleTypes.FIREWORK,
+						world.addAlwaysVisibleParticle(ParticleTypes.FIREWORK,
 								node.x+PARTICLE_RNG.nextDouble(),
 								node.y+0.5,
 								node.z+PARTICLE_RNG.nextDouble(),

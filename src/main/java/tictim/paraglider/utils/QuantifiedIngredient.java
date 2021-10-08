@@ -2,10 +2,10 @@ package tictim.paraglider.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -13,27 +13,17 @@ import java.util.function.Predicate;
 /**
  * Pair of an ingredient and an unsigned int.
  */
-public final class QuantifiedIngredient implements Predicate<ItemStack>{
-	public static QuantifiedIngredient read(PacketBuffer buffer){
-		return new QuantifiedIngredient(Ingredient.read(buffer), buffer.readVarInt());
+public record QuantifiedIngredient(Ingredient ingredient, int quantity) implements Predicate<ItemStack>{
+	public static QuantifiedIngredient read(FriendlyByteBuf buffer){
+		return new QuantifiedIngredient(Ingredient.fromNetwork(buffer), buffer.readVarInt());
 	}
-
-	private final Ingredient ingredient;
-	private final int quantity;
 
 	public QuantifiedIngredient(Ingredient ingredient, int quantity){
 		this.ingredient = Objects.requireNonNull(ingredient);
 		this.quantity = Math.max(0, quantity);
 	}
 	public QuantifiedIngredient(JsonObject obj){
-		this(Ingredient.deserialize(obj.get("ingredient")), Math.max(1, JSONUtils.getInt(obj, "quantity", 1)));
-	}
-
-	public Ingredient getIngredient(){
-		return ingredient;
-	}
-	public int getQuantity(){
-		return quantity;
+		this(Ingredient.fromJson(obj.get("ingredient")), Math.max(1, GsonHelper.getAsInt(obj, "quantity", 1)));
 	}
 
 	/**
@@ -45,20 +35,13 @@ public final class QuantifiedIngredient implements Predicate<ItemStack>{
 
 	public JsonElement serialize(){
 		JsonObject obj = new JsonObject();
-		obj.add("ingredient", ingredient.serialize());
+		obj.add("ingredient", ingredient.toJson());
 		if(quantity!=1) obj.addProperty("quantity", quantity);
 		return obj;
 	}
 
-	public void write(PacketBuffer buffer){
-		ingredient.write(buffer);
+	public void write(FriendlyByteBuf buffer){
+		ingredient.toNetwork(buffer);
 		buffer.writeVarInt(quantity);
-	}
-
-	@Override public String toString(){
-		return "QuantifiedIngredient{"+
-				"ingredient="+ingredient.serialize()+
-				", quantity="+quantity+
-				'}';
 	}
 }

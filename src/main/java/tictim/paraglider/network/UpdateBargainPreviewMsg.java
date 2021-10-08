@@ -1,8 +1,8 @@
 package tictim.paraglider.network;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.recipe.bargain.StatueBargainContainer.ItemDemand;
 
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UpdateBargainPreviewMsg{
-	public static UpdateBargainPreviewMsg read(PacketBuffer buf){
+	public static UpdateBargainPreviewMsg read(FriendlyByteBuf buf){
 		UpdateBargainPreviewMsg msg = new UpdateBargainPreviewMsg();
 		int size = buf.readUnsignedByte();
 		for(int i = 0; i<size; i++) msg.add(buf.readResourceLocation(), Data.readData(buf));
@@ -32,7 +32,7 @@ public class UpdateBargainPreviewMsg{
 		return updated;
 	}
 
-	public void write(PacketBuffer buf){
+	public void write(FriendlyByteBuf buf){
 		buf.writeByte(updated.size());
 		for(Map.Entry<ResourceLocation, Data> e : updated.entrySet()){
 			buf.writeResourceLocation(e.getKey());
@@ -40,8 +40,8 @@ public class UpdateBargainPreviewMsg{
 		}
 	}
 
-	public static final class Data{
-		private static Data readData(PacketBuffer buf){
+	public record Data(boolean canBargain, @Nullable ItemDemand[] demands){
+		private static Data readData(FriendlyByteBuf buf){
 			boolean canBargain = buf.readBoolean();
 			ItemDemand[] demands;
 			if(buf.readBoolean()){
@@ -52,38 +52,23 @@ public class UpdateBargainPreviewMsg{
 			}else demands = null;
 			return new Data(canBargain, demands);
 		}
-		private static ItemDemand readItemDemand(PacketBuffer buf){
+		private static ItemDemand readItemDemand(FriendlyByteBuf buf){
 			ItemStack[] previewItems = new ItemStack[buf.readVarInt()];
 			for(int i = 0; i<previewItems.length; i++){
-				previewItems[i] = buf.readItemStack();
+				previewItems[i] = buf.readItem();
 			}
 			int quantity = buf.readVarInt();
 			int count = buf.readVarInt();
 			return new ItemDemand(previewItems, quantity, count);
 		}
-		private static void writeItemDemand(ItemDemand itemDemand, PacketBuffer buf){
+		private static void writeItemDemand(ItemDemand itemDemand, FriendlyByteBuf buf){
 			buf.writeVarInt(itemDemand.getPreviewItems().length);
-			for(ItemStack s : itemDemand.getPreviewItems()) buf.writeItemStack(s);
+			for(ItemStack s : itemDemand.getPreviewItems()) buf.writeItem(s);
 			buf.writeVarInt(itemDemand.getQuantity());
 			buf.writeVarInt(itemDemand.getCount());
 		}
 
-		private final boolean canBargain;
-		@Nullable private final ItemDemand[] demands;
-
-		private Data(boolean canBargain, @Nullable ItemDemand[] demands){
-			this.canBargain = canBargain;
-			this.demands = demands;
-		}
-
-		public boolean canBargain(){
-			return canBargain;
-		}
-		@Nullable public ItemDemand[] getDemands(){
-			return demands;
-		}
-
-		public void write(PacketBuffer buf){
+		public void write(FriendlyByteBuf buf){
 			buf.writeBoolean(canBargain);
 			buf.writeBoolean(demands!=null);
 			if(demands!=null){

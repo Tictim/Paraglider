@@ -1,7 +1,7 @@
 package tictim.paraglider.recipe.bargain;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import tictim.paraglider.utils.TooltipFactory;
 
 import javax.annotation.Nullable;
@@ -9,22 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class BargainPreview{
-	private final List<Demand> demands;
-	private final List<Offer> offers;
-
-	public BargainPreview(List<Demand> demands, List<Offer> offers){
-		this.demands = demands;
-		this.offers = offers;
-	}
-
-	public List<Demand> getDemands(){
-		return demands;
-	}
-	public List<Offer> getOffers(){
-		return offers;
-	}
-
+public record BargainPreview(List<Demand> demands, List<Offer> offers){
 	@Override public String toString(){
 		return "BargainPreview{"+
 				"demands="+demands.stream().map(it -> it.toString()).collect(Collectors.joining(", "))+
@@ -77,7 +62,7 @@ public final class BargainPreview{
 
 		@FunctionalInterface
 		public interface Counter{
-			int count(PlayerEntity player);
+			int count(Player player);
 		}
 	}
 
@@ -112,5 +97,4 @@ public final class BargainPreview{
 					'}';
 		}
 	}
-
 }

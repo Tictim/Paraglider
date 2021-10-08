@@ -1,16 +1,16 @@
 package tictim.paraglider.datagen;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.LootParameterSet;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.ValidationTracker;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Collections;
@@ -26,20 +26,19 @@ public class LootTableGen extends LootTableProvider{
 		super(dataGeneratorIn);
 	}
 
-	@Override protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables(){
-		return Collections.singletonList(Pair.of(BlockTables::new, LootParameterSets.BLOCK));
+	@Override protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables(){
+		return Collections.singletonList(Pair.of(BlockTables::new, LootContextParamSets.BLOCK));
 	}
 
-	@Override protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker){}
+	@Override protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationContext){}
 
-
-	public static class BlockTables extends BlockLootTables{
+	public static class BlockTables extends BlockLoot{
 		@Override protected void addTables(){
-			registerDropSelfLootTable(Contents.GODDESS_STATUE.get());
-			registerDropSelfLootTable(Contents.GORON_GODDESS_STATUE.get());
-			registerDropSelfLootTable(Contents.KAKARIKO_GODDESS_STATUE.get());
-			registerDropSelfLootTable(Contents.RITO_GODDESS_STATUE.get());
-			registerDropSelfLootTable(Contents.HORNED_STATUE.get());
+			dropSelf(Contents.GODDESS_STATUE.get());
+			dropSelf(Contents.GORON_GODDESS_STATUE.get());
+			dropSelf(Contents.KAKARIKO_GODDESS_STATUE.get());
+			dropSelf(Contents.RITO_GODDESS_STATUE.get());
+			dropSelf(Contents.HORNED_STATUE.get());
 		}
 
 		@Override protected Iterable<Block> getKnownBlocks(){

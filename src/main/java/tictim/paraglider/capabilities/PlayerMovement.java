@@ -1,10 +1,10 @@
 package tictim.paraglider.capabilities;
 
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.Direction;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -19,7 +19,7 @@ import java.util.Objects;
 public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	public static final int RECOVERY_DELAY = 10;
 
-	public final PlayerEntity player;
+	public final Player player;
 	private PlayerState state = PlayerState.IDLE;
 
 	private int stamina = ModCfg.startingStamina();
@@ -28,7 +28,7 @@ public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	private int staminaVessels;
 	private int heartContainers;
 
-	public PlayerMovement(PlayerEntity player){
+	public PlayerMovement(Player player){
 		this.player = Objects.requireNonNull(player);
 	}
 
@@ -90,14 +90,14 @@ public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	}
 
 	@Override public int getMaxStamina(){
-		ModifiableAttributeInstance attribute = player.getAttribute(Contents.MAX_STAMINA.get());
+		AttributeInstance attribute = player.getAttribute(Contents.MAX_STAMINA.get());
 		if(attribute!=null) return (int)attribute.getValue();
 		ParagliderMod.LOGGER.error("Player {} doesn't have max stamina attribute", player);
 		return ModCfg.maxStamina(staminaVessels);
 	}
 
 	public boolean canUseParaglider(){
-		return player.abilities.isCreativeMode||!depleted;
+		return player.isCreative()||!depleted;
 	}
 
 	public abstract boolean isParagliding();
@@ -114,19 +114,19 @@ public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	}
 
 	protected void applyMovement(){
-		if(!player.abilities.isCreativeMode&&isDepleted()){
-			player.addPotionEffect(new EffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
+		if(!player.isCreative()&&isDepleted()){
+			player.addEffect(new MobEffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
 		}
 		if(isParagliding()){
 			player.fallDistance = 0;
 
-			Vector3d m = player.getMotion();
+			Vec3 m = player.getDeltaMovement();
 			switch(state){
 				case PARAGLIDING:
-					if(m.y<-0.05) player.setMotion(new Vector3d(m.x, -0.05, m.z));
+					if(m.y<-0.05) player.setDeltaMovement(new Vec3(m.x, -0.05, m.z));
 					break;
 				case ASCENDING:
-					if(m.y<0.25) player.setMotion(new Vector3d(m.x, Math.max(m.y+0.05, 0.25), m.z));
+					if(m.y<0.25) player.setDeltaMovement(new Vec3(m.x, Math.max(m.y+0.05, 0.25), m.z));
 					break;
 			}
 		}

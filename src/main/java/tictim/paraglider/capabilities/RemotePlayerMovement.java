@@ -1,6 +1,6 @@
 package tictim.paraglider.capabilities;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * PlayerMovement with no unique action at update. Used as simple data container.
@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class RemotePlayerMovement extends PlayerMovement{
 	private boolean paragliding;
 
-	public RemotePlayerMovement(PlayerEntity player){
+	public RemotePlayerMovement(Player player){
 		super(player);
 	}
 

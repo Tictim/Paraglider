@@ -1,17 +1,17 @@
 package tictim.paraglider.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
@@ -65,15 +65,14 @@ public final class ModNet{
 	private static void handleBargain(BargainMsg msg, Supplier<NetworkEvent.Context> ctx){
 		ctx.get().setPacketHandled(true);
 		ctx.get().enqueueWork(() -> {
-			ServerPlayerEntity player = ctx.get().getSender();
+			ServerPlayer player = ctx.get().getSender();
 			if(player==null){
 				ParagliderMod.LOGGER.error("Cannot handle BargainMsg: Wrong side");
 				return;
 			}
-			if(!(player.openContainer instanceof StatueBargainContainer)) return; // Should be ignored
-			StatueBargainContainer c = (StatueBargainContainer)player.openContainer;
+			if(!(player.containerMenu instanceof StatueBargainContainer c)) return; // Should be ignored
 			for(StatueBargain bargain : c.getBargains()){
-				if(!bargain.getId().equals(msg.bargain)) continue;
+				if(!bargain.getId().equals(msg.bargain())) continue;
 				BargainResult result = bargain.bargain(player, false);
 				if(result.isSuccess()){
 					ResourceLocation a = c.getAdvancement();
@@ -84,7 +83,7 @@ public final class ModNet{
 				c.sendDialog(bargain, result);
 				return;
 			}
-			ParagliderMod.LOGGER.info("Ignoring invalid bargain {}", msg.bargain);
+			ParagliderMod.LOGGER.info("Ignoring invalid bargain {}", msg.bargain());
 		});
 	}
 
@@ -93,7 +92,7 @@ public final class ModNet{
 
 		public static void handleSetMovement(SyncMovementMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			ClientPlayerEntity player = Minecraft.getInstance().player;
+			LocalPlayer player = Minecraft.getInstance().player;
 			if(player==null) return;
 			PlayerMovement h = PlayerMovement.of(player);
 			if(h!=null){
@@ -104,51 +103,50 @@ public final class ModNet{
 
 		public static void handleSetParagliding(SyncParaglidingMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			ClientWorld world = Minecraft.getInstance().world;
+			ClientLevel world = Minecraft.getInstance().level;
 			if(world==null) return;
-			PlayerEntity player = world.getPlayerByUuid(msg.playerId);
+			Player player = world.getPlayerByUUID(msg.playerId());
 			if(player!=null){
 				PlayerMovement h = PlayerMovement.of(player);
 				if(h!=null){
 					if(h instanceof RemotePlayerMovement){
 						if(ModCfg.traceParaglidingPacket()) ParagliderMod.LOGGER.debug("Received {}", msg);
-						((RemotePlayerMovement)h).setParagliding(msg.paragliding);
+						((RemotePlayerMovement)h).setParagliding(msg.paragliding());
 					}else ParagliderMod.LOGGER.error("Couldn't handle packet {}, capability is found but not remote", msg);
 				}else ParagliderMod.LOGGER.error("Couldn't handle packet {}, capability not found", msg);
-			}else ParagliderMod.LOGGER.error("Couldn't find player with UUID {}", msg.playerId);
+			}else ParagliderMod.LOGGER.error("Couldn't find player with UUID {}", msg.playerId());
 		}
 
 		public static void handleSetVessel(SyncVesselMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			ClientPlayerEntity player = Minecraft.getInstance().player;
+			LocalPlayer player = Minecraft.getInstance().player;
 			if(player==null) return;
 			PlayerMovement h = PlayerMovement.of(player);
 			if(h!=null){
-				h.setHeartContainers(msg.heartContainers);
-				h.setStaminaVessels(msg.staminaVessels);
-				h.setStamina(msg.stamina);
+				h.setHeartContainers(msg.heartContainers());
+				h.setStaminaVessels(msg.staminaVessels());
+				h.setStamina(msg.stamina());
 			}else ParagliderMod.LOGGER.error("Couldn't handle packet {}, capability not found", msg);
 		}
 
 		public static void handleSyncWind(SyncWindMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
-			ClientWorld world = Minecraft.getInstance().world;
+			ClientLevel world = Minecraft.getInstance().level;
 			if(world==null) return;
 			Wind wind = Wind.of(world);
-			if(wind!=null) wind.put(msg.windChunk);
+			if(wind!=null) wind.put(msg.windChunk());
 		}
 
 		public static void handleUpdateBargainPreview(UpdateBargainPreviewMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
 			ctx.get().enqueueWork(() -> {
-				ClientPlayerEntity player = Minecraft.getInstance().player;
+				LocalPlayer player = Minecraft.getInstance().player;
 				if(player==null) return;
-				Container container = player.openContainer;
-				if(!(container instanceof StatueBargainContainer)) return;
-				StatueBargainContainer c = (StatueBargainContainer)container;
+				AbstractContainerMenu container = player.containerMenu;
+				if(!(container instanceof StatueBargainContainer c)) return;
 				for(Map.Entry<ResourceLocation, UpdateBargainPreviewMsg.Data> e : msg.getUpdated().entrySet()){
 					c.setCanBargain(e.getKey(), e.getValue().canBargain());
-					if(e.getValue().getDemands()!=null) c.setDemandPreview(e.getKey(), e.getValue().getDemands());
+					if(e.getValue().demands()!=null) c.setDemandPreview(e.getKey(), e.getValue().demands());
 				}
 			});
 		}
@@ -156,22 +154,20 @@ public final class ModNet{
 		public static void handleStatueDialog(StatueDialogMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
 			ctx.get().enqueueWork(() -> {
-				Screen screen = Minecraft.getInstance().currentScreen;
-				if(!(screen instanceof StatueBargainScreen)) return;
-				StatueBargainScreen s = (StatueBargainScreen)screen;
-				s.setDialog(msg.text);
+				Screen screen = Minecraft.getInstance().screen;
+				if(!(screen instanceof StatueBargainScreen s)) return;
+				s.setDialog(msg.text());
 			});
 		}
 
 		public static void handleSyncLookAt(SyncLookAtMsg msg, Supplier<NetworkEvent.Context> ctx){
 			ctx.get().setPacketHandled(true);
 			ctx.get().enqueueWork(() -> {
-				ClientPlayerEntity player = Minecraft.getInstance().player;
+				LocalPlayer player = Minecraft.getInstance().player;
 				if(player==null) return;
-				Container container = player.openContainer;
-				if(!(container instanceof StatueBargainContainer)) return;
-				StatueBargainContainer c = (StatueBargainContainer)container;
-				c.setLookAt(msg.lookAt);
+				AbstractContainerMenu container = player.containerMenu;
+				if(!(container instanceof StatueBargainContainer c)) return;
+				c.setLookAt(msg.lookAt());
 			});
 		}
 	}

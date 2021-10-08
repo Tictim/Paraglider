@@ -1,8 +1,8 @@
 package tictim.paraglider.datagen;
 
-import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.ItemTagsProvider;
+import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
@@ -15,10 +15,10 @@ public class ItemTagGen extends ItemTagsProvider{
 		super(dataGenerator, blockTagProvider, ParagliderMod.MODID, existingFileHelper);
 	}
 
-	@Override protected void registerTags(){
+	@Override protected void addTags(){
 		copy(ModTags.Blocks.STATUES, ModTags.STATUES);
 		copy(ModTags.Blocks.STATUES_GODDESS, ModTags.STATUES_GODDESS);
 
-		getOrCreateBuilder(ModTags.PARAGLIDERS).add(Contents.PARAGLIDER.get(), Contents.DEKU_LEAF.get());
+		tag(ModTags.PARAGLIDERS).add(Contents.PARAGLIDER.get(), Contents.DEKU_LEAF.get());
 	}
 }

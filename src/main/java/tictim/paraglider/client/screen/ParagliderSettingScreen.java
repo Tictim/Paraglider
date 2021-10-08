@@ -1,12 +1,12 @@
 package tictim.paraglider.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.Util;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.event.ParagliderClientEventHandler;
 
@@ -18,32 +18,32 @@ public class ParagliderSettingScreen extends Screen{
 	private double displaySaveMessageTicks;
 
 	public ParagliderSettingScreen(){
-		super(StringTextComponent.EMPTY);
+		super(TextComponent.EMPTY);
 	}
 
 	public void saveSettings(){
 		AtomicReference<Boolean> saveResult = new AtomicReference<>();
-		Util.getRenderingService().execute(() -> saveResult.set(ModCfg.saveParagliderSettings()));
+		Util.ioPool().execute(() -> saveResult.set(ModCfg.saveParagliderSettings()));
 		this.saveResult = saveResult;
 		this.displaySaveMessageTicks = 600;
 	}
 
 	@Override protected void init(){
-		addButton(new Button(width/2-64, height/2-8, 128, 20, new TranslationTextComponent("paragliderSettings.staminaWheelSettings"), b -> {
+		addRenderableWidget(new Button(width/2-64, height/2-8, 128, 20, new TranslatableComponent("paragliderSettings.staminaWheelSettings"), b -> {
 			//noinspection ConstantConditions
-			this.minecraft.displayGuiScreen(new StaminaWheelSettingScreen(this));
+			this.minecraft.setScreen(new StaminaWheelSettingScreen(this));
 		}));
 	}
 
-	@Override public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
 		renderBackground(matrixStack);
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 		if(saveResult!=null){
 			Boolean r = saveResult.get();
-			font.func_243246_a(matrixStack, new TranslationTextComponent(
+			font.drawShadow(matrixStack, new TranslatableComponent(
 					r==null ? "paragliderSettings.saving" :
 							r ? "paragliderSettings.saving.success" :
-									"paragliderSettings.saving.failure"), 0, height-font.FONT_HEIGHT, 0xFFFFFF);
+									"paragliderSettings.saving.failure"), 0, height-font.lineHeight, 0xFFFFFF);
 			if(r!=null){
 				displaySaveMessageTicks -= partialTicks;
 				if(displaySaveMessageTicks<=0){
@@ -57,10 +57,10 @@ public class ParagliderSettingScreen extends Screen{
 	@SuppressWarnings("ConstantConditions")
 	@Override public boolean keyPressed(int keyCode, int scanCode, int modifiers){
 		if(super.keyPressed(keyCode, scanCode, modifiers)) return true;
-		InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-		if(this.minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey)||
+		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
+		if(this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey)||
 				ParagliderClientEventHandler.paragliderSettingsKey().getKey().equals(mouseKey)){
-			this.closeScreen();
+			this.onClose();
 			return true;
 		}else return false;
 	}

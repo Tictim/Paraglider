@@ -1,33 +1,31 @@
 package tictim.paraglider.contents;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.block.GoddessStatueBlock;
@@ -54,44 +52,44 @@ import static tictim.paraglider.ParagliderMod.MODID;
 public final class Contents{
 	private Contents(){}
 
-	public static final ItemGroup GROUP = new ItemGroup(MODID){
-		@Override public ItemStack createIcon(){
+	public static final CreativeModeTab GROUP = new CreativeModeTab(MODID){
+		@Override public ItemStack makeIcon(){
 			return new ItemStack(PARAGLIDER.get());
 		}
 	};
 
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-	public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
-	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
+	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
 	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
-	public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
 
-	public static final IRecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), new IRecipeType<StatueBargain>(){});
+	public static final RecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), new RecipeType<StatueBargain>(){});
 
-	private static AbstractBlock.Properties statueProperties(){
-		return Block.Properties.create(Material.ROCK)
+	private static BlockBehaviour.Properties statueProperties(){
+		return Block.Properties.of(Material.STONE)
 				.sound(SoundType.STONE)
-				.harvestTool(ToolType.PICKAXE)
-				.hardnessAndResistance(1.5f, 100f)
-				.notSolid();
+				.requiresCorrectToolForDrops()
+				.strength(1.5f, 100f)
+				.noOcclusion();
 	}
 
 	public static final RegistryObject<Block> GODDESS_STATUE = BLOCKS.register("goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties()));
 	public static final RegistryObject<Block> KAKARIKO_GODDESS_STATUE = BLOCKS.register("kakariko_goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties(),
-					new TranslationTextComponent("tooltip.paraglider.kakariko_goddess_statue.0")
-							.setStyle(Style.EMPTY.setFormatting(TextFormatting.GRAY))));
+					new TranslatableComponent("tooltip.paraglider.kakariko_goddess_statue.0")
+							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> GORON_GODDESS_STATUE = BLOCKS.register("goron_goddess_statue",
-			() -> new GoddessStatueBlock(statueProperties().setLightLevel(value -> 15),
-					new TranslationTextComponent("tooltip.paraglider.goron_goddess_statue.0")
-							.setStyle(Style.EMPTY.setFormatting(TextFormatting.GRAY))));
+			() -> new GoddessStatueBlock(statueProperties().lightLevel(value -> 15),
+					new TranslatableComponent("tooltip.paraglider.goron_goddess_statue.0")
+							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> RITO_GODDESS_STATUE = BLOCKS.register("rito_goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties(),
-					new TranslationTextComponent("tooltip.paraglider.rito_goddess_statue.0")
-							.setStyle(Style.EMPTY.setFormatting(TextFormatting.GRAY))));
+					new TranslatableComponent("tooltip.paraglider.rito_goddess_statue.0")
+							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
 			() -> new HornedStatueBlock(statueProperties()));
 
@@ -99,35 +97,25 @@ public final class Contents{
 	public static final RegistryObject<ParagliderItem> DEKU_LEAF = ITEMS.register("deku_leaf", () -> new ParagliderItem(0x3FB53F));
 	public static final RegistryObject<Item> HEART_CONTAINER = ITEMS.register("heart_container", HeartContainerItem::new);
 	public static final RegistryObject<Item> STAMINA_VESSEL = ITEMS.register("stamina_vessel", StaminaVesselItem::new);
-	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).group(GROUP)));
-	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC).group(GROUP)));
-	public static final RegistryObject<Item> ESSENCE = ITEMS.register("essence", () -> new EssenceItem(new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).tab(GROUP)));
+	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC).tab(GROUP)));
+	public static final RegistryObject<Item> ESSENCE = ITEMS.register("essence", () -> new EssenceItem(new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
 	public static final RegistryObject<BlockItem> GODDESS_STATUE_ITEM = ITEMS.register("goddess_statue", () -> new BlockItem(GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
 	public static final RegistryObject<BlockItem> KAKARIKO_GODDESS_STATUE_ITEM = ITEMS.register("kakariko_goddess_statue", () -> new BlockItem(KAKARIKO_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
 	public static final RegistryObject<BlockItem> GORON_GODDESS_STATUE_ITEM = ITEMS.register("goron_goddess_statue", () -> new BlockItem(GORON_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
 	public static final RegistryObject<BlockItem> RITO_GODDESS_STATUE_ITEM = ITEMS.register("rito_goddess_statue", () -> new BlockItem(RITO_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).group(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
 	public static final RegistryObject<BlockItem> HORNED_STATUE_ITEM = ITEMS.register("horned_statue", () -> new BlockItem(HORNED_STATUE.get(),
-			new Item.Properties().rarity(Rarity.EPIC).group(GROUP)));
+			new Item.Properties().rarity(Rarity.EPIC).tab(GROUP)));
 
-	public static final RegistryObject<Effect> EXHAUSTED = EFFECTS.register("exhausted", () -> new Effect(EffectType.HARMFUL, 5926017){
-		@Override public boolean shouldRender(EffectInstance effect){
-			return false;
-		}
-		@Override public boolean shouldRenderInvText(EffectInstance effect){
-			return false;
-		}
-		@Override public boolean shouldRenderHUD(EffectInstance effect){
-			return false;
-		}
-
+	public static final RegistryObject<MobEffect> EXHAUSTED = EFFECTS.register("exhausted", () -> new MobEffect(MobEffectCategory.HARMFUL, 5926017){
 		@Override public List<ItemStack> getCurativeItems(){
 			return new ArrayList<>();
 		}
-	}.addAttributesModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
+	}.addAttributeModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
 	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
 	public static final RegistryObject<SpiritOrbLootModifier.Serializer> SPIRIT_ORB_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("spirit_orb", SpiritOrbLootModifier.Serializer::new);
@@ -136,12 +124,12 @@ public final class Contents{
 	public static final RegistryObject<CosmeticRecipe.Serializer> COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("cosmetic", CosmeticRecipe.Serializer::new);
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
 
-	public static final RegistryObject<ContainerType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = CONTAINERS.register(
-			"goddess_statue", () -> new ContainerType<>(ModContainers::goddessStatue));
-	public static final RegistryObject<ContainerType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = CONTAINERS.register(
-			"horned_statue", () -> new ContainerType<>(ModContainers::hornedStatue));
+	public static final RegistryObject<MenuType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = CONTAINERS.register(
+			"goddess_statue", () -> new MenuType<>(ModContainers::goddessStatue));
+	public static final RegistryObject<MenuType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = CONTAINERS.register(
+			"horned_statue", () -> new MenuType<>(ModContainers::hornedStatue));
 
-	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setShouldWatch(true));
+	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
 
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);

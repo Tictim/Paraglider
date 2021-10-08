@@ -1,6 +1,6 @@
 package tictim.paraglider.client;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import tictim.paraglider.capabilities.PlayerMovement;
 
 public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer{
@@ -10,7 +10,7 @@ public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer{
 		return wheels;
 	}
 	public void setWheels(int wheels){
-		this.wheels = MathHelper.clamp(wheels, 1, 3);
+		this.wheels = Mth.clamp(wheels, 1, 3);
 	}
 
 	@Override protected void makeWheel(PlayerMovement h){

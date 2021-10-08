@@ -1,17 +1,17 @@
 package tictim.paraglider.event;
 
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.gen.FlatChunkGenerator;
-import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.settings.StructureSeparationSettings;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.StructureFeatureConfiguration;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -24,7 +24,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.ClientPlayerMovement;
@@ -68,7 +68,7 @@ public final class ParagliderEventHandler{
 				break;
 			case NETHER:{
 				ResourceLocation name = event.getName();
-				if(name==null||(!name.equals(Biomes.BASALT_DELTAS.getLocation())&&!name.equals(Biomes.CRIMSON_FOREST.getLocation())))
+				if(name==null||(!name.equals(Biomes.BASALT_DELTAS.location())&&!name.equals(Biomes.CRIMSON_FOREST.location())))
 					event.getGeneration().getStructures().add(() -> ModStructures.NETHER_HORNED_STATUE_CONFIGURED);
 				break;
 			}
@@ -78,13 +78,12 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onWorldLoad(WorldEvent.Load event){
-		if(!(event.getWorld() instanceof ServerWorld)) return;
-		ServerWorld world = (ServerWorld)event.getWorld();
+		if(!(event.getWorld() instanceof ServerLevel level)) return;
 
-		if(world.getChunkProvider().getChunkGenerator() instanceof FlatChunkGenerator&&
-				world.getDimensionKey().equals(World.OVERWORLD)) return;
+		if(level.getChunkSource().getGenerator() instanceof FlatLevelSource&&
+				level.dimension().equals(Level.OVERWORLD)) return;
 
-		Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(world.getChunkProvider().generator.func_235957_b_().func_236195_a_());
+		Map<StructureFeature<?>, StructureFeatureConfiguration> tempMap = new HashMap<>(level.getChunkSource().generator.getSettings().structureConfig());
 		if(ModCfg.enableStructures()){
 			tempMap.put(ModStructures.UNDERGROUND_HORNED_STATUE, ModStructures.UNDERGROUND_HORNED_STATUE_SEPARATION_SETTINGS);
 			tempMap.put(ModStructures.NETHER_HORNED_STATUE, ModStructures.NETHER_HORNED_STATUE_SEPARATION_SETTINGS);
@@ -94,12 +93,12 @@ public final class ParagliderEventHandler{
 			tempMap.remove(ModStructures.NETHER_HORNED_STATUE);
 			tempMap.remove(ModStructures.TARREY_TOWN_GODDESS_STATUE);
 		}
-		world.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
+		level.getChunkSource().generator.getSettings().structureConfig = tempMap;
 	}
 
 	@SubscribeEvent
 	public static void onPlayerInteract(PlayerInteractEvent event){
-		if(event.isCancelable()&&event.getHand()==Hand.OFF_HAND){
+		if(event.isCancelable()&&event.getHand()==InteractionHand.OFF_HAND){
 			ServerPlayerMovement m = ServerPlayerMovement.of(event.getPlayer());
 			if(m!=null&&m.isParagliding()) event.setCanceled(true);
 		}
@@ -114,9 +113,9 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
-		if(event.getEntityLiving().getActiveHand()==Hand.OFF_HAND&&event.getEntityLiving() instanceof PlayerEntity){
+		if(event.getEntityLiving().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntityLiving() instanceof Player){
 			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntityLiving());
-			if(m!=null&&m.isParagliding()) event.getEntityLiving().resetActiveHand();
+			if(m!=null&&m.isParagliding()) event.getEntityLiving().stopUsingItem();
 		}
 	}
 
@@ -124,10 +123,8 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onAttachPlayerCapabilities(AttachCapabilitiesEvent<Entity> event){
-		Entity o = event.getObject();
-		if(o instanceof PlayerEntity){
-			PlayerEntity p = (PlayerEntity)o;
-			PlayerMovement m = p instanceof ServerPlayerEntity ? new ServerPlayerMovement((ServerPlayerEntity)p) :
+		if(event.getObject() instanceof Player p){
+			PlayerMovement m = p instanceof ServerPlayer ? new ServerPlayerMovement((ServerPlayer)p) :
 					DistExecutor.unsafeRunForDist(
 							() -> () -> Client.createPlayerMovement(p),
 							() -> () -> new RemotePlayerMovement(p));
@@ -145,7 +142,7 @@ public final class ParagliderEventHandler{
 			}else{
 				if(h.isParagliding()){
 					double v = ModCfg.paraglidingSpeed();
-					event.player.jumpMovementFactor = (float)(DEFAULT_PARAGLIDING_SPEED*v);
+					event.player.flyingSpeed = (float)(DEFAULT_PARAGLIDING_SPEED*v);
 				}
 			}
 		}
@@ -163,20 +160,20 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onStartTracking(PlayerEvent.StartTracking event){
-		PlayerEntity player = event.getPlayer();
-		if(player instanceof ServerPlayerEntity){
+		Player player = event.getPlayer();
+		if(player instanceof ServerPlayer sp){
 			PlayerMovement h = PlayerMovement.of(event.getTarget());
 			if(h!=null){
 				SyncParaglidingMsg msg = new SyncParaglidingMsg(h);
 				if(ModCfg.traceParaglidingPacket()) ParagliderMod.LOGGER.debug("Sending packet {} from player {} to player {}", msg, h.player, player);
-				ModNet.NET.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)player), msg);
+				ModNet.NET.send(PacketDistributor.PLAYER.with(() -> sp), msg);
 			}
 		}
 	}
 
 	private static final class Client{
-		public static PlayerMovement createPlayerMovement(PlayerEntity player){
-			return player instanceof ClientPlayerEntity ? new ClientPlayerMovement(player) : new RemotePlayerMovement(player);
+		public static PlayerMovement createPlayerMovement(Player player){
+			return player instanceof LocalPlayer ? new ClientPlayerMovement(player) : new RemotePlayerMovement(player);
 		}
 	}
 }

@@ -1,18 +1,15 @@
 package tictim.paraglider.capabilities;
 
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import tictim.paraglider.wind.Wind;
 
 public final class Caps{
 	private Caps(){}
 
-	@CapabilityInject(PlayerMovement.class)
-	public static Capability<PlayerMovement> playerMovement = null;
-	@CapabilityInject(Paraglider.class)
-	public static Capability<Paraglider> paraglider = null;
-	@CapabilityInject(Wind.class)
-	public static Capability<Wind> wind = null;
-	@CapabilityInject(Stamina.class)
-	public static Capability<Stamina> stamina = null;
+	public static final Capability<PlayerMovement> playerMovement = CapabilityManager.get(new CapabilityToken<>(){});
+	public static final Capability<Paraglider> paraglider = CapabilityManager.get(new CapabilityToken<>(){});
+	public static final Capability<Wind> wind = CapabilityManager.get(new CapabilityToken<>(){});
+	public static final Capability<Stamina> stamina = CapabilityManager.get(new CapabilityToken<>(){});
 }

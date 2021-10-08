@@ -1,11 +1,10 @@
 package tictim.paraglider.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.raid.Raid;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,27 +26,25 @@ import java.util.UUID;
 @Mixin(Raid.class)
 public class MixinRaid{
 	@Shadow @Final
-	private Set<UUID> heroes;
+	private Set<UUID> heroesOfTheVillage;
 	@Shadow @Final
-	private ServerWorld world;
+	private ServerLevel level;
 
 	@Inject(
 			method = "tick()V",
 			at = {
-					@At(shift = Shift.AFTER, value = "FIELD", target = "Lnet/minecraft/world/raid/Raid;status:Lnet/minecraft/world/raid/Raid$Status;", opcode = Opcodes.PUTFIELD)
+					@At(shift = Shift.AFTER, value = "FIELD", target = "Lnet/minecraft/world/entity/raid/Raid;status:Lnet/minecraft/world/entity/raid/Raid$RaidStatus;", opcode = Opcodes.PUTFIELD)
 			},
 			slice = {
-					@Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/raid/Raid;isStarted()Z"))
+					@Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/raid/Raid;isStarted()Z"))
 			}
 	)
 	public void tick(CallbackInfo info){
 		if(!ModCfg.raidGivesVessel()) return;
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if(item==null) return;
-		for(UUID uuid : heroes){
-			Entity entity = world.getEntityByUuid(uuid);
-			if(entity instanceof PlayerEntity&&!entity.isSpectator()){
-				PlayerEntity player = (PlayerEntity)entity;
+		for(UUID uuid : heroesOfTheVillage){
+			if(level.getEntity(uuid) instanceof Player player&&!player.isSpectator()){
 				ParagliderUtils.giveItem(player, new ItemStack(item));
 			}
 		}

@@ -1,12 +1,12 @@
 package tictim.paraglider.contents;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.phys.Vec3;
 import tictim.paraglider.recipe.bargain.BargainResult;
 import tictim.paraglider.recipe.bargain.BargainResult.FailedReason;
 import tictim.paraglider.recipe.bargain.StatueBargain;
@@ -72,14 +72,14 @@ public final class ModContainers{ // TODO complete the dialog
 			.atFailure("bargain.dialog.horned_statue.failure.essence_full.0", ESSENCE_FULL)
 			.atFailureFallback("bargain.dialog.horned_statue.failure.fallback.0");
 
-	public static StatueBargainContainer goddessStatue(int windowId, PlayerInventory playerInventory){
+	public static StatueBargainContainer goddessStatue(int windowId, Inventory playerInventory){
 		return new StatueBargainContainer(Contents.GODDESS_STATUE_CONTAINER.get(),
 				windowId,
 				playerInventory,
 				GODDESS_STATUE_DIALOG,
 				ModAdvancements.PRAY_TO_THE_GODDESS);
 	}
-	public static StatueBargainContainer hornedStatue(int windowId, PlayerInventory playerInventory){
+	public static StatueBargainContainer hornedStatue(int windowId, Inventory playerInventory){
 		return new StatueBargainContainer(Contents.HORNED_STATUE_CONTAINER.get(),
 				windowId,
 				playerInventory,
@@ -87,16 +87,16 @@ public final class ModContainers{ // TODO complete the dialog
 				ModAdvancements.STATUES_BARGAIN);
 	}
 
-	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, double lookAtX, double lookAtY, double lookAtZ){
-		openContainer(player, containerFactory, new Vector3d(lookAtX, lookAtY, lookAtZ));
+	public static void openContainer(Player player, ContainerFactory<? extends StatueBargainContainer> containerFactory, double lookAtX, double lookAtY, double lookAtZ){
+		openContainer(player, containerFactory, new Vec3(lookAtX, lookAtY, lookAtZ));
 	}
 
-	public static void openContainer(PlayerEntity player, ContainerFactory<? extends StatueBargainContainer> containerFactory, @Nullable Vector3d lookAt){
-		player.openContainer(new INamedContainerProvider(){
-			@Override public ITextComponent getDisplayName(){
-				return StringTextComponent.EMPTY;
+	public static void openContainer(Player player, ContainerFactory<? extends StatueBargainContainer> containerFactory, @Nullable Vec3 lookAt){
+		player.openMenu(new MenuProvider(){
+			@Override public Component getDisplayName(){
+				return TextComponent.EMPTY;
 			}
-			@Nullable @Override public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity){
+			@Nullable @Override public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity){
 				StatueBargainContainer container = containerFactory.create(windowId, playerInventory);
 				if(container.getBargains().isEmpty()) return null;
 				if(lookAt!=null) container.setLookAt(lookAt);
@@ -106,7 +106,7 @@ public final class ModContainers{ // TODO complete the dialog
 	}
 
 	@FunctionalInterface
-	public interface ContainerFactory<C extends Container>{
-		C create(int windowId, PlayerInventory playerInventory);
+	public interface ContainerFactory<C extends AbstractContainerMenu>{
+		C create(int windowId, Inventory playerInventory);
 	}
 }

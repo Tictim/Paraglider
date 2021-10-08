@@ -1,29 +1,29 @@
 package tictim.paraglider.recipe.bargain;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-public final class NoInventory implements IInventory{
-	@Override public int getSizeInventory(){
+public final class NoInventory implements Container{
+	@Override public int getContainerSize(){
 		return 0;
 	}
 	@Override public boolean isEmpty(){
 		return true;
 	}
-	@Override public ItemStack getStackInSlot(int index){
+	@Override public ItemStack getItem(int index){
 		return ItemStack.EMPTY;
 	}
-	@Override public ItemStack decrStackSize(int index, int count){
+	@Override public ItemStack removeItem(int index, int count){
 		return ItemStack.EMPTY;
 	}
-	@Override public ItemStack removeStackFromSlot(int index){
+	@Override public ItemStack removeItemNoUpdate(int index){
 		return ItemStack.EMPTY;
 	}
-	@Override public void setInventorySlotContents(int index, ItemStack stack){}
-	@Override public void markDirty(){}
-	@Override public boolean isUsableByPlayer(PlayerEntity player){
+	@Override public void setItem(int index, ItemStack stack){}
+	@Override public void setChanged(){}
+	@Override public boolean stillValid(Player player){
 		return false;
 	}
-	@Override public void clear(){}
+	@Override public void clearContent(){}
 }

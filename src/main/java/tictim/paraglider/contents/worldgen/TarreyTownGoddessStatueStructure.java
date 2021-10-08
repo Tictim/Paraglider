@@ -1,56 +1,48 @@
 package tictim.paraglider.contents.worldgen;
 
-import net.minecraft.util.Rotation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.registry.DynamicRegistries;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
-import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.feature.structure.StructureStart;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 
-public class TarreyTownGoddessStatueStructure extends Structure<NoFeatureConfig>{
+public class TarreyTownGoddessStatueStructure extends StructureFeature<NoneFeatureConfiguration>{
 	public TarreyTownGoddessStatueStructure(){
-		super(NoFeatureConfig.field_236558_a_);
+		super(NoneFeatureConfiguration.CODEC);
 	}
 
-	@Override public IStartFactory<NoFeatureConfig> getStartFactory(){
+	@Override public StructureStartFactory<NoneFeatureConfiguration> getStartFactory(){
 		return Start::new;
 	}
-	@Override public GenerationStage.Decoration getDecorationStage(){
-		return GenerationStage.Decoration.LAKES;
+	@Override public GenerationStep.Decoration step(){
+		return GenerationStep.Decoration.LAKES;
 	}
 
-	public static final class Start extends StructureStart<NoFeatureConfig>{
-		public Start(Structure<NoFeatureConfig> structure,
-		             int chunkX,
-		             int chunkZ,
-		             MutableBoundingBox bounds,
-		             int references,
-		             long seed){
-			super(structure, chunkX, chunkZ, bounds, references, seed);
+	public static final class Start extends StructureStart<NoneFeatureConfiguration>{
+		public Start(StructureFeature<NoneFeatureConfiguration> pFeature, ChunkPos pChunkPos, int pReferences, long pSeed){
+			super(pFeature, pChunkPos, pReferences, pSeed);
 		}
 
-		@Override public void func_230364_a_(DynamicRegistries dynamicRegistries,
+		@Override public void generatePieces(RegistryAccess registry,
 		                                     ChunkGenerator chunkGenerator,
-		                                     TemplateManager templateManager,
-		                                     int chunkX,
-		                                     int chunkZ,
+		                                     StructureManager structureManager,
+		                                     ChunkPos chunkPos,
 		                                     Biome biome,
-		                                     NoFeatureConfig config){
-			Rotation rotation = Util.getRandomObject(Rotation.values(), this.rand);
-
-			ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
-			int x = chunkPos.getXStart()+this.rand.nextInt(16), z = chunkPos.getZStart()+this.rand.nextInt(16);
-			int surfaceY = chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG);
-			components.add(new TarreyTownGoddessStatuePiece(templateManager, new BlockPos(x, surfaceY-3, z), rotation));
-			recalculateStructureSize();
+		                                     NoneFeatureConfiguration config,
+		                                     LevelHeightAccessor level){
+			Rotation rotation = Util.getRandom(Rotation.values(), this.random);
+			int x = chunkPos.getMinBlockX()+this.random.nextInt(16), z = chunkPos.getMinBlockZ()+this.random.nextInt(16);
+			int surfaceY = chunkGenerator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level);
+			addPiece(new TarreyTownGoddessStatuePiece(structureManager, rotation, new BlockPos(x, surfaceY-3, z)));
 		}
 	}
 }

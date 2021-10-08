@@ -1,20 +1,20 @@
 package tictim.paraglider.utils;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.Objects;
 
 public final class Color{
 	public static Color of(int red, int green, int blue){
-		return new Color(MathHelper.clamp(red, 0, 255)/255.0f,
-				MathHelper.clamp(green, 0, 255)/255.0f,
-				MathHelper.clamp(blue, 0, 255)/255.0f);
+		return new Color(Mth.clamp(red, 0, 255)/255.0f,
+				Mth.clamp(green, 0, 255)/255.0f,
+				Mth.clamp(blue, 0, 255)/255.0f);
 	}
 	public static Color of(int red, int green, int blue, int alpha){
-		return new Color(MathHelper.clamp(red, 0, 255)/255.0f,
-				MathHelper.clamp(green, 0, 255)/255.0f,
-				MathHelper.clamp(blue, 0, 255)/255.0f,
-				MathHelper.clamp(alpha, 0, 255)/255.0f);
+		return new Color(Mth.clamp(red, 0, 255)/255.0f,
+				Mth.clamp(green, 0, 255)/255.0f,
+				Mth.clamp(blue, 0, 255)/255.0f,
+				Mth.clamp(alpha, 0, 255)/255.0f);
 	}
 
 	public final float red;

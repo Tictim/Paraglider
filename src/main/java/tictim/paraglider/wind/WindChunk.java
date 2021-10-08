@@ -2,8 +2,8 @@ package tictim.paraglider.wind;
 
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.ChunkPos;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -16,7 +16,7 @@ public final class WindChunk{
 	public WindChunk(ChunkPos chunkPos){
 		this.chunkPos = Objects.requireNonNull(chunkPos);
 	}
-	public WindChunk(PacketBuffer buf){
+	public WindChunk(FriendlyByteBuf buf){
 		chunkPos = new ChunkPos(buf.readInt(), buf.readInt());
 		for(int i = buf.readUnsignedByte(); i>0; i--){
 			putNode(new WindNode(buf, buf.readUnsignedByte()));
@@ -50,12 +50,12 @@ public final class WindChunk{
 	}
 
 	public boolean isInsideWind(int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
-		if(chunkPos.getXStart()>maxX||chunkPos.getXEnd()<minX||chunkPos.getZStart()>maxZ||chunkPos.getZEnd()<minZ) return false;
+		if(chunkPos.getMinBlockX()>maxX||chunkPos.getMaxBlockX()<minX||chunkPos.getMinBlockZ()>maxZ||chunkPos.getMaxBlockZ()<minZ) return false;
 
-		int xs = Math.max(chunkPos.getXStart(), minX);
-		int xe = Math.min(chunkPos.getXEnd(), maxX);
-		int zs = Math.max(chunkPos.getZStart(), minZ);
-		int ze = Math.min(chunkPos.getZEnd(), maxZ);
+		int xs = Math.max(chunkPos.getMinBlockX(), minX);
+		int xe = Math.min(chunkPos.getMaxBlockX(), maxX);
+		int zs = Math.max(chunkPos.getMinBlockZ(), minZ);
+		int ze = Math.min(chunkPos.getMaxBlockZ(), maxZ);
 		for(int x = xs; x<=xe; x++){
 			for(int z = zs; z<=ze; z++){
 				WindNode node = getNode(x, z);
@@ -78,7 +78,7 @@ public final class WindChunk{
 		}
 	}
 
-	public void write(PacketBuffer buf){
+	public void write(FriendlyByteBuf buf){
 		buf.writeInt(chunkPos.x);
 		buf.writeInt(chunkPos.z);
 		buf.writeVarInt(nodes.size());

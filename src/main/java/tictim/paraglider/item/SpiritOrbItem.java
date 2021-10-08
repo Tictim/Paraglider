@@ -1,14 +1,14 @@
 package tictim.paraglider.item;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class SpiritOrbItem extends Item{
 	public SpiritOrbItem(Properties properties){
 		super(properties);
 	}
 
-	@Override public boolean hasEffect(ItemStack stack){
+	@Override public boolean isFoil(ItemStack stack){
 		return true;
 	}
 }

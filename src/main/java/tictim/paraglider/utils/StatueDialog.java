@@ -1,7 +1,7 @@
 package tictim.paraglider.utils;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import tictim.paraglider.recipe.bargain.BargainResult;
 import tictim.paraglider.recipe.bargain.StatueBargain;
 
@@ -22,44 +22,44 @@ public final class StatueDialog{
 	}
 
 	public StatueDialog atInitial(String translationKey){
-		return add(Case.INITIAL, new TranslationTextComponent(translationKey));
+		return add(Case.INITIAL, new TranslatableComponent(translationKey));
 	}
 	public StatueDialog atSuccess(String translationKey){
-		return add(Case.BARGAIN_SUCCESS, new TranslationTextComponent(translationKey));
+		return add(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey));
 	}
 	public StatueDialog atSuccess(String translationKey, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		return add(Case.BARGAIN_SUCCESS, new TranslationTextComponent(translationKey), predicate);
+		return add(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey), predicate);
 	}
 	public StatueDialog atSuccessFallback(String translationKey){
-		return setFallback(Case.BARGAIN_SUCCESS, new TranslationTextComponent(translationKey));
+		return setFallback(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey));
 	}
 	public StatueDialog atFailure(String translationKey){
-		return add(Case.BARGAIN_FAILURE, new TranslationTextComponent(translationKey));
+		return add(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey));
 	}
 	public StatueDialog atFailure(String translationKey, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		return add(Case.BARGAIN_FAILURE, new TranslationTextComponent(translationKey), predicate);
+		return add(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey), predicate);
 	}
 	public StatueDialog atFailureFallback(String translationKey){
-		return setFallback(Case.BARGAIN_FAILURE, new TranslationTextComponent(translationKey));
+		return setFallback(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey));
 	}
 
-	public StatueDialog add(Case dialogCase, ITextComponent text){
+	public StatueDialog add(Case dialogCase, Component text){
 		return add(dialogCase, text, null);
 	}
-	public StatueDialog add(Case dialogCase, ITextComponent text, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		map.get(dialogCase).dialog.add(new Dialog(predicate, text));
+	public StatueDialog add(Case dialogCase, Component text, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
+		map.get(dialogCase).dialog.add(new Dialog(predicate, Objects.requireNonNull(text)));
 		return this;
 	}
 
-	public StatueDialog setFallback(Case dialogCase, ITextComponent text){
+	public StatueDialog setFallback(Case dialogCase, Component text){
 		return setFallback(dialogCase, text, null);
 	}
-	public StatueDialog setFallback(Case dialogCase, ITextComponent text, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		map.get(dialogCase).fallback = new Dialog(predicate, text);
+	public StatueDialog setFallback(Case dialogCase, Component text, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
+		map.get(dialogCase).fallback = new Dialog(predicate, Objects.requireNonNull(text));
 		return this;
 	}
 
-	@Nullable public ITextComponent getDialog(Random random, Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
+	@Nullable public Component getDialog(Random random, Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
 		return map.get(dialogCase).getDialog(random, bargain, result);
 	}
 
@@ -67,7 +67,7 @@ public final class StatueDialog{
 		private final List<Dialog> dialog = new ArrayList<>();
 		@Nullable private Dialog fallback;
 
-		@Nullable public ITextComponent getDialog(Random random, @Nullable StatueBargain bargain, @Nullable BargainResult bargainResult){
+		@Nullable public Component getDialog(Random random, @Nullable StatueBargain bargain, @Nullable BargainResult bargainResult){
 			List<Dialog> dialogs = new ArrayList<>();
 			for(Dialog f : dialog)
 				if(bargain==null||bargainResult==null||f.predicate==null||f.predicate.test(bargain, bargainResult))
@@ -77,15 +77,7 @@ public final class StatueDialog{
 		}
 	}
 
-	private static final class Dialog{
-		@Nullable private final BiPredicate<StatueBargain, BargainResult> predicate;
-		private final ITextComponent text;
-
-		public Dialog(@Nullable BiPredicate<StatueBargain, BargainResult> predicate, ITextComponent text){
-			this.predicate = predicate;
-			this.text = Objects.requireNonNull(text);
-		}
-	}
+	private record Dialog(@Nullable BiPredicate<StatueBargain, BargainResult> predicate, Component text){}
 
 	public enum Case{
 		INITIAL,

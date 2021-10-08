@@ -2,14 +2,15 @@ package tictim.paraglider.datagen;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
-import net.minecraft.advancements.criterion.ImpossibleTrigger;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.block.Blocks;
+import net.minecraft.advancements.critereon.ImpossibleTrigger;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModAdvancements;
 import tictim.paraglider.contents.ModTags;
@@ -17,12 +18,11 @@ import tictim.paraglider.contents.ModTags;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-import static net.minecraft.advancements.Advancement.Builder.builder;
 import static tictim.paraglider.ParagliderMod.MODID;
 
 public class AdvancementGen extends ModAdvancementProvider{
-	public AdvancementGen(DataGenerator generatorIn){
-		super(generatorIn);
+	public AdvancementGen(DataGenerator generator, ExistingFileHelper existingFileHelper){
+		super(generator, existingFileHelper);
 	}
 
 	@Override protected void registerAdvancements(Consumer<Advancement> consumer){
@@ -34,8 +34,8 @@ public class AdvancementGen extends ModAdvancementProvider{
 				false,
 				false,
 				false)
-				.withCriterion("crafting_table", InventoryChangeTrigger.Instance.forItems(Blocks.CRAFTING_TABLE))
-				.register(consumer, MODID+":root");
+				.addCriterion("crafting_table", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.CRAFTING_TABLE))
+				.save(consumer, MODID+":root");
 		Advancement paraglider = advancement(
 				new ItemStack(Contents.PARAGLIDER.get()),
 				"advancement.paraglider.paraglider",
@@ -43,9 +43,9 @@ public class AdvancementGen extends ModAdvancementProvider{
 				true,
 				true,
 				false)
-				.withParent(root)
-				.withCriterion("paraglider", InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(ModTags.PARAGLIDERS).build()))
-				.register(consumer, MODID+":paraglider");
+				.parent(root)
+				.addCriterion("paraglider", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(ModTags.PARAGLIDERS).build()))
+				.save(consumer, MODID+":paraglider");
 		Advancement prayToTheGoddess = advancement(
 				new ItemStack(Contents.GODDESS_STATUE.get()),
 				"advancement.paraglider.pray_to_the_goddess",
@@ -53,9 +53,9 @@ public class AdvancementGen extends ModAdvancementProvider{
 				true,
 				true,
 				false)
-				.withParent(root)
-				.withCriterion("bargain", new ImpossibleTrigger.Instance())
-				.register(consumer, ModAdvancements.PRAY_TO_THE_GODDESS.toString());
+				.parent(root)
+				.addCriterion("bargain", new ImpossibleTrigger.TriggerInstance())
+				.save(consumer, ModAdvancements.PRAY_TO_THE_GODDESS.toString());
 		Advancement statuesBargain = advancement(
 				new ItemStack(Contents.HORNED_STATUE.get()),
 				"advancement.paraglider.statues_bargain",
@@ -63,9 +63,9 @@ public class AdvancementGen extends ModAdvancementProvider{
 				true,
 				true,
 				false)
-				.withParent(root)
-				.withCriterion("bargain", new ImpossibleTrigger.Instance())
-				.register(consumer, ModAdvancements.STATUES_BARGAIN.toString());
+				.parent(root)
+				.addCriterion("bargain", new ImpossibleTrigger.TriggerInstance())
+				.save(consumer, ModAdvancements.STATUES_BARGAIN.toString());
 		Advancement allVessels = advancement(
 				new ItemStack(Contents.HEART_CONTAINER.get()),
 				"advancement.paraglider.all_vessels",
@@ -73,9 +73,9 @@ public class AdvancementGen extends ModAdvancementProvider{
 				true,
 				true,
 				false)
-				.withParent(root)
-				.withCriterion("code_triggered", new ImpossibleTrigger.Instance())
-				.register(consumer, ModAdvancements.ALL_VESSELS.toString());
+				.parent(root)
+				.addCriterion("code_triggered", new ImpossibleTrigger.TriggerInstance())
+				.save(consumer, ModAdvancements.ALL_VESSELS.toString());
 	}
 
 	private static Advancement.Builder advancement(ItemStack stack,
@@ -93,9 +93,9 @@ public class AdvancementGen extends ModAdvancementProvider{
 	                                               boolean showToast,
 	                                               boolean announceToChat,
 	                                               boolean hidden){
-		return builder().withDisplay(stack,
-				new TranslationTextComponent(display),
-				new TranslationTextComponent(display+".desc"),
+		return Advancement.Builder.advancement().display(stack,
+				new TranslatableComponent(display),
+				new TranslatableComponent(display+".desc"),
 				background,
 				frameType,
 				showToast,

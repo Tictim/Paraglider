@@ -1,20 +1,14 @@
 package tictim.paraglider.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 
-public final class StatueDialogMsg{
-	public static StatueDialogMsg read(PacketBuffer buf){
-		return new StatueDialogMsg(buf.readTextComponent());
+public record StatueDialogMsg(Component text){
+	public static StatueDialogMsg read(FriendlyByteBuf buf){
+		return new StatueDialogMsg(buf.readComponent());
 	}
 
-	public final ITextComponent text;
-
-	public StatueDialogMsg(ITextComponent text){
-		this.text = text;
-	}
-
-	public void write(PacketBuffer buf){
-		buf.writeTextComponent(text);
+	public void write(FriendlyByteBuf buf){
+		buf.writeComponent(text);
 	}
 }

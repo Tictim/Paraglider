@@ -4,13 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,11 +42,11 @@ public class StatueBargainBuilder{
 		this.bargainOwner = Objects.requireNonNull(bargainOwner);
 	}
 
-	public StatueBargainBuilder demand(IItemProvider item, int quantity){
-		return demand(Ingredient.fromItems(item), quantity);
+	public StatueBargainBuilder demand(ItemLike item, int quantity){
+		return demand(Ingredient.of(item), quantity);
 	}
-	public StatueBargainBuilder demand(ITag<Item> tag, int quantity){
-		return demand(Ingredient.fromTag(tag), quantity);
+	public StatueBargainBuilder demand(Tag<Item> tag, int quantity){
+		return demand(Ingredient.of(tag), quantity);
 	}
 	public StatueBargainBuilder demand(Ingredient ingredient, int quantity){
 		itemDemands.add(new QuantifiedIngredient(ingredient, quantity));
@@ -87,7 +87,7 @@ public class StatueBargainBuilder{
 		return this;
 	}
 
-	public void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id){
+	public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id){
 		consumerIn.accept(new Result(id,
 				bargainOwner,
 				itemDemands,
@@ -101,7 +101,7 @@ public class StatueBargainBuilder{
 				conditions));
 	}
 
-	public static class Result implements IFinishedRecipe{
+	public static class Result implements FinishedRecipe{
 		protected final ResourceLocation id;
 		protected final ResourceLocation bargainOwner;
 
@@ -139,7 +139,7 @@ public class StatueBargainBuilder{
 			this.conditions = conditions;
 		}
 
-		@Override public void serialize(JsonObject json){
+		@Override public void serializeRecipeData(JsonObject json){
 			json.addProperty("owner", bargainOwner.toString());
 			if(!itemDemands.isEmpty()||heartContainerDemands>0||staminaVesselDemands>0||essenceDemands>0){
 				JsonObject demands = new JsonObject();
@@ -172,16 +172,16 @@ public class StatueBargainBuilder{
 				json.add("conditions", a);
 			}
 		}
-		@Override public ResourceLocation getID(){
+		@Override public ResourceLocation getId(){
 			return id;
 		}
-		@Override public IRecipeSerializer<?> getSerializer(){
+		@Override public RecipeSerializer<?> getType(){
 			return Contents.STATUE_BARGAIN_RECIPE.get();
 		}
-		@Nullable @Override public JsonObject getAdvancementJson(){
+		@Nullable @Override public JsonObject serializeAdvancement(){
 			return null;
 		}
-		@Nullable @Override public ResourceLocation getAdvancementID(){
+		@Nullable @Override public ResourceLocation getAdvancementId(){
 			return null;
 		}
 	}

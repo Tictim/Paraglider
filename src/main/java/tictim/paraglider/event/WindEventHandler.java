@@ -1,19 +1,18 @@
 package tictim.paraglider.event;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.network.ModNet;
@@ -33,7 +32,7 @@ public final class WindEventHandler{
 	private static final ResourceLocation WIND_KEY = new ResourceLocation(MODID, "wind");
 
 	@SubscribeEvent
-	public static void onAttachWorldCapabilities(AttachCapabilitiesEvent<World> event){
+	public static void onAttachWorldCapabilities(AttachCapabilitiesEvent<Level> event){
 		event.addCapability(WIND_KEY, new Wind());
 	}
 
@@ -45,10 +44,10 @@ public final class WindEventHandler{
 
 		long gameTime = event.world.getGameTime();
 		if(gameTime%4==0){
-			List<? extends PlayerEntity> players = event.world.getPlayers();
+			List<? extends Player> players = event.world.players();
 			if(!players.isEmpty()){
-				for(PlayerEntity player : players){
-					if(Paraglider.isParaglider(player.getHeldItemMainhand()))
+				for(Player player : players){
+					if(Paraglider.isParaglider(player.getMainHandItem()))
 						placer.placeAround(player);
 				}
 			}
@@ -57,30 +56,28 @@ public final class WindEventHandler{
 		placer.checkPlacedWind(event.world);
 
 		for(WindChunk windChunk : placer.getModifiedChunks()){
-			Chunk chunk = event.world.getChunk(windChunk.getChunkPos().x, windChunk.getChunkPos().z);
+			LevelChunk chunk = event.world.getChunk(windChunk.getChunkPos().x, windChunk.getChunkPos().z);
 			ModNet.NET.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SyncWindMsg(windChunk));
 		}
 	}
 
 	@SubscribeEvent
 	public static void onChunkUnload(ChunkEvent.Unload event){
-		IWorld iWorld = event.getWorld();
-		if(!(iWorld instanceof World)) return;
-		World world = (World)iWorld;
-		Wind wind = Wind.of(world);
+		if(!(event.getWorld() instanceof Level level)) return;
+		Wind wind = Wind.of(level);
 		if(wind!=null)
 			wind.remove(event.getChunk().getPos());
 	}
 
 	@SubscribeEvent
 	public static void onChunkWatch(ChunkWatchEvent.Watch event){
-		ServerWorld world = event.getWorld();
-		Wind wind = Wind.of(world);
+		ServerLevel level = event.getWorld();
+		Wind wind = Wind.of(level);
 		if(wind==null) return;
 		ChunkPos pos = event.getPos();
 		WindChunk windChunk = wind.get(pos);
 		if(windChunk==null||windChunk.isEmpty()) return;
-		Chunk chunk = world.getChunk(pos.x, pos.z);
+		LevelChunk chunk = level.getChunk(pos.x, pos.z);
 		ModNet.NET.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SyncWindMsg(windChunk));
 	}
 }

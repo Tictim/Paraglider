@@ -3,13 +3,16 @@ buildscript {
         maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -17,13 +20,13 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = "${mod_version}"
 group = "tictim.${mod_id}"
-archivesBaseName = "${mod_name}-${mc_version}"
+archivesBaseName = "${mod_name}-1.17.1"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'parchment', version: '2021.10.31-1.17.1'
     // makeObfSourceJar = false
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -73,8 +76,8 @@ mixin {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+    minecraft "net.minecraftforge:forge:1.17.1-37.0.104"
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 }
 
 

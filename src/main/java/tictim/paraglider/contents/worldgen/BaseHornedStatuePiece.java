@@ -1,48 +1,36 @@
 package tictim.paraglider.contents.worldgen;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.gen.feature.structure.IStructurePieceType;
-import net.minecraft.world.gen.feature.structure.TemplateStructurePiece;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.feature.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.Random;
 
 public abstract class BaseHornedStatuePiece extends TemplateStructurePiece{
-	private final Rotation rotation;
-
-	public BaseHornedStatuePiece(IStructurePieceType structurePieceType, TemplateManager templateManager, BlockPos pos, Rotation rotation){
-		super(structurePieceType, 0);
-		this.templatePosition = pos;
-		this.rotation = rotation;
-		setup(templateManager);
+	public BaseHornedStatuePiece(StructurePieceType type, StructureManager structureManager, ResourceLocation location, Rotation rotation, BlockPos templatePos){
+		super(type, 0, structureManager, location, location.toString(), makeSettings(rotation), templatePos);
 	}
-	public BaseHornedStatuePiece(IStructurePieceType structurePieceType, TemplateManager templateManager, CompoundNBT nbt){
-		super(structurePieceType, nbt);
-		this.rotation = Rotation.valueOf(nbt.getString("Rot"));
-		setup(templateManager);
+	public BaseHornedStatuePiece(StructurePieceType type, ServerLevel level, CompoundTag tag){
+		super(type, tag, level, l -> makeSettings(Rotation.valueOf(tag.getString("Rot"))));
 	}
 
-	private void setup(TemplateManager templateManager){
-		setup(templateManager.getTemplateDefaulted(getTemplate()),
-				this.templatePosition,
-				new PlacementSettings()
-						.setRotation(rotation)
-						.setMirror(Mirror.NONE));
+	private static StructurePlaceSettings makeSettings(Rotation pRotation){
+		return new StructurePlaceSettings().setRotation(pRotation);
+		// .setRotationPivot(IglooPieces.PIVOTS.get(pLocation)) TODO hmm
 	}
 
-	protected abstract ResourceLocation getTemplate();
-
-	@Override protected void readAdditional(CompoundNBT nbt){
-		super.readAdditional(nbt);
-		nbt.putString("Rot", this.rotation.name());
+	@Override protected void addAdditionalSaveData(ServerLevel level, CompoundTag tag){
+		super.addAdditionalSaveData(level, tag);
+		tag.putString("Rot", getRotation().name());
 	}
 
-	@Override protected void handleDataMarker(String function, BlockPos pos, IServerWorld worldIn, Random rand, MutableBoundingBox sbb){}
+	@Override protected void handleDataMarker(String function, BlockPos pos, ServerLevelAccessor worldIn, Random rand, BoundingBox sbb){}
 }

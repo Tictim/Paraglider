@@ -1,7 +1,7 @@
 package tictim.paraglider.capabilities;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -17,6 +17,6 @@ public class Paraglider implements ICapabilityProvider{
 	}
 
 	public static boolean isParaglider(ItemStack stack){
-		return Caps.paraglider!=null&&!stack.isEmpty()&&(!stack.isDamageable()||stack.getDamage()<stack.getMaxDamage())&&stack.getCapability(Caps.paraglider).isPresent();
+		return Caps.paraglider!=null&&!stack.isEmpty()&&(!stack.isDamageableItem()||stack.getDamageValue()<stack.getMaxDamage())&&stack.getCapability(Caps.paraglider).isPresent();
 	}
 }
