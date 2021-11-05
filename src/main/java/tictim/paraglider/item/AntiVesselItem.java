@@ -13,6 +13,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,12 +32,12 @@ public class AntiVesselItem extends Item{
 				if(staminaVessels>0){
 					m.setStaminaVessels(0);
 					m.setStamina(Math.min(m.getStamina(), m.getMaxStamina()));
-					player.inventory.placeItemBackInInventory(world, new ItemStack(Contents.STAMINA_VESSEL.get(), staminaVessels));
+					ParagliderUtils.giveItem(player, new ItemStack(Contents.STAMINA_VESSEL.get(), staminaVessels));
 				}
 				int heartContainers = m.getHeartContainers();
 				if(heartContainers>0){
 					m.setHeartContainers(0);
-					player.inventory.placeItemBackInInventory(world, new ItemStack(Contents.HEART_CONTAINER.get(), heartContainers));
+					ParagliderUtils.giveItem(player, new ItemStack(Contents.HEART_CONTAINER.get(), heartContainers));
 				}
 				if(staminaVessels>0||heartContainers>0){
 					stack.shrink(1);
