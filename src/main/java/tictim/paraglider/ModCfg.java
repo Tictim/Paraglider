@@ -212,6 +212,7 @@ public final class ModCfg{
 						Same property cannot be specified multiple times. Wind sources with any invalid part will be excluded.""")
 				.defineListAllowEmpty(Collections.singletonList("windSources"),
 						() -> ImmutableList.of("fire",
+								"soul_fire",
 								"campfire#lit=true",
 								"soul_campfire#lit=true"),
 						o -> true);
