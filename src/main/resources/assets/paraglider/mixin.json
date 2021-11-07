@@ -1,15 +1,13 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"compatibilityLevel": "JAVA_8",
 	"package": "tictim.paraglider.mixin",
 	"refmap": "paraglider.refmap.json",
-	"client": [
-		"MixinPlayerModel",
+	"mixins": [
 		"MixinDragonFightManager",
 		"MixinRaid"
 	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+	"client": [
+		"MixinPlayerModel"
+	]
 }
