@@ -168,7 +168,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		ModifiableAttributeInstance attrib = player.getAttribute(attribute);
 		if(attrib==null) return;
 		attrib.removeModifier(uuid);
-		if(value>0)
+		if(value!=0)
 			attrib.applyPersistentModifier(new AttributeModifier(
 					uuid,
 					() -> name,
