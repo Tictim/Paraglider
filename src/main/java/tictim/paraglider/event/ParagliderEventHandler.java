@@ -106,9 +106,12 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onClone(PlayerEvent.Clone event){
-		PlayerMovement m1 = PlayerMovement.of(event.getOriginal());
+		Player original = event.getOriginal();
+		original.reviveCaps();
+		PlayerMovement m1 = PlayerMovement.of(original);
 		PlayerMovement m2 = PlayerMovement.of(event.getPlayer());
 		if(m1!=null&&m2!=null) m1.copyTo(m2);
+		original.invalidateCaps();
 	}
 
 	@SubscribeEvent
