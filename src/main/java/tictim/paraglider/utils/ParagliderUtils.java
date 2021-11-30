@@ -127,7 +127,7 @@ public final class ParagliderUtils{
 		if(ModCfg.maxHeartContainers()-m.getHeartContainers()<quantity) return false;
 		if(!simulate&&!player.level.isClientSide){
 			m.setHeartContainers(m.getHeartContainers()+quantity);
-			player.setHealth(player.getMaxHealth()+quantity);
+			player.setHealth(player.getMaxHealth());
 			if(effect) spawnParticle(player, ParticleTypes.HEART, 5+5*quantity);
 		}
 		return true;

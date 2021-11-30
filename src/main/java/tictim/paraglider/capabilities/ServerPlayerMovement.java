@@ -82,7 +82,6 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			vesselNeedsSync = true;
 			staminaNeedsUpdate = true;
 		}
-
 	}
 	@Override public void setHeartContainers(int heartContainers){
 		int cache = this.getHeartContainers();
@@ -99,9 +98,8 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 
 	@Override public void update(){
 		if(healthNeedsUpdate){
-			applyAttribute(Attributes.MAX_HEALTH, HEART_CONTAINER_UUID, "Heart Containers", ModCfg.additionalMaxHealth(getHeartContainers()));
-			float mhp = player.getMaxHealth();
-			if(player.getHealth()>mhp) player.setHealth(mhp);
+			double delta = applyAttribute(Attributes.MAX_HEALTH, HEART_CONTAINER_UUID, "Heart Containers", ModCfg.additionalMaxHealth(getHeartContainers()));
+			player.setHealth(Math.min(player.getMaxHealth(), player.getHealth()+Math.max(0, (float)delta)));
 			healthNeedsUpdate = false;
 		}
 		if(staminaNeedsUpdate){
@@ -164,16 +162,21 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 	}
 
-	private void applyAttribute(Attribute attribute, UUID uuid, String name, double value){
+	/**
+	 * @return Amount of change in stat
+	 */
+	private double applyAttribute(Attribute attribute, UUID uuid, String name, double value){
 		AttributeInstance attrib = player.getAttribute(attribute);
-		if(attrib==null) return;
-		attrib.removeModifier(uuid);
+		if(attrib==null) return 0;
+		AttributeModifier prev = attrib.getModifier(uuid);
+		if(prev!=null) attrib.removeModifier(prev);
 		if(value!=0)
 			attrib.addPermanentModifier(new AttributeModifier(
 					uuid,
 					() -> name,
 					value,
 					AttributeModifier.Operation.ADDITION));
+		return value - (prev!=null ? prev.getAmount() : 0);
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
