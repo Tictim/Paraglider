@@ -17,8 +17,8 @@ import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent;
-import net.minecraftforge.fmlclient.gui.GuiUtils;
+import net.minecraftforge.client.gui.GuiUtils;
+import net.minecraftforge.common.MinecraftForge;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.client.DisableStaminaRender;
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+import static net.minecraftforge.client.event.ScreenEvent.BackgroundDrawnEvent;
 import static tictim.paraglider.client.StaminaWheelConstants.IDLE;
 import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
@@ -92,11 +92,11 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		}
 	}
 
-	@Override public void renderBackground(PoseStack matrixStack, int vOffset){
+	@Override public void renderBackground(PoseStack pose, int vOffset){
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
-			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x10101010, 0x30101010);
-			EVENT_BUS.post(new BackgroundDrawnEvent(this, matrixStack));
+			this.fillGradient(pose, 0, 0, this.width, this.height, 0x10101010, 0x30101010);
+			MinecraftForge.EVENT_BUS.post(new BackgroundDrawnEvent(this, pose));
 		}else this.renderDirtBackground(vOffset);
 	}
 

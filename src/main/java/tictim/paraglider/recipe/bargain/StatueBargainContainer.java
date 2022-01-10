@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.network.ModNet;

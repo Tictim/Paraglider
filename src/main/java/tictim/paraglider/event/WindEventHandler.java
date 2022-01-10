@@ -12,7 +12,7 @@ import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.network.ModNet;
