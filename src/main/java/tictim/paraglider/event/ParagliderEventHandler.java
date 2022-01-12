@@ -61,12 +61,14 @@ public final class ParagliderEventHandler{
 
 		ChunkGenerator chunkGenerator = level.getChunkSource().getGenerator();
 
-		if(chunkGenerator instanceof FlatLevelSource&&
-				level.dimension().equals(Level.OVERWORLD)) return;
+		if(chunkGenerator instanceof FlatLevelSource&&level.dimension().equals(Level.OVERWORLD)) return;
 
 		ImmutableMap.Builder<StructureFeature<?>, ImmutableMultimap<ConfiguredStructureFeature<?, ?>, ResourceKey<Biome>>> b = ImmutableMap.builder();
 
-		Map<StructureFeature<?>, HashMultimap<ConfiguredStructureFeature<?, ?>, ResourceKey<Biome>>> fuckssake = new HashMap<>();
+		Map<StructureFeature<?>, HashMultimap<ConfiguredStructureFeature<?, ?>, ResourceKey<Biome>>> map = new HashMap<>();
+		map.put(ModStructures.TARREY_TOWN_GODDESS_STATUE, HashMultimap.create());
+		map.put(ModStructures.UNDERGROUND_HORNED_STATUE, HashMultimap.create());
+		map.put(ModStructures.NETHER_HORNED_STATUE, HashMultimap.create());
 
 		for(Entry<ResourceKey<Biome>, Biome> e : level.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY).entrySet()){
 			Biome biome = e.getValue();
@@ -77,8 +79,7 @@ public final class ParagliderEventHandler{
 				case MESA:
 				case PLAINS:
 				case SAVANNA:
-					fuckssake.computeIfAbsent(ModStructures.TARREY_TOWN_GODDESS_STATUE, x -> HashMultimap.create())
-							.put(ModStructures.TARREY_TOWN_GODDESS_STATUE_CONFIGURED, biomeKey);
+					map.get(ModStructures.TARREY_TOWN_GODDESS_STATUE).put(ModStructures.TARREY_TOWN_GODDESS_STATUE_CONFIGURED, biomeKey);
 				case NONE:
 				case TAIGA:
 				case FOREST:
@@ -88,21 +89,19 @@ public final class ParagliderEventHandler{
 				case DESERT:
 				case RIVER:
 				case MUSHROOM:
-					fuckssake.computeIfAbsent(ModStructures.UNDERGROUND_HORNED_STATUE, x -> HashMultimap.create())
-							.put(ModStructures.UNDERGROUND_HORNED_STATUE_CONFIGURED, biomeKey);
+					map.get(ModStructures.UNDERGROUND_HORNED_STATUE).put(ModStructures.UNDERGROUND_HORNED_STATUE_CONFIGURED, biomeKey);
 					break;
 				case NETHER:
 					if(!biomeKey.equals(Biomes.BASALT_DELTAS)&&!biomeKey.equals(Biomes.CRIMSON_FOREST))
-						fuckssake.computeIfAbsent(ModStructures.NETHER_HORNED_STATUE, x -> HashMultimap.create())
-								.put(ModStructures.NETHER_HORNED_STATUE_CONFIGURED, biomeKey);
+						map.get(ModStructures.NETHER_HORNED_STATUE).put(ModStructures.NETHER_HORNED_STATUE_CONFIGURED, biomeKey);
 					break;
 				// case THEEND: case OCEAN: case SWAMP: // no-op
 			}
 		}
 
-		fuckssake.forEach((k, v) -> b.put(k, ImmutableMultimap.copyOf(v)));
+		map.forEach((k, v) -> b.put(k, ImmutableMultimap.copyOf(v)));
 		chunkGenerator.getSettings().configuredStructures.forEach((k, v) -> {
-			if(!fuckssake.containsKey(k))
+			if(!map.containsKey(k))
 				b.put(k, v);
 		});
 

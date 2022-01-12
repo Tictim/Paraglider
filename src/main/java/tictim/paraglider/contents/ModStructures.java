@@ -5,11 +5,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.StructureSettings;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.feature.StructurePieceType;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.RangeConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.StructureFeatureConfiguration;
+import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +43,7 @@ public final class ModStructures{
 
 	public static final NetherHornedStatue NETHER_HORNED_STATUE = new NetherHornedStatue();
 	public static final StructurePieceType NETHER_HORNED_STATUE_PIECE_TYPE = NetherHornedStatue.pieceType();
-	public static final ConfiguredStructureFeature<?, ?> NETHER_HORNED_STATUE_CONFIGURED = NETHER_HORNED_STATUE.configured(NoneFeatureConfiguration.NONE);
+	public static final ConfiguredStructureFeature<?, ?> NETHER_HORNED_STATUE_CONFIGURED = NETHER_HORNED_STATUE.configured(new RangeConfiguration(UniformHeight.of(VerticalAnchor.absolute(32), VerticalAnchor.belowTop(2))));
 	public static final StructureFeatureConfiguration NETHER_HORNED_STATUE_SEPARATION_SETTINGS = new StructureFeatureConfiguration(
 			32, // spacing
 			8, // separation

@@ -101,7 +101,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			yOffset = Math.min(113, this.buttonIndexOffset*k);
 			if(this.buttonIndexOffset==offScreenBargains-1) yOffset = 113;
 		}else yOffset = 0;
-		blit(matrixStack, left+90, top+1+yOffset, this.getBlitOffset(), 0, 199, 6, 27, 256, 512);
+		blit(matrixStack, left+90, top+1+yOffset, this.getBlitOffset(), 0, 199, 6, 27, 512, 256);
 	}
 
 	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
@@ -120,7 +120,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 	@Override protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y){
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 		RenderSystem.setShaderTexture(0, MERCHANT_GUI_TEXTURE);
-		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT, 256, 512);
+		blit(matrixStack, getLeft(), getTop(), this.getBlitOffset(), 4, 17, SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT, 512, 256);
 
 		staminaWheelRenderer.renderStamina(matrixStack, getLeft()+SCROLL_BOX_THING_WIDTH+5, getTop()-5-WHEEL_RADIUS, 0);
 
@@ -305,8 +305,8 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 					171,
 					10,
 					9,
-					256,
-					512);
+					512,
+					256);
 		}
 
 		public void renderItems(){

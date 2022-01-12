@@ -35,10 +35,10 @@ public class TarreyTownGoddessStatue extends StructureFeature<NoneFeatureConfigu
 	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context){
 		BlockPos pos = new BlockPos(context.chunkPos().getMinBlockX(), 90, context.chunkPos().getMinBlockZ());
 		Rotation rotation = Rotation.getRandom(context.random());
-		addPieces(context.structureManager(), pos, rotation, builder, context.random());
+		addPieces(context.structureManager(), pos, rotation, builder);
 	}
 
-	public static void addPieces(StructureManager structureManager, BlockPos pos, Rotation rotation, StructurePieceAccessor pieces, Random random){
+	public static void addPieces(StructureManager structureManager, BlockPos pos, Rotation rotation, StructurePieceAccessor pieces){
 		pieces.addPiece(new Piece(structureManager, rotation, pos));
 	}
 
@@ -67,13 +67,11 @@ public class TarreyTownGoddessStatue extends StructureFeature<NoneFeatureConfigu
 		                                  BoundingBox box,
 		                                  ChunkPos chunkPos,
 		                                  BlockPos pos){
-			BlockPos pos2 = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(placeSettings, new BlockPos(pos.getX(), 0, pos.getZ())));
+			BlockPos pos2 = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(placeSettings, BlockPos.ZERO));
 
 			int height = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos2.getX(), pos2.getZ());
-			BlockPos temp = this.templatePosition;
-			this.templatePosition = this.templatePosition.offset(0, height-3, 0);
+			this.templatePosition = new BlockPos(templatePosition.getX(), height-3, templatePosition.getZ());
 			super.postProcess(level, structureFeatureManager, chunkGenerator, random, box, chunkPos, pos);
-			this.templatePosition = temp;
 		}
 	}
 }
