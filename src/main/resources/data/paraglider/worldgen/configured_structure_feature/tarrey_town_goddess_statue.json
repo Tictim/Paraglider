@@ -1,0 +1,7 @@
+{
+	"type": "paraglider:tarrey_town_goddess_statue",
+	"config": { },
+	"biomes": "#paraglider:has_structure/tarrey_town_goddess_statue",
+	"adapt_noise": true,
+	"spawn_overrides": { }
+}

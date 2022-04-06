@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package tictim.paraglider.datagen.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -45,7 +45,7 @@ public class StatueBargainBuilder{
 	public StatueBargainBuilder demand(ItemLike item, int quantity){
 		return demand(Ingredient.of(item), quantity);
 	}
-	public StatueBargainBuilder demand(Tag<Item> tag, int quantity){
+	public StatueBargainBuilder demand(TagKey<Item> tag, int quantity){
 		return demand(Ingredient.of(tag), quantity);
 	}
 	public StatueBargainBuilder demand(Ingredient ingredient, int quantity){

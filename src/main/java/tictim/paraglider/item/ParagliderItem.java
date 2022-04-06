@@ -12,6 +12,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.contents.Contents;
@@ -34,7 +36,8 @@ public class ParagliderItem extends Item implements DyeableLeatherItem{
 		return ModCfg.paragliderDurability()>0;
 	}
 	@Override public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair){
-		return Tags.Items.LEATHER.contains(repair.getItem());
+		ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();
+		return tags!=null&&tags.getTag(Tags.Items.LEATHER).contains(repair.getItem());
 	}
 
 	@Nullable @Override public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt){

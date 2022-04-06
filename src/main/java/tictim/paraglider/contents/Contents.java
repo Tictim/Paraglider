@@ -22,14 +22,22 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import tictim.paraglider.block.GoddessStatueBlock;
 import tictim.paraglider.block.HornedStatueBlock;
+import tictim.paraglider.contents.worldgen.NetherHornedStatue;
+import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
+import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
 import tictim.paraglider.item.AntiVesselItem;
 import tictim.paraglider.item.EssenceItem;
 import tictim.paraglider.item.HeartContainerItem;
@@ -49,6 +57,7 @@ import java.util.List;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
+@Mod.EventBusSubscriber(modid = MODID, bus = Bus.MOD)
 public final class Contents{
 	private Contents(){}
 
@@ -62,11 +71,12 @@ public final class Contents{
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
-	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, MODID);
+	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MODID);
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
+	public static final DeferredRegister<StructureFeature<?>> STRUCTURE_FEATURES = DeferredRegister.create(ForgeRegistries.STRUCTURE_FEATURES, MODID);
 
-	public static final RecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), new RecipeType<StatueBargain>(){});
+	public static final RecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = new RecipeType<>(){};
 
 	private static BlockBehaviour.Properties statueProperties(){
 		return Block.Properties.of(Material.STONE)
@@ -131,6 +141,10 @@ public final class Contents{
 
 	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
 
+	public static final RegistryObject<StructureFeature<?>> UNDERGROUND_HORNED_STATUE = STRUCTURE_FEATURES.register("underground_horned_statue", UndergroundHornedStatue::new);
+	public static final RegistryObject<StructureFeature<?>> NETHER_HORNED_STATUE = STRUCTURE_FEATURES.register("nether_horned_statue", NetherHornedStatue::new);
+	public static final RegistryObject<StructureFeature<?>> TARREY_TOWN_GODDESS_STATUE = STRUCTURE_FEATURES.register("tarrey_town_goddess_statue", TarreyTownGoddessStatue::new);
+
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
@@ -139,5 +153,11 @@ public final class Contents{
 		LOOT_MODIFIER_SERIALIZERS.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);
 		ATTRIBUTES.register(eventBus);
+		STRUCTURE_FEATURES.register(eventBus);
+	}
+
+	@SubscribeEvent
+	public static void registerRecipeType(RegistryEvent.Register<RecipeSerializer<?>> event){
+		Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), STATUE_BARGAIN_RECIPE_TYPE);
 	}
 }

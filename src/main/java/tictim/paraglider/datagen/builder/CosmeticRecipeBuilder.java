@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package tictim.paraglider.datagen.builder;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
