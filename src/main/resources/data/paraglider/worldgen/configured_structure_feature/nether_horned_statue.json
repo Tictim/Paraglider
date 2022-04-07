@@ -12,6 +12,6 @@
 		}
 	},
 	"biomes": "#paraglider:has_structure/nether_horned_statue",
-	"adapt_noise": true,
+	"adapt_noise": false,
 	"spawn_overrides": { }
 }

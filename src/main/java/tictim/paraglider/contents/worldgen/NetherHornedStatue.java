@@ -47,12 +47,12 @@ public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
 		ChunkPos chunkPos = c.chunkPos();
 		r.setLargeFeatureSeed(c.seed(), chunkPos.x, chunkPos.z);
 		int x = chunkPos.getMinBlockX()+r.nextInt(16);
-		int y = chunkPos.getMinBlockZ()+r.nextInt(16);
+		int z = chunkPos.getMinBlockZ()+r.nextInt(16);
 		int seaLevel = c.chunkGenerator().getSeaLevel();
 		WorldGenerationContext wgc = new WorldGenerationContext(c.chunkGenerator(), c.heightAccessor());
 		int wat = c.config().height.sample(r, wgc);
-		NoiseColumn noise = c.chunkGenerator().getBaseColumn(x, y, c.heightAccessor());
-		MutableBlockPos mpos = new MutableBlockPos(x, wat, y);
+		NoiseColumn noise = c.chunkGenerator().getBaseColumn(x, z, c.heightAccessor());
+		MutableBlockPos mpos = new MutableBlockPos(x, wat, z);
 
 		while(wat>seaLevel){
 			BlockState s = noise.getBlock(wat);
@@ -61,8 +61,8 @@ public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
 			if(s.isAir()&&(s2.is(Blocks.SOUL_SAND)||s2.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos.setY(wat), Direction.UP))) break;
 		}
 
-		if(wat<=seaLevel||!c.validBiome().test(c.chunkGenerator().getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(wat), QuartPos.fromBlock(y)))) return Optional.empty();
-		BlockPos pos2 = new BlockPos(x, wat, y);
+		if(wat<=seaLevel||!c.validBiome().test(c.chunkGenerator().getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(wat), QuartPos.fromBlock(z)))) return Optional.empty();
+		BlockPos pos2 = new BlockPos(x, wat-1, z);
 		return Optional.of((builder, context) -> builder.addPiece(new Piece(c.structureManager(), Rotation.getRandom(r), pos2)));
 	}
 

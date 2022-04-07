@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.feature.NoiseEffect;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -33,8 +34,9 @@ public class UndergroundHornedStatue extends StructureFeature<NoneFeatureConfigu
 	}
 
 	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context){
-		BlockPos pos = new BlockPos(context.chunkPos().getMinBlockX(), 90, context.chunkPos().getMinBlockZ());
-		Rotation rotation = Rotation.getRandom(context.random());
+		WorldgenRandom rng = context.random();
+		BlockPos pos = new BlockPos(context.chunkPos().getMinBlockX()+5+rng.nextInt(6), 90, context.chunkPos().getMinBlockZ()+5+rng.nextInt(6));
+		Rotation rotation = Rotation.getRandom(rng);
 		addPieces(context.structureManager(), pos, rotation, builder);
 	}
 

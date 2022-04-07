@@ -2,6 +2,6 @@
 	"type": "paraglider:underground_horned_statue",
 	"config": { },
 	"biomes": "#paraglider:has_structure/underground_horned_statue",
-	"adapt_noise": true,
+	"adapt_noise": false,
 	"spawn_overrides": { }
 }
