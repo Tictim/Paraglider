@@ -26,7 +26,6 @@ import net.minecraft.world.level.levelgen.structure.pieces.PieceGenerator;
 import net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import tictim.paraglider.contents.ModStructures;
 
 import java.util.Optional;
@@ -46,8 +45,8 @@ public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
 		WorldgenRandom r = new WorldgenRandom(new LegacyRandomSource(0L));
 		ChunkPos chunkPos = c.chunkPos();
 		r.setLargeFeatureSeed(c.seed(), chunkPos.x, chunkPos.z);
-		int x = chunkPos.getMinBlockX()+r.nextInt(16);
-		int z = chunkPos.getMinBlockZ()+r.nextInt(16);
+		int x = chunkPos.getMinBlockX()+r.nextInt(12);
+		int z = chunkPos.getMinBlockZ()+r.nextInt(12);
 		int seaLevel = c.chunkGenerator().getSeaLevel();
 		WorldGenerationContext wgc = new WorldGenerationContext(c.chunkGenerator(), c.heightAccessor());
 		int wat = c.config().height.sample(r, wgc);
@@ -94,13 +93,11 @@ public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
 		                                  BoundingBox box,
 		                                  ChunkPos chunkPos,
 		                                  BlockPos pos){
-			BlockPos pos2 = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(placeSettings, PIVOT));
-
 			int seaLevel = chunkGenerator.getSeaLevel();
 			int y = seaLevel+random.nextInt(chunkGenerator.getGenDepth()-2-seaLevel);
-			NoiseColumn baseColumn = chunkGenerator.getBaseColumn(pos2.getX(), pos2.getZ(), level);
+			NoiseColumn baseColumn = chunkGenerator.getBaseColumn(this.templatePosition.getX(), this.templatePosition.getZ(), level);
 
-			for(MutableBlockPos mpos = new MutableBlockPos(pos2.getX(), y, pos2.getZ()); y>seaLevel; --y){
+			for(MutableBlockPos mpos = new MutableBlockPos(this.templatePosition.getX(), y, this.templatePosition.getZ()); y>seaLevel; --y){
 				BlockState state = baseColumn.getBlock(y);
 				BlockState downState = baseColumn.getBlock(y-1);
 				if(state.isAir()&&(downState.is(Blocks.SOUL_SAND)||downState.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos.setY(y-1), Direction.UP))) break;
