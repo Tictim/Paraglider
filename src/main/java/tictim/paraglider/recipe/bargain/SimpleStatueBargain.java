@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
@@ -274,7 +273,7 @@ public class SimpleStatueBargain implements StatueBargain{
 		return Contents.STATUE_BARGAIN_RECIPE.get();
 	}
 	@Override public RecipeType<?> getType(){
-		return Contents.STATUE_BARGAIN_RECIPE_TYPE;
+		return Contents.STATUE_BARGAIN_RECIPE_TYPE.get();
 	}
 
 	@Override public String toString(){
@@ -292,7 +291,7 @@ public class SimpleStatueBargain implements StatueBargain{
 				'}';
 	}
 
-	public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SimpleStatueBargain>{
+	public static class Serializer implements RecipeSerializer<SimpleStatueBargain>{
 		@Override public SimpleStatueBargain fromJson(ResourceLocation recipeId, JsonObject json){
 			final ResourceLocation bargainOwner = new ResourceLocation(GsonHelper.getAsString(json, "owner"));
 			final List<QuantifiedIngredient> itemDemands;
@@ -304,9 +303,7 @@ public class SimpleStatueBargain implements StatueBargain{
 			final int staminaVesselOffers;
 			final int essenceOffers;
 
-			@SuppressWarnings("ConstantConditions")
 			JsonObject demands = GsonHelper.getAsJsonObject(json, "demands", null);
-			//noinspection ConstantConditions
 			if(demands!=null){
 				JsonArray items = GsonHelper.getAsJsonArray(demands, "items", null);
 				if(items==null||items.size()==0) itemDemands = Collections.emptyList();
@@ -325,9 +322,7 @@ public class SimpleStatueBargain implements StatueBargain{
 				essenceDemands = 0;
 			}
 
-			@SuppressWarnings("ConstantConditions")
 			JsonObject offers = GsonHelper.getAsJsonObject(json, "offers", null);
-			//noinspection ConstantConditions
 			if(offers!=null){
 				JsonArray items = GsonHelper.getAsJsonArray(offers, "items", null);
 				if(items==null||items.size()==0) itemOffers = Collections.emptyList();

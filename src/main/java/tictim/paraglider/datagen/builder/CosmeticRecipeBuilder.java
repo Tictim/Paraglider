@@ -95,7 +95,7 @@ public class CosmeticRecipeBuilder{
 			if(!this.group.isEmpty()) json.addProperty("group", this.group);
 			json.add("input", this.input.toJson());
 			json.add("reagent", this.reagent.toJson());
-			json.addProperty("result", Objects.requireNonNull(this.result.getRegistryName()).toString());
+			json.addProperty("result", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
 		}
 
 		@Override public RecipeSerializer<?> getType(){

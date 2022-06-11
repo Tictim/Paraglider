@@ -82,16 +82,14 @@ public class ParagliderMod{
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event){
 		DataGenerator gen = event.getGenerator();
-		if(event.includeServer()){
-			gen.addProvider(new RecipeGen(gen));
-			BlockTagGen blockTagGen = new BlockTagGen(gen, event.getExistingFileHelper());
-			gen.addProvider(blockTagGen);
-			gen.addProvider(new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
-			gen.addProvider(new BiomeTagGen(gen, event.getExistingFileHelper()));
-			gen.addProvider(new LootTableGen(gen));
-			gen.addProvider(new LootModifierProvider(gen, MODID));
-			gen.addProvider(new AdvancementGen(gen, event.getExistingFileHelper()));
-		}
+		gen.addProvider(event.includeServer(), new RecipeGen(gen));
+		BlockTagGen blockTagGen = new BlockTagGen(gen, event.getExistingFileHelper());
+		gen.addProvider(event.includeServer(), blockTagGen);
+		gen.addProvider(event.includeServer(), new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
+		gen.addProvider(event.includeServer(), new BiomeTagGen(gen, event.getExistingFileHelper()));
+		gen.addProvider(event.includeServer(), new LootTableGen(gen));
+		gen.addProvider(event.includeServer(), new LootModifierProvider(gen, MODID));
+		gen.addProvider(event.includeServer(), new AdvancementGen(gen, event.getExistingFileHelper()));
 	}
 
 	@SubscribeEvent

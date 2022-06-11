@@ -1,9 +1,8 @@
 package tictim.paraglider.contents;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -25,11 +24,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -57,7 +52,6 @@ import java.util.List;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID, bus = Bus.MOD)
 public final class Contents{
 	private Contents(){}
 
@@ -75,8 +69,9 @@ public final class Contents{
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
 	public static final DeferredRegister<StructureFeature<?>> STRUCTURE_FEATURES = DeferredRegister.create(ForgeRegistries.STRUCTURE_FEATURES, MODID);
+	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
 
-	public static final RecipeType<StatueBargain> STATUE_BARGAIN_RECIPE_TYPE = new RecipeType<>(){};
+	public static final RegistryObject<RecipeType<StatueBargain>> STATUE_BARGAIN_RECIPE_TYPE = RECIPE_TYPES.register("statue_bargain", () -> RecipeType.simple(new ResourceLocation(MODID, "statue_bargain")));
 
 	private static BlockBehaviour.Properties statueProperties(){
 		return Block.Properties.of(Material.STONE)
@@ -90,15 +85,15 @@ public final class Contents{
 			() -> new GoddessStatueBlock(statueProperties()));
 	public static final RegistryObject<Block> KAKARIKO_GODDESS_STATUE = BLOCKS.register("kakariko_goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties(),
-					new TranslatableComponent("tooltip.paraglider.kakariko_goddess_statue.0")
+					Component.translatable("tooltip.paraglider.kakariko_goddess_statue.0")
 							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> GORON_GODDESS_STATUE = BLOCKS.register("goron_goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties().lightLevel(value -> 15),
-					new TranslatableComponent("tooltip.paraglider.goron_goddess_statue.0")
+					Component.translatable("tooltip.paraglider.goron_goddess_statue.0")
 							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> RITO_GODDESS_STATUE = BLOCKS.register("rito_goddess_statue",
 			() -> new GoddessStatueBlock(statueProperties(),
-					new TranslatableComponent("tooltip.paraglider.rito_goddess_statue.0")
+					Component.translatable("tooltip.paraglider.rito_goddess_statue.0")
 							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 	public static final RegistryObject<Block> HORNED_STATUE = BLOCKS.register("horned_statue",
 			() -> new HornedStatueBlock(statueProperties()));
@@ -154,10 +149,5 @@ public final class Contents{
 		RECIPE_SERIALIZERS.register(eventBus);
 		ATTRIBUTES.register(eventBus);
 		STRUCTURE_FEATURES.register(eventBus);
-	}
-
-	@SubscribeEvent
-	public static void registerRecipeType(RegistryEvent.Register<RecipeSerializer<?>> event){
-		Registry.register(Registry.RECIPE_TYPE, new ResourceLocation(MODID, "statue_bargain"), STATUE_BARGAIN_RECIPE_TYPE);
 	}
 }

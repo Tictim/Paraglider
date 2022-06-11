@@ -5,8 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.event.ParagliderClientEventHandler;
 
@@ -18,7 +17,7 @@ public class ParagliderSettingScreen extends Screen{
 	private double displaySaveMessageTicks;
 
 	public ParagliderSettingScreen(){
-		super(TextComponent.EMPTY);
+		super(Component.empty());
 	}
 
 	public void saveSettings(){
@@ -29,7 +28,7 @@ public class ParagliderSettingScreen extends Screen{
 	}
 
 	@Override protected void init(){
-		addRenderableWidget(new Button(width/2-64, height/2-8, 128, 20, new TranslatableComponent("paragliderSettings.staminaWheelSettings"), b -> {
+		addRenderableWidget(new Button(width/2-64, height/2-8, 128, 20, Component.translatable("paragliderSettings.staminaWheelSettings"), b -> {
 			//noinspection ConstantConditions
 			this.minecraft.setScreen(new StaminaWheelSettingScreen(this));
 		}));
@@ -40,7 +39,7 @@ public class ParagliderSettingScreen extends Screen{
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 		if(saveResult!=null){
 			Boolean r = saveResult.get();
-			font.drawShadow(matrixStack, new TranslatableComponent(
+			font.drawShadow(matrixStack, Component.translatable(
 					r==null ? "paragliderSettings.saving" :
 							r ? "paragliderSettings.saving.success" :
 									"paragliderSettings.saving.failure"), 0, height-font.lineHeight, 0xFFFFFF);

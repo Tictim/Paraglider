@@ -6,7 +6,8 @@ import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -20,12 +21,12 @@ import java.util.function.Consumer;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
-public class AdvancementGen extends ModAdvancementProvider{
+public class AdvancementGen extends AdvancementProvider{
 	public AdvancementGen(DataGenerator generator, ExistingFileHelper existingFileHelper){
 		super(generator, existingFileHelper);
 	}
 
-	@Override protected void registerAdvancements(Consumer<Advancement> consumer){
+	@Override protected void registerAdvancements(Consumer<Advancement> consumer, ExistingFileHelper fileHelper){
 		Advancement root = advancement(
 				new ItemStack(Contents.PARAGLIDER.get()),
 				"advancement.paraglider",
@@ -94,8 +95,8 @@ public class AdvancementGen extends ModAdvancementProvider{
 	                                               boolean announceToChat,
 	                                               boolean hidden){
 		return Advancement.Builder.advancement().display(stack,
-				new TranslatableComponent(display),
-				new TranslatableComponent(display+".desc"),
+				Component.translatable(display),
+				Component.translatable(display+".desc"),
 				background,
 				frameType,
 				showToast,

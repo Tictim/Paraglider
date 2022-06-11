@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -51,7 +50,7 @@ public class ParagliderItem extends Item implements DyeableLeatherItem{
 
 	@Override public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag){
 		if(stack.isDamageableItem()&&stack.getMaxDamage()<=stack.getDamageValue()){
-			tooltip.add(new TranslatableComponent("tooltip.paraglider.paraglider_broken").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
+			tooltip.add(Component.translatable("tooltip.paraglider.paraglider_broken").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
 		}
 	}
 

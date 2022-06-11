@@ -1,6 +1,7 @@
 package tictim.paraglider.loot;
 
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +13,6 @@ import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public class SpiritOrbLootModifier extends LootModifier{
 	private final int count;
@@ -25,7 +25,7 @@ public class SpiritOrbLootModifier extends LootModifier{
 		this.count = count;
 	}
 
-	@Nonnull @Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
+	@Nonnull @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context){
 		if(ModCfg.enableSpiritOrbGens()) generatedLoot.add(new ItemStack(Contents.SPIRIT_ORB.get(), count));
 		return generatedLoot;
 	}

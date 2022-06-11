@@ -9,17 +9,16 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class CosmeticRecipe implements CraftingRecipe{
 	private final ResourceLocation id;
@@ -103,12 +102,12 @@ public class CosmeticRecipe implements CraftingRecipe{
 		return Contents.COSMETIC_RECIPE.get();
 	}
 
-	public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<CosmeticRecipe>{
+	public static class Serializer implements RecipeSerializer<CosmeticRecipe>{
 		@Override public CosmeticRecipe fromJson(ResourceLocation recipeId, JsonObject json){
 			String group = GsonHelper.getAsString(json, "group", "");
 			ResourceLocation itemName = new ResourceLocation(GsonHelper.getAsString(json, "result"));
 			Item item = ForgeRegistries.ITEMS.getValue(itemName);
-			if(item==null||!Objects.equals(item.getRegistryName(), itemName))
+			if(item==null||item==Items.AIR)
 				throw new JsonSyntaxException("Unknown item '"+group+"'");
 			Ingredient input = Ingredient.fromJson(json.get("input"));
 			Ingredient reagent = Ingredient.fromJson(json.get("reagent"));

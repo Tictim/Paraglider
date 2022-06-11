@@ -3,8 +3,6 @@ package tictim.paraglider.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -38,8 +36,8 @@ public class StaminaVesselItem extends Item{
 	}
 
 	@Override public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn){
-		tooltip.add(new TranslatableComponent("tooltip.paraglider.stamina_vessel.1",
-				new TextComponent(Integer.toString(ModCfg.maxStaminaVessels())).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+		tooltip.add(Component.translatable("tooltip.paraglider.stamina_vessel.1",
+				Component.literal(Integer.toString(ModCfg.maxStaminaVessels())).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
 		).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
 	}
 }

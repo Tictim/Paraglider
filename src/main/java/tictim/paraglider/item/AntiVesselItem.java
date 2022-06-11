@@ -3,7 +3,6 @@ package tictim.paraglider.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -49,9 +48,9 @@ public class AntiVesselItem extends Item{
 	}
 
 	@Override public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn){
-		tooltip.add(new TranslatableComponent("tooltip.paraglider.anti_vessel.0")
+		tooltip.add(Component.translatable("tooltip.paraglider.anti_vessel.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
-		tooltip.add(new TranslatableComponent("tooltip.paraglider.anti_vessel.1")
+		tooltip.add(Component.translatable("tooltip.paraglider.anti_vessel.1")
 				.setStyle(Style.EMPTY));
 	}
 

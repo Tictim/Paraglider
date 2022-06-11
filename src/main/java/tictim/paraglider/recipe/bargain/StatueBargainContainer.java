@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.network.ModNet;
@@ -52,10 +53,11 @@ public class StatueBargainContainer extends AbstractContainerMenu{
 		this.playerInventory = playerInventory;
 		this.dialog = dialog;
 		this.advancement = advancement;
+		ResourceLocation menuTypeId = type==null ? null : ForgeRegistries.CONTAINERS.getKey(type);
 		this.bargains = playerInventory.player.level.getRecipeManager()
-				.getAllRecipesFor(Contents.STATUE_BARGAIN_RECIPE_TYPE)
+				.getAllRecipesFor(Contents.STATUE_BARGAIN_RECIPE_TYPE.get())
 				.stream()
-				.filter(b -> type==null||b.getBargainOwner().equals(type.getRegistryName()))
+				.filter(b -> type==null||b.getBargainOwner().equals(menuTypeId))
 				.sorted(Comparator.comparing(Recipe::getId))
 				.collect(Collectors.toList());
 
@@ -136,6 +138,10 @@ public class StatueBargainContainer extends AbstractContainerMenu{
 		super.broadcastChanges();
 	}
 
+	@Override public ItemStack quickMoveStack(Player player, int index){
+		return ItemStack.EMPTY;
+	}
+
 	private boolean inventoryChanged(){
 		boolean changed = false;
 		for(int i = 0; i<playerInventory.getContainerSize(); ++i){
@@ -174,7 +180,7 @@ public class StatueBargainContainer extends AbstractContainerMenu{
 
 	private void sendDialog(StatueDialog.Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
 		if(this.dialog==null) return;
-		Component dialog = this.dialog.getDialog(playerInventory.player.getRandom(), dialogCase, bargain, result);
+		Component dialog = this.dialog.getDialog(dialogCase, bargain, result);
 		if(dialog!=null) sendToPlayer(new StatueDialogMsg(dialog));
 	}
 

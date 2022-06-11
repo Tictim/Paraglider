@@ -1,7 +1,6 @@
 package tictim.paraglider.utils;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import tictim.paraglider.recipe.bargain.BargainResult;
 import tictim.paraglider.recipe.bargain.StatueBargain;
 
@@ -15,6 +14,8 @@ import java.util.Random;
 import java.util.function.BiPredicate;
 
 public final class StatueDialog{
+	private static final Random RNG = new Random();
+
 	private final Map<Case, Dialogs> map = new EnumMap<>(Case.class);
 
 	public StatueDialog(){
@@ -22,25 +23,25 @@ public final class StatueDialog{
 	}
 
 	public StatueDialog atInitial(String translationKey){
-		return add(Case.INITIAL, new TranslatableComponent(translationKey));
+		return add(Case.INITIAL, Component.translatable(translationKey));
 	}
 	public StatueDialog atSuccess(String translationKey){
-		return add(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey));
+		return add(Case.BARGAIN_SUCCESS, Component.translatable(translationKey));
 	}
 	public StatueDialog atSuccess(String translationKey, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		return add(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey), predicate);
+		return add(Case.BARGAIN_SUCCESS, Component.translatable(translationKey), predicate);
 	}
 	public StatueDialog atSuccessFallback(String translationKey){
-		return setFallback(Case.BARGAIN_SUCCESS, new TranslatableComponent(translationKey));
+		return setFallback(Case.BARGAIN_SUCCESS, Component.translatable(translationKey));
 	}
 	public StatueDialog atFailure(String translationKey){
-		return add(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey));
+		return add(Case.BARGAIN_FAILURE, Component.translatable(translationKey));
 	}
 	public StatueDialog atFailure(String translationKey, @Nullable BiPredicate<StatueBargain, BargainResult> predicate){
-		return add(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey), predicate);
+		return add(Case.BARGAIN_FAILURE, Component.translatable(translationKey), predicate);
 	}
 	public StatueDialog atFailureFallback(String translationKey){
-		return setFallback(Case.BARGAIN_FAILURE, new TranslatableComponent(translationKey));
+		return setFallback(Case.BARGAIN_FAILURE, Component.translatable(translationKey));
 	}
 
 	public StatueDialog add(Case dialogCase, Component text){
@@ -59,20 +60,20 @@ public final class StatueDialog{
 		return this;
 	}
 
-	@Nullable public Component getDialog(Random random, Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
-		return map.get(dialogCase).getDialog(random, bargain, result);
+	@Nullable public Component getDialog(Case dialogCase, @Nullable StatueBargain bargain, @Nullable BargainResult result){
+		return map.get(dialogCase).getDialog(bargain, result);
 	}
 
 	private static final class Dialogs{
 		private final List<Dialog> dialog = new ArrayList<>();
 		@Nullable private Dialog fallback;
 
-		@Nullable public Component getDialog(Random random, @Nullable StatueBargain bargain, @Nullable BargainResult bargainResult){
+		@Nullable public Component getDialog(@Nullable StatueBargain bargain, @Nullable BargainResult bargainResult){
 			List<Dialog> dialogs = new ArrayList<>();
 			for(Dialog f : dialog)
 				if(bargain==null||bargainResult==null||f.predicate==null||f.predicate.test(bargain, bargainResult))
 					dialogs.add(f);
-			Dialog chosenDialog = dialogs.isEmpty() ? fallback : dialogs.get(random.nextInt(dialogs.size()));
+			Dialog chosenDialog = dialogs.isEmpty() ? fallback : dialogs.get(RNG.nextInt(dialogs.size()));
 			return chosenDialog!=null ? chosenDialog.text : null;
 		}
 	}

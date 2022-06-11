@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +67,7 @@ public class HornedStatueBlock extends HorizontalDirectionalBlock{
 	}
 
 	@Override public void appendHoverText(ItemStack stack, @Nullable BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
-		tooltip.add(new TranslatableComponent("tooltip.paraglider.horned_statue.0")
+		tooltip.add(Component.translatable("tooltip.paraglider.horned_statue.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)));
 	}
 }

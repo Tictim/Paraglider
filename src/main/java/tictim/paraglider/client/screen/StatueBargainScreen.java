@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -270,7 +269,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 		private final int index;
 
 		public BargainButton(int x, int y, int index){
-			super(x, y, 89, 20, TextComponent.EMPTY);
+			super(x, y, 89, 20, Component.empty());
 			this.index = index;
 			this.visible = false;
 		}

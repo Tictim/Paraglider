@@ -1,6 +1,7 @@
 package tictim.paraglider.loot;
 
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
@@ -12,7 +13,6 @@ import net.minecraftforge.common.loot.LootModifier;
 import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public class VesselLootModifier extends LootModifier{
 	private final int count;
@@ -25,7 +25,7 @@ public class VesselLootModifier extends LootModifier{
 		this.count = count;
 	}
 
-	@Nonnull @Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
+	@Nonnull @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context){
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if(item!=null) generatedLoot.add(new ItemStack(item, count));
 		return generatedLoot;

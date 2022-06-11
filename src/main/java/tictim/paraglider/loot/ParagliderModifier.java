@@ -1,6 +1,7 @@
 package tictim.paraglider.loot;
 
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -16,7 +17,6 @@ import tictim.paraglider.item.ParagliderItem;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
-import java.util.List;
 
 public class ParagliderModifier extends LootModifier{
 	public final boolean dekuLeaf;
@@ -24,12 +24,13 @@ public class ParagliderModifier extends LootModifier{
 	public ParagliderModifier(LootItemCondition[] conditionsIn){
 		this(conditionsIn, false);
 	}
+
 	public ParagliderModifier(LootItemCondition[] conditionsIn, boolean dekuLeaf){
 		super(conditionsIn);
 		this.dekuLeaf = dekuLeaf;
 	}
 
-	@Nonnull @Override protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context){
+	@Nonnull @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context){
 		ConfigOption configOption = ModCfg.paragliderInTowersOfTheWild();
 		if(configOption!=ConfigOption.DISABLE){
 			ParagliderItem item = (configOption==ConfigOption.DEKU_LEAF_ONLY||(configOption!=ConfigOption.PARAGLIDER_ONLY&&dekuLeaf) ?

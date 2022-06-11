@@ -36,7 +36,7 @@ public enum ConfigConditionSerializer implements IConditionSerializer<ICondition
 			@Override public ResourceLocation getID(){
 				return id;
 			}
-			@Override public boolean test(){
+			@Override public boolean test(IContext context){
 				return config.getAsBoolean();
 			}
 		};

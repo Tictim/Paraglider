@@ -13,9 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.GuiUtils;
 import net.minecraftforge.common.MinecraftForge;
@@ -41,30 +39,30 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	private Button saveButton;
 	private Button cancelButton;
 
-	private BaseComponent[] fuckingText;
+	private Component[] fuckingText;
 
 	private double initialStaminaWheelX = ModCfg.staminaWheelX();
 	private double initialStaminaWheelY = ModCfg.staminaWheelY();
 
 	protected StaminaWheelSettingScreen(@Nullable ParagliderSettingScreen parent){
-		super(TextComponent.EMPTY);
+		super(Component.empty());
 		this.parent = parent;
 	}
 
 	@Override protected void init(){
 		this.staminaWheel = addRenderableWidget(new StaminaWheel(initialStaminaWheelX, initialStaminaWheelY));
-		this.saveButton = addRenderableWidget(new Button(0, 0, 48, 20, new TranslatableComponent("adjustStamina.save"), button -> {
+		this.saveButton = addRenderableWidget(new Button(0, 0, 48, 20, Component.translatable("adjustStamina.save"), button -> {
 			ParagliderMod.LOGGER.debug("Save?");
 			ModCfg.setStaminaWheel(staminaWheel.getStaminaWheelX(), staminaWheel.getStaminaWheelY());
 			if(parent!=null) parent.saveSettings();
 			onClose();
 		}));
-		this.cancelButton = addRenderableWidget(new Button(0, 0, 48, 20, new TranslatableComponent("adjustStamina.cancel"), button -> onClose()));
+		this.cancelButton = addRenderableWidget(new Button(0, 0, 48, 20, Component.translatable("adjustStamina.cancel"), button -> onClose()));
 		//noinspection ConstantConditions
-		this.fuckingText = new BaseComponent[]{
-				new TranslatableComponent("adjustStamina.guide.0"),
-				new TranslatableComponent("adjustStamina.guide.1"),
-				new TranslatableComponent("adjustStamina.guide.2",
+		this.fuckingText = new Component[]{
+				Component.translatable("adjustStamina.guide.0"),
+				Component.translatable("adjustStamina.guide.1"),
+				Component.translatable("adjustStamina.guide.2",
 						this.minecraft.options.keyInventory.getTranslatedKeyMessage(),
 						ParagliderClientEventHandler.paragliderSettingsKey().getTranslatedKeyMessage())
 		};
@@ -86,7 +84,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		int y = textY+2;
-		for(BaseComponent t : fuckingText){
+		for(Component t : fuckingText){
 			font.draw(matrixStack, t, textX+2, y, 0xFF00DF53);
 			y += font.lineHeight;
 		}
@@ -144,7 +142,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		public StaminaWheel(double x, double y){
 			super((int)Math.round(x*(double)screenWidth())-WHEEL_RADIUS,
 					(int)Math.round(y*(double)screenHeight())-WHEEL_RADIUS,
-					WHEEL_RADIUS*2, WHEEL_RADIUS*2, TextComponent.EMPTY);
+					WHEEL_RADIUS*2, WHEEL_RADIUS*2, Component.empty());
 		}
 
 		public double getStaminaWheelX(){

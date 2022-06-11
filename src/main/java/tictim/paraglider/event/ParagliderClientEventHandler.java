@@ -91,7 +91,7 @@ public final class ParagliderClientEventHandler{
 		int x = Mth.clamp((int)Math.round(ModCfg.staminaWheelX()*window.getGuiScaledWidth()), 1+WHEEL_RADIUS, window.getGuiScaledWidth()-2-WHEEL_RADIUS);
 		int y = Mth.clamp((int)Math.round(ModCfg.staminaWheelY()*window.getGuiScaledHeight()), 1+WHEEL_RADIUS, window.getGuiScaledHeight()-2-WHEEL_RADIUS);
 
-		STAMINA_WHEEL_RENDERER.renderStamina(event.getMatrixStack(), x, y, 25);
+		STAMINA_WHEEL_RENDERER.renderStamina(event.getPoseStack(), x, y, 25);
 	}
 
 	@SubscribeEvent

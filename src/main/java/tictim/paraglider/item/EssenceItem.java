@@ -3,7 +3,6 @@ package tictim.paraglider.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +36,7 @@ public class EssenceItem extends Item{
 	}
 
 	@Override public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn){
-		tooltip.add(new TranslatableComponent("tooltip.paraglider.essence.0")
+		tooltip.add(Component.translatable("tooltip.paraglider.essence.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)));
 	}
 }

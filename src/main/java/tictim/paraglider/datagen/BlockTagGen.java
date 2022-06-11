@@ -21,7 +21,7 @@ public class BlockTagGen extends BlockTagsProvider{
 						Contents.KAKARIKO_GODDESS_STATUE.get(),
 						Contents.GORON_GODDESS_STATUE.get(),
 						Contents.RITO_GODDESS_STATUE.get(),
-				Contents.HORNED_STATUE.get());
+						Contents.HORNED_STATUE.get());
 
 		tag(ModTags.Blocks.STATUES_GODDESS).add(
 				Contents.GODDESS_STATUE.get(),
