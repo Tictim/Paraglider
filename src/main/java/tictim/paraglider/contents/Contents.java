@@ -1,6 +1,8 @@
 package tictim.paraglider.contents;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -21,10 +23,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.material.Material;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -39,9 +43,6 @@ import tictim.paraglider.item.HeartContainerItem;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.item.SpiritOrbItem;
 import tictim.paraglider.item.StaminaVesselItem;
-import tictim.paraglider.loot.ParagliderModifier;
-import tictim.paraglider.loot.SpiritOrbLootModifier;
-import tictim.paraglider.loot.VesselLootModifier;
 import tictim.paraglider.recipe.CosmeticRecipe;
 import tictim.paraglider.recipe.bargain.SimpleStatueBargain;
 import tictim.paraglider.recipe.bargain.StatueBargain;
@@ -50,8 +51,10 @@ import tictim.paraglider.recipe.bargain.StatueBargainContainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD;
 import static tictim.paraglider.ParagliderMod.MODID;
 
+@EventBusSubscriber(modid = MODID, bus = MOD)
 public final class Contents{
 	private Contents(){}
 
@@ -64,12 +67,12 @@ public final class Contents{
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
-	public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
-	public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MODID);
+	public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
-	public static final DeferredRegister<StructureFeature<?>> STRUCTURE_FEATURES = DeferredRegister.create(ForgeRegistries.STRUCTURE_FEATURES, MODID);
 	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
+	public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registry.STRUCTURE_TYPE_REGISTRY, MODID);
+	public static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister.create(Registry.STRUCTURE_PIECE_REGISTRY, MODID);
 
 	public static final RegistryObject<RecipeType<StatueBargain>> STATUE_BARGAIN_RECIPE_TYPE = RECIPE_TYPES.register("statue_bargain", () -> RecipeType.simple(new ResourceLocation(MODID, "statue_bargain")));
 
@@ -122,32 +125,41 @@ public final class Contents{
 		}
 	}.addAttributeModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
 
-	public static final RegistryObject<ParagliderModifier.Serializer> PARAGLIDER_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("paraglider", ParagliderModifier.Serializer::new);
-	public static final RegistryObject<SpiritOrbLootModifier.Serializer> SPIRIT_ORB_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("spirit_orb", SpiritOrbLootModifier.Serializer::new);
-	public static final RegistryObject<VesselLootModifier.Serializer> VESSEL_MODIFIER = LOOT_MODIFIER_SERIALIZERS.register("vessel", VesselLootModifier.Serializer::new);
-
 	public static final RegistryObject<CosmeticRecipe.Serializer> COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("cosmetic", CosmeticRecipe.Serializer::new);
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
 
-	public static final RegistryObject<MenuType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = CONTAINERS.register(
+	public static final RegistryObject<MenuType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = MENUS.register(
 			"goddess_statue", () -> new MenuType<>(ModContainers::goddessStatue));
-	public static final RegistryObject<MenuType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = CONTAINERS.register(
+	public static final RegistryObject<MenuType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = MENUS.register(
 			"horned_statue", () -> new MenuType<>(ModContainers::hornedStatue));
 
 	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
 
-	public static final RegistryObject<StructureFeature<?>> UNDERGROUND_HORNED_STATUE = STRUCTURE_FEATURES.register("underground_horned_statue", UndergroundHornedStatue::new);
-	public static final RegistryObject<StructureFeature<?>> NETHER_HORNED_STATUE = STRUCTURE_FEATURES.register("nether_horned_statue", NetherHornedStatue::new);
-	public static final RegistryObject<StructureFeature<?>> TARREY_TOWN_GODDESS_STATUE = STRUCTURE_FEATURES.register("tarrey_town_goddess_statue", TarreyTownGoddessStatue::new);
+	public static final RegistryObject<StructureType<UndergroundHornedStatue>> UNDERGROUND_HORNED_STATUE = structureType("underground_horned_statue", UndergroundHornedStatue.CODEC);
+	public static final RegistryObject<StructureType<NetherHornedStatue>> NETHER_HORNED_STATUE = structureType("nether_horned_statue", NetherHornedStatue.CODEC);
+	public static final RegistryObject<StructureType<TarreyTownGoddessStatue>> TARREY_TOWN_GODDESS_STATUE = structureType("tarrey_town_goddess_statue", TarreyTownGoddessStatue.CODEC);
+
+	private static <T extends Structure> RegistryObject<StructureType<T>> structureType(String id, Codec<T> codec){
+		return STRUCTURE_TYPES.register(id, () -> (StructureType<T>)(() -> codec));
+	}
+
+	public static final class PieceTypes{
+		private PieceTypes(){}
+
+		public static final RegistryObject<StructurePieceType> UNDERGROUND_HORNED_STATUE = PIECES.register("underground_horned_statue", UndergroundHornedStatue::pieceType);
+		public static final RegistryObject<StructurePieceType> NETHER_HORNED_STATUE = PIECES.register("nether_horned_statue", NetherHornedStatue::pieceType);
+		public static final RegistryObject<StructurePieceType> TARREY_TOWN_GODDESS_STATUE = PIECES.register("tarrey_town_goddess_statue", TarreyTownGoddessStatue::pieceType);
+	}
 
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
 		EFFECTS.register(eventBus);
-		CONTAINERS.register(eventBus);
-		LOOT_MODIFIER_SERIALIZERS.register(eventBus);
+		MENUS.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);
 		ATTRIBUTES.register(eventBus);
-		STRUCTURE_FEATURES.register(eventBus);
+		RECIPE_TYPES.register(eventBus);
+		STRUCTURE_TYPES.register(eventBus);
+		PIECES.register(eventBus);
 	}
 }

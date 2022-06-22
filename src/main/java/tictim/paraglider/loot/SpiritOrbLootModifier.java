@@ -1,13 +1,12 @@
 package tictim.paraglider.loot;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
@@ -15,6 +14,11 @@ import tictim.paraglider.contents.Contents;
 import javax.annotation.Nonnull;
 
 public class SpiritOrbLootModifier extends LootModifier{
+	public static final Codec<SpiritOrbLootModifier> CODEC = RecordCodecBuilder.create(inst ->
+			codecStart(inst)
+					.and(Codec.INT.fieldOf("count").forGetter(m -> m.count))
+					.apply(inst, SpiritOrbLootModifier::new));
+
 	private final int count;
 
 	public SpiritOrbLootModifier(LootItemCondition[] conditionsIn){
@@ -30,14 +34,7 @@ public class SpiritOrbLootModifier extends LootModifier{
 		return generatedLoot;
 	}
 
-	public static class Serializer extends GlobalLootModifierSerializer<SpiritOrbLootModifier>{
-		@Override public SpiritOrbLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] lootConditions){
-			return new SpiritOrbLootModifier(lootConditions, GsonHelper.getAsInt(object, "count"));
-		}
-		@Override public JsonObject write(SpiritOrbLootModifier instance){
-			JsonObject jsonObject = this.makeConditions(instance.conditions);
-			jsonObject.addProperty("count", instance.count);
-			return jsonObject;
-		}
+	@Override public Codec<? extends IGlobalLootModifier> codec(){
+		return CODEC;
 	}
 }

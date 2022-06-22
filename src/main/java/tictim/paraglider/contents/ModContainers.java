@@ -1,7 +1,6 @@
 package tictim.paraglider.contents;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -94,7 +93,7 @@ public final class ModContainers{ // TODO complete the dialog
 	public static void openContainer(Player player, ContainerFactory<? extends StatueBargainContainer> containerFactory, @Nullable Vec3 lookAt){
 		player.openMenu(new MenuProvider(){
 			@Override public Component getDisplayName(){
-				return TextComponent.EMPTY;
+				return Component.empty();
 			}
 			@Nullable @Override public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity){
 				StatueBargainContainer container = containerFactory.create(windowId, playerInventory);

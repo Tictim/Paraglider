@@ -1,15 +1,15 @@
 package tictim.paraglider.loot;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
@@ -19,12 +19,16 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 public class ParagliderModifier extends LootModifier{
+	public static final Codec<ParagliderModifier> CODEC = RecordCodecBuilder.create(inst ->
+			codecStart(inst)
+					.and(Codec.BOOL.fieldOf("dekuLeaf").forGetter(m -> m.dekuLeaf))
+					.apply(inst, ParagliderModifier::new));
+
 	public final boolean dekuLeaf;
 
 	public ParagliderModifier(LootItemCondition[] conditionsIn){
 		this(conditionsIn, false);
 	}
-
 	public ParagliderModifier(LootItemCondition[] conditionsIn, boolean dekuLeaf){
 		super(conditionsIn);
 		this.dekuLeaf = dekuLeaf;
@@ -45,16 +49,8 @@ public class ParagliderModifier extends LootModifier{
 		}
 		return generatedLoot;
 	}
-
-	public static class Serializer extends GlobalLootModifierSerializer<ParagliderModifier>{
-		@Override public ParagliderModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] lootConditions){
-			return new ParagliderModifier(lootConditions, object.get("dekuLeaf").getAsBoolean());
-		}
-		@Override public JsonObject write(ParagliderModifier instance){
-			JsonObject jsonObject = this.makeConditions(instance.conditions);
-			jsonObject.addProperty("dekuLeaf", instance.dekuLeaf);
-			return jsonObject;
-		}
+	@Override public Codec<? extends IGlobalLootModifier> codec(){
+		return CODEC;
 	}
 
 	public enum ConfigOption{

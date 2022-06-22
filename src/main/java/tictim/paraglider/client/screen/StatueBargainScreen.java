@@ -14,8 +14,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.ScreenEvent.BackgroundDrawnEvent;
-import net.minecraftforge.common.MinecraftForge;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.client.BargainScreenStaminaWheelRenderer;
@@ -169,7 +167,6 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
 			this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0x70101010, 0xa0101010);
-			MinecraftForge.EVENT_BUS.post(new BackgroundDrawnEvent(this, matrixStack));
 		}else this.renderDirtBackground(vOffset);
 	}
 

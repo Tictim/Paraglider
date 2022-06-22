@@ -1,25 +1,27 @@
 package tictim.paraglider.event;
 
-import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.PlayerMovement;
-import tictim.paraglider.client.DisableStaminaRender;
-import tictim.paraglider.client.InGameStaminaWheelRenderer;
-import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.client.screen.ParagliderSettingScreen;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 
@@ -28,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static tictim.paraglider.ParagliderMod.MODID;
-import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
 @Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public final class ParagliderClientEventHandler{
@@ -38,10 +39,6 @@ public final class ParagliderClientEventHandler{
 
 	public static KeyMapping paragliderSettingsKey(){
 		return paragliderSettingsKey;
-	}
-	public static void setParagliderSettingsKey(KeyMapping keyBinding){
-		if(paragliderSettingsKey!=null) throw new IllegalStateException("no");
-		paragliderSettingsKey = keyBinding;
 	}
 
 	@SubscribeEvent
@@ -56,7 +53,7 @@ public final class ParagliderClientEventHandler{
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 
 	@SubscribeEvent
-	public static void onGameOverlayTextRender(RenderGameOverlayEvent.Text event){
+	public static void customizeDebugText(CustomizeGuiOverlayEvent.DebugText event){
 		if(ModCfg.debugPlayerMovement()){
 			Player p = Minecraft.getInstance().player;
 			if(p!=null){
@@ -79,24 +76,10 @@ public final class ParagliderClientEventHandler{
 		}
 	}
 
-	private static final StaminaWheelRenderer STAMINA_WHEEL_RENDERER = new InGameStaminaWheelRenderer();
-
 	@SubscribeEvent
-	public static void afterGameOverlayRender(RenderGameOverlayEvent.Post event){
-		if(Minecraft.getInstance().screen instanceof DisableStaminaRender||
-				event.getType()!=RenderGameOverlayEvent.ElementType.ALL||
-				!(ModCfg.paraglidingConsumesStamina()||ModCfg.runningConsumesStamina())) return;
-		Window window = event.getWindow();
-
-		int x = Mth.clamp((int)Math.round(ModCfg.staminaWheelX()*window.getGuiScaledWidth()), 1+WHEEL_RADIUS, window.getGuiScaledWidth()-2-WHEEL_RADIUS);
-		int y = Mth.clamp((int)Math.round(ModCfg.staminaWheelY()*window.getGuiScaledHeight()), 1+WHEEL_RADIUS, window.getGuiScaledHeight()-2-WHEEL_RADIUS);
-
-		STAMINA_WHEEL_RENDERER.renderStamina(event.getPoseStack(), x, y, 25);
-	}
-
-	@SubscribeEvent
-	public static void beforeGameOverlayLayerRender(RenderGameOverlayEvent.PreLayer event){
-		if(event.getOverlay()==ForgeIngameGui.CROSSHAIR_ELEMENT&&Minecraft.getInstance().screen instanceof StatueBargainScreen)
+	public static void beforeCrosshairRender(RenderGuiOverlayEvent.Pre event){
+		if(event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id())&&
+				Minecraft.getInstance().screen instanceof StatueBargainScreen)
 			event.setCanceled(true);
 	}
 
@@ -105,6 +88,19 @@ public final class ParagliderClientEventHandler{
 		if(event.phase!=TickEvent.Phase.END) return;
 		if(Minecraft.getInstance().screen==null&&paragliderSettingsKey().consumeClick()){
 			Minecraft.getInstance().setScreen(new ParagliderSettingScreen());
+		}
+	}
+
+	@Mod.EventBusSubscriber(modid = MODID, bus = Bus.MOD, value = Dist.CLIENT)
+	private static class ModEvents{
+		@SubscribeEvent
+		public static void registerKeyMappings(RegisterKeyMappingsEvent event){
+			event.register(paragliderSettingsKey = new KeyMapping(
+					"key.paraglider.paragliderSettings",
+					KeyConflictContext.IN_GAME,
+					KeyModifier.CONTROL,
+					InputConstants.Type.KEYSYM,
+					GLFW.GLFW_KEY_P, "key.categories.misc"));
 		}
 	}
 }

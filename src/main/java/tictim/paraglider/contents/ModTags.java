@@ -8,8 +8,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraftforge.registries.RegistryObject;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
@@ -28,12 +26,11 @@ public final class ModTags{
 	}
 
 	public static final class Biomes{
-		public static final TagKey<Biome> HAS_STRUCTURE_UNDERGROUND_HORNED_STATUE = hasStructure(Contents.UNDERGROUND_HORNED_STATUE);
-		public static final TagKey<Biome> HAS_STRUCTURE_NETHER_HORNED_STATUE = hasStructure(Contents.NETHER_HORNED_STATUE);
-		public static final TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(Contents.TARREY_TOWN_GODDESS_STATUE);
+		public static final TagKey<Biome> HAS_STRUCTURE_UNDERGROUND_HORNED_STATUE = hasStructure(Contents.UNDERGROUND_HORNED_STATUE.getId());
+		public static final TagKey<Biome> HAS_STRUCTURE_NETHER_HORNED_STATUE = hasStructure(Contents.NETHER_HORNED_STATUE.getId());
+		public static final TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(Contents.TARREY_TOWN_GODDESS_STATUE.getId());
 
-		private static TagKey<Biome> hasStructure(RegistryObject<StructureFeature<?>> o){
-			ResourceLocation id = o.getId();
+		private static TagKey<Biome> hasStructure(ResourceLocation id){
 			return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(id.getNamespace(), "has_structure/"+id.getPath()));
 		}
 	}

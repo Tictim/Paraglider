@@ -1,44 +1,54 @@
 package tictim.paraglider.contents.worldgen;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.StructureFeatureManager;
-import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGenerator;
+import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import tictim.paraglider.contents.ModStructures;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import tictim.paraglider.contents.Contents;
 
-import java.util.Random;
+import java.util.Optional;
 
-import static net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier.checkForBiomeOnTop;
-import static net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier.simple;
 import static tictim.paraglider.ParagliderMod.MODID;
 
-public class TarreyTownGoddessStatue extends StructureFeature<NoneFeatureConfiguration>{
-	public TarreyTownGoddessStatue(){
-		super(NoneFeatureConfiguration.CODEC, simple(checkForBiomeOnTop(Heightmap.Types.WORLD_SURFACE_WG), TarreyTownGoddessStatue::generatePieces));
+public class TarreyTownGoddessStatue extends Structure{
+	public static final Codec<TarreyTownGoddessStatue> CODEC = simpleCodec(TarreyTownGoddessStatue::new);
+	private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "tarrey_town_goddess_statue");
+
+	public TarreyTownGoddessStatue(StructureSettings structureSettings){
+		super(structureSettings);
 	}
 
-	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context){
-		BlockPos pos = new BlockPos(context.chunkPos().getMinBlockX(), 90, context.chunkPos().getMinBlockZ());
-		Rotation rotation = Rotation.getRandom(context.random());
-		addPieces(context.structureManager(), pos, rotation, builder);
+	@Override public Optional<GenerationStub> findGenerationPoint(GenerationContext ctx){
+		StructureTemplate t = ctx.structureTemplateManager().getOrCreate(TEMPLATE);
+
+		Rotation rotation = Util.getRandom(Rotation.values(), ctx.random());
+		BlockPos worldPos = ctx.chunkPos().getWorldPosition();
+		BlockPos center = t.getBoundingBox(worldPos, rotation,
+						new BlockPos(t.getSize().getX()/2, 0, t.getSize().getZ()/2),
+						ctx.random().nextFloat()<.5f ? Mirror.NONE : Mirror.FRONT_BACK)
+				.getCenter();
+		int y = ctx.chunkGenerator().getFirstOccupiedHeight(center.getX(), center.getZ(),
+				Heightmap.Types.WORLD_SURFACE_WG, ctx.heightAccessor(), ctx.randomState())-1;
+		BlockPos pos = new BlockPos(worldPos.getX(), y, worldPos.getZ());
+		return Optional.of(new GenerationStub(pos, b -> addPieces(ctx.structureTemplateManager(), pos, rotation, b)));
 	}
 
-	public static void addPieces(StructureManager structureManager, BlockPos pos, Rotation rotation, StructurePieceAccessor pieces){
+	@Override public StructureType<?> type(){
+		return Contents.TARREY_TOWN_GODDESS_STATUE.get();
+	}
+
+	public static void addPieces(StructureTemplateManager structureManager, BlockPos pos, Rotation rotation, StructurePieceAccessor pieces){
 		pieces.addPiece(new Piece(structureManager, rotation, pos));
 	}
 
@@ -51,27 +61,11 @@ public class TarreyTownGoddessStatue extends StructureFeature<NoneFeatureConfigu
 	}
 
 	public static class Piece extends BaseHornedStatuePiece{
-		private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "tarrey_town_goddess_statue");
-
-		public Piece(StructureManager structureManager, Rotation rotation, BlockPos templatePos){
-			super(ModStructures.TARREY_TOWN_GODDESS_STATUE_PIECE_TYPE, structureManager, TEMPLATE, rotation, templatePos);
+		public Piece(StructureTemplateManager structureManager, Rotation rotation, BlockPos templatePos){
+			super(Contents.PieceTypes.TARREY_TOWN_GODDESS_STATUE.get(), structureManager, TEMPLATE, rotation, templatePos);
 		}
-		public Piece(StructureManager structureManager, CompoundTag tag){
-			super(ModStructures.TARREY_TOWN_GODDESS_STATUE_PIECE_TYPE, structureManager, tag);
-		}
-
-		@Override public void postProcess(WorldGenLevel level,
-		                                  StructureFeatureManager structureFeatureManager,
-		                                  ChunkGenerator chunkGenerator,
-		                                  Random random,
-		                                  BoundingBox box,
-		                                  ChunkPos chunkPos,
-		                                  BlockPos pos){
-			BlockPos pos2 = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(placeSettings, BlockPos.ZERO));
-
-			int height = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos2.getX(), pos2.getZ());
-			this.templatePosition = new BlockPos(templatePosition.getX(), height-3, templatePosition.getZ());
-			super.postProcess(level, structureFeatureManager, chunkGenerator, random, box, chunkPos, pos);
+		public Piece(StructureTemplateManager structureManager, CompoundTag tag){
+			super(Contents.PieceTypes.TARREY_TOWN_GODDESS_STATUE.get(), structureManager, tag);
 		}
 	}
 }

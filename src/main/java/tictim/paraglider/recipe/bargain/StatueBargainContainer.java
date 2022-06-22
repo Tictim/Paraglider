@@ -53,7 +53,7 @@ public class StatueBargainContainer extends AbstractContainerMenu{
 		this.playerInventory = playerInventory;
 		this.dialog = dialog;
 		this.advancement = advancement;
-		ResourceLocation menuTypeId = type==null ? null : ForgeRegistries.CONTAINERS.getKey(type);
+		ResourceLocation menuTypeId = type==null ? null : ForgeRegistries.MENU_TYPES.getKey(type);
 		this.bargains = playerInventory.player.level.getRecipeManager()
 				.getAllRecipesFor(Contents.STATUE_BARGAIN_RECIPE_TYPE.get())
 				.stream()

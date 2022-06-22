@@ -8,8 +8,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.ChunkWatchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.network.PacketDistributor;
@@ -37,14 +37,14 @@ public final class WindEventHandler{
 	}
 
 	@SubscribeEvent
-	public static void onWorldTick(TickEvent.WorldTickEvent event){
+	public static void onWorldTick(TickEvent.LevelTickEvent event){
 		if(event.phase!=TickEvent.Phase.END||!event.side.isServer()) return;
 
 		WindUpdater placer = new WindUpdater();
 
-		long gameTime = event.world.getGameTime();
+		long gameTime = event.level.getGameTime();
 		if(gameTime%4==0){
-			List<? extends Player> players = event.world.players();
+			List<? extends Player> players = event.level.players();
 			if(!players.isEmpty()){
 				for(Player player : players){
 					if(Paraglider.isParaglider(player.getMainHandItem()))
@@ -53,17 +53,17 @@ public final class WindEventHandler{
 			}
 		}
 
-		placer.checkPlacedWind(event.world);
+		placer.checkPlacedWind(event.level);
 
 		for(WindChunk windChunk : placer.getModifiedChunks()){
-			LevelChunk chunk = event.world.getChunk(windChunk.getChunkPos().x, windChunk.getChunkPos().z);
+			LevelChunk chunk = event.level.getChunk(windChunk.getChunkPos().x, windChunk.getChunkPos().z);
 			ModNet.NET.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), new SyncWindMsg(windChunk));
 		}
 	}
 
 	@SubscribeEvent
 	public static void onChunkUnload(ChunkEvent.Unload event){
-		if(!(event.getWorld() instanceof Level level)) return;
+		if(!(event.getLevel() instanceof Level level)) return;
 		Wind wind = Wind.of(level);
 		if(wind!=null)
 			wind.remove(event.getChunk().getPos());
@@ -71,7 +71,7 @@ public final class WindEventHandler{
 
 	@SubscribeEvent
 	public static void onChunkWatch(ChunkWatchEvent.Watch event){
-		ServerLevel level = event.getWorld();
+		ServerLevel level = event.getLevel();
 		Wind wind = Wind.of(level);
 		if(wind==null) return;
 		ChunkPos pos = event.getPos();

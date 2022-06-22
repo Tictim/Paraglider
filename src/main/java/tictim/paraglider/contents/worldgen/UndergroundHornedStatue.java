@@ -1,47 +1,32 @@
 package tictim.paraglider.contents.worldgen;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.StructureFeatureManager;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.feature.NoiseEffect;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGenerator;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import tictim.paraglider.contents.ModStructures;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import tictim.paraglider.contents.Contents;
 
-import java.util.Random;
+import java.util.Optional;
 
-import static net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier.simple;
 import static tictim.paraglider.ParagliderMod.MODID;
 
-public class UndergroundHornedStatue extends StructureFeature<NoneFeatureConfiguration>{
-	public UndergroundHornedStatue(){
-		super(NoneFeatureConfiguration.CODEC, simple(c -> true, UndergroundHornedStatue::generatePieces));
+public class UndergroundHornedStatue extends Structure{
+	public static final Codec<UndergroundHornedStatue> CODEC = simpleCodec(UndergroundHornedStatue::new);
+	private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "underground_horned_statue");
+
+	public UndergroundHornedStatue(StructureSettings structureSettings){
+		super(structureSettings);
 	}
 
-	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context){
-		WorldgenRandom rng = context.random();
-		BlockPos pos = new BlockPos(context.chunkPos().getMinBlockX()+5+rng.nextInt(6), 90, context.chunkPos().getMinBlockZ()+5+rng.nextInt(6));
-		Rotation rotation = Rotation.getRandom(rng);
-		addPieces(context.structureManager(), pos, rotation, builder);
-	}
-
-	public static void addPieces(StructureManager structureManager, BlockPos pos, Rotation rotation, StructurePieceAccessor pieces){
-		pieces.addPiece(new Piece(structureManager, rotation, pos));
+	@Override public Optional<GenerationStub> findGenerationPoint(GenerationContext p_226571_){
+		// TODO shit
+		return Optional.empty();
 	}
 
 	public static StructurePieceType.StructureTemplateType pieceType(){
@@ -52,32 +37,16 @@ public class UndergroundHornedStatue extends StructureFeature<NoneFeatureConfigu
 		return GenerationStep.Decoration.UNDERGROUND_STRUCTURES;
 	}
 
+	@Override public StructureType<?> type(){
+		return Contents.UNDERGROUND_HORNED_STATUE.get();
+	}
+
 	public static class Piece extends BaseHornedStatuePiece{
-		private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "underground_horned_statue");
-
-		public Piece(StructureManager structureManager, Rotation rotation, BlockPos templatePos){
-			super(ModStructures.UNDERGROUND_HORNED_STATUE_PIECE_TYPE, structureManager, TEMPLATE, rotation, templatePos);
+		public Piece(StructureTemplateManager structureManager, Rotation rotation, BlockPos templatePos){
+			super(Contents.PieceTypes.UNDERGROUND_HORNED_STATUE.get(), structureManager, TEMPLATE, rotation, templatePos);
 		}
-		public Piece(StructureManager structureManager, CompoundTag tag){
-			super(ModStructures.UNDERGROUND_HORNED_STATUE_PIECE_TYPE, structureManager, tag);
-		}
-
-		@Override public void postProcess(WorldGenLevel level,
-		                                  StructureFeatureManager structureFeatureManager,
-		                                  ChunkGenerator chunkGenerator,
-		                                  Random random,
-		                                  BoundingBox box,
-		                                  ChunkPos chunkPos,
-		                                  BlockPos pos){
-			BlockPos pos2 = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(placeSettings, BlockPos.ZERO));
-
-			int height = level.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, pos2.getX(), pos2.getZ());
-			this.templatePosition = new BlockPos(templatePosition.getX(), height-(random.nextInt(30)+15), templatePosition.getZ());
-			super.postProcess(level, structureFeatureManager, chunkGenerator, random, box, chunkPos, pos);
-		}
-
-		@Override public NoiseEffect getNoiseEffect(){
-			return NoiseEffect.NONE;
+		public Piece(StructureTemplateManager structureManager, CompoundTag tag){
+			super(Contents.PieceTypes.UNDERGROUND_HORNED_STATUE.get(), structureManager, tag);
 		}
 	}
 }

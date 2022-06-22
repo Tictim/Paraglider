@@ -3,7 +3,6 @@ package tictim.paraglider.capabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -176,7 +174,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 					() -> name,
 					value,
 					AttributeModifier.Operation.ADDITION));
-		return value - (prev!=null ? prev.getAmount() : 0);
+		return value-(prev!=null ? prev.getAmount() : 0);
 	}
 
 	private PlayerState calculatePlayerState(boolean isHoldingParaglider){
@@ -197,7 +195,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 	private boolean canBreathe(){
 		if(player.hasEffect(MobEffects.WATER_BREATHING)) return true;
 		if(player.isOnGround()&&(
-				!player.isEyeInFluid(FluidTags.WATER)||
+				!player.canDrownInFluidType(player.getEyeInFluidType())||
 						player.level.getBlockState(new BlockPos(player.getX(), player.getEyeY(), player.getZ())).is(Blocks.BUBBLE_COLUMN))){
 			return true;
 		}
@@ -205,10 +203,10 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
 		if(!head.isEmpty()){
 			if(head.getItem()==Items.TURTLE_HELMET) return true;
-			else if(EnchantmentHelper.getItemEnchantmentLevel(Enchantments.AQUA_AFFINITY, head)>0) return true;
+			else if(head.getEnchantmentLevel(Enchantments.AQUA_AFFINITY)>0) return true;
 		}
 		ItemStack feet = player.getItemBySlot(EquipmentSlot.FEET);
-		return !feet.isEmpty()&&EnchantmentHelper.getItemEnchantmentLevel(Enchantments.DEPTH_STRIDER, feet)>0;
+		return !feet.isEmpty()&&feet.getEnchantmentLevel(Enchantments.DEPTH_STRIDER)>0;
 	}
 
 	@Override protected void applyMovement(){

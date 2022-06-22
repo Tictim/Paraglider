@@ -80,7 +80,7 @@ public class CosmeticRecipe implements CraftingRecipe{
 				ItemStack copy = item.copy();
 				copy.setCount(1);
 				list.set(i, copy);
-			}else if(item.hasContainerItem()) list.set(i, item.getContainerItem());
+			}else if(item.hasCraftingRemainingItem()) list.set(i, item.getCraftingRemainingItem());
 		}
 
 		return list;

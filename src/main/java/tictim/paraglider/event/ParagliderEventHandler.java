@@ -37,7 +37,7 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent
 	public static void onPlayerInteract(PlayerInteractEvent event){
 		if(event.isCancelable()&&event.getHand()==InteractionHand.OFF_HAND){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getPlayer());
+			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntity());
 			if(m!=null&&m.isParagliding()) event.setCanceled(true);
 		}
 	}
@@ -47,16 +47,16 @@ public final class ParagliderEventHandler{
 		Player original = event.getOriginal();
 		original.reviveCaps();
 		PlayerMovement m1 = PlayerMovement.of(original);
-		PlayerMovement m2 = PlayerMovement.of(event.getPlayer());
+		PlayerMovement m2 = PlayerMovement.of(event.getEntity());
 		if(m1!=null&&m2!=null) m1.copyTo(m2);
 		original.invalidateCaps();
 	}
 
 	@SubscribeEvent
 	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
-		if(event.getEntityLiving().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntityLiving() instanceof Player){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntityLiving());
-			if(m!=null&&m.isParagliding()) event.getEntityLiving().stopUsingItem();
+		if(event.getEntity().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntity() instanceof Player){
+			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntity());
+			if(m!=null&&m.isParagliding()) event.getEntity().stopUsingItem();
 		}
 	}
 
@@ -91,7 +91,7 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onLogin(PlayerLoggedInEvent event){
-		ServerPlayerMovement h = ServerPlayerMovement.of(event.getPlayer());
+		ServerPlayerMovement h = ServerPlayerMovement.of(event.getEntity());
 		if(h!=null){
 			h.movementNeedsSync = true;
 			h.paraglidingNeedsSync = true;
@@ -101,7 +101,7 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onStartTracking(PlayerEvent.StartTracking event){
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		if(player instanceof ServerPlayer sp){
 			PlayerMovement h = PlayerMovement.of(event.getTarget());
 			if(h!=null){

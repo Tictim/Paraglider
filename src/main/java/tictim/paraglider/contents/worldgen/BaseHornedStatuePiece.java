@@ -3,6 +3,7 @@ package tictim.paraglider.contents.worldgen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -11,16 +12,14 @@ import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-
-import java.util.Random;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
 public abstract class BaseHornedStatuePiece extends TemplateStructurePiece{
-	public BaseHornedStatuePiece(StructurePieceType type, StructureManager structureManager, ResourceLocation location, Rotation rotation, BlockPos templatePos){
+	public BaseHornedStatuePiece(StructurePieceType type, StructureTemplateManager structureManager, ResourceLocation location, Rotation rotation, BlockPos templatePos){
 		super(type, 0, structureManager, location, location.toString(), makeSettings(rotation), templatePos);
 	}
-	public BaseHornedStatuePiece(StructurePieceType type, StructureManager structureManager, CompoundTag tag){
+	public BaseHornedStatuePiece(StructurePieceType type, StructureTemplateManager structureManager, CompoundTag tag){
 		super(type, tag, structureManager, l -> makeSettings(Rotation.valueOf(tag.getString("Rot"))));
 	}
 
@@ -36,5 +35,5 @@ public abstract class BaseHornedStatuePiece extends TemplateStructurePiece{
 		tag.putString("Rot", getRotation().name());
 	}
 
-	@Override protected void handleDataMarker(String function, BlockPos pos, ServerLevelAccessor worldIn, Random rand, BoundingBox sbb){}
+	@Override protected void handleDataMarker(String function, BlockPos pos, ServerLevelAccessor accessor, RandomSource random, BoundingBox boundingBox){}
 }

@@ -286,5 +286,6 @@
 			"translation": [0, 0, -2.75],
 			"scale": [0.5, 0.5, 0.5]
 		}
-	}
+	},
+	"render_type": "cutout"
 }

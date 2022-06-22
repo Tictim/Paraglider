@@ -1,68 +1,73 @@
 package tictim.paraglider.contents.worldgen;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.QuartPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureFeatureManager;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.RangeConfiguration;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGenerator;
-import net.minecraft.world.level.levelgen.structure.pieces.PieceGeneratorSupplier;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
-import tictim.paraglider.contents.ModStructures;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import tictim.paraglider.contents.Contents;
 
 import java.util.Optional;
-import java.util.Random;
 
 import static tictim.paraglider.ParagliderMod.MODID;
 
-public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
-	public NetherHornedStatue(){
-		super(RangeConfiguration.CODEC, NetherHornedStatue::createGenerator);
+public class NetherHornedStatue extends Structure{
+	public static final Codec<NetherHornedStatue> CODEC = RecordCodecBuilder.create((inst) ->
+			inst.group(settingsCodec(inst), HeightProvider.CODEC.fieldOf("height").forGetter(s -> s.height))
+					.apply(inst, NetherHornedStatue::new));
+	private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "nether_horned_statue");
+
+	public final HeightProvider height;
+
+	public NetherHornedStatue(StructureSettings structureSettings, HeightProvider height){
+		super(structureSettings);
+		this.height = height;
 	}
 
 	/**
-	 * @see net.minecraft.world.level.levelgen.structure.NetherFossilFeature
+	 * @see net.minecraft.world.level.levelgen.structure.structures.NetherFossilStructure
 	 */
-	private static Optional<PieceGenerator<RangeConfiguration>> createGenerator(PieceGeneratorSupplier.Context<RangeConfiguration> c){
-		WorldgenRandom r = new WorldgenRandom(new LegacyRandomSource(0L));
-		ChunkPos chunkPos = c.chunkPos();
-		r.setLargeFeatureSeed(c.seed(), chunkPos.x, chunkPos.z);
-		int x = chunkPos.getMinBlockX()+r.nextInt(12);
-		int z = chunkPos.getMinBlockZ()+r.nextInt(12);
-		int seaLevel = c.chunkGenerator().getSeaLevel();
-		WorldGenerationContext wgc = new WorldGenerationContext(c.chunkGenerator(), c.heightAccessor());
-		int wat = c.config().height.sample(r, wgc);
-		NoiseColumn noise = c.chunkGenerator().getBaseColumn(x, z, c.heightAccessor());
-		MutableBlockPos mpos = new MutableBlockPos(x, wat, z);
+	@Override public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext ctx){
+		WorldgenRandom r = ctx.random();
+		int x = ctx.chunkPos().getMinBlockX()+r.nextInt(16);
+		int z = ctx.chunkPos().getMinBlockZ()+r.nextInt(16);
+		int seaLevel = ctx.chunkGenerator().getSeaLevel();
+		int y = this.height.sample(r, new WorldGenerationContext(ctx.chunkGenerator(), ctx.heightAccessor()));
+		NoiseColumn col = ctx.chunkGenerator().getBaseColumn(x, z, ctx.heightAccessor(), ctx.randomState());
+		BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos(x, y, z);
 
-		while(wat>seaLevel){
-			BlockState s = noise.getBlock(wat);
-			--wat;
-			BlockState s2 = noise.getBlock(wat);
-			if(s.isAir()&&(s2.is(Blocks.SOUL_SAND)||s2.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos.setY(wat), Direction.UP))) break;
+		while(y>seaLevel){
+			BlockState state = col.getBlock(y);
+			--y;
+			BlockState bottomState = col.getBlock(y);
+			if(state.isAir()&&(bottomState.is(Blocks.SOUL_SAND)||
+					bottomState.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos.setY(y), Direction.UP))){
+				break;
+			}
 		}
+		if(y<=seaLevel) return Optional.empty();
 
-		if(wat<=seaLevel||!c.validBiome().test(c.chunkGenerator().getNoiseBiome(QuartPos.fromBlock(x), QuartPos.fromBlock(wat), QuartPos.fromBlock(z)))) return Optional.empty();
-		BlockPos pos2 = new BlockPos(x, wat-1, z);
-		return Optional.of((builder, context) -> builder.addPiece(new Piece(c.structureManager(), Rotation.getRandom(r), pos2)));
+		BlockPos pos = new BlockPos(x, y-1, z);
+		return Optional.of(new Structure.GenerationStub(pos, b ->
+				b.addPiece(new Piece(ctx.structureTemplateManager(), Rotation.getRandom(r), pos))));
+	}
+
+	@Override public StructureType<?> type(){
+		return Contents.NETHER_HORNED_STATUE.get();
 	}
 
 	public static StructurePieceType.StructureTemplateType pieceType(){
@@ -74,39 +79,15 @@ public class NetherHornedStatue extends StructureFeature<RangeConfiguration>{
 	}
 
 	public static class Piece extends BaseHornedStatuePiece{
-		private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "nether_horned_statue");
 		private static final BlockPos PIVOT = new BlockPos(2, 1, 2);
 
-		public Piece(StructureManager structureManager, Rotation rotation, BlockPos templatePos){
-			super(ModStructures.NETHER_HORNED_STATUE_PIECE_TYPE, structureManager, TEMPLATE, rotation, templatePos);
+		public Piece(StructureTemplateManager structureManager, Rotation rotation, BlockPos templatePos){
+			super(Contents.PieceTypes.NETHER_HORNED_STATUE.get(), structureManager, TEMPLATE, rotation, templatePos);
 			this.placeSettings.setRotationPivot(PIVOT);
 		}
-		public Piece(StructureManager structureManager, CompoundTag tag){
-			super(ModStructures.NETHER_HORNED_STATUE_PIECE_TYPE, structureManager, tag);
+		public Piece(StructureTemplateManager structureManager, CompoundTag tag){
+			super(Contents.PieceTypes.NETHER_HORNED_STATUE.get(), structureManager, tag);
 			this.placeSettings.setRotationPivot(PIVOT);
-		}
-
-		@Override public void postProcess(WorldGenLevel level,
-		                                  StructureFeatureManager structureFeatureManager,
-		                                  ChunkGenerator chunkGenerator,
-		                                  Random random,
-		                                  BoundingBox box,
-		                                  ChunkPos chunkPos,
-		                                  BlockPos pos){
-			int seaLevel = chunkGenerator.getSeaLevel();
-			int y = seaLevel+random.nextInt(chunkGenerator.getGenDepth()-2-seaLevel);
-			NoiseColumn baseColumn = chunkGenerator.getBaseColumn(this.templatePosition.getX(), this.templatePosition.getZ(), level);
-
-			for(MutableBlockPos mpos = new MutableBlockPos(this.templatePosition.getX(), y, this.templatePosition.getZ()); y>seaLevel; --y){
-				BlockState state = baseColumn.getBlock(y);
-				BlockState downState = baseColumn.getBlock(y-1);
-				if(state.isAir()&&(downState.is(Blocks.SOUL_SAND)||downState.isFaceSturdy(EmptyBlockGetter.INSTANCE, mpos.setY(y-1), Direction.UP))) break;
-			}
-
-			if(y>seaLevel){
-				this.templatePosition = new BlockPos(templatePosition.getX(), y, templatePosition.getZ());
-				super.postProcess(level, structureFeatureManager, chunkGenerator, random, box, chunkPos, pos);
-			}
 		}
 	}
 }

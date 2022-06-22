@@ -1,11 +1,7 @@
 package tictim.paraglider;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.data.DataGenerator;
@@ -14,12 +10,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,13 +23,12 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.Stamina;
+import tictim.paraglider.client.overlay.StaminaWheelOverlay;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModVillageStructures;
@@ -45,7 +39,6 @@ import tictim.paraglider.datagen.ItemTagGen;
 import tictim.paraglider.datagen.LootModifierProvider;
 import tictim.paraglider.datagen.LootTableGen;
 import tictim.paraglider.datagen.RecipeGen;
-import tictim.paraglider.event.ParagliderClientEventHandler;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.recipe.ConfigConditionSerializer;
@@ -113,25 +106,19 @@ public class ParagliderMod{
 				ScreenConstructor<StatueBargainContainer, StatueBargainScreen> f = StatueBargainScreen::new;
 				MenuScreens.register(Contents.GODDESS_STATUE_CONTAINER.get(), f);
 				MenuScreens.register(Contents.HORNED_STATUE_CONTAINER.get(), f);
-
-				ItemBlockRenderTypes.setRenderLayer(Contents.RITO_GODDESS_STATUE.get(), RenderType.cutout());
-
-				KeyMapping paragliderSettingsKey = new KeyMapping(
-						"key.paraglider.paragliderSettings",
-						KeyConflictContext.IN_GAME,
-						KeyModifier.CONTROL,
-						InputConstants.Type.KEYSYM,
-						GLFW.GLFW_KEY_P, "key.categories.misc");
-				ClientRegistry.registerKeyBinding(paragliderSettingsKey);
-				ParagliderClientEventHandler.setParagliderSettingsKey(paragliderSettingsKey);
 			});
 		}
 
 		@SubscribeEvent
-		public static void addColorHandler(ColorHandlerEvent.Item event){
-			event.getItemColors().register((stack, tint) -> tint>0 ? -1 : ((DyeableLeatherItem)stack.getItem()).getColor(stack),
+		public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event){
+			event.register((stack, tint) -> tint>0 ? -1 : ((DyeableLeatherItem)stack.getItem()).getColor(stack),
 					Contents.PARAGLIDER.get(),
 					Contents.DEKU_LEAF.get());
+		}
+
+		@SubscribeEvent
+		public static void registerGuiOverlays(RegisterGuiOverlaysEvent event){
+			event.registerAboveAll("stamina_wheel", new StaminaWheelOverlay());
 		}
 	}
 }

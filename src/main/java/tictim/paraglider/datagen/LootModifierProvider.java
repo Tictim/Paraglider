@@ -13,7 +13,6 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.LootTableIdCondition;
-import tictim.paraglider.contents.Contents;
 import tictim.paraglider.loot.ParagliderModifier;
 import tictim.paraglider.loot.SpiritOrbLootModifier;
 import tictim.paraglider.loot.VesselLootModifier;
@@ -24,14 +23,14 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 	}
 
 	@Override protected void start(){
-		add("towers_of_the_wild/chest", Contents.PARAGLIDER_MODIFIER.get(), new ParagliderModifier(
+		add("towers_of_the_wild/chest", new ParagliderModifier(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
 								new ResourceLocation("towers_of_the_wild", "chests/tower/regular/tower_chest")
 						).build()
 				}
 		));
-		add("towers_of_the_wild/ocean_chest", Contents.PARAGLIDER_MODIFIER.get(), new ParagliderModifier(
+		add("towers_of_the_wild/ocean_chest", new ParagliderModifier(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
 								new ResourceLocation("towers_of_the_wild", "chests/tower/ocean/ocean_tower_chest")
@@ -39,7 +38,7 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 				}, true
 		));
 
-		add("wither", Contents.VESSEL_MODIFIER.get(), new VesselLootModifier(
+		add("wither", new VesselLootModifier(
 				new LootItemCondition[]{
 						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(EntityType.WITHER)).build(),
 						LootItemKilledByPlayerCondition.killedByPlayer().build()
@@ -82,6 +81,6 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 	}
 
 	private void addSpiritOrbItemModifier(String modifier, SpiritOrbLootModifier instance){
-		add("spirit_orbs/"+modifier, Contents.SPIRIT_ORB_MODIFIER.get(), instance);
+		add("spirit_orbs/"+modifier, instance);
 	}
 }

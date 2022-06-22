@@ -51,7 +51,7 @@ public final class ModVillageStructures{
 	@SafeVarargs
 	private static void appendPool(ResourceLocation pool, Pair<Function<StructureTemplatePool.Projection, ? extends StructurePoolElement>, Integer>... elementToWeight){
 		StructureTemplatePool old = BuiltinRegistries.TEMPLATE_POOL.get(pool);
-		if(old==null||old==Pools.bootstrap().value()){
+		if(old==null||old==Pools.bootstrap(null).value()){
 			ParagliderMod.LOGGER.warn("Template pool '{}' doesn't exists", pool);
 			return;
 		}
