@@ -3,8 +3,8 @@ package tictim.paraglider.network;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer.ItemDemand;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer.ItemDemand;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

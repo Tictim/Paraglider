@@ -1,4 +1,4 @@
-package tictim.paraglider.item;
+package tictim.paraglider.contents.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

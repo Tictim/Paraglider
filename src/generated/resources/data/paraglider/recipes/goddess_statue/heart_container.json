@@ -1,6 +1,10 @@
 {
   "type": "paraglider:statue_bargain",
-  "owner": "paraglider:goddess_statue",
+  "conditions": [
+    {
+      "type": "paraglider:heart_container_enabled"
+    }
+  ],
   "demands": {
     "items": [
       {
@@ -14,9 +18,5 @@
   "offers": {
     "heartContainers": 1
   },
-  "conditions": [
-    {
-      "type": "paraglider:heart_container_enabled"
-    }
-  ]
+  "owner": "paraglider:goddess_statue"
 }

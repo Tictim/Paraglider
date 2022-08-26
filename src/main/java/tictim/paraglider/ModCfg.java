@@ -27,7 +27,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.capabilities.PlayerState;
-import tictim.paraglider.loot.ParagliderModifier;
+import tictim.paraglider.contents.loot.ParagliderLoot;
 
 import javax.annotation.Nullable;
 import java.io.DataInputStream;
@@ -72,7 +72,7 @@ public final class ModCfg{
 	private static IntValue startingStamina;
 	private static IntValue maxStaminaVessels;
 
-	private static EnumValue<ParagliderModifier.ConfigOption> paragliderInTowersOfTheWild;
+	private static EnumValue<ParagliderLoot.ConfigOption> paragliderInTowersOfTheWild;
 
 	private static BooleanValue enableSpiritOrbGens;
 	private static BooleanValue enableHeartContainers;
@@ -148,7 +148,7 @@ public final class ModCfg{
 		return startingStamina+(int)((double)staminaVessels/maxStaminaVessels*(maxStamina()-startingStamina));
 	}
 
-	public static ParagliderModifier.ConfigOption paragliderInTowersOfTheWild(){
+	public static ParagliderLoot.ConfigOption paragliderInTowersOfTheWild(){
 		return paragliderInTowersOfTheWild.get();
 	}
 
@@ -248,7 +248,7 @@ public final class ModCfg{
 						DISABLE: Don't spawn anything
 						PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests
 						DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss""")
-				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
+				.defineEnum("paragliderInTowersOfTheWild", ParagliderLoot.ConfigOption.DEFAULT);
 
 		server.push("stamina");
 		paraglidingConsumesStamina = server.comment("Paragliding and ascending will consume stamina.").define("paraglidingConsumesStamina", true);

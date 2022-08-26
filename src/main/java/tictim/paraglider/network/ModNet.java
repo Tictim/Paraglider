@@ -18,9 +18,9 @@ import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.RemotePlayerMovement;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.ModAdvancements;
-import tictim.paraglider.recipe.bargain.BargainResult;
-import tictim.paraglider.recipe.bargain.StatueBargain;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.recipe.bargain.BargainResult;
+import tictim.paraglider.contents.recipe.bargain.StatueBargain;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.wind.Wind;
 
 import java.util.Map;

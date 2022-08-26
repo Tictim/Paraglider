@@ -1,4 +1,4 @@
-package tictim.paraglider.item;
+package tictim.paraglider.contents.item;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

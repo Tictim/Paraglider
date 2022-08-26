@@ -1,4 +1,4 @@
-package tictim.paraglider.block;
+package tictim.paraglider.contents.block;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;

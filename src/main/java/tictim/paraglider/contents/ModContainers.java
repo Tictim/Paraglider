@@ -6,10 +6,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.phys.Vec3;
-import tictim.paraglider.recipe.bargain.BargainResult;
-import tictim.paraglider.recipe.bargain.BargainResult.FailedReason;
-import tictim.paraglider.recipe.bargain.StatueBargain;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.recipe.bargain.BargainResult;
+import tictim.paraglider.contents.recipe.bargain.BargainResult.FailedReason;
+import tictim.paraglider.contents.recipe.bargain.StatueBargain;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.utils.StatueDialog;
 
 import javax.annotation.Nullable;

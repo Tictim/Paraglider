@@ -27,26 +27,30 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import tictim.paraglider.block.GoddessStatueBlock;
-import tictim.paraglider.block.HornedStatueBlock;
+import tictim.paraglider.contents.block.GoddessStatueBlock;
+import tictim.paraglider.contents.block.HornedStatueBlock;
 import tictim.paraglider.contents.worldgen.NetherHornedStatue;
 import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
 import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
-import tictim.paraglider.item.AntiVesselItem;
-import tictim.paraglider.item.EssenceItem;
-import tictim.paraglider.item.HeartContainerItem;
-import tictim.paraglider.item.ParagliderItem;
-import tictim.paraglider.item.SpiritOrbItem;
-import tictim.paraglider.item.StaminaVesselItem;
-import tictim.paraglider.recipe.CosmeticRecipe;
-import tictim.paraglider.recipe.bargain.SimpleStatueBargain;
-import tictim.paraglider.recipe.bargain.StatueBargain;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.item.AntiVesselItem;
+import tictim.paraglider.contents.item.EssenceItem;
+import tictim.paraglider.contents.item.HeartContainerItem;
+import tictim.paraglider.contents.item.ParagliderItem;
+import tictim.paraglider.contents.item.SpiritOrbItem;
+import tictim.paraglider.contents.item.StaminaVesselItem;
+import tictim.paraglider.contents.loot.ParagliderLoot;
+import tictim.paraglider.contents.loot.SpiritOrbLoot;
+import tictim.paraglider.contents.loot.VesselLoot;
+import tictim.paraglider.contents.recipe.CosmeticRecipe;
+import tictim.paraglider.contents.recipe.bargain.SimpleStatueBargain;
+import tictim.paraglider.contents.recipe.bargain.StatueBargain;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,7 @@ public final class Contents{
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 	public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
+	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOTS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
 	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
@@ -133,6 +138,10 @@ public final class Contents{
 	public static final RegistryObject<MenuType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = MENUS.register(
 			"horned_statue", () -> new MenuType<>(ModContainers::hornedStatue));
 
+	public static final RegistryObject<Codec<ParagliderLoot>> PARAGLIDER_LOOT = LOOTS.register("paraglider", () -> ParagliderLoot.CODEC);
+	public static final RegistryObject<Codec<SpiritOrbLoot>> SPIRIT_ORB_LOOT = LOOTS.register("spirit_orb", () -> SpiritOrbLoot.CODEC);
+	public static final RegistryObject<Codec<VesselLoot>> VESSEL_LOOT = LOOTS.register("vessel", () -> VesselLoot.CODEC);
+
 	public static final RegistryObject<Attribute> MAX_STAMINA = ATTRIBUTES.register("max_stamina", () -> new RangedAttribute("max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
 
 	public static final RegistryObject<StructureType<UndergroundHornedStatue>> UNDERGROUND_HORNED_STATUE = structureType("underground_horned_statue", UndergroundHornedStatue.CODEC);
@@ -156,6 +165,7 @@ public final class Contents{
 		ITEMS.register(eventBus);
 		EFFECTS.register(eventBus);
 		MENUS.register(eventBus);
+		LOOTS.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);
 		ATTRIBUTES.register(eventBus);
 		RECIPE_TYPES.register(eventBus);

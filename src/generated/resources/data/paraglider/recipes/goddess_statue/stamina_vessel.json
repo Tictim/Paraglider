@@ -1,6 +1,10 @@
 {
   "type": "paraglider:statue_bargain",
-  "owner": "paraglider:goddess_statue",
+  "conditions": [
+    {
+      "type": "paraglider:stamina_vessel_enabled"
+    }
+  ],
   "demands": {
     "items": [
       {
@@ -14,9 +18,5 @@
   "offers": {
     "staminaVessels": 1
   },
-  "conditions": [
-    {
-      "type": "paraglider:stamina_vessel_enabled"
-    }
-  ]
+  "owner": "paraglider:goddess_statue"
 }

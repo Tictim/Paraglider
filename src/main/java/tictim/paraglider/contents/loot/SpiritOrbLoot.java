@@ -1,37 +1,36 @@
-package tictim.paraglider.loot;
+package tictim.paraglider.contents.loot;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
-import tictim.paraglider.utils.ParagliderUtils;
+import tictim.paraglider.ModCfg;
+import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nonnull;
 
-public class VesselLootModifier extends LootModifier{
-	public static final Codec<VesselLootModifier> CODEC = RecordCodecBuilder.create(inst ->
+public class SpiritOrbLoot extends LootModifier{
+	public static final Codec<SpiritOrbLoot> CODEC = RecordCodecBuilder.create(inst ->
 			codecStart(inst)
 					.and(Codec.INT.fieldOf("count").forGetter(m -> m.count))
-					.apply(inst, VesselLootModifier::new));
+					.apply(inst, SpiritOrbLoot::new));
 
 	private final int count;
 
-	public VesselLootModifier(LootItemCondition[] conditionsIn){
+	public SpiritOrbLoot(LootItemCondition[] conditionsIn){
 		this(conditionsIn, 0);
 	}
-	public VesselLootModifier(LootItemCondition[] conditionsIn, int count){
+	public SpiritOrbLoot(LootItemCondition[] conditionsIn, int count){
 		super(conditionsIn);
 		this.count = count;
 	}
 
 	@Nonnull @Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context){
-		Item item = ParagliderUtils.getAppropriateVessel();
-		if(item!=null) generatedLoot.add(new ItemStack(item, count));
+		if(ModCfg.enableSpiritOrbGens()) generatedLoot.add(new ItemStack(Contents.SPIRIT_ORB.get(), count));
 		return generatedLoot;
 	}
 

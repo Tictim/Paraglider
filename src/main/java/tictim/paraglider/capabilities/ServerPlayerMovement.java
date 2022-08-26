@@ -23,7 +23,7 @@ import tictim.paraglider.ModCfg;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModAdvancements;
-import tictim.paraglider.item.ParagliderItem;
+import tictim.paraglider.contents.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
 import tictim.paraglider.network.SyncParaglidingMsg;

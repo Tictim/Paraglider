@@ -13,7 +13,7 @@ import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModTags;
 import datagen.builder.CosmeticRecipeBuilder;
 import datagen.builder.StatueBargainBuilder;
-import tictim.paraglider.recipe.ConfigConditionSerializer;
+import tictim.paraglider.contents.recipe.ConfigConditionSerializer;
 
 import java.util.function.Consumer;
 

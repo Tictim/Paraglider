@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tictim.paraglider.item.ParagliderItem;
+import tictim.paraglider.contents.item.ParagliderItem;
 
 @Mixin(PlayerModel.class)
 public abstract class MixinPlayerModel extends HumanoidModel<LivingEntity>{

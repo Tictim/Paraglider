@@ -1,4 +1,4 @@
-package tictim.paraglider.recipe.bargain;
+package tictim.paraglider.contents.recipe.bargain;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package tictim.paraglider.recipe;
+package tictim.paraglider.contents.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;

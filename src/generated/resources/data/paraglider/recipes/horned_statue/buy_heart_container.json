@@ -1,7 +1,12 @@
 {
   "type": "paraglider:statue_bargain",
-  "owner": "paraglider:horned_statue",
+  "conditions": [
+    {
+      "type": "paraglider:heart_container_enabled"
+    }
+  ],
   "demands": {
+    "essences": 1,
     "items": [
       {
         "ingredient": {
@@ -9,15 +14,10 @@
         },
         "quantity": 6
       }
-    ],
-    "essences": 1
+    ]
   },
   "offers": {
     "heartContainers": 1
   },
-  "conditions": [
-    {
-      "type": "paraglider:heart_container_enabled"
-    }
-  ]
+  "owner": "paraglider:horned_statue"
 }

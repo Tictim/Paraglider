@@ -13,9 +13,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.LootTableIdCondition;
-import tictim.paraglider.loot.ParagliderModifier;
-import tictim.paraglider.loot.SpiritOrbLootModifier;
-import tictim.paraglider.loot.VesselLootModifier;
+import tictim.paraglider.contents.loot.ParagliderLoot;
+import tictim.paraglider.contents.loot.SpiritOrbLoot;
+import tictim.paraglider.contents.loot.VesselLoot;
 
 public class LootModifierProvider extends GlobalLootModifierProvider{
 	public LootModifierProvider(DataGenerator gen, String modid){
@@ -23,14 +23,14 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 	}
 
 	@Override protected void start(){
-		add("towers_of_the_wild/chest", new ParagliderModifier(
+		add("towers_of_the_wild/chest", new ParagliderLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
 								new ResourceLocation("towers_of_the_wild", "chests/tower/regular/tower_chest")
 						).build()
 				}
 		));
-		add("towers_of_the_wild/ocean_chest", new ParagliderModifier(
+		add("towers_of_the_wild/ocean_chest", new ParagliderLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
 								new ResourceLocation("towers_of_the_wild", "chests/tower/ocean/ocean_tower_chest")
@@ -38,13 +38,13 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 				}, true
 		));
 
-		add("wither", new VesselLootModifier(
+		add("wither", new VesselLoot(
 				new LootItemCondition[]{
 						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(EntityType.WITHER)).build(),
 						LootItemKilledByPlayerCondition.killedByPlayer().build()
 				}, 1
 		));
-		addSpiritOrbItemModifier("spawner", new SpiritOrbLootModifier(
+		addSpiritOrbItemModifier("spawner", new SpiritOrbLoot(
 				new LootItemCondition[]{
 						LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SPAWNER).build()
 				}, 2
@@ -65,7 +65,7 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 	}
 
 	private void addChestSpiritOrbItemModifier(String chestLootTableName, float chance){
-		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLootModifier(
+		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(new ResourceLocation("chests/"+chestLootTableName)).build(),
 						LootItemRandomChanceCondition.randomChance(chance).build()
@@ -73,14 +73,14 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 		));
 	}
 	private void addChestSpiritOrbItemModifier(String chestLootTableName){
-		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLootModifier(
+		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(new ResourceLocation("chests/"+chestLootTableName)).build()
 				}, 1
 		));
 	}
 
-	private void addSpiritOrbItemModifier(String modifier, SpiritOrbLootModifier instance){
+	private void addSpiritOrbItemModifier(String modifier, SpiritOrbLoot instance){
 		add("spirit_orbs/"+modifier, instance);
 	}
 }

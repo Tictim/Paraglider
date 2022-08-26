@@ -1,8 +1,8 @@
 package tictim.paraglider.utils;
 
 import net.minecraft.network.chat.Component;
-import tictim.paraglider.recipe.bargain.BargainResult;
-import tictim.paraglider.recipe.bargain.StatueBargain;
+import tictim.paraglider.contents.recipe.bargain.BargainResult;
+import tictim.paraglider.contents.recipe.bargain.StatueBargain;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package tictim.paraglider.recipe;
+package tictim.paraglider.contents.block;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

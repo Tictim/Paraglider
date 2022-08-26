@@ -1,4 +1,4 @@
-package tictim.paraglider.loot;
+package tictim.paraglider.contents.loot;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,23 +13,23 @@ import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.item.ParagliderItem;
+import tictim.paraglider.contents.item.ParagliderItem;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public class ParagliderModifier extends LootModifier{
-	public static final Codec<ParagliderModifier> CODEC = RecordCodecBuilder.create(inst ->
+public class ParagliderLoot extends LootModifier{
+	public static final Codec<ParagliderLoot> CODEC = RecordCodecBuilder.create(inst ->
 			codecStart(inst)
 					.and(Codec.BOOL.fieldOf("dekuLeaf").forGetter(m -> m.dekuLeaf))
-					.apply(inst, ParagliderModifier::new));
+					.apply(inst, ParagliderLoot::new));
 
 	public final boolean dekuLeaf;
 
-	public ParagliderModifier(LootItemCondition[] conditionsIn){
+	public ParagliderLoot(LootItemCondition[] conditionsIn){
 		this(conditionsIn, false);
 	}
-	public ParagliderModifier(LootItemCondition[] conditionsIn, boolean dekuLeaf){
+	public ParagliderLoot(LootItemCondition[] conditionsIn, boolean dekuLeaf){
 		super(conditionsIn);
 		this.dekuLeaf = dekuLeaf;
 	}

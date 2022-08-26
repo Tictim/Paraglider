@@ -1,4 +1,4 @@
-package tictim.paraglider.recipe.bargain;
+package tictim.paraglider.contents.recipe.bargain;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.recipe.bargain.BargainResult.FailedReason;
+import tictim.paraglider.contents.recipe.bargain.BargainResult.FailedReason;
 import tictim.paraglider.utils.ParagliderUtils;
 import tictim.paraglider.utils.QuantifiedIngredient;
 import tictim.paraglider.utils.QuantifiedItem;

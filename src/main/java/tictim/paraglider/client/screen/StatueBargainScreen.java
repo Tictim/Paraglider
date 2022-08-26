@@ -21,10 +21,10 @@ import tictim.paraglider.client.DisableStaminaRender;
 import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.network.BargainMsg;
 import tictim.paraglider.network.ModNet;
-import tictim.paraglider.recipe.bargain.BargainPreview;
-import tictim.paraglider.recipe.bargain.StatueBargain;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer;
-import tictim.paraglider.recipe.bargain.StatueBargainContainer.ItemDemand;
+import tictim.paraglider.contents.recipe.bargain.BargainPreview;
+import tictim.paraglider.contents.recipe.bargain.StatueBargain;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer.ItemDemand;
 import tictim.paraglider.utils.TooltipFactory;
 
 import javax.annotation.Nullable;
