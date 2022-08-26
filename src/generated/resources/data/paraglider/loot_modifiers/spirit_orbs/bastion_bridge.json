@@ -1,10 +1,10 @@
 {
+  "type": "paraglider:spirit_orb",
   "conditions": [
     {
       "condition": "forge:loot_table_id",
       "loot_table_id": "minecraft:chests/bastion_bridge"
     }
   ],
-  "count": 1,
-  "type": "paraglider:spirit_orb"
+  "count": 1
 }

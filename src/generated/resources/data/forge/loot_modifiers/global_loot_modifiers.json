@@ -1,5 +1,4 @@
 {
-  "replace": false,
   "entries": [
     "paraglider:spirit_orbs/stronghold_corridor",
     "paraglider:spirit_orbs/bastion_bridge",
@@ -18,5 +17,6 @@
     "paraglider:spirit_orbs/buried_treasure",
     "paraglider:wither",
     "paraglider:spirit_orbs/spawner"
-  ]
+  ],
+  "replace": false
 }

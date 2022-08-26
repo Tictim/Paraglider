@@ -28,11 +28,19 @@ public class ParagliderItem extends Item implements DyeableLeatherItem{
 		this.defaultColor = defaultColor;
 	}
 
+	private static int maxDurability(){
+		try{
+			return ModCfg.paragliderDurability();
+		}catch(IllegalStateException ex){ // how else should I supposed to know if the config is not loaded at this moment? bruh
+			return 0;
+		}
+	}
+
 	@Override public int getMaxDamage(ItemStack stack){
-		return ModCfg.paragliderDurability();
+		return maxDurability();
 	}
 	@Override public boolean canBeDepleted(){
-		return ModCfg.paragliderDurability()>0;
+		return maxDurability()>0;
 	}
 	@Override public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair){
 		ITagManager<Item> tags = ForgeRegistries.ITEMS.tags();

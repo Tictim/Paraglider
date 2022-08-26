@@ -1,14 +1,14 @@
 {
+  "type": "paraglider:spirit_orb",
   "conditions": [
     {
       "condition": "forge:loot_table_id",
       "loot_table_id": "minecraft:chests/stronghold_corridor"
     },
     {
-      "condition": "minecraft:random_chance",
-      "chance": 0.5
+      "chance": 0.5,
+      "condition": "minecraft:random_chance"
     }
   ],
-  "count": 1,
-  "type": "paraglider:spirit_orb"
+  "count": 1
 }

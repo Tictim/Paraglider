@@ -1,10 +1,10 @@
 {
+  "type": "paraglider:paraglider",
   "conditions": [
     {
       "condition": "forge:loot_table_id",
       "loot_table_id": "towers_of_the_wild:chests/tower/ocean/ocean_tower_chest"
     }
   ],
-  "dekuLeaf": true,
-  "type": "paraglider:paraglider"
+  "dekuLeaf": true
 }

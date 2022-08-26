@@ -1,23 +1,23 @@
 {
   "parent": "paraglider:root",
+  "criteria": {
+    "bargain": {
+      "trigger": "minecraft:impossible"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "paraglider:horned_statue"
-    },
-    "title": {
-      "translate": "advancement.paraglider.statues_bargain"
-    },
+    "announce_to_chat": true,
     "description": {
       "translate": "advancement.paraglider.statues_bargain.desc"
     },
     "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "item": "paraglider:horned_statue"
+    },
     "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false
-  },
-  "criteria": {
-    "bargain": {
-      "trigger": "minecraft:impossible"
+    "title": {
+      "translate": "advancement.paraglider.statues_bargain"
     }
   },
   "requirements": [
