@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package datagen;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;

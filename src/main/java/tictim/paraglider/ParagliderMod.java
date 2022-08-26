@@ -4,7 +4,6 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +13,6 @@ import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,13 +30,6 @@ import tictim.paraglider.client.overlay.StaminaWheelOverlay;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModVillageStructures;
-import tictim.paraglider.datagen.AdvancementGen;
-import tictim.paraglider.datagen.BiomeTagGen;
-import tictim.paraglider.datagen.BlockTagGen;
-import tictim.paraglider.datagen.ItemTagGen;
-import tictim.paraglider.datagen.LootModifierProvider;
-import tictim.paraglider.datagen.LootTableGen;
-import tictim.paraglider.datagen.RecipeGen;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
 import tictim.paraglider.recipe.ConfigConditionSerializer;
@@ -70,19 +61,6 @@ public class ParagliderMod{
 		event.register(Paraglider.class);
 		event.register(Wind.class);
 		event.register(Stamina.class);
-	}
-
-	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event){
-		DataGenerator gen = event.getGenerator();
-		gen.addProvider(event.includeServer(), new RecipeGen(gen));
-		BlockTagGen blockTagGen = new BlockTagGen(gen, event.getExistingFileHelper());
-		gen.addProvider(event.includeServer(), blockTagGen);
-		gen.addProvider(event.includeServer(), new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
-		gen.addProvider(event.includeServer(), new BiomeTagGen(gen, event.getExistingFileHelper()));
-		gen.addProvider(event.includeServer(), new LootTableGen(gen));
-		gen.addProvider(event.includeServer(), new LootModifierProvider(gen, MODID));
-		gen.addProvider(event.includeServer(), new AdvancementGen(gen, event.getExistingFileHelper()));
 	}
 
 	@SubscribeEvent

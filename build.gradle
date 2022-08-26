@@ -25,6 +25,30 @@ archivesBaseName = "${mod_name}-1.19"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
+sourceSets {
+    main {
+        resources { srcDir 'src/generated/resources' }
+    }
+
+    datagen {
+        java { srcDir "src/datagen/java" }
+        resources { srcDir "src/datagen/resources" }
+
+        compileClasspath += configurations.getByName("minecraft")
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+
+    gametest {
+        java { srcDir "src/test/java" }
+        resources { srcDir "src/test/resources" }
+
+        compileClasspath += configurations.getByName("minecraft")
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
 minecraft {
     mappings channel: 'parchment', version: '2022.08.21-1.19.2'
     // makeObfSourceJar = false
@@ -43,6 +67,7 @@ minecraft {
                 }
             }
         }
+
         server {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
@@ -54,22 +79,36 @@ minecraft {
                 }
             }
         }
-        data {
+
+        gameTestServer {
             workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            args '--mod', 'paraglider', '--all', '--output', file('src/generated/resources/')
-            ideaModule "${project.name}.main"
+            property 'forge.enabledGameTestNamespaces', 'paraglider'
 
             mods {
                 paraglider {
                     source sourceSets.main
+                    source sourceSets.gametest
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'paraglider', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                paraglider {
+                    source sourceSets.main
+                    source sourceSets.datagen
                 }
             }
         }
     }
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 mixin {
     add sourceSets.main, "paraglider.refmap.json"
