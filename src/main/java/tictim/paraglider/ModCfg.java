@@ -24,8 +24,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import tictim.paraglider.capabilities.PlayerState;
 import tictim.paraglider.contents.loot.ParagliderLoot;
 
@@ -52,6 +52,8 @@ import static tictim.paraglider.ParagliderMod.MODID;
 @Mod.EventBusSubscriber(modid = MODID, bus = Bus.MOD)
 public final class ModCfg{
 	private ModCfg(){}
+
+	private static ForgeConfigSpec serverSpec;
 
 	private static BooleanValue ascendingWinds;
 	private static BooleanValue paraglidingConsumesStamina;
@@ -91,13 +93,13 @@ public final class ModCfg{
 	private static double staminaWheelY = DEFAULT_STAMINA_WHEEL_Y;
 
 	public static boolean ascendingWinds(){
-		return ascendingWinds.get();
+		return get(serverSpec, ascendingWinds);
 	}
 	public static boolean paraglidingConsumesStamina(){
-		return paraglidingConsumesStamina.get();
+		return get(serverSpec, paraglidingConsumesStamina);
 	}
 	public static boolean runningConsumesStamina(){
-		return runningConsumesStamina.get();
+		return get(serverSpec, runningConsumesStamina);
 	}
 
 	public static boolean isWindSource(BlockState state){
@@ -106,34 +108,34 @@ public final class ModCfg{
 	}
 
 	public static double paraglidingSpeed(){
-		return paraglidingSpeed.get();
+		return get(serverSpec, paraglidingSpeed);
 	}
 	public static int paragliderDurability(){
-		return paragliderDurability.get();
+		return get(serverSpec, paragliderDurability);
 	}
 
 	public static boolean enderDragonDropsVessel(){
-		return enderDragonDropsVessel.get();
+		return get(serverSpec, enderDragonDropsVessel);
 	}
 	public static boolean raidGivesVessel(){
-		return raidGivesVessel.get();
+		return get(serverSpec, raidGivesVessel);
 	}
 
 	public static int startingHearts(){
-		return startingHearts.get();
+		return get(serverSpec, startingHearts);
 	}
 	public static int maxHeartContainers(){
-		return maxHeartContainers.get();
+		return get(serverSpec, maxHeartContainers);
 	}
 
 	public static int maxStamina(){
-		return maxStamina.get();
+		return get(serverSpec, maxStamina);
 	}
 	public static int startingStamina(){
-		return Math.min(maxStamina(), startingStamina.get());
+		return Math.min(maxStamina(), get(serverSpec, startingStamina));
 	}
 	public static int maxStaminaVessels(){
-		return maxStaminaVessels.get();
+		return get(serverSpec, maxStaminaVessels);
 	}
 
 	public static int additionalMaxHealth(int heartContainers){
@@ -149,7 +151,7 @@ public final class ModCfg{
 	}
 
 	public static ParagliderLoot.ConfigOption paragliderInTowersOfTheWild(){
-		return paragliderInTowersOfTheWild.get();
+		return get(serverSpec, paragliderInTowersOfTheWild);
 	}
 
 	public static boolean enableSpiritOrbGens(){
@@ -199,6 +201,10 @@ public final class ModCfg{
 	private static double filterBadValue(double d, double defaultValue){
 		if(Double.isNaN(d)) return defaultValue;
 		return Mth.clamp(d, 0, 1);
+	}
+
+	private static <T> T get(ForgeConfigSpec spec, ConfigValue<T> val){
+		return spec.isLoaded() ? val.get() : val.getDefault();
 	}
 
 	public static void init(){
@@ -261,7 +267,7 @@ public final class ModCfg{
 		server.pop();
 		server.pop();
 
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, server.build());
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, serverSpec = server.build());
 
 		ForgeConfigSpec.Builder common = new ForgeConfigSpec.Builder();
 		common.comment("""
@@ -406,7 +412,7 @@ public final class ModCfg{
 				return null;
 			}
 			Optional<?> o = property.getValue(e.getValue());
-			if(!o.isPresent()){
+			if(o.isEmpty()){
 				warnIgnoredWindSource(input, "property '{}' doesn't contain value '{}'", key, e.getValue());
 				return null;
 			}
