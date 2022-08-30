@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package datagen;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -11,8 +11,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModTags;
-import tictim.paraglider.datagen.builder.CosmeticRecipeBuilder;
-import tictim.paraglider.datagen.builder.StatueBargainBuilder;
+import datagen.builder.CosmeticRecipeBuilder;
+import datagen.builder.StatueBargainBuilder;
 import tictim.paraglider.recipe.ConfigConditionSerializer;
 
 import java.util.function.Consumer;

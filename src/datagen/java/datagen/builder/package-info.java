@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package tictim.paraglider.datagen.builder;
+package datagen.builder;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
