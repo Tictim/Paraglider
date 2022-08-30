@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package datagen;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.data.AdvancementProvider;

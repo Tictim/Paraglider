@@ -1,4 +1,4 @@
-package tictim.paraglider.datagen;
+package datagen;
 
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.block.Blocks;

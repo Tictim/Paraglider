@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IDyeableArmorItem;
@@ -30,7 +29,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,12 +39,6 @@ import tictim.paraglider.capabilities.Stamina;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModVillageStructures;
-import tictim.paraglider.datagen.AdvancementGen;
-import tictim.paraglider.datagen.BlockTagGen;
-import tictim.paraglider.datagen.ItemTagGen;
-import tictim.paraglider.datagen.LootModifierProvider;
-import tictim.paraglider.datagen.LootTableGen;
-import tictim.paraglider.datagen.RecipeGen;
 import tictim.paraglider.event.ParagliderClientEventHandler;
 import tictim.paraglider.item.ParagliderItem;
 import tictim.paraglider.network.ModNet;
@@ -92,20 +84,6 @@ public class ParagliderMod{
 		}, () -> {
 			throw new OperationNotSupportedException();
 		});
-	}
-
-	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event){
-		DataGenerator gen = event.getGenerator();
-		if(event.includeServer()){
-			gen.addProvider(new RecipeGen(gen));
-			BlockTagGen blockTagGen = new BlockTagGen(gen, event.getExistingFileHelper());
-			gen.addProvider(blockTagGen);
-			gen.addProvider(new ItemTagGen(gen, blockTagGen, event.getExistingFileHelper()));
-			gen.addProvider(new LootTableGen(gen));
-			gen.addProvider(new LootModifierProvider(gen, MODID));
-			gen.addProvider(new AdvancementGen(gen));
-		}
 	}
 
 	@SubscribeEvent

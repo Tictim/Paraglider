@@ -22,6 +22,21 @@ archivesBaseName = "${mod_name}-${mc_version}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
+sourceSets {
+    main {
+        resources { srcDir 'src/generated/resources' }
+    }
+
+    datagen {
+        java { srcDir "src/datagen/java" }
+        resources { srcDir "src/datagen/resources" }
+
+        compileClasspath += configurations.getByName("minecraft")
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
 minecraft {
     mappings channel: 'snapshot', version: '20201028-1.16.3'
     // makeObfSourceJar = false
@@ -60,13 +75,12 @@ minecraft {
             mods {
                 paraglider {
                     source sourceSets.main
+                    source sourceSets.datagen
                 }
             }
         }
     }
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 mixin {
     add sourceSets.main, "paraglider.refmap.json"
