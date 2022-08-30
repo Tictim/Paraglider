@@ -35,9 +35,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import tictim.paraglider.contents.block.GoddessStatueBlock;
 import tictim.paraglider.contents.block.HornedStatueBlock;
-import tictim.paraglider.contents.worldgen.NetherHornedStatue;
-import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
-import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
 import tictim.paraglider.contents.item.AntiVesselItem;
 import tictim.paraglider.contents.item.EssenceItem;
 import tictim.paraglider.contents.item.HeartContainerItem;
@@ -51,6 +48,9 @@ import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.bargain.SimpleStatueBargain;
 import tictim.paraglider.contents.recipe.bargain.StatueBargain;
 import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.contents.worldgen.NetherHornedStatue;
+import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
+import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,13 +152,9 @@ public final class Contents{
 		return STRUCTURE_TYPES.register(id, () -> (StructureType<T>)(() -> codec));
 	}
 
-	public static final class PieceTypes{
-		private PieceTypes(){}
-
-		public static final RegistryObject<StructurePieceType> UNDERGROUND_HORNED_STATUE = PIECES.register("underground_horned_statue", UndergroundHornedStatue::pieceType);
-		public static final RegistryObject<StructurePieceType> NETHER_HORNED_STATUE = PIECES.register("nether_horned_statue", NetherHornedStatue::pieceType);
-		public static final RegistryObject<StructurePieceType> TARREY_TOWN_GODDESS_STATUE = PIECES.register("tarrey_town_goddess_statue", TarreyTownGoddessStatue::pieceType);
-	}
+	public static final RegistryObject<StructurePieceType> TARREY_TOWN_GODDESS_STATUE_PIECE = PIECES.register("tarrey_town_goddess_statue", TarreyTownGoddessStatue::pieceType);
+	public static final RegistryObject<StructurePieceType> NETHER_HORNED_STATUE_PIECE = PIECES.register("nether_horned_statue", NetherHornedStatue::pieceType);
+	public static final RegistryObject<StructurePieceType> UNDERGROUND_HORNED_STATUE_PIECE = PIECES.register("underground_horned_statue", UndergroundHornedStatue::pieceType);
 
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);

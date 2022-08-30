@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.NoiseColumn;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Optional;
@@ -30,6 +28,11 @@ public class NetherHornedStatue extends Structure{
 			inst.group(settingsCodec(inst), HeightProvider.CODEC.fieldOf("height").forGetter(s -> s.height))
 					.apply(inst, NetherHornedStatue::new));
 	private static final ResourceLocation TEMPLATE = new ResourceLocation(MODID, "nether_horned_statue");
+	private static final BlockPos PIVOT = new BlockPos(2, 1, 2);
+
+	public static StructurePieceType.StructureTemplateType pieceType(){
+		return BaseHornedStatuePiece.createType(Contents.NETHER_HORNED_STATUE_PIECE, PIVOT);
+	}
 
 	public final HeightProvider height;
 
@@ -63,31 +66,14 @@ public class NetherHornedStatue extends Structure{
 
 		BlockPos pos = new BlockPos(x, y-1, z);
 		return Optional.of(new Structure.GenerationStub(pos, b ->
-				b.addPiece(new Piece(ctx.structureTemplateManager(), Rotation.getRandom(r), pos))));
+				b.addPiece(new BaseHornedStatuePiece(Contents.NETHER_HORNED_STATUE_PIECE.get(), ctx.structureTemplateManager(), TEMPLATE, pos)
+						.rot(PIVOT, Rotation.getRandom(r), false))));
 	}
 
 	@Override public StructureType<?> type(){
 		return Contents.NETHER_HORNED_STATUE.get();
 	}
-
-	public static StructurePieceType.StructureTemplateType pieceType(){
-		return Piece::new;
-	}
-
 	@Override public GenerationStep.Decoration step(){
 		return GenerationStep.Decoration.SURFACE_STRUCTURES;
-	}
-
-	public static class Piece extends BaseHornedStatuePiece{
-		private static final BlockPos PIVOT = new BlockPos(2, 1, 2);
-
-		public Piece(StructureTemplateManager structureManager, Rotation rotation, BlockPos templatePos){
-			super(Contents.PieceTypes.NETHER_HORNED_STATUE.get(), structureManager, TEMPLATE, rotation, templatePos);
-			this.placeSettings.setRotationPivot(PIVOT);
-		}
-		public Piece(StructureTemplateManager structureManager, CompoundTag tag){
-			super(Contents.PieceTypes.NETHER_HORNED_STATUE.get(), structureManager, tag);
-			this.placeSettings.setRotationPivot(PIVOT);
-		}
 	}
 }
