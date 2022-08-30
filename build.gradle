@@ -20,7 +20,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = "${mod_version}"
 group = "tictim.${mod_id}"
-archivesBaseName = "${mod_name}-1.19"
+archivesBaseName = "${mod_name}-1.19.2"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
