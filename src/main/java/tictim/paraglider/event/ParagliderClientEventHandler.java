@@ -113,21 +113,22 @@ public final class ParagliderClientEventHandler{
 	}
 
 	@SubscribeEvent
-	public static void onClickInput(InputEvent.ClickInputEvent evt) {
+	public static void onClickInput(InputEvent.ClickInputEvent event) {
 		// disables all interactions while paragliding
-		ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
-		if(itemInHand.getItem() instanceof ParagliderItem&&ParagliderItem.isItemParagliding(itemInHand)){
-			evt.setSwingHand(false);
-			evt.setCanceled(true);
+		// this is necessary in addition to cancelling interactions in ParagliderEventHandler to also prevent the arm swing animation from playing
+		Player player = Minecraft.getInstance().player;
+		PlayerMovement m = PlayerMovement.of(player);
+		if(m!=null&&m.isParagliding()) {
+			event.setSwingHand(false);
+			event.setCanceled(true);
 		}
 	}
 
 	@SubscribeEvent
-	public static void ondrawBlockSelection(DrawSelectionEvent.HighlightBlock evt) {
-		// disables drawing block highlights while paragliding (as blocks cannot be interacted with)
-		ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
-		if(itemInHand.getItem() instanceof ParagliderItem&&ParagliderItem.isItemParagliding(itemInHand)){
-			evt.setCanceled(true);
-		}
+	public static void onDrawBlockSelection(DrawSelectionEvent.HighlightBlock event) {
+		// disables drawing block highlights while paragliding (as blocks cannot be interacted with, just a convenience feature to avoid confusing players)
+		Player player = Minecraft.getInstance().player;
+		PlayerMovement m = PlayerMovement.of(player);
+		if(m!=null&&m.isParagliding()) event.setCanceled(true);
 	}
 }

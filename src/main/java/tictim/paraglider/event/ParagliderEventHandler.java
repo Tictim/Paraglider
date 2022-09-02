@@ -36,8 +36,9 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onPlayerInteract(PlayerInteractEvent event){
-		if(event.isCancelable()&&event.getHand()==InteractionHand.OFF_HAND){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getPlayer());
+		if(event.isCancelable()){
+			// use PlayerMovement instead of ServerPlayerMovement; this also needs to trigger client side to avoid desync
+			PlayerMovement m = PlayerMovement.of(event.getPlayer());
 			if(m!=null&&m.isParagliding()) event.setCanceled(true);
 		}
 	}
@@ -53,9 +54,19 @@ public final class ParagliderEventHandler{
 	}
 
 	@SubscribeEvent
-	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
-		if(event.getEntityLiving().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntityLiving() instanceof Player){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntityLiving());
+	public static void onPlayerStartUseItem(LivingEntityUseItemEvent.Start event){
+		if(event.getEntityLiving() instanceof Player){
+			// use PlayerMovement instead of ServerPlayerMovement; this also needs to trigger client side to avoid desync
+			PlayerMovement m = PlayerMovement.of(event.getEntityLiving());
+			if(m!=null&&m.isParagliding()) event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event){
+		if(event.getEntityLiving() instanceof Player){
+			// use PlayerMovement instead of ServerPlayerMovement; this also needs to trigger client side to avoid desync
+			PlayerMovement m = PlayerMovement.of(event.getEntityLiving());
 			if(m!=null&&m.isParagliding()) event.getEntityLiving().stopUsingItem();
 		}
 	}
