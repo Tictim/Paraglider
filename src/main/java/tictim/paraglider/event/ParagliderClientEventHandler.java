@@ -9,6 +9,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
@@ -106,5 +108,25 @@ public final class ParagliderClientEventHandler{
 		if(Minecraft.getInstance().screen==null&&paragliderSettingsKey().consumeClick()){
 			Minecraft.getInstance().setScreen(new ParagliderSettingScreen());
 		}
+	}
+
+	@SubscribeEvent
+	public static void onClickInput(InputEvent.ClickInputEvent event){
+		// disables all interactions while paragliding
+		// this is necessary in addition to cancelling interactions in ParagliderEventHandler to also prevent the arm swing animation from playing
+		Player player = Minecraft.getInstance().player;
+		PlayerMovement m = PlayerMovement.of(player);
+		if(m!=null&&m.isParagliding()){
+			event.setSwingHand(false);
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onDrawBlockSelection(DrawSelectionEvent.HighlightBlock event){
+		// disables drawing block highlights while paragliding (as blocks cannot be interacted with, just a convenience feature to avoid confusing players)
+		Player player = Minecraft.getInstance().player;
+		PlayerMovement m = PlayerMovement.of(player);
+		if(m!=null&&m.isParagliding()) event.setCanceled(true);
 	}
 }

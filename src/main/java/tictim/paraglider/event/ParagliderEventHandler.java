@@ -3,7 +3,6 @@ package tictim.paraglider.event;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -36,10 +35,22 @@ public final class ParagliderEventHandler{
 
 	@SubscribeEvent
 	public static void onPlayerInteract(PlayerInteractEvent event){
-		if(event.isCancelable()&&event.getHand()==InteractionHand.OFF_HAND){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getPlayer());
+		if(event.isCancelable()){
+			PlayerMovement m = PlayerMovement.of(event.getPlayer());
 			if(m!=null&&m.isParagliding()) event.setCanceled(true);
 		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerStartUseItem(LivingEntityUseItemEvent.Start event){
+		PlayerMovement m = PlayerMovement.of(event.getEntityLiving());
+		if(m!=null&&m.isParagliding()) event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event){
+		PlayerMovement m = PlayerMovement.of(event.getEntityLiving());
+		if(m!=null&&m.isParagliding()) event.getEntityLiving().stopUsingItem();
 	}
 
 	@SubscribeEvent
@@ -50,14 +61,6 @@ public final class ParagliderEventHandler{
 		PlayerMovement m2 = PlayerMovement.of(event.getPlayer());
 		if(m1!=null&&m2!=null) m1.copyTo(m2);
 		original.invalidateCaps();
-	}
-
-	@SubscribeEvent
-	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
-		if(event.getEntityLiving().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntityLiving() instanceof Player){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntityLiving());
-			if(m!=null&&m.isParagliding()) event.getEntityLiving().stopUsingItem();
-		}
 	}
 
 	private static final ResourceLocation MOVEMENT_HANDLER_KEY = new ResourceLocation(MODID, "paragliding_movement_handler");
