@@ -43,6 +43,18 @@ public final class ParagliderEventHandler{
 	}
 
 	@SubscribeEvent
+	public static void onPlayerStartUseItem(LivingEntityUseItemEvent.Start event){
+		PlayerMovement m = PlayerMovement.of(event.getEntity());
+		if(m!=null&&m.isParagliding()) event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event){
+		PlayerMovement m = PlayerMovement.of(event.getEntity());
+		if(m!=null&&m.isParagliding()) event.getEntity().stopUsingItem();
+	}
+
+	@SubscribeEvent
 	public static void onClone(PlayerEvent.Clone event){
 		Player original = event.getOriginal();
 		original.reviveCaps();
@@ -50,14 +62,6 @@ public final class ParagliderEventHandler{
 		PlayerMovement m2 = PlayerMovement.of(event.getEntity());
 		if(m1!=null&&m2!=null) m1.copyTo(m2);
 		original.invalidateCaps();
-	}
-
-	@SubscribeEvent
-	public static void onPlayerUseItem(LivingEntityUseItemEvent.Tick event){
-		if(event.getEntity().getUsedItemHand()==InteractionHand.OFF_HAND&&event.getEntity() instanceof Player){
-			ServerPlayerMovement m = ServerPlayerMovement.of(event.getEntity());
-			if(m!=null&&m.isParagliding()) event.getEntity().stopUsingItem();
-		}
 	}
 
 	private static final ResourceLocation MOVEMENT_HANDLER_KEY = new ResourceLocation(MODID, "paragliding_movement_handler");
