@@ -8,7 +8,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -25,7 +24,6 @@ import tictim.paraglider.client.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.client.screen.ParagliderSettingScreen;
 import tictim.paraglider.client.screen.StatueBargainScreen;
-import tictim.paraglider.item.ParagliderItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -113,19 +111,19 @@ public final class ParagliderClientEventHandler{
 	}
 
 	@SubscribeEvent
-	public static void onClickInput(InputEvent.ClickInputEvent event) {
+	public static void onClickInput(InputEvent.ClickInputEvent event){
 		// disables all interactions while paragliding
 		// this is necessary in addition to cancelling interactions in ParagliderEventHandler to also prevent the arm swing animation from playing
 		Player player = Minecraft.getInstance().player;
 		PlayerMovement m = PlayerMovement.of(player);
-		if(m!=null&&m.isParagliding()) {
+		if(m!=null&&m.isParagliding()){
 			event.setSwingHand(false);
 			event.setCanceled(true);
 		}
 	}
 
 	@SubscribeEvent
-	public static void onDrawBlockSelection(DrawSelectionEvent.HighlightBlock event) {
+	public static void onDrawBlockSelection(DrawSelectionEvent.HighlightBlock event){
 		// disables drawing block highlights while paragliding (as blocks cannot be interacted with, just a convenience feature to avoid confusing players)
 		Player player = Minecraft.getInstance().player;
 		PlayerMovement m = PlayerMovement.of(player);
