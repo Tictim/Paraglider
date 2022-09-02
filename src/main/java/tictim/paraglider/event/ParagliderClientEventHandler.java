@@ -111,6 +111,7 @@ public final class ParagliderClientEventHandler{
 
 	@SubscribeEvent
 	public static void onClickInput(InputEvent.ClickInputEvent event){
+		if(event.isPickBlock()) return;
 		// disables all interactions while paragliding
 		// this is necessary in addition to cancelling interactions in ParagliderEventHandler to also prevent the arm swing animation from playing
 		PlayerEntity player = Minecraft.getInstance().player;

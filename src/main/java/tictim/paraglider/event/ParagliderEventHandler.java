@@ -113,7 +113,7 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent
 	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event){
 		PlayerMovement m = PlayerMovement.of(event.getEntityLiving());
-		if(m!=null&&m.isParagliding()) event.getEntityLiving().stopActiveHand();
+		if(m!=null&&m.isParagliding()) event.getEntityLiving().resetActiveHand();
 	}
 
 	@SubscribeEvent
