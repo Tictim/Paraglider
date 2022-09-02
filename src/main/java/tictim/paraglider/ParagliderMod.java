@@ -2,7 +2,6 @@ package tictim.paraglider;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -13,15 +12,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
@@ -107,22 +102,6 @@ public class ParagliderMod{
 						GLFW.GLFW_KEY_P, "key.categories.misc");
 				ClientRegistry.registerKeyBinding(paragliderSettingsKey);
 				ParagliderClientEventHandler.setParagliderSettingsKey(paragliderSettingsKey);
-
-				MinecraftForge.EVENT_BUS.addListener((final InputEvent.ClickInputEvent evt) -> {
-					// disables all interactions while paragliding
-					ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
-					if (itemInHand.getItem() instanceof ParagliderItem && ParagliderItem.isItemParagliding(itemInHand)) {
-						evt.setSwingHand(false);
-						evt.setCanceled(true);
-					}
-				});
-				MinecraftForge.EVENT_BUS.addListener((final DrawSelectionEvent.HighlightBlock evt) -> {
-					// disables drawing block highlights while paragliding (as blocks cannot be interacted with)
-					ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
-					if (itemInHand.getItem() instanceof ParagliderItem && ParagliderItem.isItemParagliding(itemInHand)) {
-						evt.setCanceled(true);
-					}
-				});
 			});
 		}
 

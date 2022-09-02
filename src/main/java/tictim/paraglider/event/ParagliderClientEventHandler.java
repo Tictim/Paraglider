@@ -8,7 +8,10 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
@@ -22,6 +25,7 @@ import tictim.paraglider.client.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.StaminaWheelRenderer;
 import tictim.paraglider.client.screen.ParagliderSettingScreen;
 import tictim.paraglider.client.screen.StatueBargainScreen;
+import tictim.paraglider.item.ParagliderItem;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -105,6 +109,25 @@ public final class ParagliderClientEventHandler{
 		if(event.phase!=TickEvent.Phase.END) return;
 		if(Minecraft.getInstance().screen==null&&paragliderSettingsKey().consumeClick()){
 			Minecraft.getInstance().setScreen(new ParagliderSettingScreen());
+		}
+	}
+
+	@SubscribeEvent
+	public static void onClickInput(InputEvent.ClickInputEvent evt) {
+		// disables all interactions while paragliding
+		ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
+		if(itemInHand.getItem() instanceof ParagliderItem&&ParagliderItem.isItemParagliding(itemInHand)){
+			evt.setSwingHand(false);
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void ondrawBlockSelection(DrawSelectionEvent.HighlightBlock evt) {
+		// disables drawing block highlights while paragliding (as blocks cannot be interacted with)
+		ItemStack itemInHand = Minecraft.getInstance().player.getMainHandItem();
+		if(itemInHand.getItem() instanceof ParagliderItem&&ParagliderItem.isItemParagliding(itemInHand)){
+			evt.setCanceled(true);
 		}
 	}
 }
