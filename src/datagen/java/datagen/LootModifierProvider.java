@@ -23,17 +23,17 @@ public class LootModifierProvider extends GlobalLootModifierProvider{
 	}
 
 	@Override protected void start(){
-		add("towers_of_the_wild/chest", new ParagliderLoot(
+		add("totw_reworked/chest", new ParagliderLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
-								new ResourceLocation("towers_of_the_wild", "chests/tower/regular/tower_chest")
+								new ResourceLocation("totw_reworked", "tower_chest")
 						).build()
 				}
 		));
-		add("towers_of_the_wild/ocean_chest", new ParagliderLoot(
+		add("totw_reworked/ocean_chest", new ParagliderLoot(
 				new LootItemCondition[]{
 						LootTableIdCondition.builder(
-								new ResourceLocation("towers_of_the_wild", "chests/tower/ocean/ocean_tower_chest")
+								new ResourceLocation("totw_reworked", "ocean_tower_chest")
 						).build()
 				}, true
 		));

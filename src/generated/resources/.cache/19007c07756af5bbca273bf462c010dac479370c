@@ -1,5 +1,5 @@
-// 1.19.2	2022-08-26T22:27:04.2555037	Global Loot Modifiers : paraglider
-3ec1e8f37315a08d96baa8c62324d1b809b4d228 data/forge/loot_modifiers/global_loot_modifiers.json
+// 1.19.2	2022-11-09T20:58:13.5205841	Global Loot Modifiers : paraglider
+3781966ba52ef107c7d13413f80bb12073568548 data/forge/loot_modifiers/global_loot_modifiers.json
 584bc68f1ab68d4bbc401d3cad296b8b930c47f8 data/paraglider/loot_modifiers/spirit_orbs/bastion_bridge.json
 47cd872958d9e96a60132d1315e15a9362d54537 data/paraglider/loot_modifiers/spirit_orbs/bastion_hoglin_stable.json
 024b17d945833ef33b6b452c525c8c297a2617c2 data/paraglider/loot_modifiers/spirit_orbs/bastion_other.json
@@ -14,6 +14,6 @@ f9e02a14b288dc747eed611a34d5496a579672ac data/paraglider/loot_modifiers/spirit_o
 12a3093520ac4ec16806d7341a62e68fbebc00bc data/paraglider/loot_modifiers/spirit_orbs/stronghold_library.json
 e9241d5d3828959cce9e2236201061fc1551330d data/paraglider/loot_modifiers/spirit_orbs/underwater_ruin_big.json
 91ba20624f8e24bf1aa9397b8a55fba7d444e2be data/paraglider/loot_modifiers/spirit_orbs/underwater_ruin_small.json
-90c93158be797fd41b024749dd6b95964db38200 data/paraglider/loot_modifiers/towers_of_the_wild/chest.json
-9791fe9fa1618012a1a896e4db33d9067095853d data/paraglider/loot_modifiers/towers_of_the_wild/ocean_chest.json
+8e79c52eb20c8365b972f2745461c72f8d15bae8 data/paraglider/loot_modifiers/totw_reworked/chest.json
+0501deea7b05bb71fd9213ab15ba0ffeba2d16fc data/paraglider/loot_modifiers/totw_reworked/ocean_chest.json
 78f63c2cac9ff4721e9f007b3963f41bd07f74cd data/paraglider/loot_modifiers/wither.json
