@@ -247,7 +247,8 @@ public final class ModCfg{
 						DEFAULT: Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests
 						DISABLE: Don't spawn anything
 						PARAGLIDER_ONLY: Spawn paraglider in both ocean and normal tower chests
-						DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss""")
+						DEKU_LEAF_ONLY: Spawn deku leaf in both ocean and normal tower chests, like a boss
+						(Note: The TotW datapack for 1.18 only has regular towers, thus options for ocean chests have no effect.)""")
 				.defineEnum("paragliderInTowersOfTheWild", ParagliderModifier.ConfigOption.DEFAULT);
 
 		server.push("stamina");

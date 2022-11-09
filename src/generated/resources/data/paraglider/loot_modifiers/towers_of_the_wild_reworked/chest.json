@@ -2,7 +2,7 @@
   "conditions": [
     {
       "condition": "forge:loot_table_id",
-      "loot_table_id": "towers_of_the_wild:chests/tower/regular/tower_chest"
+      "loot_table_id": "towers_of_the_wild_reworked:tower_chest"
     }
   ],
   "dekuLeaf": false,
