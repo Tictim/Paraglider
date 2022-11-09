@@ -22,7 +22,7 @@ public final class WindClientEventHandler{
 
 	@SubscribeEvent
 	public static void onClientTick(TickEvent.ClientTickEvent event){
-		if(event.phase!=TickEvent.Phase.START) return;
+		if(event.phase!=TickEvent.Phase.START||Minecraft.getInstance().isPaused()) return;
 
 		ClientLevel world = Minecraft.getInstance().level;
 		if(world==null) return;
