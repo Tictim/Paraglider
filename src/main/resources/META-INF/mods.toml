@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[32,)"
+loaderVersion="[41,)"
 license="GNU General Public License version 3 (GPLv3)"
 issueTrackerURL="https://github.com/Tictim/Paraglider/issues"
 
@@ -9,6 +9,4 @@ version="${file.jarVersion}"
 displayName="Paraglider"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/paragliders"
 authors="Tictim"
-description='''
-
-'''
+description="BotW style Paraglider"
