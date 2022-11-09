@@ -18,8 +18,8 @@ public final class WindChunk{
 	}
 	public WindChunk(FriendlyByteBuf buf){
 		chunkPos = new ChunkPos(buf.readInt(), buf.readInt());
-		for(int i = buf.readUnsignedByte(); i>0; i--){
-			putNode(new WindNode(buf, buf.readUnsignedByte()));
+		for(int i = buf.readVarInt(); i>0; i--){
+			putNode(new WindNode(buf));
 		}
 	}
 
