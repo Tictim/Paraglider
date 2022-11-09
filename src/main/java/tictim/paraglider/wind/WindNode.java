@@ -17,6 +17,7 @@ public final class WindNode{
 	public long createdTime;
 	public long updatedTime;
 
+	private WindNode(){}
 	public WindNode(int x, int y, int z, int height, long createdTime){
 		this(x, y, z, height, createdTime, createdTime);
 	}
@@ -28,15 +29,22 @@ public final class WindNode{
 		this.createdTime = createdTime;
 		this.updatedTime = updatedTime;
 	}
-	public WindNode(FriendlyByteBuf buf, int trailingSizeIncludingItself){
+	public WindNode(FriendlyByteBuf buf){
+		short size = buf.readUnsignedByte();
+		read(buf);
+		WindNode currentNode = this;
+		while(--size>0){
+			WindNode next = new WindNode();
+			next.read(buf);
+			currentNode = currentNode.next = next;
+		}
+	}
+
+	private void read(FriendlyByteBuf buf){
 		this.x = buf.readInt();
 		this.y = buf.readVarInt();
 		this.z = buf.readInt();
 		this.height = buf.readVarInt();
-
-		if(trailingSizeIncludingItself>1){
-			this.next = new WindNode(buf, trailingSizeIncludingItself-1);
-		}
 	}
 
 	public boolean isExpired(long gameTime){
@@ -82,7 +90,7 @@ public final class WindNode{
 			n.writeThis(buf);
 			size++;
 		}
-		buf.setByte(w, size);
+		buf.setByte(w, Math.min(size, 255));
 	}
 
 	private void writeThis(FriendlyByteBuf buf){
