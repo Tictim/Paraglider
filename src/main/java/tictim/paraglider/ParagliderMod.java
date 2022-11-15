@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.MenuScreens.ScreenConstructor;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +53,11 @@ public class ParagliderMod{
 
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event){
-		event.enqueueWork(() -> ModVillageStructures.addVillageStructures());
+		event.enqueueWork(() -> {
+			ModVillageStructures.addVillageStructures();
+			CauldronInteraction.WATER.put(Contents.PARAGLIDER.get(), CauldronInteraction.DYED_ITEM);
+			CauldronInteraction.WATER.put(Contents.DEKU_LEAF.get(), CauldronInteraction.DYED_ITEM);
+		});
 	}
 
 	@SubscribeEvent
