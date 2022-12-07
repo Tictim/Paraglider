@@ -115,9 +115,26 @@ mixin {
     showMessageTypes = true
 }
 
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:1.19.2-43.1.2"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:11.4.0.287")
+    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:11.4.0.287")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.19.2-forge:11.4.0.287")
 }
 
 
