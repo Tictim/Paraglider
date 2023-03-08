@@ -15,7 +15,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITagManager;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.Paraglider;
-import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nullable;
 import java.util.List;
