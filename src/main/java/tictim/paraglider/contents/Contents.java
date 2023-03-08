@@ -2,7 +2,7 @@ package tictim.paraglider.contents;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +28,9 @@ import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -62,11 +64,28 @@ import static tictim.paraglider.ParagliderMod.MODID;
 public final class Contents{
 	private Contents(){}
 
-	public static final CreativeModeTab GROUP = new CreativeModeTab(MODID){
-		@Override public ItemStack makeIcon(){
-			return new ItemStack(PARAGLIDER.get());
-		}
-	};
+	public static CreativeModeTab GROUP;
+
+	@SubscribeEvent
+	public static void onCreativeModeTabRegister(CreativeModeTabEvent.Register event){
+		GROUP = event.registerCreativeModeTab(new ResourceLocation(MODID, MODID), b -> b
+				.icon(() -> new ItemStack(PARAGLIDER.get()))
+				.title(Component.translatable("itemGroup."+MODID))
+				.displayItems((features, out, hasOp) -> {
+					out.accept(PARAGLIDER.get());
+					out.accept(DEKU_LEAF.get());
+					out.accept(HEART_CONTAINER.get());
+					out.accept(STAMINA_VESSEL.get());
+					out.accept(SPIRIT_ORB.get());
+					out.accept(ANTI_VESSEL.get());
+					out.accept(ESSENCE.get());
+					out.accept(GODDESS_STATUE.get());
+					out.accept(KAKARIKO_GODDESS_STATUE.get());
+					out.accept(GORON_GODDESS_STATUE.get());
+					out.accept(RITO_GODDESS_STATUE.get());
+					out.accept(HORNED_STATUE.get());
+				}));
+	}
 
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -76,8 +95,8 @@ public final class Contents{
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 	public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
 	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
-	public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registry.STRUCTURE_TYPE_REGISTRY, MODID);
-	public static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister.create(Registry.STRUCTURE_PIECE_REGISTRY, MODID);
+	public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, MODID);
+	public static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister.create(Registries.STRUCTURE_PIECE, MODID);
 
 	public static final RegistryObject<RecipeType<StatueBargain>> STATUE_BARGAIN_RECIPE_TYPE = RECIPE_TYPES.register("statue_bargain", () -> RecipeType.simple(new ResourceLocation(MODID, "statue_bargain")));
 
@@ -110,19 +129,19 @@ public final class Contents{
 	public static final RegistryObject<ParagliderItem> DEKU_LEAF = ITEMS.register("deku_leaf", () -> new ParagliderItem(0x3FB53F));
 	public static final RegistryObject<Item> HEART_CONTAINER = ITEMS.register("heart_container", HeartContainerItem::new);
 	public static final RegistryObject<Item> STAMINA_VESSEL = ITEMS.register("stamina_vessel", StaminaVesselItem::new);
-	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON).tab(GROUP)));
-	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC).tab(GROUP)));
-	public static final RegistryObject<Item> ESSENCE = ITEMS.register("essence", () -> new EssenceItem(new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
+	public static final RegistryObject<Item> SPIRIT_ORB = ITEMS.register("spirit_orb", () -> new SpiritOrbItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
+	public static final RegistryObject<Item> ANTI_VESSEL = ITEMS.register("anti_vessel", () -> new AntiVesselItem(new Item.Properties().rarity(Rarity.EPIC)));
+	public static final RegistryObject<Item> ESSENCE = ITEMS.register("essence", () -> new EssenceItem(new Item.Properties().rarity(Rarity.RARE)));
 	public static final RegistryObject<BlockItem> GODDESS_STATUE_ITEM = ITEMS.register("goddess_statue", () -> new BlockItem(GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE)));
 	public static final RegistryObject<BlockItem> KAKARIKO_GODDESS_STATUE_ITEM = ITEMS.register("kakariko_goddess_statue", () -> new BlockItem(KAKARIKO_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE)));
 	public static final RegistryObject<BlockItem> GORON_GODDESS_STATUE_ITEM = ITEMS.register("goron_goddess_statue", () -> new BlockItem(GORON_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE)));
 	public static final RegistryObject<BlockItem> RITO_GODDESS_STATUE_ITEM = ITEMS.register("rito_goddess_statue", () -> new BlockItem(RITO_GODDESS_STATUE.get(),
-			new Item.Properties().rarity(Rarity.RARE).tab(GROUP)));
+			new Item.Properties().rarity(Rarity.RARE)));
 	public static final RegistryObject<BlockItem> HORNED_STATUE_ITEM = ITEMS.register("horned_statue", () -> new BlockItem(HORNED_STATUE.get(),
-			new Item.Properties().rarity(Rarity.EPIC).tab(GROUP)));
+			new Item.Properties().rarity(Rarity.EPIC)));
 
 	public static final RegistryObject<MobEffect> EXHAUSTED = EFFECTS.register("exhausted", () -> new MobEffect(MobEffectCategory.HARMFUL, 5926017){
 		@Override public List<ItemStack> getCurativeItems(){

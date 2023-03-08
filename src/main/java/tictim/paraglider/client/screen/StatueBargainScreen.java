@@ -19,12 +19,12 @@ import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.client.BargainScreenStaminaWheelRenderer;
 import tictim.paraglider.client.DisableStaminaRender;
 import tictim.paraglider.client.StaminaWheelRenderer;
-import tictim.paraglider.network.BargainMsg;
-import tictim.paraglider.network.ModNet;
 import tictim.paraglider.contents.recipe.bargain.BargainPreview;
 import tictim.paraglider.contents.recipe.bargain.StatueBargain;
 import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer.ItemDemand;
+import tictim.paraglider.network.BargainMsg;
+import tictim.paraglider.network.ModNet;
 import tictim.paraglider.utils.TooltipFactory;
 
 import javax.annotation.Nullable;
@@ -105,7 +105,8 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 		this.renderBackground(matrixStack);
 
 		long newTimestamp = System.currentTimeMillis();
-		if(hasShiftDown()) this.createdTime += newTimestamp-this.currentTickTimestamp; // For stopping multi item ingredient preview cycling
+		if(hasShiftDown())
+			this.createdTime += newTimestamp-this.currentTickTimestamp; // For stopping multi item ingredient preview cycling
 		this.currentTickTimestamp = newTimestamp;
 
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -130,7 +131,8 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			int alpha;
 			if(t>=DIALOG_FADEOUT_END) alpha = 0;
 			else if(t<=DIALOG_FADEOUT_START) alpha = 0xFF;
-			else alpha = Mth.clamp((int)((DIALOG_FADEOUT_END-t)*0xFF/(DIALOG_FADEOUT_END-DIALOG_FADEOUT_START)), 0, 0xFF);
+			else
+				alpha = Mth.clamp((int)((DIALOG_FADEOUT_END-t)*0xFF/(DIALOG_FADEOUT_END-DIALOG_FADEOUT_START)), 0, 0xFF);
 
 			if(alpha>4){ // Don't fucking question me, question FontRenderer#fixAlpha() instead
 				drawCenteredString(matrixStack, font, dialog, width/2, getBottom()+9, alpha<<24|0xFFFFFF);
@@ -294,8 +296,8 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			RenderSystem.enableBlend();
 			RenderSystem.setShaderTexture(0, MERCHANT_GUI_TEXTURE);
 			blit(pose,
-					x+39,
-					y+5,
+					getX()+39,
+					getY()+5,
 					this.getBlitOffset(),
 					menu.canBargain(getActualIndex()) ? 15 : 25,
 					171,
@@ -311,7 +313,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			if(bargain==null) return;
 
 			BargainPreview preview = bargain.getPreview();
-			int buttonElementTop = y+2;
+			int buttonElementTop = getY()+2;
 
 			List<BargainPreview.Demand> demands = preview.demands();
 			for(int i = demands.size()-1; i>=0; i--){
@@ -326,7 +328,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 					ParagliderMod.LOGGER.warn("Some of ItemDemandPreview has empty items.");
 					continue;
 				}
-				int itemX = x+determinePosition(i, demands.size(), BUTTON_INPUT_X_OFFSET_START, BUTTON_INPUT_X_OFFSET_END);
+				int itemX = getX()+determinePosition(i, demands.size(), BUTTON_INPUT_X_OFFSET_START, BUTTON_INPUT_X_OFFSET_END);
 				itemRenderer.renderAndDecorateFakeItem(stack, itemX, buttonElementTop);
 				if(demand.getQuantity()!=1)
 					itemRenderer.renderGuiItemDecorations(font, stack, itemX, buttonElementTop, String.valueOf(demand.getQuantity()));
@@ -340,14 +342,14 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 					ParagliderMod.LOGGER.warn("Some of ItemOfferPreview has empty item.");
 					continue;
 				}
-				int itemX = x+determinePosition(i, offers.size(), BUTTON_OUTPUT_X_OFFSET_START, BUTTON_OUTPUT_X_OFFSET_END);
+				int itemX = getX()+determinePosition(i, offers.size(), BUTTON_OUTPUT_X_OFFSET_START, BUTTON_OUTPUT_X_OFFSET_END);
 				itemRenderer.renderAndDecorateFakeItem(stack, itemX, buttonElementTop);
 				if(offer.getQuantity()!=1)
 					itemRenderer.renderGuiItemDecorations(font, stack, itemX, buttonElementTop, String.valueOf(offer.getQuantity()));
 			}
 		}
 
-		@Override public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY){
+		public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY){
 			if(!this.isHovered) return;
 			StatueBargain bargain = getBargain();
 			if(bargain==null) return;
@@ -358,7 +360,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			BargainPreview.Demand closestDemand = null;
 			int closestDemandDistance = Integer.MAX_VALUE;
 			for(int i = 0; i<demands.size(); i++){
-				int itemX = x+determinePosition(i, demands.size(), BUTTON_INPUT_X_OFFSET_START, BUTTON_INPUT_X_OFFSET_END);
+				int itemX = getX()+determinePosition(i, demands.size(), BUTTON_INPUT_X_OFFSET_START, BUTTON_INPUT_X_OFFSET_END);
 				if(mouseX>=itemX&&mouseX<itemX+16){
 					int dist = Math.abs(itemX+8-mouseX);
 					if(closestDemandDistance>dist){
@@ -379,7 +381,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			BargainPreview.Offer closestOffer = null;
 			int closestOfferDistance = Integer.MAX_VALUE;
 			for(int i = 0; i<offers.size(); i++){
-				int itemX = x+determinePosition(i, offers.size(), BUTTON_OUTPUT_X_OFFSET_START, BUTTON_OUTPUT_X_OFFSET_END);
+				int itemX = getX()+determinePosition(i, offers.size(), BUTTON_OUTPUT_X_OFFSET_START, BUTTON_OUTPUT_X_OFFSET_END);
 				if(mouseX>=itemX&&mouseX<itemX+16){
 					int dist = Math.abs(itemX+8-mouseX);
 					if(closestOfferDistance>dist){
@@ -396,7 +398,7 @@ public class StatueBargainScreen extends AbstractContainerScreen<StatueBargainCo
 			}
 		}
 
-		@Override public void updateNarration(NarrationElementOutput pNarrationElementOutput){}
+		@Override protected void updateWidgetNarration(NarrationElementOutput o){}
 	}
 
 	private ItemStack cycle(ItemStack[] stacks){

@@ -48,13 +48,17 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 
 	@Override protected void init(){
 		this.staminaWheel = addRenderableWidget(new StaminaWheel(initialStaminaWheelX, initialStaminaWheelY));
-		this.saveButton = addRenderableWidget(new Button(0, 0, 48, 20, Component.translatable("adjustStamina.save"), button -> {
-			ParagliderMod.LOGGER.debug("Save?");
-			ModCfg.setStaminaWheel(staminaWheel.getStaminaWheelX(), staminaWheel.getStaminaWheelY());
-			if(parent!=null) parent.saveSettings();
-			onClose();
-		}));
-		this.cancelButton = addRenderableWidget(new Button(0, 0, 48, 20, Component.translatable("adjustStamina.cancel"), button -> onClose()));
+		this.saveButton = addRenderableWidget(Button.builder(Component.translatable("adjustStamina.save"), button -> {
+					ParagliderMod.LOGGER.debug("Save?");
+					ModCfg.setStaminaWheel(staminaWheel.getStaminaWheelX(), staminaWheel.getStaminaWheelY());
+					if(parent!=null) parent.saveSettings();
+					onClose();
+				})
+				.bounds(0, 0, 48, 20)
+				.build());
+		this.cancelButton = addRenderableWidget(Button.builder(Component.translatable("adjustStamina.cancel"), button -> onClose())
+				.bounds(0, 0, 48, 20)
+				.build());
 		//noinspection ConstantConditions
 		this.fuckingText = new Component[]{
 				Component.translatable("adjustStamina.guide.0"),
@@ -68,13 +72,13 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
 		int textWidth = Arrays.stream(fuckingText).mapToInt(e -> font.width(e)).max().orElse(0)+6+48;
 		int textHeight = Math.max(fuckingText.length*font.lineHeight, 40+2)+4;
-		int textX = staminaWheel.x>=this.width/2 ? 0 : this.width-textWidth;
-		int textY = staminaWheel.y>=this.height/2 ? 0 : this.height-textHeight;
+		int textX = staminaWheel.getX()>=this.width/2 ? 0 : this.width-textWidth;
+		int textY = staminaWheel.getY()>=this.height/2 ? 0 : this.height-textHeight;
 
-		this.saveButton.x = textX+textWidth-this.saveButton.getWidth()-2;
-		this.saveButton.y = textY+textHeight-this.saveButton.getHeight()-2; // height realms? what?
-		this.cancelButton.x = textX+textWidth-this.cancelButton.getWidth()-2;
-		this.cancelButton.y = textY+textHeight-this.saveButton.getHeight()-this.cancelButton.getHeight()-4;
+		this.saveButton.setX(textX+textWidth-this.saveButton.getWidth()-2);
+		this.saveButton.setY(textY+textHeight-this.saveButton.getHeight()-2); // height realms? what?
+		this.cancelButton.setX(textX+textWidth-this.cancelButton.getWidth()-2);
+		this.cancelButton.setY(textY+textHeight-this.saveButton.getHeight()-this.cancelButton.getHeight()-4);
 
 		renderBackground(matrixStack);
 		fillGradient(matrixStack, textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
@@ -143,37 +147,37 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		}
 
 		public double getStaminaWheelX(){
-			return (x+WHEEL_RADIUS)/(double)screenWidth();
+			return (getX()+WHEEL_RADIUS)/(double)screenWidth();
 		}
 		public double getStaminaWheelY(){
-			return (y+WHEEL_RADIUS)/(double)screenHeight();
+			return (getY()+WHEEL_RADIUS)/(double)screenHeight();
 		}
 
 		@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
-			this.x = Mth.clamp(this.x, 1, screenWidth()-2-WHEEL_RADIUS*2);
-			this.y = Mth.clamp(this.y, 1, screenHeight()-2-WHEEL_RADIUS*2);
+			this.setX(Mth.clamp(this.getX(), 1, screenWidth()-2-WHEEL_RADIUS*2));
+			this.setY(Mth.clamp(this.getY(), 1, screenHeight()-2-WHEEL_RADIUS*2));
 			if(this.visible)
-				this.wheel.renderStamina(matrixStack, this.x+WHEEL_RADIUS, this.y+WHEEL_RADIUS, 0);
+				this.wheel.renderStamina(matrixStack, this.getX()+WHEEL_RADIUS, this.getY()+WHEEL_RADIUS, 0);
 
 			RenderSystem.disableTexture();
 
 			Tesselator t = Tesselator.getInstance();
 			BufferBuilder b = t.getBuilder();
 			b.begin(VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-			b.vertex(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.x+this.width, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.x+this.width, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.x, this.y+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.x, this.y, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.getX(), this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.getX()+this.width, this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.getX()+this.width, this.getY()+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.getX(), this.getY()+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
+			b.vertex(this.getX(), this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
 			t.end();
 			RenderSystem.enableTexture();
 
-			String s = (this.x)+", "+(this.y)+
+			String s = (this.getX())+", "+(this.getY())+
 					" ("+PERCENTAGE.format(this.getStaminaWheelX())+" :: "+PERCENTAGE.format(this.getStaminaWheelY())+")";
 			int sw = font.width(s);
 
-			int textX = Math.min(this.x, screenWidth()-sw-3);
-			int textY = this.y>=screenHeight()/2 ? this.y-1-font.lineHeight : this.y+this.height+1;
+			int textX = Math.min(this.getX(), screenWidth()-sw-3);
+			int textY = this.getY()>=screenHeight()/2 ? this.getY()-1-font.lineHeight : this.getY()+this.height+1;
 			font.draw(matrixStack, s, textX, textY, 0xFF00DF53);
 		}
 
@@ -181,36 +185,36 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			if(active&&visible&&dragging&&button==1&&this.clicked(mouseX, mouseY)){
 				ParagliderMod.LOGGER.debug("Drag Cancelled");
 				this.dragging = false;
-				this.x = this.dragStartX;
-				this.y = this.dragStartY;
+				this.setX(this.dragStartX);
+				this.setY(this.dragStartY);
 				return true;
 			}else return super.mouseClicked(mouseX, mouseY, button);
 		}
 
 		@Override public void onClick(double mouseX, double mouseY){
 			ParagliderMod.LOGGER.debug("Drag Started");
-			this.dragStartX = this.x;
-			this.dragStartY = this.y;
+			this.dragStartX = this.getX();
+			this.dragStartY = this.getY();
 			this.dragDeltaX = this.dragDeltaY = 0;
 			this.dragging = true;
 		}
 		@Override protected void onDrag(double mouseX, double mouseY, double dragX, double dragY){
 			this.dragDeltaX += dragX;
 			this.dragDeltaY += dragY;
-			this.x = (int)Math.round(this.dragStartX+this.dragDeltaX+.5);
-			this.y = (int)Math.round(this.dragStartY+this.dragDeltaY+.5);
+			this.setX((int)Math.round(this.dragStartX+this.dragDeltaX+.5));
+			this.setY((int)Math.round(this.dragStartY+this.dragDeltaY+.5));
 		}
 
 		@Override public void onRelease(double mouseX, double mouseY){
 			if(this.dragging){
 				ParagliderMod.LOGGER.debug("Drag Ended");
-				this.x = (int)Math.round(this.dragStartX+this.dragDeltaX+.5);
-				this.y = (int)Math.round(this.dragStartY+this.dragDeltaY+.5);
+				this.setX((int)Math.round(this.dragStartX+this.dragDeltaX+.5));
+				this.setY((int)Math.round(this.dragStartY+this.dragDeltaY+.5));
 				this.dragging = false;
 			}
 		}
 
 		@Override public void playDownSound(SoundManager handler){}
-		@Override public void updateNarration(NarrationElementOutput pNarrationElementOutput){}
+		@Override protected void updateWidgetNarration(NarrationElementOutput o){}
 	}
 }

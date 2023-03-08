@@ -28,10 +28,12 @@ public class ParagliderSettingScreen extends Screen{
 	}
 
 	@Override protected void init(){
-		addRenderableWidget(new Button(width/2-64, height/2-8, 128, 20, Component.translatable("paragliderSettings.staminaWheelSettings"), b -> {
-			//noinspection ConstantConditions
-			this.minecraft.setScreen(new StaminaWheelSettingScreen(this));
-		}));
+		addRenderableWidget(Button.builder(Component.translatable("paragliderSettings.staminaWheelSettings"), b -> {
+					//noinspection ConstantConditions
+					this.minecraft.setScreen(new StaminaWheelSettingScreen(this));
+				})
+				.bounds(width/2-64, height/2-8, 128, 20)
+				.build());
 	}
 
 	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){

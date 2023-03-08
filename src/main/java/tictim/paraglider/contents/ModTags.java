@@ -1,6 +1,7 @@
 package tictim.paraglider.contents;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -31,7 +32,7 @@ public final class ModTags{
 		public static final TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(Contents.TARREY_TOWN_GODDESS_STATUE.getId());
 
 		private static TagKey<Biome> hasStructure(ResourceLocation id){
-			return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(id.getNamespace(), "has_structure/"+id.getPath()));
+			return TagKey.create(Registries.BIOME, new ResourceLocation(id.getNamespace(), "has_structure/"+id.getPath()));
 		}
 	}
 }

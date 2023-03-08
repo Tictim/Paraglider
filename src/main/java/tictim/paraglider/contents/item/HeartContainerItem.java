@@ -12,7 +12,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import tictim.paraglider.ModCfg;
-import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.ParagliderUtils;
 
 import javax.annotation.Nullable;
@@ -20,7 +19,7 @@ import java.util.List;
 
 public class HeartContainerItem extends Item{
 	public HeartContainerItem(){
-		super(new Properties().rarity(Rarity.RARE).tab(Contents.GROUP));
+		super(new Properties().rarity(Rarity.RARE));
 	}
 
 	@Override public boolean isFoil(ItemStack stack){

@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -100,6 +101,9 @@ public class CosmeticRecipe implements CraftingRecipe{
 	}
 	@Override public RecipeSerializer<?> getSerializer(){
 		return Contents.COSMETIC_RECIPE.get();
+	}
+	@Override public CraftingBookCategory category(){
+		return CraftingBookCategory.MISC;
 	}
 
 	public static class Serializer implements RecipeSerializer<CosmeticRecipe>{

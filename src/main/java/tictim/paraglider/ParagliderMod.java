@@ -30,11 +30,10 @@ import tictim.paraglider.capabilities.Stamina;
 import tictim.paraglider.client.overlay.StaminaWheelOverlay;
 import tictim.paraglider.client.screen.StatueBargainScreen;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.ModVillageStructures;
 import tictim.paraglider.contents.item.ParagliderItem;
-import tictim.paraglider.network.ModNet;
 import tictim.paraglider.contents.recipe.ConfigConditionSerializer;
 import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
+import tictim.paraglider.network.ModNet;
 import tictim.paraglider.wind.Wind;
 
 @Mod(ParagliderMod.MODID)
@@ -54,7 +53,6 @@ public class ParagliderMod{
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event){
 		event.enqueueWork(() -> {
-			ModVillageStructures.addVillageStructures();
 			CauldronInteraction.WATER.put(Contents.PARAGLIDER.get(), CauldronInteraction.DYED_ITEM);
 			CauldronInteraction.WATER.put(Contents.DEKU_LEAF.get(), CauldronInteraction.DYED_ITEM);
 		});

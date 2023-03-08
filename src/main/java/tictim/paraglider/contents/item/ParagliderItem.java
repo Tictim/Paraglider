@@ -24,7 +24,7 @@ public class ParagliderItem extends Item implements DyeableLeatherItem{
 	private final int defaultColor;
 
 	public ParagliderItem(int defaultColor){
-		super(new Properties().stacksTo(1).tab(Contents.GROUP));
+		super(new Properties().stacksTo(1));
 		this.defaultColor = defaultColor;
 	}
 

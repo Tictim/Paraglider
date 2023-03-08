@@ -275,22 +275,22 @@ public final class ModCfg{
 						Most of them requires server restart or datapack reload. All of them, actually.""")
 				.push("features");
 		enableSpiritOrbGens = common.comment("""
-						For those who wants to remove entirety of Spirit Orbs generated from chests, more specifically...
+						For those who want to remove entirety of Spirit Orbs generated from chests, more specifically...
 						  * Spirit Orbs generated in various chests
 						  * Spirit Orbs dropped by spawners and such
 						Note that bargain recipe for Heart Containers/Stamina Vessels will persist, even if this option is disabled.""")
 				.define("spiritOrbGens", true);
 		enableHeartContainers = common.comment("""
-						For those who wants to remove entirety of Heart Containers from the game, more specifically...
+						For those who want to remove entirety of Heart Containers from the game, more specifically...
 						  * Heart Containers obtained by "challenges" (i.e. Killing dragon, wither, raid)
 						  * Bargains using Heart Containers (custom recipes won't be affected)
 						Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop stamina vessels instead.""")
 				.define("heartContainers", true);
 		enableStaminaVessels = common.comment("""
-						For those who wants to remove entirety of Stamina Vessels from the game, more specifically...
+						For those who want to remove entirety of Stamina Vessels from the game, more specifically...
 						  * Bargains using Stamina Vessels (custom recipes won't be affected)""")
 				.define("staminaVessels", true);
-		enableStructures = common.comment("For those who wants to remove all structures added by this mod. Requires restart.")
+		enableStructures = common.comment("For those who want to remove all structures added by this mod. Requires world restart.")
 				.define("structures", true);
 		common.pop();
 
