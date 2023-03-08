@@ -29,7 +29,7 @@ public abstract class MixinPlayerModel extends HumanoidModel<LivingEntity>{
 	public void onSetRotationAngles(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch,
 	                                CallbackInfo ci){
 		ItemStack stack = entity.getMainHandItem();
-		if(ParagliderItem.isItemParagliding(stack)){
+		if(!stack.isEmpty()&&ParagliderItem.isItemParagliding(stack)){
 			leftArm.xRot = ARM_ROTATION;
 			leftArm.zRot = 0;
 			rightArm.xRot = ARM_ROTATION;
