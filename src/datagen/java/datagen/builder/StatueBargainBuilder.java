@@ -2,8 +2,6 @@ package datagen.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -13,9 +11,9 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.ForgeRegistries;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.utils.QuantifiedIngredient;
+import tictim.paraglider.utils.QuantifiedItem;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class StatueBargainBuilder{
 	protected int staminaVesselDemands;
 	protected int essenceDemands;
 
-	protected final List<Object2IntMap.Entry<Item>> itemOffers = new ArrayList<>();
+	protected final List<QuantifiedItem> itemOffers = new ArrayList<>();
 	protected int heartContainerOffers;
 	protected int staminaVesselOffers;
 	protected int essenceOffers;
@@ -66,7 +64,7 @@ public class StatueBargainBuilder{
 	}
 
 	public StatueBargainBuilder offer(Item item, int count){
-		itemOffers.add(new AbstractObject2IntMap.BasicEntry<>(item, count));
+		itemOffers.add(new QuantifiedItem(item, count));
 		return this;
 	}
 	public StatueBargainBuilder offerHeartContainer(int quantity){
@@ -110,7 +108,7 @@ public class StatueBargainBuilder{
 		protected final int staminaVesselDemands;
 		protected final int essenceDemands;
 
-		protected final List<Object2IntMap.Entry<Item>> itemOffers;
+		protected final List<QuantifiedItem> itemOffers;
 		protected final int heartContainerOffers;
 		protected final int staminaVesselOffers;
 		protected final int essenceOffers;
@@ -122,7 +120,7 @@ public class StatueBargainBuilder{
 		              int heartContainerDemands,
 		              int staminaVesselDemands,
 		              int essenceDemands,
-		              List<Object2IntMap.Entry<Item>> itemOffers,
+		              List<QuantifiedItem> itemOffers,
 		              int heartContainerOffers,
 		              int staminaVesselOffers,
 		              int essenceOffers, List<ICondition> conditions){
@@ -143,7 +141,8 @@ public class StatueBargainBuilder{
 			json.addProperty("owner", bargainOwner.toString());
 			if(!itemDemands.isEmpty()||heartContainerDemands>0||staminaVesselDemands>0||essenceDemands>0){
 				JsonObject demands = new JsonObject();
-				if(!itemDemands.isEmpty()) demands.add("items", itemDemands.stream().collect(() -> new JsonArray(), (e, i) -> e.add(i.serialize()), (e1, e2) -> {}));
+				if(!itemDemands.isEmpty())
+					demands.add("items", itemDemands.stream().collect(() -> new JsonArray(), (e, i) -> e.add(i.serialize()), (e1, e2) -> {}));
 				if(heartContainerDemands>0) demands.addProperty("heartContainers", heartContainerDemands);
 				if(staminaVesselDemands>0) demands.addProperty("staminaVessels", staminaVesselDemands);
 				if(essenceDemands>0) demands.addProperty("essences", essenceDemands);
@@ -151,14 +150,8 @@ public class StatueBargainBuilder{
 			}
 			if(!itemOffers.isEmpty()||heartContainerOffers>0||staminaVesselOffers>0||essenceOffers>0){
 				JsonObject offers = new JsonObject();
-				if(!itemOffers.isEmpty()) offers.add("items", itemOffers.stream().collect(() -> new JsonArray(), (e, i) -> {
-					JsonObject o = new JsonObject();
-					ResourceLocation key = ForgeRegistries.ITEMS.getKey(i.getKey());
-					//noinspection ConstantConditions
-					o.addProperty("item", key.toString());
-					if(i.getIntValue()!=1) o.addProperty("count", i.getIntValue());
-					e.add(o);
-				}, (e1, e2) -> {}));
+				if(!itemOffers.isEmpty())
+					offers.add("items", itemOffers.stream().collect(() -> new JsonArray(), (e, i) -> e.add(i.serialize()), (e1, e2) -> {}));
 				if(heartContainerOffers>0) offers.addProperty("heartContainers", heartContainerOffers);
 				if(staminaVesselOffers>0) offers.addProperty("staminaVessels", staminaVesselOffers);
 				if(essenceOffers>0) offers.addProperty("essences", essenceOffers);
