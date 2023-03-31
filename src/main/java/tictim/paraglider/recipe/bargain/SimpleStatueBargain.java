@@ -10,7 +10,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -148,7 +147,7 @@ public class SimpleStatueBargain implements StatueBargain{
 						TooltipFactory.essence(essenceDemands)));
 
 			for(QuantifiedItem itemOffer : itemOffers)
-				offers.add(new BargainPreview.Offer(new ItemStack(itemOffer.getItem()), itemOffer.getQuantity()));
+				offers.add(new BargainPreview.Offer(itemOffer.getItem(), itemOffer.getQuantity()));
 			if(heartContainerOffers>0)
 				offers.add(new BargainPreview.Offer(
 						new ItemStack(Contents.HEART_CONTAINER.get()),
@@ -186,15 +185,21 @@ public class SimpleStatueBargain implements StatueBargain{
 			if(!test(i, inventory, consumptions))
 				reasons.add(FailedReason.NOT_ENOUGH_ITEMS);
 
-		if(!ParagliderUtils.takeHeartContainers(player, heartContainerDemands, true, false)) reasons.add(FailedReason.NOT_ENOUGH_HEART);
-		if(!ParagliderUtils.takeStaminaVessels(player, staminaVesselDemands, true, false)) reasons.add(FailedReason.NOT_ENOUGH_STAMINA);
-		if(!ParagliderUtils.takeEssences(player, essenceDemands, true, false)) reasons.add(FailedReason.NOT_ENOUGH_ESSENCE);
+		if(!ParagliderUtils.takeHeartContainers(player, heartContainerDemands, true, false))
+			reasons.add(FailedReason.NOT_ENOUGH_HEART);
+		if(!ParagliderUtils.takeStaminaVessels(player, staminaVesselDemands, true, false))
+			reasons.add(FailedReason.NOT_ENOUGH_STAMINA);
+		if(!ParagliderUtils.takeEssences(player, essenceDemands, true, false))
+			reasons.add(FailedReason.NOT_ENOUGH_ESSENCE);
 
 		if(!reasons.isEmpty()) return BargainResult.result(reasons);
 
-		if(!ParagliderUtils.giveHeartContainers(player, heartContainerOffers-heartContainerDemands, true, false)) reasons.add(FailedReason.HEART_FULL);
-		if(!ParagliderUtils.giveStaminaVessels(player, staminaVesselOffers-staminaVesselDemands, true, false)) reasons.add(FailedReason.STAMINA_FULL);
-		if(!ParagliderUtils.giveEssences(player, essenceOffers-essenceDemands, true, false)) reasons.add(FailedReason.ESSENCE_FULL);
+		if(!ParagliderUtils.giveHeartContainers(player, heartContainerOffers-heartContainerDemands, true, false))
+			reasons.add(FailedReason.HEART_FULL);
+		if(!ParagliderUtils.giveStaminaVessels(player, staminaVesselOffers-staminaVesselDemands, true, false))
+			reasons.add(FailedReason.STAMINA_FULL);
+		if(!ParagliderUtils.giveEssences(player, essenceOffers-essenceDemands, true, false))
+			reasons.add(FailedReason.ESSENCE_FULL);
 
 		if(!reasons.isEmpty()) return BargainResult.result(reasons);
 
@@ -213,7 +218,7 @@ public class SimpleStatueBargain implements StatueBargain{
 			}
 
 			for(QuantifiedItem item : itemOffers)
-				ParagliderUtils.giveItem(player, new ItemStack(item.getItem(), item.getQuantity()));
+				ParagliderUtils.giveItem(player, item.getItemWithQuantity());
 			if(heartContainerDemands!=heartContainerOffers&&!(heartContainerDemands<heartContainerOffers ?
 					ParagliderUtils.giveHeartContainers(player, heartContainerOffers-heartContainerDemands, false, true) :
 					ParagliderUtils.takeHeartContainers(player, heartContainerDemands-heartContainerOffers, false, true)))
@@ -334,8 +339,7 @@ public class SimpleStatueBargain implements StatueBargain{
 				else{
 					itemOffers = new ArrayList<>();
 					for(JsonElement i : items){
-						ItemStack stack = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(i, "item"));
-						itemOffers.add(new QuantifiedItem(stack.getItem(), stack.getCount()));
+						itemOffers.add(new QuantifiedItem(JSONUtils.getJsonObject(i, "item")));
 					}
 				}
 				heartContainerOffers = Math.max(0, JSONUtils.getInt(offers, "heartContainers", 0));
