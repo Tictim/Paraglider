@@ -7,10 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -44,6 +41,7 @@ import tictim.paraglider.contents.item.StaminaVesselItem;
 import tictim.paraglider.contents.loot.ParagliderLoot;
 import tictim.paraglider.contents.loot.SpiritOrbLoot;
 import tictim.paraglider.contents.loot.VesselLoot;
+import tictim.paraglider.contents.mobeffects.ExhaustedEffect;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.bargain.SimpleStatueBargain;
 import tictim.paraglider.contents.recipe.bargain.StatueBargain;
@@ -51,9 +49,6 @@ import tictim.paraglider.contents.recipe.bargain.StatueBargainContainer;
 import tictim.paraglider.contents.worldgen.NetherHornedStatue;
 import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
 import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD;
 import static tictim.paraglider.ParagliderMod.MODID;
@@ -124,11 +119,7 @@ public final class Contents{
 	public static final RegistryObject<BlockItem> HORNED_STATUE_ITEM = ITEMS.register("horned_statue", () -> new BlockItem(HORNED_STATUE.get(),
 			new Item.Properties().rarity(Rarity.EPIC).tab(GROUP)));
 
-	public static final RegistryObject<MobEffect> EXHAUSTED = EFFECTS.register("exhausted", () -> new MobEffect(MobEffectCategory.HARMFUL, 5926017){
-		@Override public List<ItemStack> getCurativeItems(){
-			return new ArrayList<>();
-		}
-	}.addAttributeModifier(Attributes.MOVEMENT_SPEED, "65ed2ca4-ceb3-4521-8552-73006dcba58d", -0.30, AttributeModifier.Operation.MULTIPLY_TOTAL)); // Slowness color
+	public static final RegistryObject<MobEffect> EXHAUSTED = EFFECTS.register("exhausted", ExhaustedEffect::new);
 
 	public static final RegistryObject<CosmeticRecipe.Serializer> COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("cosmetic", CosmeticRecipe.Serializer::new);
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
