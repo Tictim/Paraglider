@@ -1,21 +1,23 @@
 package datagen;
 
-import net.minecraft.data.DataGenerator;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
+import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.ModTags;
 
-import static tictim.paraglider.ParagliderMod.MODID;
+import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 public class BiomeTagGen extends BiomeTagsProvider{
-	public BiomeTagGen(DataGenerator dataGenerator, @Nullable ExistingFileHelper existingFileHelper){
-		super(dataGenerator, MODID, existingFileHelper);
+	public BiomeTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper){
+		super(output, lookupProvider, ParagliderMod.MODID, existingFileHelper);
 	}
 
-	@Override protected void addTags(){
+	@Override protected void addTags(HolderLookup.Provider provider){
 		// Identical to mineshaft
 		tag(ModTags.Biomes.HAS_STRUCTURE_UNDERGROUND_HORNED_STATUE)
 				.addTag(BiomeTags.IS_OCEAN)

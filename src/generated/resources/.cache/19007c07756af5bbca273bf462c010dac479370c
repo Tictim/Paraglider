@@ -1,4 +1,4 @@
-// 1.19.2	2022-11-09T20:58:13.5205841	Global Loot Modifiers : paraglider
+// 1.19.3	2023-04-07T04:49:09.3435185	Global Loot Modifiers : paraglider
 3781966ba52ef107c7d13413f80bb12073568548 data/forge/loot_modifiers/global_loot_modifiers.json
 584bc68f1ab68d4bbc401d3cad296b8b930c47f8 data/paraglider/loot_modifiers/spirit_orbs/bastion_bridge.json
 47cd872958d9e96a60132d1315e15a9362d54537 data/paraglider/loot_modifiers/spirit_orbs/bastion_hoglin_stable.json

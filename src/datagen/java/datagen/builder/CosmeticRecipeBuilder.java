@@ -7,6 +7,7 @@ import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -25,6 +26,8 @@ public class CosmeticRecipeBuilder{
 	private final Advancement.Builder advancementBuilder = Advancement.Builder.advancement();
 	private String group;
 
+	private RecipeCategory recipeCategory = RecipeCategory.MISC;
+
 	public CosmeticRecipeBuilder(Item result, Ingredient input, Ingredient reagent){
 		this.result = result;
 		this.input = input;
@@ -41,6 +44,11 @@ public class CosmeticRecipeBuilder{
 		return this;
 	}
 
+	public CosmeticRecipeBuilder recipeCategory(RecipeCategory category){
+		this.recipeCategory = Objects.requireNonNull(category);
+		return this;
+	}
+
 	public void build(Consumer<FinishedRecipe> consumerIn){
 		this.build(consumerIn, Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)));
 	}
@@ -52,19 +60,19 @@ public class CosmeticRecipeBuilder{
 		this.build(consumerIn, new ResourceLocation(save));
 	}
 
-	public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id){
+	public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id){
 		this.validate(id);
 		this.advancementBuilder.parent(new ResourceLocation("recipes/root"))
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
 				.rewards(AdvancementRewards.Builder.recipe(id))
 				.requirements(RequirementsStrategy.OR);
-		consumerIn.accept(new Result(id,
+		consumer.accept(new Result(id,
 				this.result,
 				this.group==null ? "" : this.group,
 				this.input,
 				this.reagent,
 				this.advancementBuilder,
-				new ResourceLocation(id.getNamespace(), "recipes/"+Objects.requireNonNull(this.result.getItemCategory()).getRecipeFolderName()+"/"+id.getPath())));
+				id.withPrefix("recipes/"+recipeCategory.getFolderName()+"/")));
 	}
 
 	private void validate(ResourceLocation id){
