@@ -17,14 +17,14 @@ public final class ModAdvancements{
 
 	public static boolean give(ServerPlayer player, ResourceLocation advancementName, String criterion){
 		PlayerAdvancements advancements = player.getAdvancements();
-		ServerAdvancementManager advancementManager = player.getLevel().getServer().getAdvancements();
+		ServerAdvancementManager advancementManager = player.level().getServer().getAdvancements();
 		Advancement advancement = advancementManager.getAdvancement(advancementName);
 		return advancement!=null&&advancements.award(advancement, criterion);
 	}
 
 	public static boolean has(ServerPlayer player, ResourceLocation advancementName){
 		PlayerAdvancements advancements = player.getAdvancements();
-		ServerAdvancementManager advancementManager = player.getLevel().getServer().getAdvancements();
+		ServerAdvancementManager advancementManager = player.level().getServer().getAdvancements();
 		Advancement advancement = advancementManager.getAdvancement(advancementName);
 		return advancement!=null&&advancements.getOrStartProgress(advancement).isDone();
 	}

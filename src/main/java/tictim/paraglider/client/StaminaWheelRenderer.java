@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -34,14 +35,14 @@ public abstract class StaminaWheelRenderer{
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void renderStamina(PoseStack matrixStack, double x, double y, double z){
+	public void renderStamina(final GuiGraphics graphics, double x, double y, double z){
 		LocalPlayer player = Minecraft.getInstance().player;
 		if(player==null) return;
 		PlayerMovement h = PlayerMovement.of(player);
 		if(h==null) return;
 		makeWheel(h);
 
-		render(matrixStack, x, y, z, ModCfg.debugPlayerMovement()&&Paraglider.isParaglider(player.getOffhandItem()));
+		render(graphics, x, y, z, ModCfg.debugPlayerMovement()&&Paraglider.isParaglider(player.getOffhandItem()));
 	}
 
 	protected abstract void makeWheel(PlayerMovement h);
@@ -59,16 +60,16 @@ public abstract class StaminaWheelRenderer{
 		this.wheel.put(wheelLevel, wheel!=null ? wheel.insert(new Wheel(start, end, color)) : new Wheel(start, end, color));
 	}
 
-	protected void render(PoseStack stack, double x, double y, double z, boolean debug){
+	protected void render(GuiGraphics graphics, double x, double y, double z, boolean debug){
 		RenderSystem.disableDepthTest();
 		if(debug){
-			float linePos = 10;
+			int linePos = 10;
 			Font font = Minecraft.getInstance().font;
 			for(WheelLevel t : WheelLevel.values()){
 				Wheel wheel = getWheel(t);
 				if(wheel!=null){
-					linePos = font.drawShadow(stack, t+":", 20, linePos, 0xFFFFFFFF);
-					linePos = font.drawShadow(stack, wheel.toString(), 30, linePos, 0xFFFFFFFF);
+					linePos = graphics.drawString(font, t+":", 20, linePos, 0xFFFFFFFF);
+					linePos = graphics.drawString(font, wheel.toString(), 30, linePos, 0xFFFFFFFF);
 				}
 			}
 		}
@@ -77,7 +78,7 @@ public abstract class StaminaWheelRenderer{
 			Wheel wheel = getWheel(t);
 			if(wheel!=null){
 				RenderSystem.setShaderTexture(0, t.texture);
-				wheel.draw(stack, x, y, z, WHEEL_RADIUS, debug);
+				wheel.draw(graphics, x, y, z, WHEEL_RADIUS, debug);
 			}
 		}
 
@@ -132,19 +133,20 @@ public abstract class StaminaWheelRenderer{
 
 		private static final double[] renderPoints = {0, 1/8.0, 3/8.0, 5/8.0, 7/8.0, 1};
 
-		public void draw(PoseStack stack, double x, double y, double z, double radius, boolean debug){
+		public void draw(final GuiGraphics graphics, double x, double y, double z, double radius, boolean debug){
 			List<Vec2> debugVertices = debug ? new ArrayList<>() : null;
 			drawInternal(x, y, z, radius, debugVertices);
 
 			if(debugVertices!=null){
+				final PoseStack stack = graphics.pose();
 				stack.pushPose();
 				stack.translate(x, y, z);
 				Font font = Minecraft.getInstance().font;
 				for(Vec2 vec : debugVertices){
 					String s = vec.x+" "+vec.y;
-					font.drawShadow(stack, s,
-							vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.width(s),
-							vec.y>0 ? vec.y*(float)-radius-2-font.lineHeight : vec.y*(float)-radius+2,
+					graphics.drawString(font, s,
+							(int) (vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.width(s)),
+							(int) (vec.y>0 ? vec.y*(float)-radius-2-font.lineHeight : vec.y*(float)-radius+2),
 							0xFF00FF00);
 				}
 				stack.popPose();

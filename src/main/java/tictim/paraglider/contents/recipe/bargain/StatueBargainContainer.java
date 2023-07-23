@@ -54,7 +54,7 @@ public class StatueBargainContainer extends AbstractContainerMenu{
 		this.dialog = dialog;
 		this.advancement = advancement;
 		ResourceLocation menuTypeId = type==null ? null : ForgeRegistries.MENU_TYPES.getKey(type);
-		this.bargains = playerInventory.player.level.getRecipeManager()
+		this.bargains = playerInventory.player.level().getRecipeManager()
 				.getAllRecipesFor(Contents.STATUE_BARGAIN_RECIPE_TYPE.get())
 				.stream()
 				.filter(b -> type==null||b.getBargainOwner().equals(menuTypeId))

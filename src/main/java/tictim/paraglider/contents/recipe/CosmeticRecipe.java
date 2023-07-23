@@ -3,6 +3,7 @@ package tictim.paraglider.contents.recipe;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -52,7 +53,7 @@ public class CosmeticRecipe implements CraftingRecipe{
 		return paragliderSeen&&reagentSeen;
 	}
 
-	@Override public ItemStack assemble(CraftingContainer inv){
+	@Override public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
 		ItemStack paraglider = new ItemStack(recipeOut);
 		for(int i = 0; i<inv.getContainerSize(); i++){
 			ItemStack stack = inv.getItem(i);
@@ -68,7 +69,9 @@ public class CosmeticRecipe implements CraftingRecipe{
 	@Override public boolean canCraftInDimensions(int width, int height){
 		return width*height>=2;
 	}
-	@Override public ItemStack getResultItem(){
+
+	@Override
+	public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
 		return new ItemStack(recipeOut);
 	}
 

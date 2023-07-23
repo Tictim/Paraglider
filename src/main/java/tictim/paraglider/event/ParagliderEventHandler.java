@@ -87,7 +87,7 @@ public final class ParagliderEventHandler{
 			}else{
 				if(h.isParagliding()){
 					double v = ModCfg.paraglidingSpeed();
-					event.player.flyingSpeed = (float)(DEFAULT_PARAGLIDING_SPEED*v);
+					event.player.setSpeed((float)(DEFAULT_PARAGLIDING_SPEED*v)); // TODO
 				}
 			}
 		}

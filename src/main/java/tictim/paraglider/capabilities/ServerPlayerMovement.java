@@ -106,7 +106,7 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			staminaNeedsUpdate = false;
 		}
 
-		if(player.isOnGround()||player.getY()>prevY) accumulatedFallDistance = 0;
+		if(player.onGround()||player.getY()>prevY) accumulatedFallDistance = 0;
 		else accumulatedFallDistance += prevY-player.getY();
 
 		boolean isHoldingParaglider = Paraglider.isParaglider(player.getMainHandItem());
@@ -182,21 +182,21 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else if(player.getVehicle()!=null) return PlayerState.RIDING;
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canBreathe() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
-		else if(!player.isOnGround()&&isHoldingParaglider&&!player.isFallFlying()){
-			if(ModCfg.ascendingWinds()&&Wind.isInside(player.level, player.getBoundingBox())) return PlayerState.ASCENDING;
+		else if(!player.onGround()&&isHoldingParaglider&&!player.isFallFlying()){
+			if(ModCfg.ascendingWinds()&&Wind.isInside(player.level(), player.getBoundingBox())) return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
 		if(player.isSprinting()&&!player.isUsingItem()) return PlayerState.RUNNING;
-		else if(player.isOnGround()) return PlayerState.IDLE;
+		else if(player.onGround()) return PlayerState.IDLE;
 		else return PlayerState.MIDAIR;
 	}
 
 	private boolean canBreathe(){
 		if(player.hasEffect(MobEffects.WATER_BREATHING)) return true;
-		if(player.isOnGround()&&(
+		if(player.onGround()&&(
 				!player.canDrownInFluidType(player.getEyeInFluidType())||
-						player.level.getBlockState(new BlockPos(player.getX(), player.getEyeY(), player.getZ())).is(Blocks.BUBBLE_COLUMN))){
+						player.level().getBlockState(BlockPos.containing(player.getX(), player.getEyeY(), player.getZ())).is(Blocks.BUBBLE_COLUMN))){
 			return true;
 		}
 

@@ -35,7 +35,7 @@ public class MixinDragonFightManager{
 		if(!ModCfg.enderDragonDropsVessel()) return;
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if(item==null) return;
-		BlockPos endPodium = this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION);
+		BlockPos endPodium = this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(BlockPos.ZERO));
 		ItemEntity itemEntity = new ItemEntity(level, endPodium.getX()+.5, endPodium.getY()+1, endPodium.getZ()+.5, new ItemStack(item));
 		itemEntity.setInvulnerable(true);
 		itemEntity.setExtendedLifetime();

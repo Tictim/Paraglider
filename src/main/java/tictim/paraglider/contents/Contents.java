@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -18,16 +19,14 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -59,29 +58,6 @@ import static tictim.paraglider.ParagliderMod.MODID;
 public final class Contents{
 	private Contents(){}
 
-	public static CreativeModeTab GROUP;
-
-	@SubscribeEvent
-	public static void onCreativeModeTabRegister(CreativeModeTabEvent.Register event){
-		GROUP = event.registerCreativeModeTab(new ResourceLocation(MODID, MODID), b -> b
-				.icon(() -> new ItemStack(PARAGLIDER.get()))
-				.title(Component.translatable("itemGroup."+MODID))
-				.displayItems((features, out, hasOp) -> {
-					out.accept(PARAGLIDER.get());
-					out.accept(DEKU_LEAF.get());
-					out.accept(HEART_CONTAINER.get());
-					out.accept(STAMINA_VESSEL.get());
-					out.accept(SPIRIT_ORB.get());
-					out.accept(ANTI_VESSEL.get());
-					out.accept(ESSENCE.get());
-					out.accept(GODDESS_STATUE.get());
-					out.accept(KAKARIKO_GODDESS_STATUE.get());
-					out.accept(GORON_GODDESS_STATUE.get());
-					out.accept(RITO_GODDESS_STATUE.get());
-					out.accept(HORNED_STATUE.get());
-				}));
-	}
-
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
@@ -92,11 +68,12 @@ public final class Contents{
 	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, MODID);
 	public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, MODID);
 	public static final DeferredRegister<StructurePieceType> PIECES = DeferredRegister.create(Registries.STRUCTURE_PIECE, MODID);
+	public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
 	public static final RegistryObject<RecipeType<StatueBargain>> STATUE_BARGAIN_RECIPE_TYPE = RECIPE_TYPES.register("statue_bargain", () -> RecipeType.simple(new ResourceLocation(MODID, "statue_bargain")));
 
 	private static BlockBehaviour.Properties statueProperties(){
-		return Block.Properties.of(Material.STONE)
+		return Block.Properties.copy(Blocks.STONE)
 				.sound(SoundType.STONE)
 				.requiresCorrectToolForDrops()
 				.strength(1.5f, 100f)
@@ -144,9 +121,9 @@ public final class Contents{
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
 
 	public static final RegistryObject<MenuType<StatueBargainContainer>> GODDESS_STATUE_CONTAINER = MENUS.register(
-			"goddess_statue", () -> new MenuType<>(ModContainers::goddessStatue));
+			"goddess_statue", () -> new MenuType<>(ModContainers::goddessStatue, FeatureFlagSet.of()));
 	public static final RegistryObject<MenuType<StatueBargainContainer>> HORNED_STATUE_CONTAINER = MENUS.register(
-			"horned_statue", () -> new MenuType<>(ModContainers::hornedStatue));
+			"horned_statue", () -> new MenuType<>(ModContainers::hornedStatue, FeatureFlagSet.of()));
 
 	public static final RegistryObject<Codec<ParagliderLoot>> PARAGLIDER_LOOT = LOOTS.register("paraglider", () -> ParagliderLoot.CODEC);
 	public static final RegistryObject<Codec<SpiritOrbLoot>> SPIRIT_ORB_LOOT = LOOTS.register("spirit_orb", () -> SpiritOrbLoot.CODEC);
@@ -166,6 +143,24 @@ public final class Contents{
 	public static final RegistryObject<StructurePieceType> NETHER_HORNED_STATUE_PIECE = PIECES.register("nether_horned_statue", NetherHornedStatue::pieceType);
 	public static final RegistryObject<StructurePieceType> UNDERGROUND_HORNED_STATUE_PIECE = PIECES.register("underground_horned_statue", UndergroundHornedStatue::pieceType);
 
+	public static final RegistryObject<CreativeModeTab> MAIN_TAB = CREATIVE_TABS.register(MODID, () -> CreativeModeTab.builder()
+			.icon(() -> new ItemStack(PARAGLIDER.get()))
+			.title(Component.translatable("itemGroup."+MODID))
+			.displayItems((features, out) -> {
+				out.accept(PARAGLIDER.get());
+				out.accept(DEKU_LEAF.get());
+				out.accept(HEART_CONTAINER.get());
+				out.accept(STAMINA_VESSEL.get());
+				out.accept(SPIRIT_ORB.get());
+				out.accept(ANTI_VESSEL.get());
+				out.accept(ESSENCE.get());
+				out.accept(GODDESS_STATUE.get());
+				out.accept(KAKARIKO_GODDESS_STATUE.get());
+				out.accept(GORON_GODDESS_STATUE.get());
+				out.accept(RITO_GODDESS_STATUE.get());
+				out.accept(HORNED_STATUE.get());
+			}).build());
+
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
@@ -177,5 +172,6 @@ public final class Contents{
 		RECIPE_TYPES.register(eventBus);
 		STRUCTURE_TYPES.register(eventBus);
 		PIECES.register(eventBus);
+		CREATIVE_TABS.register(eventBus);
 	}
 }

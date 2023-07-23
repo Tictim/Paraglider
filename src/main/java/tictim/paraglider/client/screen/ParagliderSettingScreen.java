@@ -3,6 +3,7 @@ package tictim.paraglider.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -36,15 +37,16 @@ public class ParagliderSettingScreen extends Screen{
 				.build());
 	}
 
-	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
-		renderBackground(matrixStack);
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
+	@Override
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(graphics);
+		super.render(graphics, mouseX, mouseY, partialTicks);
 		if(saveResult!=null){
 			Boolean r = saveResult.get();
-			font.drawShadow(matrixStack, Component.translatable(
+			graphics.drawString(font, Component.translatable(
 					r==null ? "paragliderSettings.saving" :
 							r ? "paragliderSettings.saving.success" :
-									"paragliderSettings.saving.failure"), 0, height-font.lineHeight, 0xFFFFFF);
+									"paragliderSettings.saving.failure"), 0, height-font.lineHeight, 0xFFFFFF, true);
 			if(r!=null){
 				displaySaveMessageTicks -= partialTicks;
 				if(displaySaveMessageTicks<=0){

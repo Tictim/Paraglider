@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -69,7 +70,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		};
 	}
 
-	@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+	@Override
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		int textWidth = Arrays.stream(fuckingText).mapToInt(e -> font.width(e)).max().orElse(0)+6+48;
 		int textHeight = Math.max(fuckingText.length*font.lineHeight, 40+2)+4;
 		int textX = staminaWheel.getX()>=this.width/2 ? 0 : this.width-textWidth;
@@ -80,23 +82,24 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.cancelButton.setX(textX+textWidth-this.cancelButton.getWidth()-2);
 		this.cancelButton.setY(textY+textHeight-this.saveButton.getHeight()-this.cancelButton.getHeight()-4);
 
-		renderBackground(matrixStack);
-		fillGradient(matrixStack, textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
+		renderBackground(guiGraphics);
+		guiGraphics.fillGradient(textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		int y = textY+2;
 		for(Component t : fuckingText){
-			font.draw(matrixStack, t, textX+2, y, 0xFF00DF53);
+			guiGraphics.drawString(font, t, textX+2, y, 0xFF00DF53);
 			y += font.lineHeight;
 		}
 	}
 
-	@Override public void renderBackground(PoseStack pose, int vOffset){
+	@Override
+	public void renderBackground(GuiGraphics guiGraphics) {
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
-			this.fillGradient(pose, 0, 0, this.width, this.height, 0x10101010, 0x30101010);
+			guiGraphics.fillGradient(0, 0, this.width, this.height, 0x10101010, 0x30101010);
 			// MinecraftForge.EVENT_BUS.post(new ScreenEvent.BackgroundRendered(this, pose));
-		}else this.renderDirtBackground(vOffset);
+		}else this.renderDirtBackground(guiGraphics);
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -153,13 +156,12 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			return (getY()+WHEEL_RADIUS)/(double)screenHeight();
 		}
 
-		@Override public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+		@Override
+		public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks){
 			this.setX(Mth.clamp(this.getX(), 1, screenWidth()-2-WHEEL_RADIUS*2));
 			this.setY(Mth.clamp(this.getY(), 1, screenHeight()-2-WHEEL_RADIUS*2));
 			if(this.visible)
-				this.wheel.renderStamina(matrixStack, this.getX()+WHEEL_RADIUS, this.getY()+WHEEL_RADIUS, 0);
-
-			RenderSystem.disableTexture();
+				this.wheel.renderStamina(guiGraphics, this.getX()+WHEEL_RADIUS, this.getY()+WHEEL_RADIUS, 0);
 
 			Tesselator t = Tesselator.getInstance();
 			BufferBuilder b = t.getBuilder();
@@ -170,7 +172,6 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			b.vertex(this.getX(), this.getY()+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
 			b.vertex(this.getX(), this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
 			t.end();
-			RenderSystem.enableTexture();
 
 			String s = (this.getX())+", "+(this.getY())+
 					" ("+PERCENTAGE.format(this.getStaminaWheelX())+" :: "+PERCENTAGE.format(this.getStaminaWheelY())+")";
@@ -178,7 +179,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 
 			int textX = Math.min(this.getX(), screenWidth()-sw-3);
 			int textY = this.getY()>=screenHeight()/2 ? this.getY()-1-font.lineHeight : this.getY()+this.height+1;
-			font.draw(matrixStack, s, textX, textY, 0xFF00DF53);
+			guiGraphics.drawString(font, s, textX, textY, 0xFF00DF53);
 		}
 
 		@Override public boolean mouseClicked(double mouseX, double mouseY, int button){

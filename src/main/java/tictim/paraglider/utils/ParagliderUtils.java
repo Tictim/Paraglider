@@ -27,17 +27,17 @@ public final class ParagliderUtils{
 	 * @see net.minecraft.world.entity.player.Inventory#placeItemBackInInventory(ItemStack, boolean)
 	 */
 	public static void giveItem(Player player, ItemStack stack){
-		if(player.level.isClientSide) return;
+		if(player.level().isClientSide) return;
 		while(!stack.isEmpty()){
 			int slot = player.getInventory().getSlotWithRemainingSpace(stack);
 			if(slot==-1) slot = player.getInventory().getFreeSlot();
 
 			if(slot==-1){
 				while(!stack.isEmpty()){
-					ItemEntity itemEntity = new ItemEntity(player.level, player.getX(), player.getY(.5), player.getZ(), stack.split(stack.getMaxStackSize()));
+					ItemEntity itemEntity = new ItemEntity(player.level(), player.getX(), player.getY(.5), player.getZ(), stack.split(stack.getMaxStackSize()));
 					itemEntity.setPickUpDelay(40);
 					itemEntity.setDeltaMovement(0, 0, 0);
-					player.level.addFreshEntity(itemEntity);
+					player.level().addFreshEntity(itemEntity);
 				}
 				break;
 			}
@@ -62,7 +62,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getHeartContainers()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setHeartContainers(m.getHeartContainers()-quantity);
 			// if(effect){}
 		}
@@ -83,7 +83,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getStaminaVessels()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setStaminaVessels(m.getStaminaVessels()-quantity);
 			// if(effect){}
 		}
@@ -104,7 +104,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(m.getEssence()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setEssence(m.getEssence()-quantity);
 			// if(effect){}
 		}
@@ -125,7 +125,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(ModCfg.maxHeartContainers()-m.getHeartContainers()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setHeartContainers(m.getHeartContainers()+quantity);
 			player.setHealth(player.getMaxHealth());
 			if(effect) spawnParticle(player, ParticleTypes.HEART, 5+5*quantity);
@@ -147,7 +147,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(ModCfg.maxStaminaVessels()-m.getStaminaVessels()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setStaminaVessels(m.getStaminaVessels()+quantity);
 			m.setStamina(m.getMaxStamina());
 			if(effect) spawnParticle(player, ParticleTypes.HAPPY_VILLAGER, 7+7*quantity);
@@ -169,7 +169,7 @@ public final class ParagliderUtils{
 		ServerPlayerMovement m = ServerPlayerMovement.of(player);
 		if(m==null) return false;
 		if(Integer.MAX_VALUE-m.getEssence()<quantity) return false;
-		if(!simulate&&!player.level.isClientSide){
+		if(!simulate&&!player.level().isClientSide){
 			m.setEssence(m.getEssence()+quantity);
 			// if(effect){}
 		}
@@ -177,7 +177,7 @@ public final class ParagliderUtils{
 	}
 
 	private static void spawnParticle(Player player, ParticleOptions particle, int count){
-		ServerLevel world = player.level instanceof ServerLevel ? ((ServerLevel)player.level) : null;
+		ServerLevel world = player.level() instanceof ServerLevel ? ((ServerLevel)player.level()) : null;
 		if(world==null) return;
 		world.sendParticles(particle, player.getX(), player.getY(.5), player.getZ(), count, 1, 2, 1, 0);
 	}
