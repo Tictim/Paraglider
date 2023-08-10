@@ -28,5 +28,6 @@
     "recipes": [
       "paraglider:paraglider"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

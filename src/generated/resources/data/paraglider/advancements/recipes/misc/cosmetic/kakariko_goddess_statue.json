@@ -28,5 +28,6 @@
     "recipes": [
       "paraglider:cosmetic/kakariko_goddess_statue"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

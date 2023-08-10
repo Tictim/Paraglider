@@ -1,6 +1,6 @@
-// 1.19.3	2023-04-07T04:49:09.3485047	Loot Tables
-7be41f48c0ee0441142b4c3d4f899394d8a5eeb5 data/paraglider/loot_tables/blocks/goddess_statue.json
-0c9809cf838290f7f58b12fa99386a3c0657e5e7 data/paraglider/loot_tables/blocks/goron_goddess_statue.json
-5c3f5a322f5b1bbc21e144ae10f374b015ccdf89 data/paraglider/loot_tables/blocks/horned_statue.json
-684a6410a4e4b9ea315360ad28b8a2a16b05554a data/paraglider/loot_tables/blocks/kakariko_goddess_statue.json
-bcb32bebbb05e4522d72f47f77bb3c4e59b7b6f5 data/paraglider/loot_tables/blocks/rito_goddess_statue.json
+// 1.20.1	2023-08-10T18:34:38.348111657	Loot Tables
+98366aaa5341f5617a091365f4a283b19f3dae15 data/paraglider/loot_tables/blocks/goddess_statue.json
+a908f26d8bb625dcc8876328166523a7eed24c7c data/paraglider/loot_tables/blocks/goron_goddess_statue.json
+8ba997c2e71efb9d7257abeeb333c112e9b54a36 data/paraglider/loot_tables/blocks/horned_statue.json
+a96ca268d981c38ef0a995533a46f66df2c6f383 data/paraglider/loot_tables/blocks/kakariko_goddess_statue.json
+7f3b8f774cc5b1666788dc2122e5b0bfe9aa0492 data/paraglider/loot_tables/blocks/rito_goddess_statue.json

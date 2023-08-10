@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "paraglider:paraglider"
-  }
+  },
+  "show_notification": true
 }

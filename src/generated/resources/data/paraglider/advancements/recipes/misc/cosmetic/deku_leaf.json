@@ -28,5 +28,6 @@
     "recipes": [
       "paraglider:cosmetic/deku_leaf"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

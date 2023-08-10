@@ -16,7 +16,7 @@ public class Datagen{
 		gen.addProvider(event.includeServer(), new RecipeGen(gen.getPackOutput()));
 		BlockTagGen blockTagGen = new BlockTagGen(gen.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper());
 		gen.addProvider(event.includeServer(), blockTagGen);
-		gen.addProvider(event.includeServer(), new ItemTagGen(gen.getPackOutput(), event.getLookupProvider(), blockTagGen, event.getExistingFileHelper()));
+		gen.addProvider(event.includeServer(), new ItemTagGen(gen.getPackOutput(), event.getLookupProvider(), blockTagGen.contentsGetter(), event.getExistingFileHelper()));
 		gen.addProvider(event.includeServer(), new BiomeTagGen(gen.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
 		gen.addProvider(event.includeServer(), new LootTableGen(gen.getPackOutput()));
 		gen.addProvider(event.includeServer(), new LootModifierProvider(gen.getPackOutput()));

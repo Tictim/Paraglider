@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class ItemTagGen extends ItemTagsProvider{
-	public ItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, TagsProvider<Block> blockTags, @Nullable ExistingFileHelper existingFileHelper){
+	public ItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTags, @Nullable ExistingFileHelper existingFileHelper){
 		super(output, lookupProvider, blockTags, ParagliderMod.MODID, existingFileHelper);
 	}
 
