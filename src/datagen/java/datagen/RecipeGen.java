@@ -1,7 +1,10 @@
 package datagen;
 
-import net.minecraft.data.DataGenerator;
+import datagen.builder.CosmeticRecipeBuilder;
+import datagen.builder.StatueBargainBuilder;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -11,8 +14,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModTags;
-import datagen.builder.CosmeticRecipeBuilder;
-import datagen.builder.StatueBargainBuilder;
 import tictim.paraglider.contents.recipe.ConfigConditionSerializer;
 
 import java.util.function.Consumer;
@@ -20,12 +21,12 @@ import java.util.function.Consumer;
 import static tictim.paraglider.ParagliderMod.MODID;
 
 public class RecipeGen extends RecipeProvider{
-	public RecipeGen(DataGenerator generatorIn){
-		super(generatorIn);
+	public RecipeGen(PackOutput output){
+		super(output);
 	}
 
-	@Override protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer){
-		ShapedRecipeBuilder.shaped(Contents.PARAGLIDER.get())
+	@Override protected void buildRecipes(Consumer<FinishedRecipe> consumer){
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Contents.PARAGLIDER.get())
 				.pattern("121")
 				.pattern("212")
 				.pattern("1 1")

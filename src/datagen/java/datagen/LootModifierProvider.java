@@ -2,6 +2,7 @@ package datagen;
 
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
@@ -13,13 +14,14 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerC
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.LootTableIdCondition;
+import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.loot.ParagliderLoot;
 import tictim.paraglider.contents.loot.SpiritOrbLoot;
 import tictim.paraglider.contents.loot.VesselLoot;
 
 public class LootModifierProvider extends GlobalLootModifierProvider{
-	public LootModifierProvider(DataGenerator gen, String modid){
-		super(gen, modid);
+	public LootModifierProvider(PackOutput output){
+		super(output, ParagliderMod.MODID);
 	}
 
 	@Override protected void start(){

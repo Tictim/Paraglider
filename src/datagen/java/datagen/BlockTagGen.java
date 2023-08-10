@@ -1,21 +1,23 @@
 package datagen;
 
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ModTags;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 public class BlockTagGen extends BlockTagsProvider{
-	public BlockTagGen(DataGenerator generatorIn, @Nullable ExistingFileHelper existingFileHelper){
-		super(generatorIn, ParagliderMod.MODID, existingFileHelper);
+	public BlockTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper){
+		super(output, lookupProvider, ParagliderMod.MODID, existingFileHelper);
 	}
 
-	@Override protected void addTags(){
+	@Override protected void addTags(HolderLookup.Provider provider){
 		tag(BlockTags.MINEABLE_WITH_PICKAXE)
 				.add(Contents.GODDESS_STATUE.get(),
 						Contents.KAKARIKO_GODDESS_STATUE.get(),
