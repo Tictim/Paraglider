@@ -37,12 +37,12 @@ public class WindUpdater{
 		int y = Mth.floor(player.getY());
 		int z = Mth.floor(player.getZ());
 
-		place(player.level,
+		place(player.level(),
 				x-XZ_RAD_HALF,
-				y+(player.isOnGround() ? GROUND_Y_MIN : PARAGLIDING_Y_MIN),
+				y+(player.onGround() ? GROUND_Y_MIN : PARAGLIDING_Y_MIN),
 				z-XZ_RAD_HALF,
 				x+XZ_RAD_HALF,
-				y+(player.isOnGround() ? GROUND_Y_MAX : PARAGLIDING_Y_MAX),
+				y+(player.onGround() ? GROUND_Y_MAX : PARAGLIDING_Y_MAX),
 				z+XZ_RAD_HALF);
 	}
 
@@ -72,7 +72,7 @@ public class WindUpdater{
 						int height = y-fireY;
 						if(height>=10||
 								isWindSource||
-								state.getMaterial().blocksMotion()||
+								state.blocksMotion()||
 								Block.canSupportCenter(world, mpos, Direction.DOWN)||
 								Block.canSupportCenter(world, mpos, Direction.UP)){
 							if(height>2) writer.wind(fireY, height);

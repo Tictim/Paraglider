@@ -1,6 +1,7 @@
 package tictim.paraglider.contents.recipe.bargain;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,13 +30,13 @@ public interface StatueBargain extends Recipe<NoInventory>{
 	@Deprecated @Override default boolean matches(NoInventory inv, Level worldIn){
 		return false;
 	}
-	@Deprecated @Override default ItemStack assemble(NoInventory inv){
+	@Deprecated @Override default ItemStack assemble(NoInventory inv, RegistryAccess registryAccess){
 		return ItemStack.EMPTY;
 	}
 	@Deprecated @Override default boolean canCraftInDimensions(int width, int height){
 		return false;
 	}
-	@Deprecated @Override default ItemStack getResultItem(){
+	@Deprecated @Override default ItemStack getResultItem(RegistryAccess registryAccess){
 		return ItemStack.EMPTY;
 	}
 	@Deprecated @Override default NonNullList<ItemStack> getRemainingItems(NoInventory inv){

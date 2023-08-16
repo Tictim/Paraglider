@@ -6,7 +6,7 @@ buildscript {
         maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
     }
@@ -20,7 +20,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = "${mod_version}"
 group = "tictim.${mod_id}"
-archivesBaseName = "${mod_name}-1.19.3"
+archivesBaseName = "${mod_name}-1.20.1"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
@@ -50,7 +50,7 @@ sourceSets {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: '2023.02.26-1.19.3'
+    mappings channel: 'parchment', version: '2023.08.13-1.20.1'
     // makeObfSourceJar = false
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -129,12 +129,12 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.19.3-44.1.21"
+    minecraft "net.minecraftforge:forge:1.20.1-47.1.0"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    compileOnly fg.deobf("mezz.jei:jei-1.19.3-common-api:12.3.0.18")
-    compileOnly fg.deobf("mezz.jei:jei-1.19.3-forge-api:12.3.0.18")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.19.3-forge:12.3.0.18")
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:15.2.0.25")
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.2.0.25")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.2.0.25")
 }
 
 

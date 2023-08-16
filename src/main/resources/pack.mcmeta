@@ -1,6 +1,8 @@
 {
-    "pack": {
-        "description": "Paraglider mod resources",
-        "pack_format": 10
-    }
+  "pack": {
+    "description": {
+      "text": "Paraglider mod resources"
+    },
+    "pack_format": 15
+  }
 }
