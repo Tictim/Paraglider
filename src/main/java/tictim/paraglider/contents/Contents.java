@@ -27,7 +27,6 @@ import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -51,10 +50,8 @@ import tictim.paraglider.contents.worldgen.NetherHornedStatue;
 import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
 import tictim.paraglider.contents.worldgen.UndergroundHornedStatue;
 
-import static net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD;
 import static tictim.paraglider.ParagliderMod.MODID;
 
-@EventBusSubscriber(modid = MODID, bus = MOD)
 public final class Contents{
 	private Contents(){}
 
