@@ -49,6 +49,7 @@ public class WindUpdater{
 	/**
 	 * Scans blocks in range and update wind chunks.
 	 */
+	@SuppressWarnings("deprecation")
 	public void place(Level world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
 		Wind wind = Wind.of(world);
 		if(wind==null){
@@ -70,7 +71,6 @@ public class WindUpdater{
 
 					if(hasFireY){
 						int height = y-fireY;
-						//noinspection deprecation
 						if(height>=10||
 								isWindSource||
 								state.blocksMotion()||

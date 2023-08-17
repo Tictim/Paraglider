@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -41,7 +40,6 @@ import tictim.paraglider.contents.item.StaminaVesselItem;
 import tictim.paraglider.contents.loot.ParagliderLoot;
 import tictim.paraglider.contents.loot.SpiritOrbLoot;
 import tictim.paraglider.contents.loot.VesselLoot;
-import tictim.paraglider.contents.mobeffects.ExhaustedEffect;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.bargain.SimpleStatueBargain;
 import tictim.paraglider.contents.recipe.bargain.StatueBargain;
@@ -57,7 +55,6 @@ public final class Contents{
 
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-	public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 	public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
 	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOTS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
@@ -112,8 +109,6 @@ public final class Contents{
 	public static final RegistryObject<BlockItem> HORNED_STATUE_ITEM = ITEMS.register("horned_statue", () -> new BlockItem(HORNED_STATUE.get(),
 			new Item.Properties().rarity(Rarity.EPIC)));
 
-	public static final RegistryObject<MobEffect> EXHAUSTED = EFFECTS.register("exhausted", ExhaustedEffect::new);
-
 	public static final RegistryObject<CosmeticRecipe.Serializer> COSMETIC_RECIPE = RECIPE_SERIALIZERS.register("cosmetic", CosmeticRecipe.Serializer::new);
 	public static final RegistryObject<SimpleStatueBargain.Serializer> STATUE_BARGAIN_RECIPE = RECIPE_SERIALIZERS.register("statue_bargain", SimpleStatueBargain.Serializer::new);
 
@@ -161,7 +156,6 @@ public final class Contents{
 	public static void registerEventHandlers(IEventBus eventBus){
 		BLOCKS.register(eventBus);
 		ITEMS.register(eventBus);
-		EFFECTS.register(eventBus);
 		MENUS.register(eventBus);
 		LOOTS.register(eventBus);
 		RECIPE_SERIALIZERS.register(eventBus);

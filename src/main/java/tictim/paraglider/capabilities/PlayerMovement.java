@@ -1,7 +1,6 @@
 package tictim.paraglider.capabilities;
 
 import net.minecraft.core.Direction;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -114,20 +113,17 @@ public abstract class PlayerMovement implements Stamina, ICapabilityProvider{
 	}
 
 	protected void applyMovement(){
-		if(!player.isCreative()&&isDepleted()){
-			player.addEffect(new MobEffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
-		}
 		if(isParagliding()){
 			player.fallDistance = 0;
 
 			Vec3 m = player.getDeltaMovement();
 			switch(state){
-				case PARAGLIDING:
+				case PARAGLIDING -> {
 					if(m.y<-0.05) player.setDeltaMovement(new Vec3(m.x, -0.05, m.z));
-					break;
-				case ASCENDING:
+				}
+				case ASCENDING -> {
 					if(m.y<0.25) player.setDeltaMovement(new Vec3(m.x, Math.max(m.y+0.05, 0.25), m.z));
-					break;
+				}
 			}
 		}
 	}

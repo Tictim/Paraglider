@@ -5,6 +5,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -14,12 +18,14 @@ import tictim.paraglider.capabilities.ServerPlayerMovement;
 import tictim.paraglider.contents.Contents;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public final class ParagliderUtils{
 	private ParagliderUtils(){}
 
 	/**
-	 * Give {@code stack} to {@code player}. If there's no more room left, the item will be dropped in the world as entity.<br>
+	 * Give {@code stack} to {@code player}. If there's no more room left, the item will be dropped in the world as
+	 * entity.<br>
 	 * Accounts for ItemStacks with count more than its maximum stack size.
 	 *
 	 * @param player Who will receive the item
@@ -49,12 +55,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to take specific quantity of Heart Containers from the player. Does not continue the action if the player doesn't have enough.
+	 * Attempt to take specific quantity of Heart Containers from the player. Does not continue the action if the player
+	 * doesn't have enough.
 	 *
 	 * @param player   Who will provide the Heart Container
 	 * @param quantity Quantity of Heart Containers to be taken
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean takeHeartContainers(Player player, int quantity, boolean simulate, boolean effect){
@@ -70,12 +78,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to take specific quantity of Stamina Vessels from the player. Does not continue the action if the player doesn't have enough.
+	 * Attempt to take specific quantity of Stamina Vessels from the player. Does not continue the action if the player
+	 * doesn't have enough.
 	 *
 	 * @param player   Who will provide the Stamina Vessel
 	 * @param quantity Quantity of Stamina Vessels to be taken
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean takeStaminaVessels(Player player, int quantity, boolean simulate, boolean effect){
@@ -91,12 +101,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to take specific quantity of Essences from the player. Does not continue the action if the player doesn't have enough.
+	 * Attempt to take specific quantity of Essences from the player. Does not continue the action if the player doesn't
+	 * have enough.
 	 *
 	 * @param player   Who will provide the Essence
 	 * @param quantity Quantity of Essences to be taken
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean takeEssences(Player player, int quantity, boolean simulate, boolean effect){
@@ -112,12 +124,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to give specific quantity of Heart Containers to the player. Does not continue the action if the player can't take all of it.
+	 * Attempt to give specific quantity of Heart Containers to the player. Does not continue the action if the player
+	 * can't take all of it.
 	 *
 	 * @param player   Who will take the Heart Container
 	 * @param quantity Quantity of Heart Containers to be given
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean giveHeartContainers(Player player, int quantity, boolean simulate, boolean effect){
@@ -134,12 +148,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to give specific quantity of Stamina Vessels to the player. Does not continue the action if the player can't take all of it.
+	 * Attempt to give specific quantity of Stamina Vessels to the player. Does not continue the action if the player
+	 * can't take all of it.
 	 *
 	 * @param player   Who will take the Stamina Vessel
 	 * @param quantity Quantity of Stamina Vessels to be given
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean giveStaminaVessels(Player player, int quantity, boolean simulate, boolean effect){
@@ -156,12 +172,14 @@ public final class ParagliderUtils{
 	}
 
 	/**
-	 * Attempt to give specific quantity of Essences to the player. Does not continue the action if the player can't take all of it.
+	 * Attempt to give specific quantity of Essences to the player. Does not continue the action if the player can't
+	 * take all of it.
 	 *
 	 * @param player   Who will take the Essence
 	 * @param quantity Quantity of Essences to be given
 	 * @param simulate If {@code true}, the result of the action will not be applied to the player.
-	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if {@code simulate == true}.
+	 * @param effect   If {@code true}, effects such as particles will be spawned. Does nothing if
+	 *                 {@code simulate == true}.
 	 * @return Whether or not the action was successful
 	 */
 	public static boolean giveEssences(Player player, int quantity, boolean simulate, boolean effect){
@@ -189,5 +207,24 @@ public final class ParagliderUtils{
 		return ModCfg.enableHeartContainers() ? Contents.HEART_CONTAINER.get() :
 				ModCfg.enableSpiritOrbGens() ? Contents.SPIRIT_ORB.get() :
 						null;
+	}
+
+	private static final UUID EXHAUSTION_ATTRIBUTE_UUID = UUID.fromString("65ed2ca4-ceb3-4521-8552-73006dcba58d");
+	private static final double EXHAUSTION_AMOUNT = -0.30;
+
+	public static void addExhaustion(LivingEntity entity){
+		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+		if(attr==null||attr.getModifier(EXHAUSTION_ATTRIBUTE_UUID)!=null) return;
+		attr.addTransientModifier(new AttributeModifier(
+				EXHAUSTION_ATTRIBUTE_UUID,
+				"Exhaustion",
+				EXHAUSTION_AMOUNT,
+				AttributeModifier.Operation.MULTIPLY_TOTAL));
+	}
+
+	public static void removeExhaustion(LivingEntity entity){
+		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+		if(attr==null) return;
+		attr.removeModifier(EXHAUSTION_ATTRIBUTE_UUID);
 	}
 }

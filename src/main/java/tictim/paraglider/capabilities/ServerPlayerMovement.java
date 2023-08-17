@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -28,6 +27,7 @@ import tictim.paraglider.network.ModNet;
 import tictim.paraglider.network.SyncMovementMsg;
 import tictim.paraglider.network.SyncParaglidingMsg;
 import tictim.paraglider.network.SyncVesselMsg;
+import tictim.paraglider.utils.ParagliderUtils;
 import tictim.paraglider.wind.Wind;
 
 import javax.annotation.Nullable;
@@ -120,7 +120,9 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 			prevIsParagliding = isParagliding;
 		}
 		if(!player.isCreative()&&isDepleted()){
-			player.addEffect(new MobEffectInstance(Contents.EXHAUSTED.get(), 2, 0, false, false, false));
+			ParagliderUtils.addExhaustion(player);
+		}else{
+			ParagliderUtils.removeExhaustion(player);
 		}
 		applyMovement();
 
@@ -133,7 +135,8 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		}
 		if(paraglidingNeedsSync){
 			SyncParaglidingMsg msg2 = new SyncParaglidingMsg(this);
-			if(ModCfg.traceParaglidingPacket()) ParagliderMod.LOGGER.debug("Sending packet {} to player tracking {}", msg2, player);
+			if(ModCfg.traceParaglidingPacket())
+				ParagliderMod.LOGGER.debug("Sending packet {} to player tracking {}", msg2, player);
 			ModNet.NET.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), msg2);
 			paraglidingNeedsSync = false;
 		}
@@ -183,7 +186,8 @@ public final class ServerPlayerMovement extends PlayerMovement implements INBTSe
 		else if(player.isSwimming()) return PlayerState.SWIMMING;
 		else if(player.isInWater()) return canBreathe() ? PlayerState.BREATHING_UNDERWATER : PlayerState.UNDERWATER;
 		else if(!player.onGround()&&isHoldingParaglider&&!player.isFallFlying()){
-			if(ModCfg.ascendingWinds()&&Wind.isInside(player.level(), player.getBoundingBox())) return PlayerState.ASCENDING;
+			if(ModCfg.ascendingWinds()&&Wind.isInside(player.level(), player.getBoundingBox()))
+				return PlayerState.ASCENDING;
 			else if(prevState.isParagliding()||accumulatedFallDistance>=1.45f) return PlayerState.PARAGLIDING;
 		}
 
