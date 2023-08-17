@@ -2,17 +2,13 @@ package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -71,7 +67,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks){
 		int textWidth = Arrays.stream(fuckingText).mapToInt(e -> font.width(e)).max().orElse(0)+6+48;
 		int textHeight = Math.max(fuckingText.length*font.lineHeight, 40+2)+4;
 		int textX = staminaWheel.getX()>=this.width/2 ? 0 : this.width-textWidth;
@@ -94,7 +90,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics guiGraphics) {
+	public void renderBackground(GuiGraphics guiGraphics){
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
 			guiGraphics.fillGradient(0, 0, this.width, this.height, 0x10101010, 0x30101010);
@@ -163,15 +159,14 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			if(this.visible)
 				this.wheel.renderStamina(guiGraphics, this.getX()+WHEEL_RADIUS, this.getY()+WHEEL_RADIUS, 0);
 
-			Tesselator t = Tesselator.getInstance();
-			BufferBuilder b = t.getBuilder();
-			b.begin(VertexFormat.Mode.LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-			b.vertex(this.getX(), this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.getX()+this.width, this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.getX()+this.width, this.getY()+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.getX(), this.getY()+this.height, 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			b.vertex(this.getX(), this.getY(), 0).color(IDLE.red, IDLE.green, IDLE.blue, 1).endVertex();
-			t.end();
+			// draw rectangle lines as an indicator for the stamina wheel
+			guiGraphics.fill(getX()-1, getY()-1, getX()+width+1, getY(), IDLE);
+			guiGraphics.fill(getX()-1, getY()+height, getX()+width+1, getY()+height+1, IDLE);
+			guiGraphics.fill(getX()-1, getY()-1, getX(), getY()+height+1, IDLE);
+			guiGraphics.fill(getX()+width, getY()-1, getX()+width+1, getY()+height+1, IDLE);
+
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
 			String s = (this.getX())+", "+(this.getY())+
 					" ("+PERCENTAGE.format(this.getStaminaWheelX())+" :: "+PERCENTAGE.format(this.getStaminaWheelY())+")";

@@ -53,7 +53,7 @@ public class CosmeticRecipe implements CraftingRecipe{
 		return paragliderSeen&&reagentSeen;
 	}
 
-	@Override public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
+	@Override public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
 		ItemStack paraglider = new ItemStack(recipeOut);
 		for(int i = 0; i<inv.getContainerSize(); i++){
 			ItemStack stack = inv.getItem(i);
@@ -71,7 +71,7 @@ public class CosmeticRecipe implements CraftingRecipe{
 	}
 
 	@Override
-	public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+	public ItemStack getResultItem(RegistryAccess registryAccess) {
 		return new ItemStack(recipeOut);
 	}
 

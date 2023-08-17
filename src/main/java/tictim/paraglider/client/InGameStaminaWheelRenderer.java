@@ -1,9 +1,9 @@
 package tictim.paraglider.client;
 
+import net.minecraft.util.FastColor.ARGB32;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.PlayerMovement;
 import tictim.paraglider.capabilities.PlayerState;
-import tictim.paraglider.utils.Color;
 
 import static tictim.paraglider.client.StaminaWheelConstants.*;
 
@@ -22,13 +22,13 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer{
 				fullTime = time;
 				timeDiff = 0;
 			}else timeDiff = time-fullTime;
-			Color color = StaminaWheelConstants.getGlowAndFadeColor(timeDiff);
-			if(color.alpha<=0) return;
+			int color = StaminaWheelConstants.getGlowAndFadeColor(timeDiff);
+			if(ARGB32.alpha(color)<=0) return;
 			for(WheelLevel t : WheelLevel.values())
 				addWheel(t, 0, t.getProportion(stamina), color);
 		}else{
 			prevStamina = stamina;
-			Color color = DEPLETED_1.blend(DEPLETED_2, cycle(System.currentTimeMillis(), h.isDepleted() ? DEPLETED_BLINK : BLINK));
+			int color = ARGB32.lerp(cycle(System.currentTimeMillis(), h.isDepleted() ? DEPLETED_BLINK : BLINK), DEPLETED_1, DEPLETED_2);
 			PlayerState state = h.getState();
 			for(WheelLevel t : WheelLevel.values()){
 				addWheel(t, 0, t.getProportion(maxStamina), EMPTY);

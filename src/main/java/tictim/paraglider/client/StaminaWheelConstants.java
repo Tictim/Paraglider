@@ -1,17 +1,17 @@
 package tictim.paraglider.client;
 
-import tictim.paraglider.utils.Color;
+import net.minecraft.util.FastColor.ARGB32;
 
 public final class StaminaWheelConstants{
 	private StaminaWheelConstants(){}
 
-	public static final Color IDLE = Color.of(0, 223, 83);
-	public static final Color GLOW = Color.of(255, 255, 255);
-	public static final Color EVIL_GLOW = Color.of(248, 223, 223);
-	public static final Color TRANSPARENT = Color.of(255, 255, 255, 0);
-	public static final Color DEPLETED_1 = Color.of(150, 2, 2);
-	public static final Color DEPLETED_2 = Color.of(255, 150, 2);
-	public static final Color EMPTY = Color.of(2, 2, 2, 150);
+	public static final int IDLE = ARGB32.color(255, 0, 223, 83);
+	public static final int GLOW = ARGB32.color(255, 255, 255, 255);
+	public static final int EVIL_GLOW = ARGB32.color(255, 248, 223, 223);
+	public static final int TRANSPARENT = ARGB32.color(0, 255, 255, 255);
+	public static final int DEPLETED_1 = ARGB32.color(255, 150, 2, 2);
+	public static final int DEPLETED_2 = ARGB32.color(255, 255, 150, 2);
+	public static final int EMPTY = ARGB32.color(150, 2, 2, 2);
 
 	public static final long GLOW_FADE_START = 100;
 	public static final long GLOW_FADE = 250;
@@ -25,15 +25,11 @@ public final class StaminaWheelConstants{
 	/**
 	 * Helper functions for calculating color when stamina wheel glows and fades out.
 	 */
-	public static Color getGlowAndFadeColor(long time){
-		if(time<GLOW_FADE_START)
-			return GLOW;
-		else if(time<GLOW_FADE_START+GLOW_FADE)
-			return GLOW.blend(IDLE, (float)(time-GLOW_FADE_START)/GLOW_FADE);
-		else if(time<FADE_START)
-			return IDLE;
-		else if(time<FADE_START+FADE)
-			return IDLE.blend(TRANSPARENT, (float)(time-FADE_START)/FADE);
+	public static int getGlowAndFadeColor(long time){
+		if(time<GLOW_FADE_START) return GLOW;
+		else if(time<GLOW_FADE_START+GLOW_FADE) return ARGB32.lerp((float)(time-GLOW_FADE_START)/GLOW_FADE, GLOW, IDLE);
+		else if(time<FADE_START) return IDLE;
+		else if(time<FADE_START+FADE) return ARGB32.lerp((float)(time-FADE_START)/FADE, IDLE, TRANSPARENT);
 		else return TRANSPARENT;
 	}
 

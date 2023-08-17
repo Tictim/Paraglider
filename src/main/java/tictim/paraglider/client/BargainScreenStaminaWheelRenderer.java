@@ -1,5 +1,6 @@
 package tictim.paraglider.client;
 
+import net.minecraft.util.FastColor.ARGB32;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.PlayerMovement;
 
@@ -47,7 +48,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer{
 			int stamina = ModCfg.maxStamina(h.getStaminaVessels()-1);
 			for(WheelLevel t : WheelLevel.values()){
 				addWheel(t, 0, t.getProportion(stamina), IDLE);
-				addWheel(t, t.getProportion(stamina), t.getProportion(maxStamina), GLOW.blend(IDLE, (float)(timeSinceFull)/GLOW_FADE));
+				addWheel(t, t.getProportion(stamina), t.getProportion(maxStamina),
+						ARGB32.lerp((float)timeSinceFull/GLOW_FADE, GLOW, IDLE));
 			}
 		}else{
 			for(WheelLevel t : WheelLevel.values())

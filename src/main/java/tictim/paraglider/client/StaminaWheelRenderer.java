@@ -16,7 +16,6 @@ import net.minecraft.world.phys.Vec2;
 import tictim.paraglider.ModCfg;
 import tictim.paraglider.capabilities.Paraglider;
 import tictim.paraglider.capabilities.PlayerMovement;
-import tictim.paraglider.utils.Color;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.PI;
+import static net.minecraft.util.FastColor.ARGB32.*;
 import static tictim.paraglider.ParagliderMod.MODID;
 import static tictim.paraglider.client.StaminaWheelConstants.WHEEL_RADIUS;
 
@@ -35,7 +35,7 @@ public abstract class StaminaWheelRenderer{
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void renderStamina(final GuiGraphics graphics, double x, double y, double z){
+	public void renderStamina(GuiGraphics graphics, double x, double y, double z){
 		LocalPlayer player = Minecraft.getInstance().player;
 		if(player==null) return;
 		PlayerMovement h = PlayerMovement.of(player);
@@ -51,7 +51,7 @@ public abstract class StaminaWheelRenderer{
 		return wheel.get(type);
 	}
 
-	protected void addWheel(WheelLevel wheelLevel, double start, double end, Color color){
+	protected void addWheel(WheelLevel wheelLevel, double start, double end, int color){
 		start = Math.max(0, start);
 		end = Math.min(1, end);
 		if(start>=end) return;
@@ -89,14 +89,14 @@ public abstract class StaminaWheelRenderer{
 	public static final class Wheel{
 		private double start;
 		private double end;
-		private final Color color;
+		private final int color;
 
 		@Nullable private Wheel next;
 
-		private Wheel(double start, double end, Color color){
+		private Wheel(double start, double end, int color){
 			this.start = start;
 			this.end = end;
-			this.color = Objects.requireNonNull(color);
+			this.color = color;
 		}
 
 		/**
@@ -133,7 +133,7 @@ public abstract class StaminaWheelRenderer{
 
 		private static final double[] renderPoints = {0, 1/8.0, 3/8.0, 5/8.0, 7/8.0, 1};
 
-		public void draw(final GuiGraphics graphics, double x, double y, double z, double radius, boolean debug){
+		public void draw(GuiGraphics graphics, double x, double y, double z, double radius, boolean debug){
 			List<Vec2> debugVertices = debug ? new ArrayList<>() : null;
 			drawInternal(x, y, z, radius, debugVertices);
 
@@ -145,8 +145,8 @@ public abstract class StaminaWheelRenderer{
 				for(Vec2 vec : debugVertices){
 					String s = vec.x+" "+vec.y;
 					graphics.drawString(font, s,
-							(int) (vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.width(s)),
-							(int) (vec.y>0 ? vec.y*(float)-radius-2-font.lineHeight : vec.y*(float)-radius+2),
+							(int)(vec.x>0 ? vec.x*(float)radius+2 : vec.x*(float)radius-2-font.width(s)),
+							(int)(vec.y>0 ? vec.y*(float)-radius-2-font.lineHeight : vec.y*(float)-radius+2),
 							0xFF00FF00);
 				}
 				stack.popPose();
@@ -154,7 +154,7 @@ public abstract class StaminaWheelRenderer{
 		}
 
 		private void drawInternal(double x, double y, double z, double radius, @Nullable List<Vec2> debugVertices){
-			RenderSystem.setShaderColor(color.red, color.green, color.blue, color.alpha);
+			RenderSystem.setShaderColor(red(color)/(float)0xFF, green(color)/(float)0xFF, blue(color)/(float)0xFF, alpha(color)/(float)0xFF);
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
@@ -214,8 +214,8 @@ public abstract class StaminaWheelRenderer{
 
 		@Override public String toString(){
 			return next!=null ?
-					String.format("[%f ~ %f](#%s) -> \n%s", start, end, color, next) :
-					String.format("[%f ~ %f](#%s)", start, end, color);
+					String.format("[%f ~ %f](#%X) -> \n%s", start, end, color, next) :
+					String.format("[%f ~ %f](#%X)", start, end, color);
 		}
 	}
 

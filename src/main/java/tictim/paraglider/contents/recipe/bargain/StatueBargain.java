@@ -27,16 +27,16 @@ public interface StatueBargain extends Recipe<NoInventory>{
 
 	// And behold, the peak of human intelligence
 
-	@Deprecated @Override default boolean matches(NoInventory inv, Level worldIn){
+	@Deprecated @Override default boolean matches(NoInventory inv, Level world){
 		return false;
 	}
-	@Deprecated @Override default ItemStack assemble(NoInventory inv, RegistryAccess pRegistryAccess){
+	@Deprecated @Override default ItemStack assemble(NoInventory inv, RegistryAccess registryAccess){
 		return ItemStack.EMPTY;
 	}
 	@Deprecated @Override default boolean canCraftInDimensions(int width, int height){
 		return false;
 	}
-	@Deprecated @Override default ItemStack getResultItem(RegistryAccess pRegistryAccess){
+	@Deprecated @Override default ItemStack getResultItem(RegistryAccess registryAccess){
 		return ItemStack.EMPTY;
 	}
 	@Deprecated @Override default NonNullList<ItemStack> getRemainingItems(NoInventory inv){
