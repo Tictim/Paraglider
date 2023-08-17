@@ -70,9 +70,10 @@ public class WindUpdater{
 
 					if(hasFireY){
 						int height = y-fireY;
+						//noinspection deprecation
 						if(height>=10||
 								isWindSource||
-								state.blocksMotion()|| // TODO
+								state.blocksMotion()||
 								Block.canSupportCenter(world, mpos, Direction.DOWN)||
 								Block.canSupportCenter(world, mpos, Direction.UP)){
 							if(height>2) writer.wind(fireY, height);
@@ -93,7 +94,8 @@ public class WindUpdater{
 	}
 
 	/**
-	 * Checks if placed wind is still valid - that is still having wind source at root position, and isn't expired yet. All invalid winds will be removed.
+	 * Checks if placed wind is still valid - that is still having wind source at root position, and isn't expired yet.
+	 * All invalid winds will be removed.
 	 */
 	public void checkPlacedWind(Level world){
 		Wind wind = Wind.of(world);
