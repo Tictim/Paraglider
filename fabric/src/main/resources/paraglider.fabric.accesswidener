@@ -1,0 +1,14 @@
+accessWidener   v2  named
+
+# common
+
+accessible	field	net/minecraft/server/network/ServerGamePacketListenerImpl aboveGroundTickCount I
+mutable		field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+accessible	field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+accessible	field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool templates Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+
+# fabric only
+
+accessible	class	net/minecraft/client/renderer/ItemInHandRenderer$HandRenderSelection
+extendable	method	net/minecraft/world/item/Item getMaxDamage ()I
+accessible	field	net/minecraft/client/KeyMapping MAP Ljava/util/Map;

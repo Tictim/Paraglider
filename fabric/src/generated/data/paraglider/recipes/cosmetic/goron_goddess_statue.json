@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:cosmetic",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
+  "reagent": {
+    "item": "minecraft:gold_ingot"
+  },
+  "result": "paraglider:goron_goddess_statue"
+}

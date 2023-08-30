@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:cosmetic",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
+  "reagent": {
+    "item": "minecraft:cobblestone"
+  },
+  "result": "paraglider:goddess_statue"
+}

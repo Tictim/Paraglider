@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"compatibilityLevel": "JAVA_17",
+	"package": "tictim.paraglider.mixin",
+	"mixins": [
+		"MixinDragonFightManager",
+		"MixinRaid",
+		"MixinPlayer"
+	],
+	"client": [
+		"MixinPlayerModel"
+	]
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "paraglider",
+  "version": "${version}",
+  "name": "Paragliders",
+  "description": "BotW style Paraglider",
+  "authors": [
+    "Tictim"
+  ],
+  "contact": {
+    "website": "https://legacy.curseforge.com/minecraft/mc-mods/paragliders",
+    "sources": "https://github.com/Tictim/Paraglider",
+    "issues": "https://github.com/Tictim/Paraglider/issues"
+  },
+  "license": "GNU General Public License version 3 (GPLv3)",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "tictim.paraglider.fabric.FabricParagliderMod"
+    ],
+    "client": [
+      "tictim.paraglider.fabric.client.FabricParagliderClient"
+    ],
+    "paraglider-plugin": [
+      "tictim.paraglider.plugin.ParagliderDefaultPlugin"
+    ],
+    "fabric-datagen": [
+      "datagen.Datagen"
+    ]
+  },
+  "mixins": [
+    "paraglider.mixins.json",
+    "paraglider.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.20.1",
+    "forgeconfigapiport": ">=8.0.0"
+  }
+}

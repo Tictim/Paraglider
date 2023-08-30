@@ -1,0 +1,8 @@
+accessWidener   v2  named
+
+# common
+
+accessible	field	net/minecraft/server/network/ServerGamePacketListenerImpl aboveGroundTickCount I
+mutable		field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+accessible	field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+accessible	field	net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool templates Lit/unimi/dsi/fastutil/objects/ObjectArrayList;

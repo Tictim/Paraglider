@@ -1,0 +1,17 @@
+{
+  "type": "paraglider:spirit_orb",
+  "conditions": [
+    {
+      "condition": "paraglider:config_spirit_orb_loots"
+    },
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/nether_bridge"
+    },
+    {
+      "chance": 0.5,
+      "condition": "minecraft:random_chance"
+    }
+  ],
+  "count": 1
+}

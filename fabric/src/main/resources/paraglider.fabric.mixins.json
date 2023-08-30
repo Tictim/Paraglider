@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"compatibilityLevel": "JAVA_17",
+	"package": "tictim.paraglider.fabric.mixin",
+	"mixins": [
+		"MixinChunkMap",
+		"MixinPlayer"
+	],
+	"client": [
+		"MixinDebugScreenOverlay",
+		"MixinGui",
+		"MixinItemInHandRenderer",
+		"MixinMinecraft"
+	]
+}

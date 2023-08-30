@@ -1,0 +1,29 @@
+{
+  "parent": "paraglider:root",
+  "criteria": {
+    "code_triggered": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.paraglider.all_vessels.desc"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "item": "paraglider:heart_container"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.paraglider.all_vessels"
+    }
+  },
+  "requirements": [
+    [
+      "code_triggered"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

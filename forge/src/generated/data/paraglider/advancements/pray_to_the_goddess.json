@@ -1,0 +1,29 @@
+{
+  "parent": "paraglider:root",
+  "criteria": {
+    "bargain": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.paraglider.pray_to_the_goddess.desc"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "item": "paraglider:goddess_statue"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.paraglider.pray_to_the_goddess"
+    }
+  },
+  "requirements": [
+    [
+      "bargain"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

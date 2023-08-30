@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_goddess_statue": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "paraglider:statues/goddess"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "paraglider:cosmetic/goron_goddess_statue"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_goddess_statue",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "paraglider:cosmetic/goron_goddess_statue"
+    ]
+  },
+  "sends_telemetry_event": true
+}

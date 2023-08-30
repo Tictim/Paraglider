@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "1": {
+      "item": "minecraft:stick"
+    },
+    "2": {
+      "item": "minecraft:leather"
+    }
+  },
+  "pattern": [
+    "121",
+    "212",
+    "1 1"
+  ],
+  "result": {
+    "item": "paraglider:paraglider"
+  },
+  "show_notification": true
+}

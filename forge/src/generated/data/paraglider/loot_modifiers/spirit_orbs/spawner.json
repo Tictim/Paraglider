@@ -1,0 +1,9 @@
+{
+  "type": "paraglider:spawner_spirit_orb",
+  "conditions": [
+    {
+      "block": "minecraft:spawner",
+      "condition": "minecraft:block_state_property"
+    }
+  ]
+}

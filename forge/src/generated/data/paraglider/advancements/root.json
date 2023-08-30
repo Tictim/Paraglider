@@ -1,0 +1,38 @@
+{
+  "criteria": {
+    "crafting_table": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:crafting_table"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "paraglider:textures/gui/advancement_background.png",
+    "description": {
+      "translate": "advancement.paraglider.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "paraglider:paraglider"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancement.paraglider"
+    }
+  },
+  "requirements": [
+    [
+      "crafting_table"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

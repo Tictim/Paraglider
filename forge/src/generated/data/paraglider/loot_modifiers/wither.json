@@ -1,0 +1,19 @@
+{
+  "type": "paraglider:vessel",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "minecraft:wither"
+      }
+    },
+    {
+      "condition": "minecraft:killed_by_player"
+    },
+    {
+      "condition": "paraglider:config_wither_drops_vessel"
+    }
+  ],
+  "count": 1
+}

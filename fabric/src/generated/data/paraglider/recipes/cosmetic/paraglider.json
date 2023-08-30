@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:cosmetic",
+  "input": {
+    "tag": "paraglider:paragliders"
+  },
+  "reagent": {
+    "item": "minecraft:stick"
+  },
+  "result": "paraglider:paraglider"
+}

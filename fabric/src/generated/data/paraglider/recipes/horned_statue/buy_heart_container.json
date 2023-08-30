@@ -1,0 +1,19 @@
+{
+  "type": "paraglider:statue_bargain",
+  "bargainType": "paraglider:horned_statue",
+  "demands": {
+    "essences": 1,
+    "items": [
+      {
+        "ingredient": {
+          "item": "minecraft:emerald"
+        },
+        "quantity": 6
+      }
+    ]
+  },
+  "offers": {
+    "heartContainers": 1
+  },
+  "usesHeartContainerFeature": true
+}
