@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Range;
 import tictim.paraglider.api.ParagliderAPI;
 
 /**
- * Interface
+ * Interface providing access to movement state of the player.
  */
 public interface Movement{
 	@NotNull static Movement get(@NotNull Player player){
