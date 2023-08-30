@@ -40,11 +40,14 @@ import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.bargain.preview.QuantifiedIngredient;
 import tictim.paraglider.client.ParagliderClientSettings;
+import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.impl.movement.ClientPlayerMovement;
 import tictim.paraglider.impl.movement.PlayerMovement;
+import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
+import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.RemotePlayerMovement;
 import tictim.paraglider.impl.movement.ServerPlayerMovement;
 
@@ -231,6 +234,31 @@ public final class ParagliderUtils{
 		return player instanceof ServerPlayer serverPlayer ? new ServerPlayerMovement(serverPlayer) :
 				isClient() ? ClientImpl.createPlayerMovement(player) :
 						new RemotePlayerMovement(player);
+	}
+
+	public static void printPlayerStates(@NotNull PlayerStateMap stateMap, @NotNull PlayerStateConnectionMap connectionMap){
+		if(!DebugCfg.get().debugPlayerMovement()) return;
+		ParagliderMod.LOGGER.debug("All Player States: "+stateMap.states().size()+" entries"+
+				stateMap.states().values().stream()
+						.map(s -> "\n  "+s.id()+" : staminaDelta="+s.staminaDelta()+
+								", recoveryDelay="+s.recoveryDelay()+
+								(s.flags().isEmpty() ? "" : ", flags=["+s.flags().stream()
+										.map(f -> f.toString())
+										.collect(Collectors.joining(", "))+"]"))
+						.collect(Collectors.joining()));
+		StringBuilder stb = new StringBuilder("All Player State Connections: ")
+				.append(connectionMap.connections().size()).append(" entries");
+		for(var e : connectionMap.connections().entrySet()){
+			stb.append("\n  ").append(e.getKey());
+			for(PlayerStateConnectionMap.Branch branch : e.getValue().branches()){
+				stb.append("\n    -> ").append(branch.state());
+			}
+			if(e.getValue().fallback()!=null){
+				stb.append("\n    fallback: ").append(e.getValue().fallback());
+			}
+			stb.append('\n');
+		}
+		ParagliderMod.LOGGER.debug(stb.toString());
 	}
 
 	// some part of those methods have to use shitty forge api so uh uhh

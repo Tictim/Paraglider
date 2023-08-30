@@ -83,13 +83,21 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 			ParagliderVillageStructures.addVillageStructures(server);
 			ParagliderUtils.checkBargainRecipes(server);
 
-			Objects.requireNonNull(this.stateMapConfig);
-			this.stateMapConfig.unbindServer();
-			this.stateMapConfig.reload();
-			this.stateMapConfig.bindServer(server, (stateMap, updated) -> {
-				if(updated) ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+			StateMapConfig stateMapConfig = Objects.requireNonNull(this.stateMapConfig);
+			stateMapConfig.unbindServer();
+			stateMapConfig.reload();
+			ParagliderUtils.printPlayerStates(stateMapConfig.stateMap(), getPlayerConnectionMap());
+			stateMapConfig.bindServer(server, (stateMap, updated) -> {
+				if(updated){
+					ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
+					ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+				}
 			}, (ex, updated) -> {
-				if(updated) ParagliderNetwork.get().syncStateMapToAll(server, this.stateMapConfig.stateMap());
+				if(updated){
+					PlayerStateMap stateMap = stateMapConfig.stateMap();
+					ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
+					ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+				}
 			});
 		});
 

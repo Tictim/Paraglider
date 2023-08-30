@@ -38,8 +38,6 @@ import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
 import tictim.paraglider.impl.vessel.NullVesselContainer;
 import tictim.paraglider.network.ParagliderNetwork;
 
-import java.util.Objects;
-
 public class CommonProxy{
 	private final StateMapConfig stateMapConfig;
 	private final PlayerStateConnectionMap connectionMap;
@@ -87,13 +85,20 @@ public class CommonProxy{
 	protected void onServerAboutToStart(ServerAboutToStartEvent event){
 		MinecraftServer server = event.getServer();
 		ParagliderVillageStructures.addVillageStructures(server);
-		Objects.requireNonNull(this.stateMapConfig);
 		this.stateMapConfig.unbindServer();
 		this.stateMapConfig.reload();
+		ParagliderUtils.printPlayerStates(this.stateMapConfig.stateMap(), getConnectionMap());
 		this.stateMapConfig.bindServer(server, (stateMap, updated) -> {
-			if(updated) ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+			if(updated){
+				ParagliderUtils.printPlayerStates(stateMap, getConnectionMap());
+				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+			}
 		}, (ex, updated) -> {
-			if(updated) ParagliderNetwork.get().syncStateMapToAll(server, this.stateMapConfig.stateMap());
+			if(updated){
+				PlayerStateMap stateMap = this.stateMapConfig.stateMap();
+				ParagliderUtils.printPlayerStates(stateMap, getConnectionMap());
+				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+			}
 		});
 		ParagliderUtils.checkBargainRecipes(server);
 	}

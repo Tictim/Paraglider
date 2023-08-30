@@ -7,4 +7,5 @@ public interface PlayerMovementValues{
 	int PANIC_DELAY = 30;
 	int PANIC_DURATION = 15;
 	UUID HEART_CONTAINER_UUID = UUID.fromString("a0f1c25b-c4f9-4413-9619-7841cd7982a3");
+	float PARAGLIDING_FALL_DISTANCE = 1.45f;
 }

@@ -28,11 +28,27 @@ import static tictim.paraglider.impl.movement.PlayerMovementValues.*;
 public class ServerPlayerMovement extends PlayerMovement implements Serde{
 	private boolean heartContainerChanged = true;
 	private boolean staminaVesselChanged = true;
+	private boolean movementChanged;
 
+	/**
+	 * Panic paragliding delay when {@code panicParagliding == false}, panic paragliding duration when
+	 * {@code panicParagliding == true}
+	 */
 	private int panicParaglidingDelay = PANIC_INITIAL_DELAY;
+	/**
+	 * {@code false} means panic paragliding mode is recharging. {@code true} means panic paragliding mode is currently
+	 * active.
+	 */
 	private boolean panicParagliding = false;
 
+	/**
+	 * Previous Y position for tracking {@link #accumulatedFallDistance}.
+	 */
 	private double prevY;
+	/**
+	 * Self-explanatory. Needs to track it ourselves since fall distance in entity instance often gets overwritten by
+	 * other mods and breaks fall distance check.
+	 */
 	private double accumulatedFallDistance;
 
 	public ServerPlayerMovement(@NotNull ServerPlayer player){
@@ -90,24 +106,9 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 						player().isCreative()||!stamina().isDepleted()||canDoPanicParagliding(),
 						this.accumulatedFallDistance));
 
-		boolean movementChanged = !prevState.equals(state());
+		if(!prevState.equals(state())) markMovementChanged();
 
-		boolean wasDepleted = stamina().isDepleted();
 		stamina().update(this);
-		if(stamina().isDepleted()){
-			if(stamina().stamina()>=stamina().maxStamina()){
-				stamina().setDepleted(false);
-				movementChanged = true;
-			}
-		}else if(stamina().stamina()<=0){
-			stamina().setDepleted(true);
-			this.panicParaglidingDelay = PANIC_INITIAL_DELAY;
-			this.panicParagliding = false;
-			movementChanged = true;
-		}
-		if(wasDepleted!=stamina().isDepleted()){
-			movementChanged = true;
-		}
 
 		if(!player().isCreative()&&stamina().isDepleted()){
 			ParagliderUtils.addExhaustion(player());
@@ -116,12 +117,13 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 		}
 		applyMovement();
 
-		if(movementChanged){
+		if(this.movementChanged){
 			ParagliderNetwork.get().syncMovement(player(),
 					state().id(),
 					stamina().stamina(),
 					stamina().isDepleted(),
 					recoveryDelay());
+			this.movementChanged = false;
 		}
 
 		if(vesselsChanged){
@@ -148,19 +150,24 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 
 	@Override protected void applyMovement(){
 		super.applyMovement();
-		if(state().has(FLAG_PARAGLIDING)){
+		boolean paragliding = state().has(FLAG_PARAGLIDING);
+		if(paragliding){
 			player().connection.aboveGroundTickCount = 0;
 			ItemStack stack = player().getMainHandItem();
 			if(stack.getItem() instanceof Paraglider p){
 				p.damageParaglider(player(), stack);
 			}
-			if(!player().isCreative()&&stamina().isDepleted()){
-				if(this.panicParaglidingDelay>0){
-					this.panicParaglidingDelay--;
-				}else{
-					this.panicParaglidingDelay = this.panicParagliding ? PANIC_DELAY : PANIC_DURATION;
-					this.panicParagliding = !this.panicParagliding;
-				}
+		}
+		if(!player().isCreative()&&stamina().isDepleted()){
+			if(this.panicParaglidingDelay>0){
+				if(!player().onGround()) this.panicParaglidingDelay--;
+				else resetPanicParaglidingState();
+			}else if(this.panicParagliding){
+				this.panicParaglidingDelay = PANIC_DELAY;
+				this.panicParagliding = false;
+			}else if(paragliding){ // only active panic paragliding when the user is paragliding
+				this.panicParaglidingDelay = PANIC_DURATION;
+				this.panicParagliding = true;
 			}
 		}
 	}
@@ -172,7 +179,22 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 	 * @return Whether you can perform "Panic Paragliding" this tick
 	 */
 	public boolean canDoPanicParagliding(){
-		return this.panicParagliding;
+		return this.panicParagliding||this.panicParaglidingDelay<=0;
+	}
+
+	public void resetPanicParaglidingState(){
+		this.panicParaglidingDelay = PANIC_INITIAL_DELAY;
+		this.panicParagliding = false;
+	}
+
+	public void markHeartContainerChanged(){
+		this.heartContainerChanged = true;
+	}
+	public void markStaminaVesselChanged(){
+		this.staminaVesselChanged = true;
+	}
+	public void markMovementChanged(){
+		this.movementChanged = true;
 	}
 
 	@Override public void read(@NotNull CompoundTag tag){

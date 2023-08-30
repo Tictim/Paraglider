@@ -6,10 +6,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.movement.PlayerStateCondition;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +21,10 @@ public final class PlayerStateConnectionMap{
 
 	public PlayerStateConnectionMap(@NotNull Map<@NotNull ResourceLocation, @NotNull ConnectionList> connections){
 		this.connections = connections;
+	}
+
+	@NotNull @Unmodifiable public Map<@NotNull ResourceLocation, @NotNull ConnectionList> connections(){
+		return Collections.unmodifiableMap(connections);
 	}
 
 	@NotNull public PlayerState evaluate(@NotNull PlayerStateMap stateMap,
@@ -61,10 +67,10 @@ public final class PlayerStateConnectionMap{
 	}
 
 	public record ConnectionList(
-			@NotNull List<@NotNull Branch> branches,
+			@NotNull @Unmodifiable List<@NotNull Branch> branches,
 			@Nullable ResourceLocation fallback
 	){
-		public ConnectionList(@NotNull List<@NotNull Branch> branches, @Nullable ResourceLocation fallback){
+		public ConnectionList(@NotNull @Unmodifiable List<@NotNull Branch> branches, @Nullable ResourceLocation fallback){
 			this.branches = List.copyOf(Objects.requireNonNull(branches, "branches == null"));
 			for(Branch branch : this.branches) Objects.requireNonNull(branch);
 			this.fallback = fallback;

@@ -15,6 +15,7 @@ import tictim.paraglider.wind.Wind;
 
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.*;
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.*;
+import static tictim.paraglider.impl.movement.PlayerMovementValues.PARAGLIDING_FALL_DISTANCE;
 
 @ParagliderPlugin
 public class ParagliderDefaultPlugin implements MovementPlugin{
@@ -48,11 +49,12 @@ public class ParagliderDefaultPlugin implements MovementPlugin{
 						p.getMainHandItem().getItem() instanceof Paraglider item&&
 						item.canDoParagliding(p.getMainHandItem()),
 				PARAGLIDING, PARAGLIDING_PRIORITY);
-		register.addBranch(PARAGLIDING, (p, s, b, f) -> !p.isCreative()&&Stamina.get(p).isDepleted(), PANIC_PARAGLIDING);
+
+		register.addBranch(PARAGLIDING, (p, s, b, f) -> f>=PARAGLIDING_FALL_DISTANCE&&!p.isCreative()&&Stamina.get(p).isDepleted(), PANIC_PARAGLIDING);
 		register.addBranch(PARAGLIDING,
 				(p, s, b, f) -> Cfg.get().ascendingWinds()&&Wind.isInside(p.level(), p.getBoundingBox()),
 				ASCENDING);
-		register.addBranch(PARAGLIDING, (p, s, b, f) -> f<1.45f&&!s.has(FLAG_PARAGLIDING), IDLE);
+		register.addBranch(PARAGLIDING, (p, s, b, f) -> f<PARAGLIDING_FALL_DISTANCE&&!s.has(FLAG_PARAGLIDING), IDLE);
 
 		register.addBranch(IDLE, (p, s, b, f) -> p.isSprinting()&&!p.isUsingItem(), RUNNING, RUNNING_PRIORITY);
 		register.addBranch(IDLE, (p, s, b, f) -> !p.onGround(), MIDAIR, MIDAIR_PRIORITY);

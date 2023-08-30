@@ -40,6 +40,7 @@ public interface ParagliderPlayerStates{
 
 	ResourceLocation PANIC_PARAGLIDING = ParagliderAPI.id("panic_paragliding");
 	int PANIC_PARAGLIDING_STAMINA_DELTA = -3;
+
 	ResourceLocation ASCENDING = ParagliderAPI.id("ascending");
 	int ASCENDING_STAMINA_DELTA = PARAGLIDING_STAMINA_DELTA;
 

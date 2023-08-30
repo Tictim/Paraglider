@@ -12,17 +12,15 @@ import tictim.paraglider.api.vessel.VesselContainer;
 
 public final class BotWStaminaFactory implements StaminaFactory{
 	@Override @NotNull public Stamina createServerInstance(@NotNull ServerPlayer player){
-		return create(player);
-	}
-	@Override @NotNull public Stamina createRemoteInstance(@NotNull Player player){
-		return create(player);
-	}
-	@Environment(EnvType.CLIENT)
-	@Override @NotNull public Stamina createLocalClientInstance(@NotNull LocalPlayer player){
-		return create(player);
+		return new ServerBotWStamina(VesselContainer.get(player));
 	}
 
-	@NotNull private Stamina create(@NotNull Player player){
+	@Override @NotNull public Stamina createRemoteInstance(@NotNull Player player){
+		return new BotWStamina(VesselContainer.get(player));
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override @NotNull public Stamina createLocalClientInstance(@NotNull LocalPlayer player){
 		return new BotWStamina(VesselContainer.get(player));
 	}
 }
