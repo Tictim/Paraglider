@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -42,6 +43,10 @@ import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.impl.movement.ClientPlayerMovement;
+import tictim.paraglider.impl.movement.PlayerMovement;
+import tictim.paraglider.impl.movement.RemotePlayerMovement;
+import tictim.paraglider.impl.movement.ServerPlayerMovement;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -222,6 +227,12 @@ public final class ParagliderUtils{
 		return System.nanoTime()/1_000_000;
 	}
 
+	@NotNull public static PlayerMovement createPlayerMovement(@NotNull Player player){
+		return player instanceof ServerPlayer serverPlayer ? new ServerPlayerMovement(serverPlayer) :
+				isClient() ? ClientImpl.createPlayerMovement(player) :
+						new RemotePlayerMovement(player);
+	}
+
 	// some part of those methods have to use shitty forge api so uh uhh
 
 	@ExpectPlatform
@@ -264,5 +275,17 @@ public final class ParagliderUtils{
 	@Environment(EnvType.CLIENT)
 	public static boolean isActiveAndMatches(@NotNull KeyMapping keyMapping, @NotNull InputConstants.Key key){
 		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	private static boolean isClient(){
+		throw new AssertionError();
+	}
+
+	private static final class ClientImpl{
+		@NotNull static PlayerMovement createPlayerMovement(@NotNull Player player){
+			return player instanceof LocalPlayer localPlayer ? new ClientPlayerMovement(localPlayer) :
+					new RemotePlayerMovement(player);
+		}
 	}
 }

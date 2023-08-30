@@ -1,6 +1,5 @@
 package tictim.paraglider.forge.event;
 
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -12,18 +11,14 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.bargain.BargainHandler;
 import tictim.paraglider.forge.capability.PlayerMovementProvider;
-import tictim.paraglider.impl.movement.ClientPlayerMovement;
 import tictim.paraglider.impl.movement.PlayerMovement;
-import tictim.paraglider.impl.movement.RemotePlayerMovement;
-import tictim.paraglider.impl.movement.ServerPlayerMovement;
 import tictim.paraglider.network.ParagliderNetwork;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
@@ -77,12 +72,7 @@ public final class ParagliderEventHandler{
 	@SubscribeEvent
 	public static void onAttachPlayerCapabilities(AttachCapabilitiesEvent<Entity> event){
 		if(!(event.getObject() instanceof Player player)) return;
-		event.addCapability(MOVEMENT_HANDLER_KEY, PlayerMovementProvider.create(
-				player instanceof ServerPlayer serverPlayer ?
-						new ServerPlayerMovement(serverPlayer) :
-						DistExecutor.unsafeRunForDist(
-								() -> () -> Client.createPlayerMovement(player),
-								() -> () -> new RemotePlayerMovement(player))));
+		event.addCapability(MOVEMENT_HANDLER_KEY, PlayerMovementProvider.create(ParagliderUtils.createPlayerMovement(player)));
 	}
 
 	@SubscribeEvent
@@ -107,13 +97,5 @@ public final class ParagliderEventHandler{
 	public static void onLogin(PlayerEvent.PlayerLoggedInEvent event){
 		if(event.getEntity() instanceof ServerPlayer player)
 			ParagliderNetwork.get().syncStateMap(player, ParagliderMod.instance().getLocalPlayerStateMap());
-	}
-
-	private static final class Client{
-		@NotNull public static PlayerMovement createPlayerMovement(@NotNull Player player){
-			return player instanceof LocalPlayer localPlayer ?
-					new ClientPlayerMovement(localPlayer) :
-					new RemotePlayerMovement(player);
-		}
 	}
 }

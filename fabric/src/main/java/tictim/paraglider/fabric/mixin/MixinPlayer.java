@@ -1,10 +1,7 @@
 package tictim.paraglider.fabric.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,12 +10,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.Serde;
 import tictim.paraglider.fabric.impl.PlayerMovementAccess;
-import tictim.paraglider.impl.movement.ClientPlayerMovement;
 import tictim.paraglider.impl.movement.PlayerMovement;
-import tictim.paraglider.impl.movement.RemotePlayerMovement;
-import tictim.paraglider.impl.movement.ServerPlayerMovement;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
@@ -29,17 +24,9 @@ public abstract class MixinPlayer implements PlayerMovementAccess{
 	@Unique
 	@Nullable private PlayerMovement movement;
 
+	@SuppressWarnings("DataFlowIssue")
 	@Override @NotNull public PlayerMovement paragliderPlayerMovement(){
-		if(this.movement==null){
-			@SuppressWarnings("DataFlowIssue")
-			Player player = (Player)(Object)this;
-			this.movement = player instanceof ServerPlayer serverPlayer ?
-					new ServerPlayerMovement(serverPlayer) :
-					switch(FabricLoader.getInstance().getEnvironmentType()){
-						case CLIENT -> Client.createPlayerMovement(player);
-						case SERVER -> new RemotePlayerMovement(player);
-					};
-		}
+		if(this.movement==null) this.movement = ParagliderUtils.createPlayerMovement((Player)(Object)this);
 		return this.movement;
 	}
 
@@ -59,14 +46,6 @@ public abstract class MixinPlayer implements PlayerMovementAccess{
 	public void onAddAdditionalSaveData(CompoundTag tag, CallbackInfo info){
 		if(paragliderPlayerMovement() instanceof Serde serde){
 			tag.put(TAG, serde.write());
-		}
-	}
-
-	private static final class Client{
-		@NotNull static PlayerMovement createPlayerMovement(@NotNull Player player){
-			return player instanceof LocalPlayer localPlayer ?
-					new ClientPlayerMovement(localPlayer) :
-					new RemotePlayerMovement(player);
 		}
 	}
 }

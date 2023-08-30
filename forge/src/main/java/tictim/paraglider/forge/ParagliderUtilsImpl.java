@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITagManager;
 import org.jetbrains.annotations.NotNull;
@@ -75,5 +76,9 @@ public final class ParagliderUtilsImpl{
 	@OnlyIn(Dist.CLIENT)
 	public static boolean isActiveAndMatches(@NotNull KeyMapping keyMapping, @NotNull InputConstants.Key key){
 		return keyMapping.isActiveAndMatches(key);
+	}
+
+	public static boolean isClient(){
+		return FMLEnvironment.dist.isClient();
 	}
 }

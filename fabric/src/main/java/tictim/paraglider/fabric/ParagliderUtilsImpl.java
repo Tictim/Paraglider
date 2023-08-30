@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -76,5 +77,9 @@ public final class ParagliderUtilsImpl{
 	@Environment(EnvType.CLIENT)
 	public static boolean isActiveAndMatches(@NotNull KeyMapping keyMapping, @NotNull InputConstants.Key key){
 		return key!=InputConstants.UNKNOWN&&key.equals(KeyBindingHelper.getBoundKeyOf(keyMapping));
+	}
+
+	public static boolean isClient(){
+		return FabricLoader.getInstance().getEnvironmentType()==EnvType.CLIENT;
 	}
 }
