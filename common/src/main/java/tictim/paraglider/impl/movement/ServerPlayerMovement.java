@@ -26,6 +26,7 @@ import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_P
 import static tictim.paraglider.impl.movement.PlayerMovementValues.*;
 
 public class ServerPlayerMovement extends PlayerMovement implements Serde{
+	private boolean resync;
 	private boolean heartContainerChanged = true;
 	private boolean staminaVesselChanged = true;
 	private boolean movementChanged;
@@ -65,14 +66,17 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 		return new SimpleVesselContainer(player()){
 			@Override protected void onChange(@NotNull ActionType actionType, int change){
 				switch(actionType){
-					case HEART_CONTAINER -> heartContainerChanged = true;
-					case STAMINA_VESSEL -> staminaVesselChanged = true;
+					case HEART_CONTAINER -> markHeartContainerChanged();
+					case STAMINA_VESSEL -> markStaminaVesselChanged();
 				}
 			}
 		};
 	}
 
 	@Override public void update(){
+		boolean resync = this.resync;
+		this.resync = false;
+
 		boolean vesselsChanged = this.heartContainerChanged||this.staminaVesselChanged;
 		if(this.heartContainerChanged){
 			double delta;
@@ -117,7 +121,7 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 		}
 		applyMovement();
 
-		if(this.movementChanged){
+		if(resync||this.movementChanged){
 			ParagliderNetwork.get().syncMovement(player(),
 					state().id(),
 					stamina().stamina(),
@@ -126,13 +130,14 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 			this.movementChanged = false;
 		}
 
-		if(vesselsChanged){
+		if(resync||vesselsChanged){
 			ParagliderNetwork.get().syncVessels(player(),
 					stamina().stamina(),
 					vessels().heartContainer(),
 					vessels().staminaVessel());
 
-			if(Cfg.get().maxHeartContainers()<=vessels().heartContainer()&&
+			if(vesselsChanged&&
+					Cfg.get().maxHeartContainers()<=vessels().heartContainer()&&
 					Cfg.get().maxStaminaVessels()<=vessels().staminaVessel()){
 				ParagliderUtils.giveAdvancement(player(), ParagliderAdvancements.ALL_VESSELS, "code_triggered");
 			}
@@ -187,12 +192,30 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 		this.panicParagliding = false;
 	}
 
+	/**
+	 * Causes every information (vessels and movement) to be synced to client on next tick.
+	 */
+	public void markForSync(){
+		this.resync = true;
+	}
+
+	/**
+	 * Causes player's max HP to be updated and adjusted, and vessel information to be synced to client, on next tick.
+	 */
 	public void markHeartContainerChanged(){
 		this.heartContainerChanged = true;
 	}
+
+	/**
+	 * Causes player's stamina value to be adjusted, and vessel information to be synced to client, on next tick.
+	 */
 	public void markStaminaVesselChanged(){
 		this.staminaVesselChanged = true;
 	}
+
+	/**
+	 * Causes movement information to be synced to client on next tick.
+	 */
 	public void markMovementChanged(){
 		this.movementChanged = true;
 	}

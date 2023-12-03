@@ -19,6 +19,7 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.bargain.BargainHandler;
 import tictim.paraglider.forge.capability.PlayerMovementProvider;
 import tictim.paraglider.impl.movement.PlayerMovement;
+import tictim.paraglider.impl.movement.ServerPlayerMovement;
 import tictim.paraglider.network.ParagliderNetwork;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
@@ -86,6 +87,13 @@ public final class ParagliderEventHandler{
 	public static void onStartTracking(PlayerEvent.StartTracking event){
 		if(!(event.getTarget() instanceof Player tracking)||!(event.getEntity() instanceof ServerPlayer player)) return;
 		ParagliderNetwork.get().syncRemoteMovement(tracking, player, Movement.get(tracking).state().id());
+	}
+
+	@SubscribeEvent
+	public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event){
+		if(Movement.get(event.getEntity()) instanceof ServerPlayerMovement serverPlayerMovement){
+			serverPlayerMovement.markForSync();
+		}
 	}
 
 	@SubscribeEvent
