@@ -21,25 +21,21 @@ import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.command.ParagliderCommands;
-import tictim.paraglider.config.StateMapConfig;
+import tictim.paraglider.config.PlayerStateMapConfig;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderVillageStructures;
 import tictim.paraglider.forge.ForgeParagliderNetwork;
 import tictim.paraglider.forge.capability.PlayerMovementProvider;
-import tictim.paraglider.forge.config.ForgeStateMapConfig;
+import tictim.paraglider.forge.config.ForgePlayerStateMapConfig;
 import tictim.paraglider.forge.contents.ConfigConditionSerializer;
-import tictim.paraglider.impl.movement.NullMovement;
-import tictim.paraglider.impl.movement.PlayerMovement;
-import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
-import tictim.paraglider.impl.movement.PlayerStateMap;
-import tictim.paraglider.impl.movement.PlayerStateMapLoader;
+import tictim.paraglider.impl.movement.*;
 import tictim.paraglider.impl.stamina.NullStamina;
 import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
 import tictim.paraglider.impl.vessel.NullVesselContainer;
 import tictim.paraglider.network.ParagliderNetwork;
 
 public class CommonProxy{
-	private final StateMapConfig stateMapConfig;
+	private final PlayerStateMapConfig stateMapConfig;
 	private final PlayerStateConnectionMap connectionMap;
 
 	{
@@ -64,7 +60,7 @@ public class CommonProxy{
 		});
 
 		var pair = PlayerStateMapLoader.loadStates();
-		this.stateMapConfig = new ForgeStateMapConfig(pair.getFirst());
+		this.stateMapConfig = new ForgePlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
 		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
 
@@ -76,7 +72,7 @@ public class CommonProxy{
 			ParagliderUtils.checkBargainRecipes(server);
 			ParagliderVillageStructures.addVillageStructures(server);
 		});
-		MinecraftForge.EVENT_BUS.addListener((ServerStoppingEvent e) -> this.stateMapConfig.unbindServer());
+		MinecraftForge.EVENT_BUS.addListener((ServerStoppingEvent e) -> this.stateMapConfig.removeCallbacks());
 
 		ForgeParagliderNetwork.init();
 		for(ConfigConditionSerializer c : ConfigConditionSerializer.values()) CraftingHelper.register(c);
@@ -85,20 +81,13 @@ public class CommonProxy{
 	protected void onServerAboutToStart(ServerAboutToStartEvent event){
 		MinecraftServer server = event.getServer();
 		ParagliderVillageStructures.addVillageStructures(server);
-		this.stateMapConfig.unbindServer();
-		this.stateMapConfig.reload();
-		ParagliderUtils.printPlayerStates(this.stateMapConfig.stateMap(), getConnectionMap());
-		this.stateMapConfig.bindServer(server, (stateMap, updated) -> {
-			if(updated){
-				ParagliderUtils.printPlayerStates(stateMap, getConnectionMap());
-				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
-			}
-		}, (ex, updated) -> {
-			if(updated){
-				PlayerStateMap stateMap = this.stateMapConfig.stateMap();
-				ParagliderUtils.printPlayerStates(stateMap, getConnectionMap());
-				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
-			}
+		PlayerStateMapConfig stateMapConfig = this.stateMapConfig;
+		stateMapConfig.removeCallbacks();
+		stateMapConfig.reload();
+		ParagliderUtils.printPlayerStates(stateMapConfig.stateMap(), getConnectionMap());
+		stateMapConfig.addCallback(stateMap -> {
+			ParagliderUtils.printPlayerStates(stateMap, getConnectionMap());
+			ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
 		});
 		ParagliderUtils.checkBargainRecipes(server);
 	}
@@ -115,6 +104,9 @@ public class CommonProxy{
 	}
 	@NotNull public PlayerStateConnectionMap getConnectionMap(){
 		return connectionMap;
+	}
+	@NotNull public PlayerStateMapConfig getStateMapConfig(){
+		return stateMapConfig;
 	}
 
 	public void setSyncedStateMap(@Nullable PlayerStateMap stateMap){

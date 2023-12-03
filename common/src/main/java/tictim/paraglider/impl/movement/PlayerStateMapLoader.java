@@ -77,7 +77,6 @@ public final class PlayerStateMapLoader{
 			)+":\n  "+String.join("\n  ", issues));
 		}
 
-
 		return Pair.of(
 				new PlayerStateMap(states.values().stream()
 						.collect(Collectors.toMap(

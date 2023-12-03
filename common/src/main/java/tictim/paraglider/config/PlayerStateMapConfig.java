@@ -13,28 +13,29 @@ import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.SimplePlayerState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_RUNNING;
 
-public class StateMapConfig{
+public class PlayerStateMapConfig{
 	protected static final String FILENAME = "paraglider-player-states.toml";
 
 	protected final ForgeConfigSpec spec;
 
 	private final PlayerStateMap originalStateMap;
 	private final Map<ResourceLocation, Config> configSpecs;
+	private final List<@NotNull Consumer<@NotNull PlayerStateMap>> onUpdateCallbacks = new ArrayList<>();
 
 	@Nullable private PlayerStateMap configuredStateMap;
 
-	private @Nullable MinecraftServer server;
-	private @Nullable Callback<PlayerStateMap> onSuccessCallback;
-	private @Nullable Callback<RuntimeException> onErrorCallback;
-
-	public StateMapConfig(@NotNull PlayerStateMap originalStateMap){
+	public PlayerStateMapConfig(@NotNull PlayerStateMap originalStateMap){
 		this.originalStateMap = originalStateMap;
 
 		// sort player states, always write paragliders state at the top
@@ -90,83 +91,58 @@ public class StateMapConfig{
 		return configuredStateMap;
 	}
 
-	// since I can't get instance of server in fabric easily like forge (at least in my knowledge), I am binding instance
-	// of the server preemptively so reloading configs can Just Work (TM)
-	public void bindServer(@NotNull MinecraftServer server,
-	                       @Nullable Callback<PlayerStateMap> onSuccessCallback,
-	                       @Nullable Callback<RuntimeException> onErrorCallback){
-		this.server = server;
-		this.onSuccessCallback = onSuccessCallback;
-		this.onErrorCallback = onErrorCallback;
+	public void addCallback(@NotNull Consumer<@NotNull PlayerStateMap> callback){
+		this.onUpdateCallbacks.add(Objects.requireNonNull(callback, "callback == null"));
 	}
 
-	public void unbindServer(){
-		this.server = null;
-		this.onSuccessCallback = null;
-		this.onErrorCallback = null;
-	}
-
-	@NotNull public Future<?> scheduleReload(){
-		return Util.ioPool().submit(() -> {
-			PlayerStateMap prevStateMap = stateMap();
-			try{
-				reloadInternal();
-				dispatchSuccess(true, prevStateMap);
-			}catch(RuntimeException ex){
-				this.configuredStateMap = null;
-				dispatchError(true, ex, prevStateMap);
-			}
-		});
-	}
-
-	private void dispatchSuccess(boolean dispatchOnServer, @NotNull PlayerStateMap prevStateMap){
-		MinecraftServer server = this.server;
-		if(server==null) return;
-		if(server.isStopped()){
-			unbindServer();
-			return;
-		}
-		Callback<PlayerStateMap> callback = this.onSuccessCallback;
-		if(callback==null) return;
-		PlayerStateMap stateMap = stateMap();
-		boolean contentUpdated = !prevStateMap.equals(stateMap);
-		if(dispatchOnServer){
-			server.submit(() -> callback.accept(stateMap, contentUpdated));
-		}else{
-			callback.accept(stateMap, contentUpdated);
-		}
-	}
-
-	private void dispatchError(boolean dispatchOnServer, @NotNull RuntimeException exception, @NotNull PlayerStateMap prevStateMap){
-		ParagliderMod.LOGGER.error("Cannot load state map due to an error", exception);
-		MinecraftServer server = this.server;
-		if(server==null) return;
-		if(server.isStopped()){
-			unbindServer();
-			return;
-		}
-		Callback<RuntimeException> callback = this.onErrorCallback;
-		if(callback==null) return;
-		boolean contentUpdated = !prevStateMap.equals(stateMap());
-		if(dispatchOnServer){
-			server.submit(() -> callback.accept(exception, contentUpdated));
-		}else{
-			callback.accept(exception, contentUpdated);
-		}
+	public void removeCallbacks(){
+		this.onUpdateCallbacks.clear();
 	}
 
 	public void reload(){
+		reload(null);
+	}
+
+	public void reload(@Nullable Callback callback){
+		reload(r -> r.run(), callback);
+	}
+
+	public void reload(@NotNull Consumer<@NotNull Runnable> onUpdatedCallbackDispatcher,
+	                   @Nullable Callback callback){
 		PlayerStateMap prevStateMap = stateMap();
+		RuntimeException exception = null;
 		try{
 			reloadInternal();
-			dispatchSuccess(false, prevStateMap);
 		}catch(RuntimeException ex){
 			this.configuredStateMap = null;
-			dispatchError(false, ex, prevStateMap);
+			ParagliderMod.LOGGER.error("Cannot load state map due to an error", ex);
+			exception = ex;
+		}
+		PlayerStateMap stateMap = stateMap();
+		boolean contentUpdated = !prevStateMap.equals(stateMap);
+		if(contentUpdated){
+			for(Consumer<PlayerStateMap> onUpdate : this.onUpdateCallbacks){
+				onUpdatedCallbackDispatcher.accept(() -> onUpdate.accept(stateMap));
+			}
+		}
+		if(callback!=null){
+			if(exception==null){
+				onUpdatedCallbackDispatcher.accept(() -> callback.onSuccess(stateMap, contentUpdated));
+			}else{
+				RuntimeException finalException = exception;
+				onUpdatedCallbackDispatcher.accept(() -> callback.onFail(stateMap, finalException, contentUpdated));
+			}
 		}
 	}
 
-	public void reloadInternal(){
+	@NotNull public Future<?> scheduleReload(@Nullable MinecraftServer server, @Nullable Callback callback){
+		return Util.ioPool().submit(() -> reload(r -> {
+			if(server!=null) server.execute(r);
+			else r.run();
+		}, callback));
+	}
+
+	protected void reloadInternal(){
 		boolean paraglidingConsumesStamina = Cfg.get().paraglidingConsumesStamina();
 		boolean runningConsumesStamina = Cfg.get().runningConsumesStamina();
 
@@ -202,11 +178,11 @@ public class StateMapConfig{
 		this.configuredStateMap = newStates==null ? null : new PlayerStateMap(newStates);
 	}
 
-	@FunctionalInterface
-	public interface Callback<T>{
-		void accept(@NotNull T t, boolean contentUpdated);
+	public interface Callback{
+		void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated);
+		void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update);
 	}
 
-	private record Config(@NotNull ForgeConfigSpec.IntValue staminaDelta,
-	                      @NotNull ForgeConfigSpec.IntValue recoveryDelay){}
+	protected record Config(@NotNull ForgeConfigSpec.IntValue staminaDelta,
+	                        @NotNull ForgeConfigSpec.IntValue recoveryDelay){}
 }

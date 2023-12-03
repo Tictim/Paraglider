@@ -136,6 +136,8 @@
 	"commands.paraglider.bargain.end.success": "Successfully finished bargain with %s.",
 	"commands.paraglider.bargain.end.already_finished": "The bargain with %s is already finished.",
 	"commands.paraglider.bargain.end.no_bargain": "No bargain is currently in place with %s.",
+	"commands.paraglider.reload_player_states.success": "Reloaded player states.",
+	"commands.paraglider.reload_player_states.fail": "Failed to reload player states.",
 
 	"adjustStamina.guide.0": "Drag Stamina Wheel to adjust its position.",
 	"adjustStamina.guide.1": "1~3: Change Stamina Wheel size.",

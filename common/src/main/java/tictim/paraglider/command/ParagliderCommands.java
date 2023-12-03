@@ -5,15 +5,19 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.bargain.BargainContext;
 import tictim.paraglider.bargain.BargainHandler;
+import tictim.paraglider.config.PlayerStateMapConfig;
 import tictim.paraglider.contents.BargainTypeRegistry;
+import tictim.paraglider.impl.movement.PlayerStateMap;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -37,7 +41,8 @@ public final class ParagliderCommands{
 				.then(setVessel(SetType.set))
 				.then(setVessel(SetType.give))
 				.then(setVessel(SetType.take))
-				.then(bargain());
+				.then(bargain())
+				.then(reloadPlayerStates());
 	}
 
 	private static LiteralArgumentBuilder<CommandSourceStack> queryVessel(){
@@ -118,6 +123,12 @@ public final class ParagliderCommands{
 								.executes(ctx -> endBargain(ctx.getSource(), getPlayer(ctx, "player")))));
 	}
 
+	private static LiteralArgumentBuilder<CommandSourceStack> reloadPlayerStates(){
+		return literal("reloadPlayerStates")
+				.requires(s -> s.hasPermission(3))
+				.executes(context -> reloadPlayerStates(context.getSource()));
+	}
+
 	private static int startBargain(@NotNull CommandSourceStack source,
 	                                @NotNull ServerPlayer player,
 	                                @NotNull ResourceLocation bargainType,
@@ -151,6 +162,20 @@ public final class ParagliderCommands{
 			source.sendFailure(Component.translatable("command.paraglider.bargain.end.no_bargain", player.getDisplayName()));
 			return -1;
 		}
+	}
+
+	private static int reloadPlayerStates(@NotNull CommandSourceStack source){
+		MinecraftServer server = source.getServer();
+		ParagliderMod.instance().getPlayerStateMapConfig().scheduleReload(server,
+				new PlayerStateMapConfig.Callback(){
+					@Override public void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated){
+						source.sendSuccess(() -> Component.translatable("commands.paraglider.reload_player_states.success"), true);
+					}
+					@Override public void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update){
+						source.sendFailure(Component.translatable("commands.paraglider.reload_player_states.fail"));
+					}
+				});
+		return 1;
 	}
 
 	private enum SetType{

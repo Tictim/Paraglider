@@ -11,6 +11,7 @@ import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
+import tictim.paraglider.config.PlayerStateMapConfig;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
@@ -49,6 +50,7 @@ public abstract class ParagliderMod{
 	@NotNull public abstract PlayerStateMap getPlayerStateMap();
 	@NotNull public abstract PlayerStateMap getLocalPlayerStateMap();
 	@NotNull public abstract PlayerStateConnectionMap getPlayerConnectionMap();
+	@NotNull public abstract PlayerStateMapConfig getPlayerStateMapConfig();
 
 	@Environment(EnvType.CLIENT)
 	@NotNull public abstract KeyMapping getParagliderSettingsKey();

@@ -9,11 +9,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -32,14 +28,14 @@ import tictim.paraglider.command.ParagliderCommands;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
-import tictim.paraglider.config.StateMapConfig;
+import tictim.paraglider.config.PlayerStateMapConfig;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderVillageStructures;
 import tictim.paraglider.fabric.client.FabricParagliderClient;
 import tictim.paraglider.fabric.config.FabricCommonConfig;
 import tictim.paraglider.fabric.config.FabricConfig;
-import tictim.paraglider.fabric.config.FabricStateMapConfig;
+import tictim.paraglider.fabric.config.FabricPlayerStateMapConfig;
 import tictim.paraglider.fabric.contents.FabricBargainTypeRegistry;
 import tictim.paraglider.fabric.contents.FabricContents;
 import tictim.paraglider.fabric.contents.loot.FabricLootTable;
@@ -67,7 +63,7 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 	private final FabricConfig config = new FabricConfig();
 	private final FabricCommonConfig commonConfig = new FabricCommonConfig();
 
-	@Nullable private StateMapConfig stateMapConfig;
+	@Nullable private FabricPlayerStateMapConfig stateMapConfig;
 	@Nullable private PlayerStateConnectionMap connectionMap;
 
 	@Override public void onInitialize(){
@@ -83,25 +79,22 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 			ParagliderVillageStructures.addVillageStructures(server);
 			ParagliderUtils.checkBargainRecipes(server);
 
-			StateMapConfig stateMapConfig = Objects.requireNonNull(this.stateMapConfig);
-			stateMapConfig.unbindServer();
+			FabricPlayerStateMapConfig stateMapConfig = Objects.requireNonNull(this.stateMapConfig);
+			stateMapConfig.removeCallbacks();
 			stateMapConfig.reload();
 			ParagliderUtils.printPlayerStates(stateMapConfig.stateMap(), getPlayerConnectionMap());
-			stateMapConfig.bindServer(server, (stateMap, updated) -> {
-				if(updated){
-					ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
-					ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
-				}
-			}, (ex, updated) -> {
-				if(updated){
-					PlayerStateMap stateMap = stateMapConfig.stateMap();
-					ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
-					ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
-				}
+			stateMapConfig.setServer(server);
+			stateMapConfig.addCallback(stateMap -> {
+				ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
+				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
 			});
 		});
 
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> Objects.requireNonNull(this.stateMapConfig).unbindServer());
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			FabricPlayerStateMapConfig stateMapConfig = Objects.requireNonNull(this.stateMapConfig);
+			stateMapConfig.setServer(null);
+			stateMapConfig.removeCallbacks();
+		});
 
 		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
 			if(!success) return;
@@ -139,7 +132,7 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 		ParagliderAPI.setVesselContainerSupplier(p -> ((PlayerMovementAccess)p).paragliderPlayerMovement().vessels());
 
 		var pair = PlayerStateMapLoader.loadStates();
-		this.stateMapConfig = new FabricStateMapConfig(pair.getFirst());
+		this.stateMapConfig = new FabricPlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
 		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
 	}
@@ -185,6 +178,10 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 	@Override @NotNull public PlayerStateConnectionMap getPlayerConnectionMap(){
 		if(connectionMap==null) throw new IllegalStateException("Connection map is not available yet");
 		return this.connectionMap;
+	}
+	@Override @NotNull public PlayerStateMapConfig getPlayerStateMapConfig(){
+		if(stateMapConfig==null) throw new IllegalStateException("State map is not available yet");
+		return this.stateMapConfig;
 	}
 
 	@Environment(EnvType.CLIENT)

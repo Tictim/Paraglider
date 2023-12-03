@@ -13,6 +13,7 @@ import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
+import tictim.paraglider.config.PlayerStateMapConfig;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.forge.config.ForgeCommonConfig;
 import tictim.paraglider.forge.config.ForgeConfig;
@@ -77,6 +78,9 @@ public class ForgeParagliderMod extends ParagliderMod{
 	}
 	@Override @NotNull public PlayerStateConnectionMap getPlayerConnectionMap(){
 		return proxy.getConnectionMap();
+	}
+	@Override @NotNull public PlayerStateMapConfig getPlayerStateMapConfig(){
+		return proxy.getStateMapConfig();
 	}
 
 	@OnlyIn(Dist.CLIENT)
