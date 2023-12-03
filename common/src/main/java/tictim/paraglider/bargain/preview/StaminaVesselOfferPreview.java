@@ -30,7 +30,7 @@ public final class StaminaVesselOfferPreview implements OfferPreview{
 	@Environment(EnvType.CLIENT)
 	@Override @NotNull public List<@NotNull Component> getTooltip(){
 		return List.of(quantity==1 ?
-				Component.translatable("bargain.paraglider.heart_container") :
-				Component.translatable("bargain.paraglider.heart_container.s", quantity));
+				Component.translatable("bargain.paraglider.stamina_vessel") :
+				Component.translatable("bargain.paraglider.stamina_vessel.s", quantity));
 	}
 }
