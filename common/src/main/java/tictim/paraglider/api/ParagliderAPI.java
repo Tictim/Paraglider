@@ -12,6 +12,9 @@ import tictim.paraglider.api.vessel.VesselContainer;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * Internal part of paraglider mod's API. Not recommended for use.
+ */
 public class ParagliderAPI{
 	public static final String MODID = "paraglider";
 

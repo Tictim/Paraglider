@@ -5,11 +5,22 @@ import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 
 /**
+ * <p>
  * Interface providing access to "vessels", a.k.a. Heart Containers and Stamina Vessels. "Essences" can also be accessed
- * with this interface.<br/>
+ * with this interface.
+ * </p>
+ * <p>
  * Note that essences are not synced to clients; only heart containers and stamina vessels are synced.
+ * </p>
  */
 public interface VesselContainer{
+	/**
+	 * Get a vessel container instance bound to specific player; if there's none, a no-op singleton implementation is
+	 * returned.
+	 *
+	 * @param player Player
+	 * @return A vessel container instance bound to specific player, or a no-op singleton implementation
+	 */
 	@NotNull static VesselContainer get(@NotNull Player player){
 		return ParagliderAPI.vesselContainerSupplier().apply(player);
 	}

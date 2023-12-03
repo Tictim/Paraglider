@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.stamina.Stamina;
 
 /**
- * Interface providing methods for de/serialization using {@link CompoundTag}. Custom implementations of
+ * Interface providing methods for (de)serialization using {@link CompoundTag}. Custom implementations of
  * {@link Stamina} may implement this interface for saving and loading persistent data.
  */
 public interface Serde{

@@ -8,12 +8,31 @@ import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.Movement;
 
 /**
+ * <p>
  * Interface providing access to stamina system.
- * <p/>
+ * </p>
+ * <p>
  * The default implementation of this interface used by Paragliders mod is BotW-like stamina system. This can be
  * changed with custom implementation via plugin system; see {@link StaminaPlugin}.
+ * </p>
+ * <p>
+ * In the base mod, the stamina implementation is server-oriented; changes made in client-side instance do not affect
+ * the server-side instance, and could even cause state desync between the two sides. Manual state sync is required if
+ * you want to sync other values, aside from the stamina value, which can get synced with built-in packets; see the base
+ * implementation for details.
+ * </p>
+ * <p>
+ * If stamina is gained/consumed each tick based on certain player state, then using
+ * {@link tictim.paraglider.api.movement.PlayerState PlayerState} is recommended.
+ * </p>
  */
 public interface Stamina{
+	/**
+	 * Get a stamina instance bound to specific player; if there's none, a no-op singleton implementation is returned.
+	 *
+	 * @param player Player
+	 * @return A stamina instance bound to specific player, or a no-op singleton implementation
+	 */
 	@NotNull static Stamina get(@NotNull Player player){
 		return ParagliderAPI.staminaSupplier().apply(player);
 	}
@@ -54,7 +73,8 @@ public interface Stamina{
 	 * Tries to add stamina by specific {@code amount} without exceeding {@link Stamina#maxStamina() maxStamina}.
 	 *
 	 * @param amount   Amount of stamina to be given
-	 * @param simulate Simulation only if {@code true}
+	 * @param simulate If {@code true}, this method call does not affect the game state; instead the return value is
+	 *                 evaluated only as a simulated result.
 	 * @return Amount of stamina given
 	 */
 	int giveStamina(int amount, boolean simulate);
@@ -64,7 +84,8 @@ public interface Stamina{
 	 * {@code ignoreDepletion} is {@code true}, no stamina will be subtracted.
 	 *
 	 * @param amount          Amount of stamina to be taken
-	 * @param simulate        Simulation only if {@code true}
+	 * @param simulate        If {@code true}, this method call does not affect the game state; instead the return value is
+	 *                        evaluated only as a simulated result.
 	 * @param ignoreDepletion Bypasses depleted state check if {@code true}
 	 * @return Amount of stamina taken
 	 */
