@@ -10,11 +10,7 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public final class PlayerStateMap{
 	private final Map<ResourceLocation, PlayerState> states;
@@ -65,7 +61,7 @@ public final class PlayerStateMap{
 	 */
 	public boolean hasStaminaConsumption(){
 		if(this.hasStaminaConsumptionCache!=null) return this.hasStaminaConsumptionCache;
-		else return this.hasStaminaConsumptionCache = this.states.values().stream().anyMatch(s -> s.staminaDelta()<0);
+		else return this.hasStaminaConsumptionCache = this.states.values().stream().anyMatch(s -> s.staminaDelta()>0);
 	}
 
 	public void write(@NotNull FriendlyByteBuf buffer){
