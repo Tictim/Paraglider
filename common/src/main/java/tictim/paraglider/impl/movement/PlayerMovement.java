@@ -49,7 +49,11 @@ public abstract class PlayerMovement implements Movement, Copy{
 	@NotNull protected abstract VesselContainer createVesselContainer();
 
 	@Override @NotNull public final PlayerState state(){
-		return state==null ? ParagliderMod.instance().getPlayerStateMap().getIdleState() : state;
+		if(state!=null) return state;
+		PlayerStateMap stateMap = player().level().isClientSide ?
+				ParagliderMod.instance().getPlayerStateMap() :
+				ParagliderMod.instance().getLocalPlayerStateMap();
+		return stateMap.getIdleState();
 	}
 
 	protected final void setState(@NotNull PlayerState state){

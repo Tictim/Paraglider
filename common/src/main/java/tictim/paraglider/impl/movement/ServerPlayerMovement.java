@@ -101,7 +101,7 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 
 		PlayerState prevState = state();
 		setState(ParagliderMod.instance().getPlayerConnectionMap()
-				.evaluate(ParagliderMod.instance().getPlayerStateMap(),
+				.evaluate(ParagliderMod.instance().getLocalPlayerStateMap(),
 						player(), state(),
 						player().isCreative()||!stamina().isDepleted()||canDoPanicParagliding(),
 						this.accumulatedFallDistance));
