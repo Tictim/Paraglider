@@ -2,13 +2,16 @@ package datagen.builder;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -17,14 +20,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.contents.Contents;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class CosmeticRecipeBuilder{
 	private final Item result;
 	private final Ingredient input;
 	private final Ingredient reagent;
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.advancement();
+	private final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 	private String group;
 
 	private RecipeCategory recipeCategory = RecipeCategory.MISC;
@@ -35,8 +39,8 @@ public class CosmeticRecipeBuilder{
 		this.reagent = reagent;
 	}
 
-	public CosmeticRecipeBuilder addCriterion(String name, CriterionTriggerInstance criterionIn){
-		this.advancementBuilder.addCriterion(name, criterionIn);
+	public CosmeticRecipeBuilder addCriterion(String name, Criterion<InventoryChangeTrigger.TriggerInstance> criterion){
+		this.criteria.put(name, criterion);
 		return this;
 	}
 
@@ -50,75 +54,46 @@ public class CosmeticRecipeBuilder{
 		return this;
 	}
 
-	public void build(Consumer<FinishedRecipe> consumer){
-		this.build(consumer, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(this.result)));
+	public void save(RecipeOutput recipeOutput){
+		this.save(recipeOutput, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(this.result)));
 	}
 
-	public void build(Consumer<FinishedRecipe> consumer, String save){
+	public void save(RecipeOutput recipeOutput, String save){
 		ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(this.result);
 		if((new ResourceLocation(save)).equals(resourcelocation))
 			throw new IllegalStateException("Paraglider Cosmetic Recipe "+save+" should remove its 'save' argument");
-		this.build(consumer, new ResourceLocation(save));
+		this.save(recipeOutput, new ResourceLocation(save));
 	}
 
-	public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id){
+	public void save(RecipeOutput recipeOutput, ResourceLocation id){
 		this.validate(id);
-		this.advancementBuilder.parent(new ResourceLocation("recipes/root"))
+		Advancement.Builder builder = recipeOutput.advancement()
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
 				.rewards(AdvancementRewards.Builder.recipe(id))
-				.requirements(RequirementsStrategy.OR);
-		consumer.accept(new Result(id,
+				.requirements(AdvancementRequirements.Strategy.OR);
+		recipeOutput.accept(new Result(id,
 				this.result,
 				this.group==null ? "" : this.group,
 				this.input,
 				this.reagent,
-				this.advancementBuilder,
-				id.withPrefix("recipes/"+recipeCategory.getFolderName()+"/")));
+				builder.build(id.withPrefix("recipes/"+recipeCategory.getFolderName()+"/"))));
 	}
 
 	private void validate(ResourceLocation id){
-		if(this.advancementBuilder.getCriteria().isEmpty())
+		if(this.criteria.isEmpty())
 			throw new IllegalStateException("No way of obtaining recipe "+id);
 	}
 
-	public static class Result implements FinishedRecipe{
-		private final ResourceLocation id;
-		private final Item result;
-		private final String group;
-		private final Ingredient input;
-		private final Ingredient reagent;
-		private final Advancement.Builder advancementBuilder;
-		private final ResourceLocation advancementId;
-
-		public Result(ResourceLocation id, Item result, String group, Ingredient input, Ingredient reagent,
-		              Advancement.Builder advancementBuilder, ResourceLocation advancementId){
-			this.id = id;
-			this.result = result;
-			this.group = group;
-			this.input = input;
-			this.reagent = reagent;
-			this.advancementBuilder = advancementBuilder;
-			this.advancementId = advancementId;
-		}
-
+	public record Result(@NotNull ResourceLocation id, Item result, String group, Ingredient input, Ingredient reagent, @Nullable AdvancementHolder advancement) implements FinishedRecipe{
 		@Override public void serializeRecipeData(@NotNull JsonObject json){
 			if(!this.group.isEmpty()) json.addProperty("group", this.group);
-			json.add("input", this.input.toJson());
-			json.add("reagent", this.reagent.toJson());
+			json.add("input", this.input.toJson(false));
+			json.add("reagent", this.reagent.toJson(false));
 			json.addProperty("result", Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(this.result)).toString());
 		}
 
-		@Override @NotNull public RecipeSerializer<?> getType(){
+		@Override @NotNull public RecipeSerializer<?> type(){
 			return Contents.get().cosmeticRecipeSerializer();
-		}
-		@Override @NotNull public ResourceLocation getId(){
-			return this.id;
-		}
-		@Override @Nullable public JsonObject serializeAdvancement(){
-			return this.advancementBuilder.serializeToJson();
-		}
-		@Override @Nullable public ResourceLocation getAdvancementId(){
-			return this.advancementId;
 		}
 	}
 }

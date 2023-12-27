@@ -98,7 +98,7 @@ public class ParagliderSettingScreen extends Screen{
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks){
-		renderBackground(graphics);
+		renderBackground(graphics, mouseX, mouseY, partialTicks);
 
 		if(this.saveSettingsButton!=null){
 			this.saveSettingsButton.setMessage(this.particleSliderWidget!=null&&this.particleSliderWidget.dirty ?

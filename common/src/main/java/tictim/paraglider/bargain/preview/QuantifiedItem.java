@@ -1,16 +1,15 @@
 package tictim.paraglider.bargain.preview;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.OfferPreview;
@@ -36,22 +35,9 @@ public record QuantifiedItem(@NotNull ItemStack item, int quantity) implements O
 		this.quantity = Math.max(0, quantity);
 	}
 
-	public QuantifiedItem(@NotNull JsonObject object){
-		this(parseItemStack(object), GsonHelper.getAsInt(object, "count", 1));
-	}
-
-	private static ItemStack parseItemStack(JsonObject object){
-		ItemStack stack = ShapedRecipe.itemStackFromJson(object);
-		stack.setCount(1);
-		return stack;
-	}
-
-	@NotNull public ItemStack getItem(){
-		return item;
-	}
-	public int getQuantity(){
-		return quantity;
-	}
+	@NotNull public static final Codec<QuantifiedItem> CODEC = ItemStack.CODEC.xmap(
+		itemStack -> new QuantifiedItem(itemStack, itemStack.getCount()),
+		QuantifiedItem::item);
 
 	@Override @NotNull public ItemStack preview(){
 		return item;

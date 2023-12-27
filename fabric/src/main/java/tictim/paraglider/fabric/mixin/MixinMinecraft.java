@@ -46,7 +46,7 @@ public abstract class MixinMinecraft{
 		if(this.level!=null) Wind.unregisterLevel(this.level);
 	}
 
-	@Inject(at = @At("HEAD"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
+	@Inject(at = @At("HEAD"), method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
 	public void onClearLevel(Screen screen, CallbackInfo info){
 		if(this.level!=null) Wind.unregisterLevel(this.level);
 	}

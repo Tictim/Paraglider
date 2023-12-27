@@ -2,11 +2,12 @@ package tictim.paraglider.bargain.preview;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -34,9 +35,13 @@ public record QuantifiedIngredient(
 		this.ingredient = Objects.requireNonNull(ingredient);
 		this.quantity = Math.max(0, quantity);
 	}
-	public QuantifiedIngredient(@NotNull JsonObject obj){
-		this(Ingredient.fromJson(obj.get("ingredient")), Math.max(1, GsonHelper.getAsInt(obj, "quantity", 1)));
-	}
+
+	@NotNull public static final Codec<QuantifiedIngredient> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+			Ingredient.CODEC.fieldOf("ingredient").forGetter(QuantifiedIngredient::ingredient),
+			Codec.INT.fieldOf("quantity").forGetter(QuantifiedIngredient::quantity)
+		).apply(instance, QuantifiedIngredient::new)
+	);
 
 	/**
 	 * Test the ItemStack using ingredient. Does not count quantity.
@@ -66,7 +71,7 @@ public record QuantifiedIngredient(
 
 	@NotNull public JsonElement serialize(){
 		JsonObject obj = new JsonObject();
-		obj.add("ingredient", ingredient.toJson());
+		obj.add("ingredient", ingredient.toJson(false));
 		if(quantity!=1) obj.addProperty("quantity", quantity);
 		return obj;
 	}

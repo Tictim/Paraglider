@@ -4,7 +4,6 @@
 	"compatibilityLevel": "JAVA_17",
 	"package": "tictim.paraglider.fabric.mixin",
 	"mixins": [
-		"MixinChunkMap",
 		"MixinPlayer",
 		"MixinServerPlayer"
 	],

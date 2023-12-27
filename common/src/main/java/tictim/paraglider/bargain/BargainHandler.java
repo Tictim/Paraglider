@@ -1,10 +1,12 @@
 package tictim.paraglider.bargain;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +21,7 @@ import tictim.paraglider.network.ParagliderNetwork;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static tictim.paraglider.ParagliderUtils.DIALOG_RNG;
@@ -66,8 +69,8 @@ public final class BargainHandler{
 		var bargains = player.level().getRecipeManager()
 				.getAllRecipesFor(Contents.get().bargainRecipeType())
 				.stream()
-				.filter(b -> bargainType.equals(b.getBargainType())&&b.isAvailableFor(player, pos))
-				.collect(Collectors.toMap(Bargain::getId, b -> b, (b1, b2) -> b1, Object2ObjectOpenHashMap::new));
+				.filter(holder -> bargainType.equals(holder.value().getBargainType())&&holder.value().isAvailableFor(player, pos))
+				.collect(Collectors.toCollection(ObjectOpenHashSet::new));
 
 		if(bargains.isEmpty()) return false;
 

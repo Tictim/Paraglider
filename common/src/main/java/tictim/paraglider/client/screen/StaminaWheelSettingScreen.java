@@ -78,7 +78,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.cancelButton.setX(textX+textWidth-this.cancelButton.getWidth()-2);
 		this.cancelButton.setY(textY+textHeight-this.saveButton.getHeight()-this.cancelButton.getHeight()-4);
 
-		renderBackground(guiGraphics);
+		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		guiGraphics.fillGradient(textX, textY, textX+textWidth, textY+textHeight, 0x80000000, 0x80000000);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
@@ -90,7 +90,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics guiGraphics){
+	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick){
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
 			guiGraphics.fillGradient(0, 0, this.width, this.height, 0x10101010, 0x30101010);

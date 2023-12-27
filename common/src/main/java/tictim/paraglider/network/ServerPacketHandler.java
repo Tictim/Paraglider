@@ -3,6 +3,7 @@ package tictim.paraglider.network;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
@@ -24,9 +25,10 @@ public final class ServerPacketHandler{
 		BargainContext ctx = BargainHandler.getBargain(player);
 		if(ctx==null||ctx.sessionId()!=msg.sessionId()) return;
 
-		Bargain bargain = ctx.bargains().get(msg.bargain());
-		if(bargain==null) return;
+		RecipeHolder<Bargain> bargainHolder = ctx.bargains().get(msg.bargain());
+		if(bargainHolder==null) return;
 
+		Bargain bargain = bargainHolder.value();
 		BargainResult result = bargain.bargain(player, false);
 		if(result.isSuccess()){
 			ResourceLocation advancement = ctx.advancement();

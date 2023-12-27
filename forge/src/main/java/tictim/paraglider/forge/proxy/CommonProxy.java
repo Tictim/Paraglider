@@ -7,7 +7,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -27,7 +26,6 @@ import tictim.paraglider.contents.ParagliderVillageStructures;
 import tictim.paraglider.forge.ForgeParagliderNetwork;
 import tictim.paraglider.forge.capability.PlayerMovementProvider;
 import tictim.paraglider.forge.config.ForgePlayerStateMapConfig;
-import tictim.paraglider.forge.contents.ConfigConditionSerializer;
 import tictim.paraglider.impl.movement.*;
 import tictim.paraglider.impl.stamina.NullStamina;
 import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
@@ -75,7 +73,6 @@ public class CommonProxy{
 		MinecraftForge.EVENT_BUS.addListener((ServerStoppingEvent e) -> this.stateMapConfig.removeCallbacks());
 
 		ForgeParagliderNetwork.init();
-		for(ConfigConditionSerializer c : ConfigConditionSerializer.values()) CraftingHelper.register(c);
 	}
 
 	protected void onServerAboutToStart(ServerAboutToStartEvent event){

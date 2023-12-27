@@ -84,7 +84,7 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 			AttributeInstance attrib = player().getAttribute(Attributes.MAX_HEALTH);
 			if(attrib!=null){
 				AttributeModifier prev = attrib.getModifier(HEART_CONTAINER_UUID);
-				if(prev!=null) attrib.removeModifier(prev);
+				if(prev!=null) attrib.removeModifier(prev.getId());
 				if(value!=0){
 					attrib.addPermanentModifier(new AttributeModifier(HEART_CONTAINER_UUID,
 							"Heart Containers", value, AttributeModifier.Operation.ADDITION));

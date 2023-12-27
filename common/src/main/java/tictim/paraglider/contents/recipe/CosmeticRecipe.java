@@ -1,12 +1,12 @@
 package tictim.paraglider.contents.recipe;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,24 +22,10 @@ import tictim.paraglider.contents.Contents;
 
 import java.util.Arrays;
 
-public class CosmeticRecipe implements CraftingRecipe{
-	protected final ResourceLocation id;
-	protected final String group;
-	protected final Ingredient input;
-	protected final Ingredient reagent;
-	protected final Item recipeOut;
-
-	public CosmeticRecipe(@NotNull ResourceLocation id,
-	                      @NotNull String group,
-	                      @NotNull Ingredient input,
-	                      @NotNull Ingredient reagent,
-	                      @NotNull Item recipeOut){
-		this.id = id;
-		this.group = group;
-		this.input = input;
-		this.reagent = reagent;
-		this.recipeOut = recipeOut;
-	}
+public record CosmeticRecipe(@NotNull String group,
+                             @NotNull Ingredient input,
+                             @NotNull Ingredient reagent,
+                             @NotNull Item recipeOut) implements CraftingRecipe{
 
 	@Override public boolean matches(@NotNull CraftingContainer inv, @NotNull Level level){
 		boolean paragliderSeen = false, reagentSeen = false;
@@ -100,12 +86,7 @@ public class CosmeticRecipe implements CraftingRecipe{
 		list.add(reagent);
 		return list;
 	}
-	@Override @NotNull public String getGroup(){
-		return group;
-	}
-	@Override @NotNull public ResourceLocation getId(){
-		return id;
-	}
+
 	@Override @NotNull public RecipeSerializer<?> getSerializer(){
 		return Contents.get().cosmeticRecipeSerializer();
 	}
@@ -114,22 +95,26 @@ public class CosmeticRecipe implements CraftingRecipe{
 	}
 
 	public static class Serializer implements RecipeSerializer<CosmeticRecipe>{
-		@Override @NotNull public CosmeticRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json){
-			String group = GsonHelper.getAsString(json, "group", "");
-			ResourceLocation itemName = new ResourceLocation(GsonHelper.getAsString(json, "result"));
-			Item item = ParagliderUtils.getItem(itemName);
-			if(item==Items.AIR) throw new JsonSyntaxException("Unknown item '"+group+"'");
-			Ingredient input = Ingredient.fromJson(json.get("input"));
-			Ingredient reagent = Ingredient.fromJson(json.get("reagent"));
-			return new CosmeticRecipe(recipeId, group, input, reagent, item);
+		@Override @NotNull public Codec<CosmeticRecipe> codec(){
+			return RecordCodecBuilder.create(instance -> instance.group(
+					Codec.STRING.fieldOf("group").orElse("").forGetter(CosmeticRecipe::getGroup),
+					Ingredient.CODEC.fieldOf("input").forGetter(CosmeticRecipe::input),
+					Ingredient.CODEC.fieldOf("reagent").forGetter(CosmeticRecipe::reagent),
+					ResourceLocation.CODEC.fieldOf("result").xmap(id -> {
+						Item item = ParagliderUtils.getItem(id);
+						if(item==Items.AIR) throw new JsonSyntaxException("Unknown item '"+ id + "'");
+						return item;
+					}, ParagliderUtils::getKey).forGetter(CosmeticRecipe::recipeOut)
+				).apply(instance, CosmeticRecipe::new)
+			);
 		}
 
-		@Override @NotNull public CosmeticRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer){
+		@Override @NotNull public CosmeticRecipe fromNetwork(@NotNull FriendlyByteBuf buffer){
 			String group = buffer.readUtf();
 			Ingredient input = Ingredient.fromNetwork(buffer);
 			Ingredient reagent = Ingredient.fromNetwork(buffer);
 			Item out = Item.byId(buffer.readVarInt());
-			return new CosmeticRecipe(recipeId, group, input, reagent, out);
+			return new CosmeticRecipe(group, input, reagent, out);
 		}
 
 		@Override public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull CosmeticRecipe recipe){

@@ -1,6 +1,8 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.1-SNAPSHOT" apply false
+    id "io.freefair.lombok" version "8.4"
+    id "java"
 }
 
 architectury {
@@ -18,8 +20,12 @@ subprojects {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:2023.08.20@zip")
+            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${project.parchment_build}@zip")
         }
+        compileOnly("org.projectlombok:lombok:1.18.30")
+        annotationProcessor("org.projectlombok:lombok:1.18.30")
+        testCompileOnly("org.projectlombok:lombok:1.18.30")
+        testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
     }
 }
 

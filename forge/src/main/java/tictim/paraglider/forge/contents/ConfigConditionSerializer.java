@@ -1,27 +1,20 @@
 package tictim.paraglider.forge.contents;
 
-import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 import org.jetbrains.annotations.NotNull;
-import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.config.FeatureCfg;
 
-import java.util.Locale;
-
-public enum ConfigConditionSerializer implements IConditionSerializer<ICondition>, ICondition{
+public enum ConfigConditionSerializer implements ICondition {
 	HEART_CONTAINER_ENABLED,
 	STAMINA_VESSEL_ENABLED;
 
-	private final ResourceLocation id = ParagliderAPI.id(name().toLowerCase(Locale.ROOT));
+	private final Codec<ConfigConditionSerializer> codec = RecordCodecBuilder.create(instance -> instance.stable(this));
 
-	@Override public void write(@NotNull JsonObject json, @NotNull ICondition value){}
-	@Override @NotNull public ICondition read(JsonObject json){
-		return this;
-	}
-	@Override @NotNull public ResourceLocation getID(){
-		return id;
+	@NotNull
+	public Codec<ConfigConditionSerializer> codec() {
+		return codec;
 	}
 
 	@Override public boolean test(IContext context){

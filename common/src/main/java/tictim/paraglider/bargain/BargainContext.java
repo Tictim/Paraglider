@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +16,10 @@ import tictim.paraglider.api.bargain.BargainType;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.network.ParagliderNetwork;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Pseudo-container for bargain recipes, since the system doesn't use containers. Handles syncing and such.
@@ -29,7 +31,7 @@ public final class BargainContext{
 	private final int sessionId;
 	private final BargainType type;
 	private final ResourceLocation typeId;
-	private final Map<ResourceLocation, Bargain> bargains;
+	private final Set<RecipeHolder<Bargain>> bargains;
 
 	@Nullable private ResourceLocation advancement;
 	@Nullable private Vec3 lookAt;
@@ -46,7 +48,7 @@ public final class BargainContext{
 	                      int sessionId,
 	                      @NotNull BargainType type,
 	                      @NotNull ResourceLocation typeId,
-	                      @NotNull Map<@NotNull ResourceLocation, @NotNull Bargain> bargains,
+	                      @NotNull Set<RecipeHolder<Bargain>> bargains,
 	                      @Nullable ResourceLocation advancement,
 	                      @Nullable Vec3 lookAt){
 		this.player = Objects.requireNonNull(player);
@@ -70,8 +72,8 @@ public final class BargainContext{
 	@NotNull public ResourceLocation typeId(){
 		return typeId;
 	}
-	@NotNull @Unmodifiable public Map<@NotNull ResourceLocation, @NotNull Bargain> bargains(){
-		return Collections.unmodifiableMap(bargains);
+	@NotNull @Unmodifiable public Map<@NotNull ResourceLocation, @NotNull RecipeHolder<@NotNull Bargain>> bargains(){
+		return bargains.stream().collect(Collectors.toUnmodifiableMap(RecipeHolder::id, holder -> holder, (holder1, holder2) -> holder1));
 	}
 	public boolean isFinished(){
 		return finished;
@@ -143,10 +145,10 @@ public final class BargainContext{
 
 	@NotNull public Map<@NotNull ResourceLocation, @NotNull BargainCatalog> makeCatalog(){
 		Map<ResourceLocation, BargainCatalog> demands = new Object2ObjectOpenHashMap<>();
-		for(var e : this.bargains.entrySet()){
-			Bargain bargain = e.getValue();
-			demands.put(e.getKey(), new BargainCatalog(
-					e.getKey(),
+		for(RecipeHolder<Bargain> holder : this.bargains){
+			Bargain bargain = holder.value();
+			demands.put(holder.id(), new BargainCatalog(
+					holder.id(),
 					bargain.previewDemands().stream()
 							.mapToInt(demandPreview -> demandPreview.count(this.player))
 							.toArray(),

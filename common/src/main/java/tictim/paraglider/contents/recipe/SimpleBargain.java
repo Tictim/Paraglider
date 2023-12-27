@@ -1,8 +1,13 @@
 package tictim.paraglider.contents.recipe;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -39,19 +44,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
 public class SimpleBargain implements Bargain{
-	private final ResourceLocation id;
 	private final ResourceLocation bargainType;
 
-	private final List<QuantifiedIngredient> itemDemands;
-	private final int heartContainerDemands;
-	private final int staminaVesselDemands;
-	private final int essenceDemands;
+	private final Demand demand;
 
-	private final List<QuantifiedItem> itemOffers;
-	private final int heartContainerOffers;
-	private final int staminaVesselOffers;
-	private final int essenceOffers;
+	private final Offer offer;
 
 	private final Set<String> userTags;
 	private final Set<String> tags;
@@ -59,74 +58,27 @@ public class SimpleBargain implements Bargain{
 	@Nullable private List<DemandPreview> demandPreviews;
 	@Nullable private List<OfferPreview> offerPreviews;
 
-	public SimpleBargain(@NotNull ResourceLocation id,
+	public SimpleBargain(
 	                     @NotNull ResourceLocation bargainType,
-	                     @NotNull List<@NotNull QuantifiedIngredient> itemDemands,
-	                     int heartContainerDemands,
-	                     int staminaVesselDemands,
-	                     int essenceDemands,
-	                     @NotNull List<@NotNull QuantifiedItem> itemOffers,
-	                     int heartContainerOffers,
-	                     int staminaVesselOffers,
-	                     int essenceOffers,
+	                     @NotNull Demand demand,
+	                     @NotNull Offer offer,
 	                     @NotNull Set<@NotNull String> userTags){
-		this.id = Objects.requireNonNull(id);
 		this.bargainType = bargainType;
-		this.itemDemands = ImmutableList.copyOf(itemDemands);
-		for(var itemDemand : this.itemDemands) Objects.requireNonNull(itemDemand);
-		this.heartContainerDemands = heartContainerDemands;
-		this.staminaVesselDemands = staminaVesselDemands;
-		this.essenceDemands = essenceDemands;
-		this.itemOffers = ImmutableList.copyOf(itemOffers);
-		this.heartContainerOffers = heartContainerOffers;
-		this.staminaVesselOffers = staminaVesselOffers;
-		this.essenceOffers = essenceOffers;
+		for(var itemDemand : demand.items) Objects.requireNonNull(itemDemand);
+		this.demand = demand;
+		this.offer = offer;
 
 		this.userTags = Set.copyOf(userTags);
 		this.tags = new ObjectOpenHashSet<>(userTags);
 
-		if(!this.itemDemands.isEmpty()) this.tags.add(ParagliderBargainTags.CONSUMES_ITEM);
-		if(this.heartContainerDemands>0) this.tags.add(ParagliderBargainTags.CONSUMES_HEART_CONTAINER);
-		if(this.staminaVesselDemands>0) this.tags.add(ParagliderBargainTags.CONSUMES_STAMINA_VESSEL);
-		if(this.essenceDemands>0) this.tags.add(ParagliderBargainTags.CONSUMES_ESSENCE);
-		if(!this.itemOffers.isEmpty()) this.tags.add(ParagliderBargainTags.GIVES_ITEM);
-		if(this.heartContainerOffers>0) this.tags.add(ParagliderBargainTags.GIVES_HEART_CONTAINER);
-		if(this.staminaVesselOffers>0) this.tags.add(ParagliderBargainTags.GIVES_STAMINA_VESSEL);
-		if(this.essenceOffers>0) this.tags.add(ParagliderBargainTags.GIVES_ESSENCE);
-	}
-
-	@Override @NotNull public ResourceLocation getBargainType(){
-		return bargainType;
-	}
-
-	@NotNull public List<QuantifiedIngredient> getItemDemands(){
-		return itemDemands;
-	}
-	public int getHeartContainerDemands(){
-		return heartContainerDemands;
-	}
-	public int getStaminaVesselDemands(){
-		return staminaVesselDemands;
-	}
-	public int getEssenceDemands(){
-		return essenceDemands;
-	}
-
-	@NotNull public List<QuantifiedItem> getItemOffers(){
-		return itemOffers;
-	}
-	public int getHeartContainerOffers(){
-		return heartContainerOffers;
-	}
-	public int getStaminaVesselOffers(){
-		return staminaVesselOffers;
-	}
-	public int getEssenceOffers(){
-		return essenceOffers;
-	}
-
-	@NotNull public Set<String> getUserTags(){
-		return userTags;
+		if(!demand.items.isEmpty()) this.tags.add(ParagliderBargainTags.CONSUMES_ITEM);
+		if(demand.heartContainers>0) this.tags.add(ParagliderBargainTags.CONSUMES_HEART_CONTAINER);
+		if(demand.staminaVessels>0) this.tags.add(ParagliderBargainTags.CONSUMES_STAMINA_VESSEL);
+		if(demand.essences>0) this.tags.add(ParagliderBargainTags.CONSUMES_ESSENCE);
+		if(!offer.items.isEmpty()) this.tags.add(ParagliderBargainTags.GIVES_ITEM);
+		if(offer.heartContainers>0) this.tags.add(ParagliderBargainTags.GIVES_HEART_CONTAINER);
+		if(offer.staminaVessels>0) this.tags.add(ParagliderBargainTags.GIVES_STAMINA_VESSEL);
+		if(offer.essences>0) this.tags.add(ParagliderBargainTags.GIVES_ESSENCE);
 	}
 
 	@Override public boolean isAvailableFor(@NotNull Player player, @Nullable BlockPos pos){
@@ -137,33 +89,33 @@ public class SimpleBargain implements Bargain{
 		if(this.demandPreviews!=null) return this.demandPreviews;
 		this.demandPreviews = new ArrayList<>();
 
-		this.demandPreviews.addAll(this.itemDemands);
-		if(heartContainerDemands>0){
-			this.demandPreviews.add(new HeartContainerDemandPreview(heartContainerDemands));
+		this.demandPreviews.addAll(demand.items);
+		if(demand.heartContainers>0){
+			this.demandPreviews.add(new HeartContainerDemandPreview(demand.heartContainers));
 		}
-		if(staminaVesselDemands>0){
-			this.demandPreviews.add(new StaminaVesselDemandPreview(staminaVesselDemands));
+		if(demand.staminaVessels>0){
+			this.demandPreviews.add(new StaminaVesselDemandPreview(demand.staminaVessels));
 		}
-		if(essenceDemands>0){
-			this.demandPreviews.add(new EssenceDemandPreview(essenceDemands));
+		if(demand.essences>0){
+			this.demandPreviews.add(new EssenceDemandPreview(demand.essences));
 		}
-		return this.demandPreviews;
+		return Collections.unmodifiableList(this.demandPreviews);
 	}
 	@Override @NotNull @Unmodifiable public List<@NotNull OfferPreview> previewOffers(){
 		if(this.offerPreviews!=null) return this.offerPreviews;
 		this.offerPreviews = new ArrayList<>();
 
-		this.offerPreviews.addAll(itemOffers);
-		if(heartContainerOffers>0){
-			this.offerPreviews.add(new HeartContainerOfferPreview(heartContainerOffers));
+		this.offerPreviews.addAll(offer.items);
+		if(offer.heartContainers>0){
+			this.offerPreviews.add(new HeartContainerOfferPreview(offer.heartContainers));
 		}
-		if(staminaVesselOffers>0){
-			this.offerPreviews.add(new StaminaVesselOfferPreview(staminaVesselOffers));
+		if(offer.staminaVessels>0){
+			this.offerPreviews.add(new StaminaVesselOfferPreview(offer.staminaVessels));
 		}
-		if(essenceOffers>0){
-			this.offerPreviews.add(new EssenceOfferPreview(essenceOffers));
+		if(offer.essences>0){
+			this.offerPreviews.add(new EssenceOfferPreview(offer.essences));
 		}
-		return this.offerPreviews;
+		return Collections.unmodifiableList(this.offerPreviews);
 	}
 
 	@Override @NotNull public BargainResult bargain(@NotNull Player player, boolean simulate){
@@ -173,25 +125,25 @@ public class SimpleBargain implements Bargain{
 
 		Inventory inventory = player.getInventory();
 		var consumptions = new Int2IntOpenHashMap();
-		for(QuantifiedIngredient i : itemDemands){
+		for(QuantifiedIngredient i : demand.items){
 			if(!ParagliderUtils.calculateConsumption(i, inventory, consumptions)){
 				reasons.add(ParagliderFailReasons.NOT_ENOUGH_ITEMS);
 				break;
 			}
 		}
 
-		if(container.takeHeartContainers(heartContainerDemands, true, false)<heartContainerDemands)
+		if(container.takeHeartContainers(demand.heartContainers, true, false)<demand.heartContainers)
 			reasons.add(ParagliderFailReasons.NOT_ENOUGH_HEARTS);
-		if(container.takeStaminaVessels(staminaVesselDemands, true, false)<staminaVesselDemands)
+		if(container.takeStaminaVessels(demand.staminaVessels, true, false)<demand.staminaVessels)
 			reasons.add(ParagliderFailReasons.NOT_ENOUGH_STAMINA);
-		if(container.takeEssences(essenceDemands, true, false)<essenceDemands)
+		if(container.takeEssences(demand.essences, true, false)<demand.essences)
 			reasons.add(ParagliderFailReasons.NOT_ENOUGH_ESSENCES);
 
 		if(!reasons.isEmpty()) return BargainResult.fail(reasons);
 
-		int heartDiff = heartContainerOffers-heartContainerDemands;
-		int staminaDiff = staminaVesselOffers-staminaVesselDemands;
-		int essenceDiff = essenceOffers-essenceDemands;
+		int heartDiff = offer.heartContainers-demand.heartContainers;
+		int staminaDiff = offer.staminaVessels-demand.staminaVessels;
+		int essenceDiff = offer.essences-demand.essences;
 
 		if(heartDiff>0&&container.giveHeartContainers(heartDiff, true, false)<heartDiff)
 			reasons.add(ParagliderFailReasons.HEART_FULL);
@@ -217,7 +169,7 @@ public class SimpleBargain implements Bargain{
 				}
 			}
 
-			for(QuantifiedItem item : itemOffers){
+			for(QuantifiedItem item : offer.items){
 				ParagliderUtils.giveItem(player, item.getItemWithQuantity());
 			}
 
@@ -225,19 +177,19 @@ public class SimpleBargain implements Bargain{
 				if(heartDiff>0 ?
 						container.giveHeartContainers(heartDiff, false, true)!=heartDiff :
 						container.takeHeartContainers(-heartDiff, false, true)!=-heartDiff)
-					ParagliderMod.LOGGER.error("Heart Container transaction of bargain {} failed to resolve after successful simulation.", id);
+					ParagliderMod.LOGGER.error("Heart Container transaction of bargain failed to resolve after successful simulation.");
 			}
 			if(staminaDiff!=0){
 				if(staminaDiff>0 ?
 						container.giveStaminaVessels(staminaDiff, false, true)!=staminaDiff :
 						container.takeStaminaVessels(-staminaDiff, false, true)!=-staminaDiff)
-					ParagliderMod.LOGGER.error("Stamina Vessel transaction of bargain {} failed to resolve after successful simulation.", id);
+					ParagliderMod.LOGGER.error("Stamina Vessel transaction of bargain failed to resolve after successful simulation.");
 			}
 			if(essenceDiff!=0){
 				if(essenceDiff>0 ?
 						container.giveEssences(essenceDiff, false, true)!=essenceDiff :
 						container.takeEssences(-essenceDiff, false, true)!=-essenceDiff)
-					ParagliderMod.LOGGER.error("Essence transaction of bargain {} failed to resolve after successful simulation.", id);
+					ParagliderMod.LOGGER.error("Essence transaction of bargain failed to resolve after successful simulation.");
 			}
 		}
 		return BargainResult.success();
@@ -247,13 +199,57 @@ public class SimpleBargain implements Bargain{
 		return Collections.unmodifiableSet(this.tags);
 	}
 
-	@Override @NotNull public ResourceLocation getId(){
-		return id;
-	}
 	@Override @NotNull public RecipeSerializer<?> getSerializer(){
 		return Contents.get().bargainRecipeSerializer();
 	}
 	@Override @NotNull public RecipeType<?> getType(){
 		return Contents.get().bargainRecipeType();
+	}
+
+	public static final class Demand extends Bargained<QuantifiedIngredient> {
+		public Demand(List<QuantifiedIngredient> items, int heartContainers, int staminaVessels, int essences) {
+			super(items, heartContainers, staminaVessels, essences);
+		}
+
+		public static final Codec<Demand> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				QuantifiedIngredient.CODEC.listOf().fieldOf("items").forGetter(Bargained::items)
+			).and(commonFields(instance)
+			).apply(instance, Demand::new)
+		);
+	}
+
+	public static final class Offer extends Bargained<QuantifiedItem> {
+		public Offer(List<QuantifiedItem> items, int heartContainers, int staminaVessels, int essences) {
+			super(items, heartContainers, staminaVessels, essences);
+		}
+
+		public static final Codec<Offer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				QuantifiedItem.CODEC.listOf().fieldOf("items").forGetter(Bargained::items)
+			).and(commonFields(instance)
+			).apply(instance, Offer::new)
+		);
+	}
+
+	@Getter
+	@Accessors(fluent = true)
+	private static abstract class Bargained<Q> {
+		protected final List<Q> items;
+		protected final int heartContainers;
+		protected final int staminaVessels;
+		protected final int essences;
+
+		private Bargained(@NotNull List<@NotNull Q> items, int heartContainers, int staminaVessels, int essences) {
+			this.items = ImmutableList.copyOf(items);
+			this.heartContainers = heartContainers;
+			this.staminaVessels = staminaVessels;
+			this.essences = essences;
+		}
+
+		@NotNull protected static <QQ, B extends Bargained<QQ>> Products.P3<RecordCodecBuilder.Mu<B>, Integer, Integer, Integer> commonFields(RecordCodecBuilder.Instance<B> instance) {
+			return instance.group(
+				Codec.INT.fieldOf("heartContainers").forGetter(Bargained::heartContainers),
+				Codec.INT.fieldOf("staminaVessels").forGetter(Bargained::staminaVessels),
+				Codec.INT.fieldOf("essences").forGetter(Bargained::essences));
+		}
 	}
 }

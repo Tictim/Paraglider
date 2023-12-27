@@ -2,7 +2,9 @@ package datagen.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -18,7 +20,6 @@ import tictim.paraglider.contents.Contents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class StatueBargainBuilder{
 	protected final ResourceLocation bargainType;
@@ -84,8 +85,8 @@ public class StatueBargainBuilder{
 		return this;
 	}
 
-	public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id){
-		consumerIn.accept(new Result(id,
+	public void save(RecipeOutput recipeOutput, ResourceLocation id){
+		recipeOutput.accept(new Result(id,
 				bargainType,
 				itemDemands,
 				heartContainerDemands,
@@ -163,16 +164,13 @@ public class StatueBargainBuilder{
 				if(staminaVesselDemands>0||staminaVesselOffers>0) json.addProperty("usesStaminaVesselFeature", true);
 			}
 		}
-		@Override @NotNull public ResourceLocation getId(){
+		@Override @NotNull public ResourceLocation id(){
 			return id;
 		}
-		@Override @NotNull public RecipeSerializer<?> getType(){
+		@Override @NotNull public RecipeSerializer<?> type(){
 			return Contents.get().bargainRecipeSerializer();
 		}
-		@Override @Nullable public JsonObject serializeAdvancement(){
-			return null;
-		}
-		@Override @Nullable public ResourceLocation getAdvancementId(){
+		@Override @Nullable public AdvancementHolder advancement(){
 			return null;
 		}
 	}

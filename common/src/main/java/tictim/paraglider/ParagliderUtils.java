@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -30,6 +30,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -137,7 +138,7 @@ public final class ParagliderUtils{
 	                                      @NotNull String criterion){
 		PlayerAdvancements advancements = player.getAdvancements();
 		ServerAdvancementManager advancementManager = player.server.getAdvancements();
-		Advancement advancement = advancementManager.getAdvancement(advancementName);
+		AdvancementHolder advancement = advancementManager.get(advancementName);
 		return advancement!=null&&advancements.award(advancement, criterion);
 	}
 
@@ -151,15 +152,16 @@ public final class ParagliderUtils{
 	}
 
 	public static void checkBargainRecipes(@NotNull MinecraftServer server){
-		List<Bargain> recipes = server.getRecipeManager().getAllRecipesFor(Contents.get().bargainRecipeType());
+		List<RecipeHolder<Bargain>> recipeHolders = server.getRecipeManager().getAllRecipesFor(Contents.get().bargainRecipeType());
 		BargainTypeRegistry typeRegistry = BargainTypeRegistry.get();
 		Map<ResourceLocation, List<ResourceLocation>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
 		int count = 0;
-		for(Bargain b : recipes){
+		for(RecipeHolder<Bargain> bargainHolder : recipeHolders){
+			Bargain b = bargainHolder.value();
 			ResourceLocation bargainType = b.getBargainType();
 			if(typeRegistry.getFromID(server, Objects.requireNonNull(bargainType))==null){
 				missingBargainTypes.computeIfAbsent(bargainType, s -> new ArrayList<>())
-						.add(Objects.requireNonNull(b.getId()));
+						.add(Objects.requireNonNull(bargainHolder.id()));
 				count++;
 			}
 		}

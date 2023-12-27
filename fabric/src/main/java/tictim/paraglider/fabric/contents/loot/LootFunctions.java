@@ -1,18 +1,18 @@
 package tictim.paraglider.fabric.contents.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.config.Cfg;
 
-public enum LootFunctions implements LootItemFunction, Serializer<LootItemFunction>, LootItemFunction.Builder{
+public enum LootFunctions implements LootItemFunction, LootItemFunction.Builder{
 	SPAWNER_SPIRIT_ORB_COUNT;
+
+	private final Codec<LootItemFunction> codec = RecordCodecBuilder.create(instance -> instance.stable(this));
 
 	@Override @NotNull public LootItemFunctionType getType(){
 		return switch(this){
@@ -28,9 +28,8 @@ public enum LootFunctions implements LootItemFunction, Serializer<LootItemFuncti
 		};
 	}
 
-	@Override public void serialize(JsonObject json, LootItemFunction function, JsonSerializationContext ctx){}
-	@Override @NotNull public LootItemFunction deserialize(JsonObject json, JsonDeserializationContext ctx){
-		return this;
+	@NotNull public Codec<LootItemFunction> codec(){
+		return codec;
 	}
 
 	@Override @NotNull public LootItemFunction build(){

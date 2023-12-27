@@ -3,6 +3,8 @@ package datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.network.chat.Component;
@@ -26,9 +28,9 @@ public class AdvancementGen extends FabricAdvancementProvider{
 		super(output);
 	}
 
-	@Override public void generateAdvancement(Consumer<Advancement> consumer){
+	@Override public void generateAdvancement(Consumer<AdvancementHolder> consumer){
 		Contents contents = Contents.get();
-		Advancement root = advancement(
+		AdvancementHolder root = advancement(
 				new ItemStack(contents.paraglider()),
 				"advancement.paraglider",
 				ParagliderAPI.id("textures/gui/advancement_background.png"),
@@ -38,7 +40,7 @@ public class AdvancementGen extends FabricAdvancementProvider{
 				false)
 				.addCriterion("crafting_table", hasItems(Blocks.CRAFTING_TABLE))
 				.save(consumer, MODID+":root");
-		Advancement paraglider = advancement(
+		AdvancementHolder paraglider = advancement(
 				new ItemStack(contents.paraglider()),
 				"advancement.paraglider.paraglider",
 				FrameType.GOAL,
@@ -48,7 +50,7 @@ public class AdvancementGen extends FabricAdvancementProvider{
 				.parent(root)
 				.addCriterion("paraglider", hasItems(item().of(ParagliderTags.PARAGLIDERS).build()))
 				.save(consumer, MODID+":paraglider");
-		Advancement prayToTheGoddess = advancement(
+		AdvancementHolder prayToTheGoddess = advancement(
 				new ItemStack(contents.goddessStatue()),
 				"advancement.paraglider.pray_to_the_goddess",
 				FrameType.GOAL,
@@ -56,9 +58,9 @@ public class AdvancementGen extends FabricAdvancementProvider{
 				true,
 				false)
 				.parent(root)
-				.addCriterion("bargain", new ImpossibleTrigger.TriggerInstance())
+				.addCriterion("bargain", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()))
 				.save(consumer, ParagliderAdvancements.PRAY_TO_THE_GODDESS.toString());
-		Advancement statuesBargain = advancement(
+		AdvancementHolder statuesBargain = advancement(
 				new ItemStack(contents.hornedStatue()),
 				"advancement.paraglider.statues_bargain",
 				FrameType.GOAL,
@@ -66,9 +68,9 @@ public class AdvancementGen extends FabricAdvancementProvider{
 				true,
 				false)
 				.parent(root)
-				.addCriterion("bargain", new ImpossibleTrigger.TriggerInstance())
+				.addCriterion("bargain", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()))
 				.save(consumer, ParagliderAdvancements.STATUES_BARGAIN.toString());
-		Advancement allVessels = advancement(
+		AdvancementHolder allVessels = advancement(
 				new ItemStack(contents.heartContainer()),
 				"advancement.paraglider.all_vessels",
 				FrameType.CHALLENGE,
@@ -76,7 +78,7 @@ public class AdvancementGen extends FabricAdvancementProvider{
 				true,
 				false)
 				.parent(root)
-				.addCriterion("code_triggered", new ImpossibleTrigger.TriggerInstance())
+				.addCriterion("code_triggered", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()))
 				.save(consumer, ParagliderAdvancements.ALL_VESSELS.toString());
 	}
 

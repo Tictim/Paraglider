@@ -17,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,7 @@ import tictim.paraglider.network.ParagliderNetwork;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static tictim.paraglider.ParagliderUtils.ms;
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
@@ -99,8 +101,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender{
 		Minecraft mc = Minecraft.getInstance();
 		if(mc.level==null) return null;
 		RecipeManager recipeManager = mc.level.getRecipeManager();
-		var optionalRecipe = recipeManager.byKey(id);
-		return optionalRecipe.isPresent()&&optionalRecipe.get() instanceof Bargain b ? b : null;
+		Optional<RecipeHolder<?>> optionalRecipe = recipeManager.byKey(id);
+		return optionalRecipe.isPresent() && optionalRecipe.get().value() instanceof Bargain b ? b : null;
 	}
 
 	public void setLookAt(@Nullable Vec3 lookAt){
@@ -148,7 +150,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender{
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks){
-		this.renderBackground(guiGraphics);
+		this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
 		long newTimestamp = ms();
 		if(hasShiftDown())
@@ -198,7 +200,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender{
 		}
 	}
 
-	@Override public void renderBackground(GuiGraphics guiGraphics){
+	@Override public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick){
 		//noinspection ConstantConditions
 		if(this.minecraft.level!=null){
 			guiGraphics.fillGradient(0, 0, this.width, this.height, 0x70101010, 0xa0101010);
@@ -293,10 +295,10 @@ public class BargainScreen extends Screen implements DisableStaminaRender{
 		return (float)Mth.lerp(percentage, start<end ? (end-start>180 ? start+360 : start) : (start-end>180 ? start-360 : start), end);
 	}
 
-	@Override public boolean mouseScrolled(double mouseX, double mouseY, double delta){
+	@Override public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY){
 		int bargainSize = this.catalog.size();
 		if(bargainSize>7){
-			this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset-delta), 0, bargainSize-7);
+			this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset-scrollY), 0, bargainSize-7);
 		}
 		return true;
 	}

@@ -1,10 +1,8 @@
 package tictim.paraglider.forge.contents.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +10,11 @@ import tictim.paraglider.config.Cfg;
 import tictim.paraglider.forge.ForgeParagliderMod;
 import tictim.paraglider.forge.contents.ForgeContents;
 
-public enum LootConditions implements LootItemCondition, Serializer<LootItemCondition>{
+public enum LootConditions implements LootItemCondition{
 	WITHER_DROPS_VESSEL,
 	SPIRIT_ORB_LOOTS;
+
+	private final Codec<LootItemCondition> codec = RecordCodecBuilder.create(instance -> instance.stable(this));
 
 	@Override @NotNull public LootItemConditionType getType(){
 		ForgeContents contents = ForgeParagliderMod.instance().getContents();
@@ -30,8 +30,7 @@ public enum LootConditions implements LootItemCondition, Serializer<LootItemCond
 		};
 	}
 
-	@Override public void serialize(@NotNull JsonObject json, @NotNull LootItemCondition condition, @NotNull JsonSerializationContext ctx){}
-	@Override @NotNull public LootItemCondition deserialize(@NotNull JsonObject json, @NotNull JsonDeserializationContext ctx){
-		return this;
+	@NotNull public Codec<LootItemCondition> codec(){
+		return codec;
 	}
 }

@@ -1,9 +1,7 @@
 package tictim.paraglider.fabric.contents.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import net.minecraft.util.GsonHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.DyeableLeatherItem;
@@ -19,14 +17,20 @@ import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.item.ParagliderItem;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static tictim.paraglider.config.Cfg.TotwCompatConfigOption.*;
 
 public class ParagliderLootEntry extends LootPoolSingletonContainer{
+	public static final Codec<ParagliderLootEntry> CODEC = RecordCodecBuilder.create(instance ->
+		instance
+			.group(Codec.BOOL.fieldOf("deku_leaf").forGetter(paragliderLootEntry -> paragliderLootEntry.dekuLeaf))
+			.and(singletonFields(instance))
+			.apply(instance, ParagliderLootEntry::new));
 	public final boolean dekuLeaf;
 
-	public ParagliderLootEntry(boolean dekuLeaf, int weight, int quality, LootItemCondition[] conditions, LootItemFunction[] functions){
+	public ParagliderLootEntry(boolean dekuLeaf, int weight, int quality, List<LootItemCondition> conditions, List<LootItemFunction> functions){
 		super(weight, quality, conditions, functions);
 		this.dekuLeaf = dekuLeaf;
 	}
@@ -54,19 +58,4 @@ public class ParagliderLootEntry extends LootPoolSingletonContainer{
 		return simpleBuilder((weight, quality, conditions, functions) -> new ParagliderLootEntry(dekuLeaf, weight, quality, conditions, functions));
 	}
 
-	public static final class Serializer extends LootPoolSingletonContainer.Serializer<ParagliderLootEntry>{
-		@Override public void serializeCustom(JsonObject json, ParagliderLootEntry entry, JsonSerializationContext ctx){
-			super.serializeCustom(json, entry, ctx);
-			json.addProperty("deku_leaf", entry.dekuLeaf);
-		}
-
-		@Override @NotNull protected ParagliderLootEntry deserialize(JsonObject json,
-		                                                             JsonDeserializationContext ctx,
-		                                                             int weight,
-		                                                             int quality,
-		                                                             LootItemCondition[] conditions,
-		                                                             LootItemFunction[] functions){
-			return new ParagliderLootEntry(GsonHelper.getAsBoolean(json, "deku_leaf"), weight, quality, conditions, functions);
-		}
-	}
 }

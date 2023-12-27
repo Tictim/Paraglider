@@ -50,7 +50,7 @@ public final class ParagliderClientEventHandler{
 	private static void renderDebugText(GuiGraphics guiGraphics){
 		if(!DebugCfg.get().debugPlayerMovement()) return;
 		Minecraft mc = Minecraft.getInstance();
-		if(mc.options.renderDebug) return; // handled by DebugScreenOverlay
+		if(mc.getDebugOverlay().showDebugScreen()) return; // handled by DebugScreenOverlay
 		Player p = mc.player;
 		if(p==null) return;
 

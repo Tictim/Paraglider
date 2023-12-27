@@ -2,14 +2,16 @@ package datagen.builder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.bargain.preview.QuantifiedIngredient;
@@ -20,7 +22,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class StatueBargainBuilder{
 	protected final ResourceLocation bargainType;
@@ -35,7 +36,7 @@ public class StatueBargainBuilder{
 	protected int staminaVesselOffers;
 	protected int essenceOffers;
 
-	protected final List<ICondition> conditions = new ArrayList<>();
+	private ICondition condition;
 
 	public StatueBargainBuilder(ResourceLocation bargainType){
 		this.bargainType = Objects.requireNonNull(bargainType);
@@ -82,12 +83,14 @@ public class StatueBargainBuilder{
 	}
 
 	public StatueBargainBuilder condition(ICondition condition){
-		this.conditions.add(Objects.requireNonNull(condition));
+		if (this.condition != null)
+			throw new IllegalStateException("Only one condition per ");
+		this.condition = Objects.requireNonNull(condition);
 		return this;
 	}
 
-	public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id){
-		consumerIn.accept(new Result(id,
+	public void save(RecipeOutput recipeOutput, ResourceLocation id){
+		recipeOutput.accept(new Result(id,
 				bargainType,
 				itemDemands,
 				heartContainerDemands,
@@ -97,7 +100,7 @@ public class StatueBargainBuilder{
 				heartContainerOffers,
 				staminaVesselOffers,
 				essenceOffers,
-				conditions));
+				condition));
 	}
 
 	public static class Result implements FinishedRecipe{
@@ -113,7 +116,7 @@ public class StatueBargainBuilder{
 		protected final int heartContainerOffers;
 		protected final int staminaVesselOffers;
 		protected final int essenceOffers;
-		protected final List<ICondition> conditions;
+		protected final ICondition condition;
 
 		public Result(@NotNull ResourceLocation id,
 		              @NotNull ResourceLocation bargainType,
@@ -124,7 +127,8 @@ public class StatueBargainBuilder{
 		              @NotNull List<QuantifiedItem> itemOffers,
 		              int heartContainerOffers,
 		              int staminaVesselOffers,
-		              int essenceOffers, List<ICondition> conditions){
+		              int essenceOffers,
+		              ICondition condition){
 			this.id = id;
 			this.bargainType = bargainType;
 			this.itemDemands = itemDemands;
@@ -135,7 +139,7 @@ public class StatueBargainBuilder{
 			this.heartContainerOffers = heartContainerOffers;
 			this.staminaVesselOffers = staminaVesselOffers;
 			this.essenceOffers = essenceOffers;
-			this.conditions = conditions;
+			this.condition = condition;
 		}
 
 		@Override public void serializeRecipeData(@NotNull JsonObject json){
@@ -158,24 +162,15 @@ public class StatueBargainBuilder{
 				if(essenceOffers>0) offers.addProperty("essences", essenceOffers);
 				json.add("offers", offers);
 			}
-			if(!conditions.isEmpty()){
-				JsonArray a = new JsonArray();
-				for(ICondition c : conditions){
-					a.add(CraftingHelper.serialize(c));
-				}
-				json.add("conditions", a);
-			}
+			ForgeHooks.writeCondition(condition, json);
 		}
-		@Override @NotNull public ResourceLocation getId(){
+		@Override @NotNull public ResourceLocation id(){
 			return id;
 		}
-		@Override @NotNull public RecipeSerializer<?> getType(){
+		@Override @NotNull public RecipeSerializer<?> type(){
 			return Contents.get().bargainRecipeSerializer();
 		}
-		@Override @Nullable public JsonObject serializeAdvancement(){
-			return null;
-		}
-		@Override @Nullable public ResourceLocation getAdvancementId(){
+		@Override @Nullable public AdvancementHolder advancement(){
 			return null;
 		}
 	}

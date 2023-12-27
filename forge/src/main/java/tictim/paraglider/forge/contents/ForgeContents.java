@@ -15,6 +15,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -45,6 +46,8 @@ import tictim.paraglider.forge.contents.loot.SpawnerSpiritOrbLoot;
 import tictim.paraglider.forge.contents.loot.SpiritOrbLoot;
 import tictim.paraglider.forge.contents.loot.VesselLoot;
 
+import java.util.Locale;
+
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 import static tictim.paraglider.contents.CommonContents.*;
 
@@ -60,6 +63,7 @@ public final class ForgeContents implements Contents{
 	private final DeferredRegister<StructureType<?>> structureTypes = DeferredRegister.create(Registries.STRUCTURE_TYPE, MODID);
 	private final DeferredRegister<StructurePieceType> pieces = DeferredRegister.create(Registries.STRUCTURE_PIECE, MODID);
 	private final DeferredRegister<CreativeModeTab> creativeTabs = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+	private final DeferredRegister<Codec<? extends ICondition>> conditionSerializers = DeferredRegister.create(ForgeRegistries.Keys.CONDITION_SERIALIZERS, ParagliderAPI.MODID);
 
 	private final RegistryObject<Block> goddessStatue = blocks.register("goddess_statue",
 			() -> new GoddessStatueBlock(statueBlock()));
@@ -97,9 +101,9 @@ public final class ForgeContents implements Contents{
 	private final RegistryObject<Codec<SpawnerSpiritOrbLoot>> spawnerSpiritOrbLoot = loots.register("spawner_spirit_orb", () -> SpawnerSpiritOrbLoot.CODEC);
 
 	public final RegistryObject<LootItemConditionType> witherDropsVesselConfigCondition = lootConditions.register("config_wither_drops_vessel",
-			() -> new LootItemConditionType(LootConditions.WITHER_DROPS_VESSEL));
+			() -> new LootItemConditionType(LootConditions.WITHER_DROPS_VESSEL.codec()));
 	public final RegistryObject<LootItemConditionType> spiritOrbLootsConfigCondition = lootConditions.register("config_spirit_orb_loots",
-			() -> new LootItemConditionType(LootConditions.SPIRIT_ORB_LOOTS));
+			() -> new LootItemConditionType(LootConditions.SPIRIT_ORB_LOOTS.codec()));
 
 	private final RegistryObject<StructureType<TarreyTownGoddessStatue>> tarreyTownGoddessStatue = structureType("tarrey_town_goddess_statue", TarreyTownGoddessStatue.CODEC);
 	private final RegistryObject<StructureType<NetherHornedStatue>> netherHornedStatue = structureType("nether_horned_statue", NetherHornedStatue.CODEC);
@@ -132,6 +136,10 @@ public final class ForgeContents implements Contents{
 			}).build());
 
 	{
+		for(ConfigConditionSerializer c : ConfigConditionSerializer.values()) {
+			conditionSerializers.register(c.name().toLowerCase(Locale.ROOT), c::codec);
+		}
+
 		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		blocks.register(eventBus);
 		items.register(eventBus);
@@ -143,6 +151,7 @@ public final class ForgeContents implements Contents{
 		structureTypes.register(eventBus);
 		pieces.register(eventBus);
 		creativeTabs.register(eventBus);
+		conditionSerializers.register(eventBus);
 	}
 
 	@NotNull public DeferredRegister<Block> blocks(){
