@@ -20,6 +20,7 @@ public class BotWStamina implements Stamina, Copy, Serde{
 
 	public BotWStamina(@NotNull VesselContainer vessels){
 		this.vessels = vessels;
+		this.stamina = maxStamina();
 	}
 
 	@Override public int stamina(){
