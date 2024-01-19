@@ -31,7 +31,8 @@ public interface ParagliderNetwork{
 	                  @NotNull ResourceLocation state,
 	                  int stamina,
 	                  boolean depleted,
-	                  int recoveryDelay);
+	                  int recoveryDelay,
+	                  double reductionRate);
 
 	void syncRemoteMovement(@NotNull MinecraftServer server, @NotNull Entity entity, @NotNull ResourceLocation state);
 	void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull ResourceLocation state);

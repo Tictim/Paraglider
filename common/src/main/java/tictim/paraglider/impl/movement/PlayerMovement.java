@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.Copy;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
@@ -26,6 +27,7 @@ public abstract class PlayerMovement implements Movement, Copy{
 	@Nullable private PlayerState state;
 
 	private int recoveryDelay;
+	protected double staminaReductionRate;
 
 	public PlayerMovement(@NotNull Player player){
 		this.player = Objects.requireNonNull(player, "player == null");
@@ -65,6 +67,14 @@ public abstract class PlayerMovement implements Movement, Copy{
 	}
 	@Override public final void setRecoveryDelay(int recoveryDelay){
 		this.recoveryDelay = Math.max(0, recoveryDelay);
+	}
+
+	@Override public double staminaReductionRate(){
+		return staminaReductionRate;
+	}
+
+	@Override public int getActualStaminaDelta(){
+		return ParagliderUtils.applyReductionToDelta(state().staminaDelta(), staminaReductionRate());
 	}
 
 	public abstract void update();

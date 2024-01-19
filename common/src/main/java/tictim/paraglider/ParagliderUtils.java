@@ -200,6 +200,7 @@ public final class ParagliderUtils{
 	}
 
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
+	private static final DecimalFormat PERCENTAGE_SIGNED = new DecimalFormat("+#.#%;-#.#%");
 
 	public static void addDebugText(@NotNull Player p, @NotNull List<String> list){
 		Movement movement = Movement.get(p);
@@ -207,14 +208,32 @@ public final class ParagliderUtils{
 		VesselContainer vessels = VesselContainer.get(p);
 		ParagliderClientSettings clientSettings = ParagliderClientSettings.get();
 
-		if(!list.isEmpty()) list.add("");
 		PlayerState state = movement.state();
-		list.add("State: "+state.id()+" (staminaDelta="+state.staminaDelta()+", recoveryDelay="+state.recoveryDelay()+(
-				state.flags().isEmpty() ? "" : ", flags="+state.flags().stream()
-						.map(Object::toString)
-						.collect(Collectors.joining(" "))
-		)+")");
+		int actualStaminaDelta = movement.getActualStaminaDelta();
+
+		if(!list.isEmpty()) list.add("");
+		if(state.flags().isEmpty()){
+			list.add("State: "+state.id());
+		}else{
+			list.add("State: "+state.id()+" ("+state.flags().stream()
+					.map(Object::toString)
+					.collect(Collectors.joining(" "))+")");
+		}
 		list.add((stamina.isDepleted() ? ChatFormatting.RED : "")+"Stamina: "+stamina.stamina()+" / "+stamina.maxStamina());
+
+		StringBuilder stb = new StringBuilder().append("Stamina Delta: ").append(actualStaminaDelta);
+
+		if(state.staminaDelta()!=actualStaminaDelta){
+			int diff = actualStaminaDelta-state.staminaDelta();
+			if(diff>0) stb.append("+");
+			stb.append(diff);
+		}
+		double reductionRate = movement.staminaReductionRate();
+		if(reductionRate!=0) stb.append(" (").append(PERCENTAGE_SIGNED.format(reductionRate));
+
+		list.add(stb.toString());
+
+		list.add("Recovery Delay: "+state.recoveryDelay());
 		list.add(vessels.staminaVessel()+" Stamina Vessels, "+vessels.heartContainer()+" Heart Containers");
 		list.add(movement.recoveryDelay()+" Recovery Delay");
 		list.add("Stamina Wheel X: "+PERCENTAGE.format(clientSettings.staminaWheelX())+
@@ -259,6 +278,39 @@ public final class ParagliderUtils{
 			stb.append('\n');
 		}
 		ParagliderMod.LOGGER.debug(stb.toString());
+	}
+
+	/**
+	 * <p>
+	 * Im just copypasting this from stamina reduction logic's docs
+	 * </p>
+	 * <p>
+	 * Stamina reduction rate is a proportion of change to be made to stamina delta. Function of stamina reduction rate
+	 * changes based on the sign of original stamina delta - positive reduction rate increases stamina regeneration on
+	 * positive stamina delta (+N%), and decreases stamina consumption on negative stamina delta (-N%). For example,
+	 * reduction rate of {@code 0.5} corresponds to +-50%, which could either increase stamina regeneration by half
+	 * (+50%), or reduce stamina consumption by half (-50%). Negative reduction rate will do the opposite. Note that the
+	 * system cannot make stamina delta positive from negative, or vice versa; reduction rate below -100% will just set
+	 * stamina delta to 0.
+	 * </p>
+	 * <p>
+	 * Nice docs dude how about you reduce some of your fats? increase some muscle mass? go study in real life?
+	 * </p>
+	 *
+	 * @param staminaDelta Stamina delta
+	 * @param reduction    Reduction
+	 * @return Stamina delta with reduction applied
+	 */
+	public static int applyReductionToDelta(int staminaDelta, double reduction){
+		if(staminaDelta==0) return 0;
+		if(Double.isNaN(reduction)) return staminaDelta;
+		if(staminaDelta>0){
+			if(reduction<=-1) return 0;
+			return Math.max(1, (int)Math.round(staminaDelta*reduction));
+		}else{
+			if(reduction>=1) return 0;
+			return Math.min(-1, (int)Math.round(staminaDelta*-reduction));
+		}
 	}
 
 	// some part of those methods have to use shitty forge api so uh uhh

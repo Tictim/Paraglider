@@ -63,6 +63,7 @@ public class CommonProxy{
 		this.stateMapConfig = new ForgePlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
 		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
+		StaminaReductionLogicHandler.init();
 
 		MinecraftForge.EVENT_BUS.addListener(this::onServerAboutToStart);
 		MinecraftForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> e.getDispatcher().register(ParagliderCommands.register()));

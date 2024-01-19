@@ -24,6 +24,8 @@ public interface MovementPlugin extends ParagliderPluginBase{
 
 	default void registerStateConnections(@NotNull PlayerStateConnectionRegister register){}
 
+	default void registerStaminaReductionLogic(@NotNull MovementPlugin.StaminaReductionLogicRegister register){}
+
 	/**
 	 * @return Implementation of {@link ConflictResolver} for this {@link MovementPlugin} instance
 	 */
@@ -246,5 +248,18 @@ public interface MovementPlugin extends ParagliderPluginBase{
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code fallback}
 		 */
 		void setFallback(@NotNull ResourceLocation parent, @Nullable ResourceLocation fallback, double priority);
+	}
+
+	/**
+	 * Interface for registering stamina reduction logic.
+	 */
+	interface StaminaReductionLogicRegister{
+		/**
+		 * Register stamina reduction logic instance.
+		 *
+		 * @param logic Logic
+		 * @throws NullPointerException If {@code logic == null}
+		 */
+		void register(@NotNull StaminaReductionLogic logic);
 	}
 }

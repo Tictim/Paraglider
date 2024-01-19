@@ -52,6 +52,8 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 	 */
 	private double accumulatedFallDistance;
 
+	private double prevStaminaReduction;
+
 	public ServerPlayerMovement(@NotNull ServerPlayer player){
 		super(player);
 	}
@@ -110,6 +112,13 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 						player().isCreative()||!stamina().isDepleted()||canDoPanicParagliding(),
 						this.accumulatedFallDistance));
 
+		if(state().staminaDelta()!=0){
+			this.staminaReductionRate = StaminaReductionLogicHandler.getReductionRate(player(), state());
+		}
+		if(this.prevStaminaReduction!=this.staminaReductionRate){
+			markMovementChanged();
+		}
+
 		if(!prevState.equals(state())) markMovementChanged();
 
 		stamina().update(this);
@@ -126,7 +135,8 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 					state().id(),
 					stamina().stamina(),
 					stamina().isDepleted(),
-					recoveryDelay());
+					recoveryDelay(),
+					staminaReductionRate());
 			this.movementChanged = false;
 		}
 
@@ -144,6 +154,7 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 		}
 
 		this.prevY = player().getY();
+		this.prevStaminaReduction = this.staminaReductionRate;
 
 		for(int i = 0; i<player().getInventory().getContainerSize(); i++){
 			ItemStack stack = player().getInventory().getItem(i);

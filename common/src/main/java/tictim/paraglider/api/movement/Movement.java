@@ -35,4 +35,15 @@ public interface Movement{
 	 *                      when this value is greater than 0. Decreases each tick.
 	 */
 	void setRecoveryDelay(int recoveryDelay);
+
+	/**
+	 * @return Stamina reduction rate
+	 */
+	double staminaReductionRate();
+
+	/**
+	 * @return Actual stamina delta based on {@link #state() player state} and
+	 * {@link #staminaReductionRate() reduction rate}
+	 */
+	int getActualStaminaDelta();
 }

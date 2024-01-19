@@ -12,6 +12,7 @@ import tictim.paraglider.impl.vessel.NullVesselContainer;
 import tictim.paraglider.network.SyncMovementHandle;
 
 public class RemotePlayerMovement extends PlayerMovement implements SyncMovementHandle{
+
 	public RemotePlayerMovement(@NotNull Player player){
 		super(player);
 	}
@@ -25,7 +26,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 
 	@Override public void update(){}
 
-	@Override public void syncMovement(@NotNull ResourceLocation stateId, int stamina, boolean depleted, int recoveryDelay){
+	@Override public void syncMovement(@NotNull ResourceLocation stateId, int stamina, boolean depleted, int recoveryDelay, double reductionRate){
 		PlayerStateMap stateMap = ParagliderMod.instance().getPlayerStateMap();
 		PlayerState state = stateMap.getState(stateId);
 		setState(state==null ? stateMap.getIdleState() : state);
@@ -34,5 +35,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 		stamina().setDepleted(depleted);
 
 		setRecoveryDelay(recoveryDelay);
+
+		this.staminaReductionRate = reductionRate;
 	}
 }

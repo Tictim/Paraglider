@@ -53,8 +53,9 @@ public abstract class ParagliderNetworkBase implements ParagliderNetwork{
 	                                   @NotNull ResourceLocation state,
 	                                   int stamina,
 	                                   boolean depleted,
-	                                   int recoveryDelay){
-		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, depleted, recoveryDelay);
+	                                   int recoveryDelay,
+	                                   double reductionRate){
+		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, depleted, recoveryDelay, reductionRate);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		sendToPlayer(player, msg);
 		syncRemoteMovement(player.server, player, state);

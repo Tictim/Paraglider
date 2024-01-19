@@ -45,6 +45,7 @@ import tictim.paraglider.fabric.impl.PlayerMovementAccess;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.PlayerStateMapLoader;
+import tictim.paraglider.impl.movement.StaminaReductionLogicHandler;
 import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
 import tictim.paraglider.network.ParagliderNetwork;
 import tictim.paraglider.plugin.ParagliderPluginLoader;
@@ -135,6 +136,7 @@ public final class FabricParagliderMod extends ParagliderMod implements ModIniti
 		this.stateMapConfig = new FabricPlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
 		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
+		StaminaReductionLogicHandler.init();
 	}
 
 	@Override @NotNull public Cfg getConfig(){

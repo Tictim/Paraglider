@@ -37,7 +37,7 @@ public final class ClientPacketHandler{
 		Minecraft mc = Minecraft.getInstance();
 		if(mc.player==null) return;
 		if(Movement.get(mc.player) instanceof SyncMovementHandle smh){
-			smh.syncMovement(msg.state(), msg.stamina(), msg.depleted(), msg.recoveryDelay());
+			smh.syncMovement(msg.state(), msg.stamina(), msg.depleted(), msg.recoveryDelay(), msg.reductionRate());
 		}
 	}
 

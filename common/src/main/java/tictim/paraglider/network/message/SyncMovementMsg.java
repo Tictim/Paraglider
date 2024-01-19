@@ -8,14 +8,16 @@ public record SyncMovementMsg(
 		@NotNull ResourceLocation state,
 		int stamina,
 		boolean depleted,
-		int recoveryDelay
+		int recoveryDelay,
+		double reductionRate
 ) implements Msg{
 	@NotNull public static SyncMovementMsg read(@NotNull FriendlyByteBuf buffer){
 		return new SyncMovementMsg(
 				buffer.readResourceLocation(),
 				buffer.readInt(),
 				buffer.readBoolean(),
-				buffer.readVarInt());
+				buffer.readVarInt(),
+				buffer.readDouble());
 	}
 
 	@Override public void write(@NotNull FriendlyByteBuf buffer){
@@ -23,5 +25,6 @@ public record SyncMovementMsg(
 		buffer.writeInt(stamina);
 		buffer.writeBoolean(depleted);
 		buffer.writeVarInt(recoveryDelay);
+		buffer.writeDouble(reductionRate);
 	}
 }

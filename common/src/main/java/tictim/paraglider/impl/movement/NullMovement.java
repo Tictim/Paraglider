@@ -23,4 +23,11 @@ public final class NullMovement implements Movement{
 		return 0;
 	}
 	@Override public void setRecoveryDelay(int recoveryDelay){}
+
+	@Override public double staminaReductionRate(){
+		return 0;
+	}
+	@Override public int getActualStaminaDelta(){
+		return 0;
+	}
 }
