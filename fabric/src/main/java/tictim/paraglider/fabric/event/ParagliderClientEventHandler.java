@@ -13,7 +13,6 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
-import tictim.paraglider.client.render.StaminaWheelRenderer;
 import tictim.paraglider.client.screen.DisableStaminaRender;
 import tictim.paraglider.config.DebugCfg;
 
@@ -25,8 +24,6 @@ import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS
 
 public final class ParagliderClientEventHandler{
 	private ParagliderClientEventHandler(){}
-
-	private static final StaminaWheelRenderer staminaWheelRenderer = new InGameStaminaWheelRenderer();
 
 	public static void renderHUD(GuiGraphics guiGraphics){
 		renderDebugText(guiGraphics);
@@ -44,7 +41,7 @@ public final class ParagliderClientEventHandler{
 		int x = Mth.clamp((int)Math.round(settings.staminaWheelX()*guiGraphics.guiWidth()), 1+WHEEL_RADIUS, guiGraphics.guiWidth()-2-WHEEL_RADIUS);
 		int y = Mth.clamp((int)Math.round(settings.staminaWheelY()*guiGraphics.guiHeight()), 1+WHEEL_RADIUS, guiGraphics.guiHeight()-2-WHEEL_RADIUS);
 
-		staminaWheelRenderer.renderStamina(guiGraphics, x, y, 25);
+		InGameStaminaWheelRenderer.get().renderStamina(guiGraphics, x, y, 25);
 	}
 
 	private static void renderDebugText(GuiGraphics guiGraphics){

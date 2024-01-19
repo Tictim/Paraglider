@@ -38,7 +38,7 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer{
 				this.internalStamina = Math.min(internalStamina+getStaminaChange(timePassed), maxStamina);
 				this.timeSinceFull = 0;
 				this.gainedStamina = true;
-			}else if(timeSinceFull<GLOW_FADE){
+			}else if(timeSinceFull<GLOW_FADE_DURATION){
 				this.timeSinceFull += timePassed;
 			}
 		}
@@ -48,10 +48,10 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer{
 			wheel.fill(maxStamina, internalStamina, EVIL_GLOW);
 		}else if(internalStamina<maxStamina){
 			wheel.fill(0, internalStamina, IDLE);
-		}else if(gainedStamina&&timeSinceFull<GLOW_FADE){
+		}else if(gainedStamina&&timeSinceFull<GLOW_FADE_DURATION){
 			int stamina = Cfg.get().maxStamina(vessels.staminaVessel()-1);
 			wheel.fill(0, stamina, IDLE);
-			wheel.fill(stamina, maxStamina, ARGB32.lerp((float)timeSinceFull/GLOW_FADE, GLOW, IDLE));
+			wheel.fill(stamina, maxStamina, ARGB32.lerp((float)timeSinceFull/GLOW_FADE_DURATION, GLOW, IDLE));
 		}else{
 			wheel.fill(0, maxStamina, IDLE);
 		}

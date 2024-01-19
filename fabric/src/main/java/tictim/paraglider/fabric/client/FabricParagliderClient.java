@@ -3,6 +3,7 @@ package tictim.paraglider.fabric.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -17,6 +18,7 @@ import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.client.ParagliderItemColor;
 import tictim.paraglider.client.ParagliderItemProperty;
+import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.fabric.FabricParagliderMod;
 import tictim.paraglider.fabric.FabricParagliderNetwork;
@@ -61,6 +63,7 @@ public final class FabricParagliderClient implements ClientModInitializer{
 		HudRenderCallback.EVENT.register((guiGraphics, delta) -> ParagliderClientEventHandler.renderHUD(guiGraphics));
 		ClientPreAttackCallback.EVENT.register((mc, player, clickCount) -> ParagliderClientEventHandler.beforeAttack(player));
 		WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((ctx, hitResult) -> ParagliderClientEventHandler.beforeBlockOutline());
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> InGameStaminaWheelRenderer.get().reset());
 
 		ClientTickEvents.END_WORLD_TICK.register(level -> {
 			Wind wind = Wind.of(level);

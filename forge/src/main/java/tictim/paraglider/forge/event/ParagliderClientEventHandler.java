@@ -5,11 +5,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderHighlightEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.Movement;
+import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.screen.BargainScreen;
 import tictim.paraglider.client.screen.ParagliderSettingScreen;
 import tictim.paraglider.config.DebugCfg;
@@ -83,5 +80,10 @@ public final class ParagliderClientEventHandler{
 		if(player==null) return;
 		Movement movement = Movement.get(player);
 		if(movement.state().has(FLAG_PARAGLIDING)) event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public static void onClientLoggingIn(ClientPlayerNetworkEvent.LoggingIn event){
+		InGameStaminaWheelRenderer.get().reset();
 	}
 }
