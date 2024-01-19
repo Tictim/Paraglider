@@ -112,9 +112,8 @@ public class ServerPlayerMovement extends PlayerMovement implements Serde{
 						player().isCreative()||!stamina().isDepleted()||canDoPanicParagliding(),
 						this.accumulatedFallDistance));
 
-		if(state().staminaDelta()!=0){
-			this.staminaReductionRate = StaminaReductionLogicHandler.getReductionRate(player(), state());
-		}
+		this.staminaReductionRate = state().staminaDelta()!=0 ?
+				StaminaReductionLogicHandler.getReductionRate(player(), state()) : 0;
 		if(this.prevStaminaReduction!=this.staminaReductionRate){
 			markMovementChanged();
 		}

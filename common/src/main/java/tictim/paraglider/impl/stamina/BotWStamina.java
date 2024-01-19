@@ -42,11 +42,12 @@ public class BotWStamina implements Stamina, Copy, Serde{
 		PlayerState state = movement.state();
 		int recoveryDelay = movement.recoveryDelay();
 		int newRecoveryDelay = recoveryDelay;
-		if(state.staminaDelta()<0){
-			if(!isDepleted()) takeStamina(-state.staminaDelta(), false, false);
+		int delta = movement.getActualStaminaDelta();
+		if(delta<0){
+			if(!isDepleted()) takeStamina(-delta, false, false);
 		}else{
 			if(recoveryDelay>0) newRecoveryDelay--;
-			else if(state.staminaDelta()>0) giveStamina(state.staminaDelta(), false);
+			else if(delta>0) giveStamina(delta, false);
 		}
 		//noinspection DataFlowIssue
 		newRecoveryDelay = Math.max(0, Math.max(newRecoveryDelay, state.recoveryDelay()));

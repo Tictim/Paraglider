@@ -221,12 +221,15 @@ public final class ParagliderUtils{
 		}
 		list.add((stamina.isDepleted() ? ChatFormatting.RED : "")+"Stamina: "+stamina.stamina()+" / "+stamina.maxStamina());
 
-		StringBuilder stb = new StringBuilder().append("Stamina Delta: ").append(actualStaminaDelta);
+		StringBuilder stb = new StringBuilder().append("Stamina Delta: ");
 
 		if(state.staminaDelta()!=actualStaminaDelta){
+			stb.append(state.staminaDelta());
 			int diff = actualStaminaDelta-state.staminaDelta();
 			if(diff>0) stb.append("+");
 			stb.append(diff);
+		}else{
+			stb.append(actualStaminaDelta);
 		}
 		double reductionRate = movement.staminaReductionRate();
 		if(reductionRate!=0) stb.append(" (").append(PERCENTAGE_SIGNED.format(reductionRate));
@@ -303,13 +306,13 @@ public final class ParagliderUtils{
 	 */
 	public static int applyReductionToDelta(int staminaDelta, double reduction){
 		if(staminaDelta==0) return 0;
-		if(Double.isNaN(reduction)) return staminaDelta;
+		if(Double.isNaN(reduction)||reduction==0) return staminaDelta;
 		if(staminaDelta>0){
 			if(reduction<=-1) return 0;
-			return Math.max(1, (int)Math.round(staminaDelta*reduction));
+			return Math.max(1, (int)Math.round(staminaDelta+staminaDelta*reduction));
 		}else{
 			if(reduction>=1) return 0;
-			return Math.min(-1, (int)Math.round(staminaDelta*-reduction));
+			return Math.min(-1, (int)Math.round(staminaDelta-staminaDelta*reduction));
 		}
 	}
 
