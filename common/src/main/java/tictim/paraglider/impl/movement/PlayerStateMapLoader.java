@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.MovementPlugin;
 import tictim.paraglider.api.movement.MovementPlugin.PlayerStateConnectionRegister;
@@ -18,19 +17,14 @@ import tictim.paraglider.api.movement.MovementPluginAction.ChangeDefaultStaminaD
 import tictim.paraglider.api.movement.MovementPluginAction.NewState;
 import tictim.paraglider.api.movement.MovementPluginAction.SetFallbackBranch;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
+import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.api.plugin.PluginAction;
 import tictim.paraglider.api.plugin.PluginInstance;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap.Branch;
 import tictim.paraglider.plugin.ParagliderPluginLoader;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static tictim.paraglider.plugin.ParagliderPluginUtils.*;
@@ -109,6 +103,7 @@ public final class PlayerStateMapLoader{
 					idToCountMap.put(id, idToCountMap.getInt(id)+1);
 					newStates.add(new PluginAction<>(plugin, new NewState.Regular(id, defaultStaminaDelta, Set.of(flags))));
 				}
+
 				@Override public void registerSyntheticState(@NotNull ResourceLocation id){
 					Objects.requireNonNull(id, "id == null");
 					idToCountMap.put(id, idToCountMap.getInt(id)+1);
@@ -143,9 +138,14 @@ public final class PlayerStateMapLoader{
 
 		for(PluginInstance<MovementPlugin> plugin : plugins){
 			plugin.instance().modifyRegisteredStates(new PlayerStateModifier(){
+				@Override @NotNull @UnmodifiableView public Map<@NotNull ResourceLocation, @NotNull PlayerState> playerStates(){
+					return Collections.unmodifiableMap(states);
+				}
+
 				@Override public boolean exists(@NotNull ResourceLocation id){
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
+
 				@Override public void changeDefaultStaminaDelta(@NotNull ResourceLocation id, int defaultStaminaDelta){
 					Objects.requireNonNull(id, "id == null");
 					State state = states.get(id);
@@ -155,6 +155,7 @@ public final class PlayerStateMapLoader{
 					staminaDeltaChanges.add(new PluginAction<>(plugin, new ChangeDefaultStaminaDelta(id, defaultStaminaDelta)));
 					idToCountMap.put(id, idToCountMap.getInt(id)+1);
 				}
+
 				@Override public void addFlags(@NotNull ResourceLocation id, @NotNull ResourceLocation @NotNull ... flags){
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
@@ -164,6 +165,7 @@ public final class PlayerStateMapLoader{
 					Set<ResourceLocation> set = flagAdditions.computeIfAbsent(id, $ -> new ObjectOpenHashSet<>());
 					for(ResourceLocation flag : flags) set.add(Objects.requireNonNull(flag));
 				}
+
 				@Override public void removeFlags(@NotNull ResourceLocation id, @NotNull ResourceLocation @NotNull ... flags){
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
@@ -236,6 +238,10 @@ public final class PlayerStateMapLoader{
 
 		for(PluginInstance<MovementPlugin> plugin : plugins){
 			plugin.instance().registerStateConnections(new PlayerStateConnectionRegister(){
+				@Override @NotNull @Unmodifiable public Map<@NotNull ResourceLocation, @NotNull PlayerState> playerStates(){
+					return Collections.unmodifiableMap(states);
+				}
+
 				@Override public boolean exists(@NotNull ResourceLocation id){
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
@@ -347,7 +353,7 @@ public final class PlayerStateMapLoader{
 		}
 	}
 
-	private static final class State{
+	private static final class State implements PlayerState{
 		@NotNull final ResourceLocation id;
 		int defaultStaminaDelta;
 		@NotNull final Set<@NotNull ResourceLocation> flags = new ObjectOpenHashSet<>();
@@ -410,6 +416,19 @@ public final class PlayerStateMapLoader{
 				}
 				case CHECKED -> null; // already checked and reported, no need to check it twice
 			};
+		}
+
+		@Override @NotNull public ResourceLocation id(){
+			return this.id;
+		}
+		@Override @NotNull @Unmodifiable public Set<@NotNull ResourceLocation> flags(){
+			return this.flags;
+		}
+		@Override public int staminaDelta(){
+			return this.defaultStaminaDelta;
+		}
+		@Override @Range(from = 0, to = Integer.MAX_VALUE) public int recoveryDelay(){
+			return this.defaultStaminaDelta<0 ? ParagliderPlayerStates.RECOVERY_DELAY : 0;
 		}
 
 		enum CheckStatus{

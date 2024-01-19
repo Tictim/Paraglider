@@ -3,11 +3,14 @@ package tictim.paraglider.api.movement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.plugin.ParagliderPluginBase;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Plugin for movement-related features.
@@ -66,13 +69,26 @@ public interface MovementPlugin extends ParagliderPluginBase{
 	 */
 	interface PlayerStateModifier{
 		/**
+		 * Get all registered player states, mapped to its ID. The collection is immutable, and attempting to modify the
+		 * collection will throw an exception. Note that changes made to the fields of the player states, such as
+		 * stamina delta or flags, will not be reflected to the fields of corresponding instance; player states with
+		 * finalized attributes will be available in {@link #registerStateConnections(PlayerStateConnectionRegister)
+		 * registerStateConnections} stage.
+		 *
+		 * @return Map of registered player states
+		 */
+		@NotNull @Unmodifiable Map<@NotNull ResourceLocation, @NotNull PlayerState> playerStates();
+
+		/**
 		 * See if a state with ID {@code id} is registered.
 		 *
 		 * @param id ID of the state
 		 * @return Whether a state is registered with ID {@code id}
 		 * @throws NullPointerException If {@code id == null}
 		 */
-		boolean exists(@NotNull ResourceLocation id);
+		default boolean exists(@NotNull ResourceLocation id){
+			return playerStates().containsKey(Objects.requireNonNull(id, "id == null"));
+		}
 
 		/**
 		 * Change a state's default stamina delta. Positive values represent a state which replenishes stamina.
@@ -124,13 +140,23 @@ public interface MovementPlugin extends ParagliderPluginBase{
 	 */
 	interface PlayerStateConnectionRegister{
 		/**
+		 * Get all registered player states, mapped to its ID. The collection is immutable, and attempting to modify the
+		 * collection will throw an exception.
+		 *
+		 * @return Map of registered player states
+		 */
+		@NotNull @Unmodifiable Map<@NotNull ResourceLocation, @NotNull PlayerState> playerStates();
+
+		/**
 		 * See if a state with ID {@code id} is registered.
 		 *
 		 * @param id ID of the state
 		 * @return Whether a state is registered with ID {@code id}
 		 * @throws NullPointerException If {@code id == null}
 		 */
-		boolean exists(@NotNull ResourceLocation id);
+		default boolean exists(@NotNull ResourceLocation id){
+			return playerStates().containsKey(Objects.requireNonNull(id, "id == null"));
+		}
 
 		/**
 		 * Add a conditioned branch from {@code parent} to {@code state} with given condition and priority of {@code 0}.
