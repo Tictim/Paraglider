@@ -1,0 +1,134 @@
+{
+  "dialog": {
+    "fail": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.not_enough_items.0"
+        },
+        "reason": [
+          "not_enough_items"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.not_enough_items.1"
+        },
+        "reason": [
+          "not_enough_items"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.not_enough_items.2"
+        },
+        "reason": [
+          "not_enough_items"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.full.0"
+        },
+        "reason": [
+          "heart_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.heart_full.0"
+        },
+        "reason": [
+          "heart_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.heart_full.1"
+        },
+        "reason": [
+          "heart_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.full.0"
+        },
+        "reason": [
+          "stamina_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.stamina_full.0"
+        },
+        "reason": [
+          "stamina_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.failure.stamina_full.1"
+        },
+        "reason": [
+          "stamina_full"
+        ]
+      }
+    ],
+    "fail_fallback": {
+      "dialog": {
+        "translate": "bargain.dialog.goddess_statue.failure.fallback.0"
+      }
+    },
+    "initial": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.initial.0"
+        }
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.initial.1"
+        }
+      }
+    ],
+    "success": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.success.0"
+        }
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.success.heart.0"
+        },
+        "tag": [
+          "gives_heart_container"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.success.heart.1"
+        },
+        "tag": [
+          "gives_heart_container"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.success.stamina.0"
+        },
+        "tag": [
+          "gives_stamina_vessel"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.goddess_statue.success.stamina.1"
+        },
+        "tag": [
+          "gives_stamina_vessel"
+        ]
+      }
+    ]
+  }
+}

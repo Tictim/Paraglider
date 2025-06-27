@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "paraglider:block/rito_goddess_statue",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "paraglider:block/rito_goddess_statue"
+    },
+    "facing=south": {
+      "model": "paraglider:block/rito_goddess_statue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "paraglider:block/rito_goddess_statue",
+      "y": 270
+    }
+  }
+}

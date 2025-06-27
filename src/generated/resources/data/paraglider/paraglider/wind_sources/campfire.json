@@ -1,0 +1,11 @@
+{
+  "conditions": {
+    "block": [
+      "minecraft:campfire",
+      "minecraft:soul_campfire"
+    ],
+    "properties": {
+      "lit": "true"
+    }
+  }
+}

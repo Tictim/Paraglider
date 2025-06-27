@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "paraglider:stamina_vessel_enabled"
+    }
+  ],
+  "type": "paraglider:statue_bargain",
+  "bargainType": "paraglider:horned_statue",
+  "demands": {
+    "essences": 1,
+    "items": [
+      {
+        "ingredient": "#c:gems/emerald",
+        "quantity": 6
+      }
+    ]
+  },
+  "offers": {
+    "staminaVessels": 1
+  }
+}

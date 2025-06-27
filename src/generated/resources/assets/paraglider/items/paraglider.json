@@ -1,0 +1,26 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "paraglider:item/paraglider",
+      "tints": [
+        {
+          "type": "minecraft:dye",
+          "default": -5875371
+        }
+      ]
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "paraglider:item/paraglider_on",
+      "tints": [
+        {
+          "type": "minecraft:dye",
+          "default": -5875371
+        }
+      ]
+    },
+    "property": "paraglider:paragliding"
+  }
+}

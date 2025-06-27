@@ -1,0 +1,8 @@
+{
+  "conditions": {
+    "block": [
+      "minecraft:fire",
+      "minecraft:soul_fire"
+    ]
+  }
+}

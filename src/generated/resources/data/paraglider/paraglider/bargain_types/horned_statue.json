@@ -1,0 +1,147 @@
+{
+  "dialog": {
+    "fail": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_items.0"
+        },
+        "reason": [
+          "not_enough_items"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_heart.0"
+        },
+        "reason": [
+          "not_enough_hearts"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_heart.1"
+        },
+        "reason": [
+          "not_enough_hearts"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_stamina.0"
+        },
+        "reason": [
+          "not_enough_stamina"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_stamina.1"
+        },
+        "reason": [
+          "not_enough_stamina"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_essence.0"
+        },
+        "reason": [
+          "not_enough_essences"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.not_enough_essence.1"
+        },
+        "reason": [
+          "not_enough_essences"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.heart_full.0"
+        },
+        "reason": [
+          "heart_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.stamina_full.0"
+        },
+        "reason": [
+          "stamina_full"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.failure.essence_full.0"
+        },
+        "reason": [
+          "essence_full"
+        ]
+      }
+    ],
+    "fail_fallback": {
+      "dialog": {
+        "translate": "bargain.dialog.horned_statue.failure.fallback.0"
+      }
+    },
+    "initial": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.initial.0"
+        }
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.initial.1"
+        }
+      }
+    ],
+    "success": [
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.0"
+        }
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.1"
+        }
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.consumes_heart.0"
+        },
+        "tag": [
+          "consumes_heart_container"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.consumes_heart.1"
+        },
+        "tag": [
+          "consumes_heart_container"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.consumes_stamina.0"
+        },
+        "tag": [
+          "consumes_stamina_vessel"
+        ]
+      },
+      {
+        "dialog": {
+          "translate": "bargain.dialog.horned_statue.success.consumes_stamina.1"
+        },
+        "tag": [
+          "consumes_stamina_vessel"
+        ]
+      }
+    ]
+  }
+}

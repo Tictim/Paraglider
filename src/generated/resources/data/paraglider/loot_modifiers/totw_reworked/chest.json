@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:paraglider",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "totw_reworked:tower_chest"
+    }
+  ],
+  "dekuLeaf": false
+}

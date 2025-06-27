@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "paraglider:block/horned_statue",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "paraglider:block/horned_statue"
+    },
+    "facing=south": {
+      "model": "paraglider:block/horned_statue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "paraglider:block/horned_statue",
+      "y": 270
+    }
+  }
+}

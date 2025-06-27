@@ -1,0 +1,27 @@
+{
+  "parent": "paraglider:root",
+  "criteria": {
+    "bargain": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.paraglider.statues_bargain.desc"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "paraglider:horned_statue"
+    },
+    "title": {
+      "translate": "advancement.paraglider.statues_bargain"
+    }
+  },
+  "requirements": [
+    [
+      "bargain"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
