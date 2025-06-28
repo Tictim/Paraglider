@@ -150,7 +150,7 @@ public final class BargainContext {
 					e.getKey(),
 					bargain.previewDemands(),
 					bargain.previewOffers(),
-					new IntArrayList(bargain.count(this.player)),
+					new IntArrayList(bargain.countDemands(this.player)),
 					bargain.bargain(this.player, true).isSuccess()));
 		}
 		return demands;

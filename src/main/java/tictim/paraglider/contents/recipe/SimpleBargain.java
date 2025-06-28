@@ -160,7 +160,7 @@ public class SimpleBargain implements Bargain {
 		return this.offerPreviews;
 	}
 
-	@Override public int @NotNull [] count(@NotNull Player player) {
+	@Override public int @NotNull [] countDemands(@NotNull Player player) {
 		IntList list = new IntArrayList();
 
 		for (QuantifiedIngredient i : this.itemDemands) {

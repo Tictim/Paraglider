@@ -55,30 +55,33 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	@NotNull BargainResult bargain(@NotNull Player player, boolean simulate);
 
 	/**
-	 * @return List of preview for demands. This value is used both in server and client side, and the values
-	 * on both sides must be same size, with identical arrangement.
+	 * @return List of preview for demands. The previews are recreated on server side and synced on initialization of
+	 * bargain, as well as when the player's inventory or vessel amount changes.
+	 * @see #countDemands(Player)
 	 */
 	@NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewDemands();
+
 	/**
-	 * @return List of preview for offers. This value is used in client side.
+	 * @return List of preview for offers. The previews are recreated on server side and synced on initialization of
+	 * bargain, as well as when the player's inventory or vessel amount changes.
 	 */
 	@NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewOffers();
 
 	/**
 	 * <p>
-	 * Count how many instances of each input is supplied. For example, for item ingredient inputs the total number of
-	 * items matched in inventory is returned; for heart containers the number of heart containers the player possesses
-	 * is returned. The length of returned array should match the size of {@link #previewDemands()}, with each entry of
-	 * same index corresponding to demand, to the count of how much input is currently supplied for that demand.
+	 * Count how many instances of each input is supplied. For example, for item inputs the total number of items
+	 * matched in inventory is returned; for heart containers the number of heart containers the player possesses is
+	 * returned. The length of returned array should match the size of {@link #previewDemands()}, with each entry of
+	 * same index corresponding to the demand, to the count of how much input is currently supplied for that demand.
 	 * </p>
 	 * <p>
-	 * Note that, because of the nature of checks, this method is called from server-side and sent to client.
+	 * This value is evaluated on server-side and sent to client.
 	 * </p>
 	 *
 	 * @param player Player
 	 * @return Array with values denoting how many instances of each input is supplied
 	 */
-	int @NotNull [] count(@NotNull Player player);
+	int @NotNull [] countDemands(@NotNull Player player);
 
 	/**
 	 * @return Set of string tags associated with this bargain recipe. Tags describe basic description of what this
@@ -98,9 +101,7 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 		return false;
 	}
 
-	@Deprecated
-	@Override
-	default @NotNull ItemStack assemble(@NotNull NoInput input, @NotNull HolderLookup.Provider lookup) {
+	@Deprecated @Override default @NotNull ItemStack assemble(@NotNull NoInput input, @NotNull HolderLookup.Provider lookup) {
 		return ItemStack.EMPTY;
 	}
 
@@ -113,13 +114,11 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	}
 
 	final class NoInput implements RecipeInput {
-		@Override
-		public @NotNull ItemStack getItem(int i) {
+		@Override public @NotNull ItemStack getItem(int i) {
 			return ItemStack.EMPTY;
 		}
 
-		@Override
-		public int size() {
+		@Override public int size() {
 			return 0;
 		}
 	}
