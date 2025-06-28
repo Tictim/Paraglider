@@ -1,4 +1,4 @@
-package tictim.paraglider.impl;
+package tictim.paraglider.bargain;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import net.minecraft.core.RegistryAccess;

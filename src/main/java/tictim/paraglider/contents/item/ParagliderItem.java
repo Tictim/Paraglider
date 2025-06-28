@@ -16,10 +16,6 @@ public class ParagliderItem extends Item {
 		super(p);
 	}
 
-	public ParagliderItem() {
-		this(new Properties().stacksTo(1));
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
 			@NotNull ItemStack stack, @NotNull TooltipContext context,

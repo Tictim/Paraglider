@@ -29,7 +29,7 @@ import tictim.paraglider.config.*;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderVillageStructures;
-import tictim.paraglider.impl.BargainRecipeChecker;
+import tictim.paraglider.bargain.BargainRecipeChecker;
 import tictim.paraglider.impl.DefaultParagliderItemCapability;
 import tictim.paraglider.impl.ParagliderCauldronInteraction;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
