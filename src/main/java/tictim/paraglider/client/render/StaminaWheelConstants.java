@@ -32,16 +32,13 @@ public final class StaminaWheelConstants {
 	// pair of idle/background colors for stamina - first is the basic green color
 	// later ones are used for 4th wheel and beyond, cycling through each entry
 	private static final int[] WHEEL_COLORS = {
-			0xff00df53, 0xff006b24,
-			0xff8ab7ff, 0xff1457a2,
-			0xffff85ac, 0xff922e51,
-			0xffcfbf00, 0xff5f5c00,
-			0xff00d2ff, 0xff006480,
-			0xffff79ff, 0xff7e377f,
-			0xffeeaa00, 0xff784d00,
-			0xff00ddc6, 0xff006a5e,
-			0xffc0a2ff, 0xff5a469d,
-			0xffff9060, 0xff94350f,
+			0xff00df53, 0xff006320,
+			0xff81bbff, 0xff005395,
+			0xffff82c2, 0xff842c58,
+			0xffdfb500, 0xff644f00,
+			0xff00d9e1, 0xff006165,
+			0xffce9aff, 0xff5f3c8c,
+			0xffff9250, 0xff883200,
 	};
 
 	public static int wheelColor(int offset) {
