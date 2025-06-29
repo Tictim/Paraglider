@@ -20,8 +20,8 @@ import tictim.paraglider.client.render.SettingsWidgetStaminaWheelRenderer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-import static tictim.paraglider.client.render.StaminaWheelConstants.IDLE;
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
+import static tictim.paraglider.client.render.StaminaWheelConstants.wheelColor;
 
 public class StaminaWheelSettingScreen extends Screen implements DisableStaminaRender {
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
@@ -148,13 +148,13 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			setX(Mth.clamp(getX(), 1, screenWidth() - 2 - WHEEL_RADIUS * 2));
 			setY(Mth.clamp(getY(), 1, screenHeight() - 2 - WHEEL_RADIUS * 2));
 			if (this.visible)
-				this.wheel.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, 0);
+				this.wheel.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, 0, partialTicks);
 
 			// draw rectangle lines as an indicator for the stamina wheel
-			guiGraphics.fill(getX() - 1, getY() - 1, getX() + width + 1, getY(), IDLE);
-			guiGraphics.fill(getX() - 1, getY() + height, getX() + width + 1, getY() + height + 1, IDLE);
-			guiGraphics.fill(getX() - 1, getY() - 1, getX(), getY() + height + 1, IDLE);
-			guiGraphics.fill(getX() + width, getY() - 1, getX() + width + 1, getY() + height + 1, IDLE);
+			guiGraphics.fill(getX() - 1, getY() - 1, getX() + width + 1, getY(), wheelColor(0));
+			guiGraphics.fill(getX() - 1, getY() + height, getX() + width + 1, getY() + height + 1, wheelColor(0));
+			guiGraphics.fill(getX() - 1, getY() - 1, getX(), getY() + height + 1, wheelColor(0));
+			guiGraphics.fill(getX() + width, getY() - 1, getX() + width + 1, getY() + height + 1, wheelColor(0));
 
 			String s = (getX()) + ", " + (getY()) +
 					" (" + PERCENTAGE.format(getStaminaWheelX()) + " :: " + PERCENTAGE.format(getStaminaWheelY()) + ")";

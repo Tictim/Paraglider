@@ -26,7 +26,6 @@ import org.joml.Matrix4fStack;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.client.render.BargainScreenStaminaWheelRenderer;
-import tictim.paraglider.client.render.StaminaWheelRenderer;
 import tictim.paraglider.network.ParagliderNetwork;
 
 import java.util.Arrays;
@@ -82,7 +81,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 	private long dialogTimestamp;
 	private boolean dialogUpdated;
 
-	private StaminaWheelRenderer staminaWheelRenderer;
+	private BargainScreenStaminaWheelRenderer staminaWheelRenderer;
 	private @Nullable ContextMap contextMap;
 
 	public BargainScreen(int sessionId,
@@ -150,6 +149,10 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		}
 	}
 
+	@Override public void tick() {
+		this.staminaWheelRenderer.tick();
+	}
+
 	@Override public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		long newTimestamp = ms();
 		if (hasShiftDown())
@@ -190,7 +193,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		this.staminaWheelRenderer.render(guiGraphics,
 				getLeft() + SCROLL_BOX_THING_WIDTH + 5,
 				getTop() - 5 - WHEEL_RADIUS,
-				0);
+				0,
+				partialTick);
 
 		if (this.dialog != null) {
 			if (this.dialogUpdated) {
@@ -265,23 +269,23 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 
 			int xOff = left + i % rows * (16 * mag);
 			int yOff = top + (i / rows) * (16 * mag);
-			Matrix4fStack modelView = RenderSystem.getModelViewStack();
 
-			modelView.pushMatrix();
-			modelView.translate(xOff, yOff, 0);
-			modelView.scale(mag, mag, 1);
+			PoseStack pose = guiGraphics.pose();
+			pose.pushPose();
+			pose.translate(xOff, yOff, 0);
+
+			pose.pushPose();
+			pose.scale(mag, mag, 1);
 
 			guiGraphics.renderFakeItem(cycle(demandPreviewItem.get(i)), 0, 0);
 
-			modelView.popMatrix();
+			pose.popPose();
 
 			int count = catalog.getCount(i);
 			String s = (count >= demand.quantity() ? count :
 					ChatFormatting.RED + "" + count + ChatFormatting.RESET)
 					+ "/" + demand.quantity();
 
-			PoseStack pose = new PoseStack();
-			pose.translate(xOff, yOff, 0);
 			pose.translate(15 * mag + 2 * textMag, 16 * mag - 7 * textMag, 200);
 			pose.scale(textMag, textMag, 1);
 
@@ -295,6 +299,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 					Font.DisplayMode.NORMAL,
 					0,
 					0xf000f0));
+
+			pose.popPose();
 		}
 	}
 
@@ -497,7 +503,10 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			List<@NotNull Component> tooltip = closest.getTooltip();
 
 			if (tooltip == null) {
-				List<List<ItemStack>> previewItems = this.screen.demandPreviewItem(actualIndex());
+				List<List<ItemStack>> previewItems = demand ?
+						this.screen.demandPreviewItem(actualIndex()) :
+						this.screen.offerPreviewItem(actualIndex());
+
 				if (closestIndex < previewItems.size()) {
 					List<ItemStack> items = previewItems.get(closestIndex);
 					int i = this.screen.cycleIndex(items.size());

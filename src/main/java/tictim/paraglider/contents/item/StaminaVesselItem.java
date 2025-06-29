@@ -27,7 +27,8 @@ public class StaminaVesselItem extends VesselItem {
 			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
 			@NotNull TooltipFlag flag) {
 		tooltipAdder.accept(Component.translatable("tooltip.paraglider.stamina_vessel.1",
-				Component.literal(Integer.toString(Cfg.get().maxStaminaVessels())).setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
+				Component.literal(Integer.toString(Cfg.get().maxStaminaVessels()))
+						.setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
 		).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
 	}
 }

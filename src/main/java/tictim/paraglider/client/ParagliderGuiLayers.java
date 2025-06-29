@@ -37,7 +37,8 @@ public final class ParagliderGuiLayers {
 		int x = Mth.clamp((int)Math.round(settings.staminaWheelX() * w), 1 + WHEEL_RADIUS, w - 2 - WHEEL_RADIUS);
 		int y = Mth.clamp((int)Math.round(settings.staminaWheelY() * h), 1 + WHEEL_RADIUS, h - 2 - WHEEL_RADIUS);
 
-		InGameStaminaWheelRenderer.get().render(guiGraphics, x, y, 25);
+		InGameStaminaWheelRenderer.get().render(guiGraphics, x, y, 25,
+				deltaTracker.getGameTimeDeltaPartialTick(false));
 	}
 
 	private static int yOffset;

@@ -7,6 +7,7 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 
 import static tictim.paraglider.ParagliderUtils.ms;
+import static tictim.paraglider.client.render.StaminaWheelAnimationTracker.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
@@ -16,56 +17,129 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		return instance;
 	}
 
-	private boolean full = true;
-	private long fullDuration = FADE_END;
-	private long prevFullTime;
+	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
+	private final StaminaWheelAnimationTracker extraWheelFillAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_FILL_DURATION);
+	private final StaminaWheelAnimationTracker extraWheelEmptyAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_EMPTY_DURATION);
+	private final StaminaWheelAnimationTracker recoverAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
 
-	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel) {
+	private boolean prevDepleted;
+	private int prevWheelIndex = -1;
+
+	public InGameStaminaWheelRenderer() {
+		reset();
+	}
+
+	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
 		Stamina s = Stamina.get(player);
 		int maxStamina = s.maxStamina();
-		int stamina = Math.min(maxStamina, s.stamina());
+		int stamina = s.stamina();
 
-		if (stamina >= maxStamina) {
-			makeFullWheel(wheel, stamina);
-			return;
-		}
-
-		this.full = false;
-		boolean depleted = s.isDepleted();
 		Movement movement = Movement.get(player);
 		int staminaDelta = movement.getActualStaminaDelta();
 
-		wheel.fill(0, maxStamina, EMPTY);
-		if (depleted) {
-			wheel.fill(0, stamina, getBlinkColor(ms(), true));
+		wheel.setProperties(stamina, maxStamina);
+
+		boolean full = stamina >= maxStamina;
+		int wheelIndex = (int)Math.ceil(wheel.staminaWheelPos());
+
+		this.fullAnim.update(full);
+		this.extraWheelFillAnim.update(full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
+		this.extraWheelEmptyAnim.update(full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
+		this.recoverAnim.update(full ? SET_INACTIVE : this.prevDepleted && !s.isDepleted() ? SET_ACTIVE : RETAIN);
+
+		this.prevWheelIndex = wheelIndex;
+		this.prevDepleted = s.isDepleted();
+
+		if (full) {
+			int color = this.fullAnim.getGlowAndFadeColor(wheelColor(0));
+			if (ARGB.alpha(color) <= 0) return;
+			wheel.fillStamina(0, maxStamina, color);
+			makeExtraWheel(wheel);
 		} else {
-			wheel.fill(0, stamina, IDLE);
-			if (staminaDelta < 0) {
-				wheel.fill(stamina + staminaDelta * 10, stamina, getBlinkColor(ms(), false));
+			wheel.fillStamina(0, maxStamina, EMPTY);
+			if (s.isDepleted()) {
+				wheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(getBlinkColor(ms(), true)));
+			} else {
+				wheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(wheelColor(0)));
+				makeExtraWheel(wheel);
+
+				if (staminaDelta < 0) {
+					long ms = ms();
+					int color = this.recoverAnim.getGlowColor(getBlinkColor(ms, false));
+					wheel.fillStamina(stamina + staminaDelta * 10, stamina, color);
+
+					if (wheel.staminaWheelPos() > 3) {
+						wheel.fillWheel(
+								1 + toWheelPos(stamina + staminaDelta * 10),
+								1 + toWheelPos(stamina), color);
+					}
+				}
 			}
 		}
+
+		debugAnim("full", this.fullAnim);
+		debugAnim("extraWheelFill", this.extraWheelFillAnim);
+		debugAnim("extraWheelEmpty", this.extraWheelEmptyAnim);
+		debugAnim("recoverAnim", this.recoverAnim);
 	}
 
-	private void makeFullWheel(@NotNull Wheel wheel, int stamina) {
-		long time = ms();
-		if (!this.full) {
-			this.full = true;
-			this.fullDuration = 0;
-		} else if (this.fullDuration < FADE_END) {
-			long d = time - this.prevFullTime;
-			this.fullDuration = Math.min(this.fullDuration + d, FADE_END);
-		} else return;
+	private void makeExtraWheel(Wheel wheel) {
+		float staminaWheelPos = wheel.staminaWheelPos();
+		if (staminaWheelPos <= 2) return;
 
-		int color = getGlowAndFadeColor(this.fullDuration);
-		if (ARGB.alpha(color) <= 0) return;
-		wheel.fill(0, stamina, color);
+		int wheels = (int)Math.ceil(staminaWheelPos);
+		int color = wheelColor(wheels - 3);
+		int wheelIndicatorColor = wheels == 3 ? 0 : color;
 
-		this.prevFullTime = time;
+		if (this.extraWheelEmptyAnim.isActive()) {
+			float d = Math.min(1, (float)this.extraWheelEmptyAnim.activeDuration() / EXTRA_WHEEL_EMPTY_DURATION);
+			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
+			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
+					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
+		}
+
+		if (this.fullAnim.isActive()) {
+			color = this.fullAnim.getGlowAndFadeColor(color);
+			if (wheels >= 4) wheelIndicatorColor = color;
+		} else if (this.recoverAnim.isActive()) {
+			wheelIndicatorColor = color = this.recoverAnim.getGlowColor(color);
+		}
+
+		wheel.fillWheel(2, staminaWheelPos, color);
+
+		if (wheels >= 4) {
+			int bgColor = wheelBgColor(wheels - 4);
+
+			if (this.extraWheelFillAnim.isActive()) {
+				float d = Math.min(1, (float)this.extraWheelFillAnim.activeDuration() / EXTRA_WHEEL_FILL_DURATION);
+				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
+				wheelIndicatorColor = ARGB.lerp(d,
+						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
+						wheelColor(wheels - 3));
+			}
+
+			if (this.fullAnim.isActive()) {
+				bgColor = this.fullAnim.getGlowAndFadeColor(bgColor);
+			} else if (this.recoverAnim.isActive()) {
+				bgColor = this.recoverAnim.getGlowColor(bgColor);
+			}
+
+			wheel.fillWheel(staminaWheelPos, (float)Math.ceil(staminaWheelPos), bgColor);
+		}
+
+		wheel.setExtraWheelIndicatorColor(wheelIndicatorColor);
 	}
 
 	public void reset() {
-		this.full = true;
-		this.fullDuration = FADE_END;
-		this.prevFullTime = 0;
+		this.fullAnim.reset();
+		this.fullAnim.setActive(true);
+		this.fullAnim.setActiveDuration(FADE_END);
+
+		this.extraWheelFillAnim.reset();
+		this.extraWheelEmptyAnim.reset();
+		this.recoverAnim.reset();
+
+		this.prevDepleted = false;
+		this.prevWheelIndex = -1;
 	}
 }

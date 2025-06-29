@@ -27,6 +27,11 @@ import tictim.paraglider.api.ParagliderAPI;
  */
 public interface Stamina {
 	/**
+	 * Amount of stamina represented by one stamina wheel
+	 */
+	int STAMINA_PER_WHEEL = 1000;
+
+	/**
 	 * Get a stamina instance bound to specific player; if there's none, a no-op singleton implementation is returned.
 	 *
 	 * @param player Player

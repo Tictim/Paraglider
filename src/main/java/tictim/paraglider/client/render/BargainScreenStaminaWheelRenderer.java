@@ -1,63 +1,137 @@
 package tictim.paraglider.client.render;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
-import tictim.paraglider.api.vessel.VesselContainer;
-import tictim.paraglider.config.Cfg;
+import tictim.paraglider.api.stamina.Stamina;
 
-import static tictim.paraglider.ParagliderUtils.ms;
+import static tictim.paraglider.client.render.StaminaWheelAnimationTracker.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
-	private int internalStamina;
-	private long lastUpdateTimestamp;
-	private long timeSinceFull;
+	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
+	private final StaminaWheelAnimationTracker extraWheelFillAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_FILL_DURATION);
+	private final StaminaWheelAnimationTracker extraWheelEmptyAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_EMPTY_DURATION);
+
+	private int stamina;
+	private int maxStamina, prevMaxStamina;
+	private int prevWheelIndex = -1;
 	private boolean gainedStamina;
+	private boolean full;
 
-	private boolean initialized;
+	public BargainScreenStaminaWheelRenderer() {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null) return;
 
-	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel) {
-		VesselContainer vessels = VesselContainer.get(player);
-		int maxStamina = Cfg.get().maxStamina(vessels.staminaVessel());
+		this.stamina = this.maxStamina = this.prevMaxStamina = Stamina.get(player).maxStamina();
+	}
 
-		if (!this.initialized) {
-			this.initialized = true;
-			this.internalStamina = maxStamina;
-			this.lastUpdateTimestamp = ms();
-		} else {
-			long newTimestamp = ms();
-			long timePassed = newTimestamp - lastUpdateTimestamp;
-			this.lastUpdateTimestamp = newTimestamp;
+	public void tick() {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null) return;
 
-			if (internalStamina > maxStamina) {
-				this.internalStamina = Math.max(internalStamina - getStaminaChange(timePassed), maxStamina);
-				this.timeSinceFull = 0;
-				this.gainedStamina = false;
-			} else if (internalStamina < maxStamina) {
-				this.internalStamina = Math.min(internalStamina + getStaminaChange(timePassed), maxStamina);
-				this.timeSinceFull = 0;
-				this.gainedStamina = true;
-			} else if (timeSinceFull < GLOW_FADE_DURATION) {
-				this.timeSinceFull += timePassed;
+		int maxStamina = Stamina.get(player).maxStamina();
+		if (maxStamina != this.maxStamina) {
+			// only update prevMaxStamina if stamina value has caught up on max stamina
+			if (this.maxStamina == this.stamina) {
+				this.prevMaxStamina = this.maxStamina;
+			}
+			this.maxStamina = maxStamina;
+		}
+
+		if (this.stamina > maxStamina) {
+			this.stamina = Math.max(this.stamina - 20, maxStamina);
+			this.gainedStamina = false;
+		} else if (this.stamina < maxStamina) {
+			this.stamina = Math.min(this.stamina + 20, maxStamina);
+			this.gainedStamina = true;
+		}
+
+		this.full = this.gainedStamina && this.stamina >= maxStamina;
+	}
+
+	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
+		wheel.setProperties(this.stamina, Math.max(this.stamina, this.maxStamina));
+
+		int wheelIndex = (int)Math.ceil(wheel.staminaWheelPos());
+
+		this.fullAnim.update(this.full);
+		this.extraWheelFillAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
+		this.extraWheelEmptyAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
+
+		this.prevWheelIndex = wheelIndex;
+
+		wheel.fillStamina(0, Math.min(this.maxStamina, this.stamina), wheelColor(0));
+
+		if (this.stamina > this.maxStamina) {
+			wheel.fillStamina(this.maxStamina, this.stamina, EVIL_GLOW);
+		} else if (this.full) {
+			wheel.fillStamina(this.prevMaxStamina, this.maxStamina, this.fullAnim.getGlowColor(wheelColor(0)));
+		}
+
+		makeExtraWheel(wheel); // idk?
+
+		debugAnim("full", this.fullAnim);
+		debugAnim("extraWheelFill", this.extraWheelFillAnim);
+		debugAnim("extraWheelEmpty", this.extraWheelEmptyAnim);
+	}
+
+	private void makeExtraWheel(Wheel wheel) {
+		float staminaWheelPos = wheel.staminaWheelPos();
+		if (staminaWheelPos <= 2) return;
+
+		int wheels = (int)Math.ceil(staminaWheelPos);
+		int color = wheelColor(wheels - 3);
+		int wheelIndicatorColor = wheels == 3 ? 0 : color;
+
+		if (this.extraWheelEmptyAnim.isActive()) {
+			float d = Math.min(1, (float)this.extraWheelEmptyAnim.activeDuration() / EXTRA_WHEEL_EMPTY_DURATION);
+			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
+			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
+					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
+		}
+
+		wheel.fillWheel(2, staminaWheelPos, color);
+
+		if (this.stamina > this.maxStamina) {
+			wheel.fillWheel(
+					toWheelPos(this.maxStamina),
+					Math.min(toWheelPos(this.stamina), staminaWheelPos),
+					EVIL_GLOW);
+		} else if (this.fullAnim.isActive()) {
+			color = this.fullAnim.getGlowColor(color);
+			if (wheels >= 4) wheelIndicatorColor = color;
+			wheel.fillWheel(
+					Math.max(toWheelPos(this.prevMaxStamina), wheels - 1),
+					toWheelPos(this.maxStamina),
+					color);
+		}
+
+		if (wheels >= 4) {
+			int bgColor = wheelBgColor(wheels - 4);
+
+			if (this.extraWheelFillAnim.isActive()) {
+				float d = Math.min(1, (float)this.extraWheelFillAnim.activeDuration() / EXTRA_WHEEL_FILL_DURATION);
+				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
+				wheelIndicatorColor = ARGB.lerp(d,
+						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
+						wheelColor(wheels - 3));
+			}
+
+			wheel.fillWheel(staminaWheelPos, (float)Math.ceil(staminaWheelPos), bgColor);
+
+			if (this.stamina > this.maxStamina) {
+				wheel.fillWheel(toWheelPos(this.maxStamina) + 1, (float)Math.ceil(staminaWheelPos), EVIL_GLOW);
+			} else if (this.fullAnim.isActive()) {
+				wheel.fillWheel(
+						toWheelPos(this.prevMaxStamina) + 1,
+						Math.min(toWheelPos(this.maxStamina) + 1, (float)Math.ceil(staminaWheelPos)),
+						this.fullAnim.getGlowColor(bgColor));
 			}
 		}
 
-		if (internalStamina > maxStamina) {
-			wheel.fill(0, maxStamina, IDLE);
-			wheel.fill(maxStamina, internalStamina, EVIL_GLOW);
-		} else if (internalStamina < maxStamina) {
-			wheel.fill(0, internalStamina, IDLE);
-		} else if (gainedStamina && timeSinceFull < GLOW_FADE_DURATION) {
-			int stamina = Cfg.get().maxStamina(vessels.staminaVessel() - 1);
-			wheel.fill(0, stamina, IDLE);
-			wheel.fill(stamina, maxStamina, ARGB.lerp((float)timeSinceFull / GLOW_FADE_DURATION, GLOW, IDLE));
-		} else {
-			wheel.fill(0, maxStamina, IDLE);
-		}
-	}
-
-	private int getStaminaChange(long timePassed) {
-		return (int)(timePassed * (0.4));
+		wheel.setExtraWheelIndicatorColor(wheelIndicatorColor);
 	}
 }

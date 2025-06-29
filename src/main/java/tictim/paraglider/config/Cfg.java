@@ -93,27 +93,25 @@ public interface Cfg {
 	int maxHeartContainers();
 
 	/**
-	 * Maximum amount of stamina Player can get. One third of this value is equal to one stamina wheel.
-	 *
-	 * @return Config value
-	 */
-	int maxStamina();
-
-	/**
-	 * Amount of stamina Player starts with. Values higher than maxStamina doesn't work.<br>
-	 * If you want to make starting stamina displayed as one full stamina wheel, this value should be one
-	 * third of maxStamina.
+	 * Amount of stamina players starts with. One full stamina wheel is equivalent to 1000 stamina.
 	 *
 	 * @return Config value
 	 */
 	int startingStamina();
 
 	/**
-	 * Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.
+	 * Maximum amount of Stamina Vessels one player can consume. Higher value = higher maximum stamina.
 	 *
 	 * @return Config value
 	 */
 	int maxStaminaVessels();
+
+	/**
+	 * Stamina increase per vessel. One full stamina wheel is equivalent to 1000 stamina.
+	 *
+	 * @return Config value
+	 */
+	int staminaIncreasePerVessel();
 
 	// stamina
 
@@ -149,11 +147,7 @@ public interface Cfg {
 	}
 
 	default int maxStamina(int staminaVessels) {
-		int maxStaminaVessels = maxStaminaVessels();
-		int startingStamina = startingStamina();
-		if (maxStaminaVessels <= 0) return startingStamina;
-		if (maxStaminaVessels <= staminaVessels) maxStamina();
-		return startingStamina + (int)((double)staminaVessels / maxStaminaVessels * (maxStamina() - startingStamina));
+		return Math.max(0, startingStamina() + Math.max(0, Math.min(staminaVessels, maxStaminaVessels())) * staminaIncreasePerVessel());
 	}
 
 	enum TotwCompatConfigOption {
@@ -161,7 +155,7 @@ public interface Cfg {
 		 * Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests
 		 */
 		DEFAULT,
-		/**
+		/**a
 		 * Don't spawn anything
 		 */
 		DISABLE,

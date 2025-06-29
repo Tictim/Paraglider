@@ -2,19 +2,22 @@ package tictim.paraglider.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.floats.FloatList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.client.ParagliderRenderTypes;
-import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.contents.ParagliderTags;
 
@@ -24,22 +27,35 @@ import java.util.List;
 import java.util.Objects;
 
 import static net.minecraft.util.ARGB.alpha;
-import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
+import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public abstract class StaminaWheelRenderer {
 	private static final DecimalFormat DEBUG = new DecimalFormat("#.00");
 
 	private final Wheel wheel = new Wheel();
 
+	private boolean debug;
+	private @Nullable List<StaminaWheelAnimationTracker> debugAnims;
+	private @Nullable List<String> debugAnimNames;
+	private @Nullable FloatList debugVertices; // xy
+
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void render(@NotNull GuiGraphics guiGraphics, float x, float y, float z) {
+	public void render(@NotNull GuiGraphics guiGraphics, float x, float y, float z, float partialTicks) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
-		makeWheel(player, this.wheel);
+		this.debug = isDebugEnabled(player);
+		makeWheel(player, this.wheel, partialTicks);
 		render(guiGraphics, this.wheel, x, y, z, isDebugEnabled(player));
 		this.wheel.reset();
+
+		if (this.debug) {
+			this.debug = false;
+			if (this.debugAnims != null) this.debugAnims.clear();
+			if (this.debugAnimNames != null) this.debugAnimNames.clear();
+			if (this.debugVertices != null) this.debugVertices.clear();
+		}
 	}
 
 	// by default, holding a paraglider offhand enables stamina wheel debug info
@@ -47,76 +63,157 @@ public abstract class StaminaWheelRenderer {
 		return DebugCfg.get().debugPlayerMovement() && player.getOffhandItem().is(ParagliderTags.PARAGLIDERS);
 	}
 
-	protected abstract void makeWheel(@NotNull Player player, @NotNull Wheel wheel);
+	protected void debugAnim(String name, StaminaWheelAnimationTracker anim) {
+		if (!this.debug) return;
+		if (this.debugAnims == null) this.debugAnims = new ArrayList<>();
+		if (this.debugAnimNames == null) this.debugAnimNames = new ArrayList<>();
+		this.debugAnims.add(anim);
+		this.debugAnimNames.add(name);
+	}
 
-	protected void render(@NotNull GuiGraphics guiGraphics, @NotNull Wheel wheel, float x, float y, float z, boolean debug) {
+	protected abstract void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks);
+
+	protected void render(@NotNull GuiGraphics guiGraphics, @NotNull Wheel wheel,
+	                      float x, float y, float z, boolean debug) {
 		if (debug) {
 			Font font = Minecraft.getInstance().font;
-			for (int i = 0; i < wheel.count; i++) {
-				guiGraphics.drawString(font, wheel.segments.get(i).toString(),
-						20, 10 + font.lineHeight * i,
-						0xFFFFFFFF);
-			}
-		}
+			int lines = 0;
 
-		draw(guiGraphics, wheel, x, y, z, WHEEL_RADIUS, debug);
-	}
+			if (this.debugAnimNames != null && this.debugAnims != null) {
+				for (int i = 0; i < this.debugAnimNames.size(); i++) {
+					String name = this.debugAnimNames.get(i);
+					StaminaWheelAnimationTracker anim = this.debugAnims.get(i);
 
-	private static final float[] renderPoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
-
-	private static void draw(GuiGraphics guiGraphics, Wheel wheel,
-	                         float x, float y, float z, float radius, boolean debug) {
-		List<Vec2> debugVertices = debug ? new ArrayList<>() : null;
-
-		guiGraphics.drawSpecial(s -> {
-			for (WheelLevel wheelLevel : WheelLevel.values()) {
-				for (int i = 0; i < wheel.count; i++) {
-					Wheel.Segment segment = wheel.segments.get(i);
-					int alpha = alpha(segment.color);
-					if (alpha <= 0) continue;
-					float start = wheelLevel.getProportion(segment.from);
-					if (start >= 1) continue;
-					float end = wheelLevel.getProportion(segment.to);
-					if (end <= 0) continue;
-
-					VertexConsumer b = s.getBuffer(ParagliderRenderTypes.STAMINA_WHEEL.apply(wheelLevel.texture));
-					b.addVertex(x, y, z).setUv(0.5f, 0.5f).setColor(segment.color);
-
-					for (int j = 0; j < renderPoints.length - 1; j++) {
-						float currentStart = renderPoints[j];
-						if (currentStart >= end) break;
-						float currentEnd = renderPoints[j + 1];
-						if (currentEnd <= start) continue;
-
-						if (currentStart <= start)
-							vert(b, x, y, z, start, radius, segment.color, debugVertices);
-						if (currentEnd >= end) break;
-						vert(b, x, y, z, currentEnd, radius, segment.color, debugVertices);
-					}
-					vert(b, x, y, z, end, radius, segment.color, debugVertices);
+					guiGraphics.drawString(font,
+							name + ": " + (anim.isActive() ? "active " + anim.activeDuration() : "inactive"),
+							20, 10 + font.lineHeight * lines++,
+							0xFFFFFFFF);
 				}
 			}
+
+			if (lines > 0) lines++;
+
+			int lineStart = lines;
+			int maxWidth = 0;
+
+			for (int i = 0; i < wheel.count; i++) {
+				Wheel.Segment s = wheel.segments.get(i);
+				String segmentString = DEBUG.format(s.from) + " ~ " + DEBUG.format(s.to) + ": ";
+
+				guiGraphics.drawString(font, segmentString,
+						20, 10 + font.lineHeight * lines++,
+						0xFFFFFFFF);
+				maxWidth = Math.max(maxWidth, font.width(segmentString));
+			}
+
+			lines = lineStart;
+
+			for (int i = 0; i < wheel.count; i++) {
+				Wheel.Segment s = wheel.segments.get(i);
+				guiGraphics.drawString(font, String.format("#%X", s.color),
+						20 + maxWidth, 10 + font.lineHeight * lines++,
+						ARGB.color(Math.max(255, ARGB.alpha(s.color) * 2), s.color));
+			}
+		}
+
+		PoseStack pose = guiGraphics.pose();
+		pose.pushPose();
+		pose.translate(x, y, z);
+
+		draw(guiGraphics, wheel, WHEEL_RADIUS);
+
+		if (this.debugVertices != null) {
+			Font font = Minecraft.getInstance().font;
+			for (int i = 0; i < this.debugVertices.size(); i += 2) {
+				float vx = this.debugVertices.getFloat(i);
+				float vy = this.debugVertices.getFloat(i + 1);
+
+				String s = DEBUG.format(vx) + " " + DEBUG.format(vy);
+				Vector2f v2 = new Vector2f(vx, vy).normalize().mul(WHEEL_RADIUS * 2);
+
+				guiGraphics.drawString(font, s,
+						(int)(vx > 0 ? v2.x : v2.x - font.width(s)),
+						(int)(vy > 0 ? -v2.y - font.lineHeight : -v2.y),
+						wheelColor(0));
+			}
+		}
+
+		pose.popPose();
+	}
+
+	private static final float[] edgePoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
+
+	protected void draw(GuiGraphics guiGraphics, Wheel wheel, float radius) {
+		guiGraphics.drawSpecial(s -> {
+			drawWheel(guiGraphics, s, wheel, WheelLevel.FIRST, radius);
+			drawWheel(guiGraphics, s, wheel, WheelLevel.SECOND, radius);
+			drawWheel(guiGraphics, s, wheel, WheelLevel.THIRD, radius);
 		});
 
-		if (debugVertices != null) {
-			PoseStack stack = guiGraphics.pose();
-			stack.pushPose();
-			stack.translate(x, y, z);
+		int color = wheel.extraWheelIndicatorColor();
+		if (ARGB.alpha(color) >= 4) {
 			Font font = Minecraft.getInstance().font;
-			for (Vec2 vec : debugVertices) {
-				String s = DEBUG.format(vec.x) + " " + DEBUG.format(vec.y);
-				Vec2 v2 = vec.normalized().scale(radius * 2);
-				guiGraphics.drawString(font, s,
-						(int)(vec.x > 0 ? v2.x : v2.x - font.width(s)),
-						(int)(vec.y > 0 ? -v2.y - font.lineHeight : -v2.y),
-						0xFF00FF00);
-			}
-			stack.popPose();
+			int x = Math.round(radius);
+			//noinspection IntegerDivisionInFloatingPointContext
+			int y = Math.round(-radius - font.lineHeight / 2);
+
+			guiGraphics.drawString(font,
+					"+" + Math.max(1, (int)(Math.ceil(wheel.staminaWheelPos()) - 3)),
+					x, y, color);
 		}
 	}
 
-	private static void vert(VertexConsumer b, float x, float y, float z, float point, float radius, int color,
-	                         @Nullable List<Vec2> debugVertices) {
+	protected void drawWheel(GuiGraphics guiGraphics, MultiBufferSource bufferSource,
+	                         Wheel wheel, WheelLevel wheelLevel, float radius) {
+		float wheelStart = switch (wheelLevel) {
+			case FIRST -> 0;
+			case SECOND -> 1;
+			case THIRD -> Math.max(2, (int)Math.ceil(wheel.staminaWheelPos()) - 1);
+		};
+
+		for (int i = 0; i < wheel.count; i++) {
+			Wheel.Segment segment = wheel.segments.get(i);
+
+			int alpha = alpha(segment.color);
+			if (alpha <= 0) continue;
+
+			float start = segment.from - wheelStart;
+			if (start >= 1) continue;
+
+			float end = segment.to - wheelStart;
+			if (end <= 0) continue;
+
+			drawSegment(guiGraphics, bufferSource, wheelLevel, start, end, segment.color, radius);
+		}
+	}
+
+	protected void drawSegment(GuiGraphics guiGraphics, MultiBufferSource bufferSource, WheelLevel wheelLevel,
+	                           float start, float end, int color, float radius) {
+		VertexConsumer vc = bufferSource.getBuffer(ParagliderRenderTypes.STAMINA_WHEEL.apply(wheelLevel.texture));
+		vc.addVertex(guiGraphics.pose().last(), 0, 0, 0).setUv(0.5f, 0.5f).setColor(color);
+
+		int edgeIndex = 0;
+		int segmentIndex = 0;
+
+		while (edgeIndex < edgePoints.length && segmentIndex < 2) {
+			float currentSegment = segmentIndex == 0 ? start : end;
+			float currentEdge = edgePoints[edgeIndex];
+
+			if (currentSegment <= currentEdge) {
+				if (currentSegment > 0) {
+					vert(guiGraphics, vc, currentSegment, radius, color);
+				}
+				segmentIndex++;
+			} else {
+				if (segmentIndex > 0) {
+					vert(guiGraphics, vc, currentEdge, radius, color);
+				}
+				edgeIndex++;
+			}
+		}
+	}
+
+	protected void vert(GuiGraphics guiGraphics, VertexConsumer vc, float point, float radius, int color) {
 		float vx, vy;
 		final float PI = Mth.PI;
 		if (point == 0 || point == 1) {
@@ -147,65 +244,112 @@ public abstract class StaminaWheelRenderer {
 			vx = 1;
 			vy = -1 / (float)Math.tan(point * (2 * PI));
 		}
-		b.addVertex(x + vx * radius, y + vy * -radius, z)
+		vc.addVertex(guiGraphics.pose().last(), vx * radius, vy * -radius, 0)
 				.setUv((float)(vx / 2 + 0.5), (float)(vy / 2 + 0.5))
 				.setColor(color);
-		if (debugVertices != null) debugVertices.add(new Vec2(vx, vy));
+		if (this.debug) {
+			if (this.debugVertices == null) this.debugVertices = new FloatArrayList();
+			this.debugVertices.add(vx);
+			this.debugVertices.add(vy);
+		}
 	}
 
 	public static final class Wheel {
 		private final List<Segment> segments = new ArrayList<>();
+		private int stamina;
+		private int maxStamina;
 		private int count;
 
-		public void fill(int from, int to, int color) {
-			if (from >= to) return;
+		private int extraWheelIndicatorColor;
 
-			for (int i = 0; i < this.count; i++) {
-				Segment s = this.segments.get(i);
-				if (s.to <= from) continue;
-				insert(s.from < from ? i + 1 : i, from, to, color);
-				return;
-			}
-			// no entries, just add
-			insert(this.count, from, to, color);
+		public int stamina() {
+			return stamina;
 		}
 
-		private void insert(int index, int from, int to, int color) {
+		public int maxStamina() {
+			return this.maxStamina;
+		}
+
+		public void setProperties(int stamina, int maxStamina) {
+			this.stamina = stamina;
+			this.maxStamina = maxStamina;
+		}
+
+		public int extraWheelIndicatorColor() {
+			return this.extraWheelIndicatorColor;
+		}
+
+		public void setExtraWheelIndicatorColor(int extraWheelIndicatorColor) {
+			this.extraWheelIndicatorColor = extraWheelIndicatorColor;
+		}
+
+		public float staminaWheelPos() {
+			return toWheelPos(Math.min(maxStamina(), stamina()));
+		}
+
+		public void fillStamina(int from, int to, int color) {
+			fillWheel(toWheelPos(Math.clamp(from, 0, this.maxStamina)), toWheelPos(Math.clamp(to, 0, this.maxStamina)), color);
+		}
+
+		public void fillWheel(float from, float to, int color) {
+			from = Math.max(0, from);
+			if (from < to) {
+				insert(searchForBaseSegment(from), from, to, color);
+			}
+		}
+
+		private int searchForBaseSegment(float from) {
+			int l = 0, r = this.count;
+			while (l < r) {
+				int m = l + (r - l) / 2;
+				Segment s = this.segments.get(m);
+				if (s.from < from) l = m + 1;
+				else r = m;
+			}
+			return l;
+		}
+
+		private void insert(int index, float from, float to, int color) {
+			for (int i = index; i < this.count; i++) {
+				Segment s = this.segments.get(i);
+				if (s.from < from) {
+					index++;
+					s.to = from;
+				} else if (s.to <= to) {
+					removeSegment(i--);
+				} else {
+					s.from = to;
+					break;
+				}
+			}
+
 			int lastIndex = this.segments.size() - 1;
 			Segment s = lastIndex > this.count ? this.segments.remove(lastIndex) : new Segment();
-			this.segments.add(index, s);
-			this.count++;
 			s.from = from;
 			s.to = to;
 			s.color = color;
-
-			for (int i = index + 1; i < this.count; i++) {
-				Segment e = segments.get(i);
-				if (e.to <= to) {
-					remove(i--);
-				} else {
-					e.from = to;
-					return;
-				}
-			}
+			this.segments.add(index, s);
+			this.count++;
 		}
 
-		private void remove(int index) {
+		private void removeSegment(int index) {
 			this.segments.add(this.segments.remove(index));
 			this.count--;
 		}
 
 		public void reset() {
 			this.count = 0;
+			this.maxStamina = 0;
+			this.extraWheelIndicatorColor = 0;
 		}
 
 		private static final class Segment {
-			private int from;
-			private int to;
+			private float from;
+			private float to;
 			private int color; // ARGB
 
 			@Override public String toString() {
-				return String.format("%d ~ %d: #%X", from, to, color);
+				return String.format("%s ~ %s: #%X", DEBUG.format(from), DEBUG.format(to), color);
 			}
 		}
 	}
@@ -219,29 +363,6 @@ public abstract class StaminaWheelRenderer {
 
 		WheelLevel(ResourceLocation texture) {
 			this.texture = Objects.requireNonNull(texture);
-		}
-
-		public int start() {
-			return switch (this) {
-				case FIRST -> 0;
-				case SECOND -> (int)(Cfg.get().maxStamina() / 3.0);
-				case THIRD -> (int)(Cfg.get().maxStamina() * 2 / 3.0);
-			};
-		}
-		public int end() {
-			return switch (this) {
-				case FIRST -> (int)(Cfg.get().maxStamina() / 3.0);
-				case SECOND -> (int)(Cfg.get().maxStamina() * 2 / 3.0);
-				case THIRD -> Cfg.get().maxStamina();
-			};
-		}
-
-		public float getProportion(int value) {
-			int start = start();
-			if (start >= value) return 0;
-			int end = end();
-			if (end <= value) return 1;
-			return (float)(value - start) / (end - start);
 		}
 	}
 }

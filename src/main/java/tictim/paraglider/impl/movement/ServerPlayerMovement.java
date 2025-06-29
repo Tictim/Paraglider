@@ -231,7 +231,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 		super.updateStamina();
 
 		if (stamina.isDepleted()) {
-			if (stamina.stamina() >= stamina.maxStamina()) {
+			if (stamina.stamina() >= Math.min(stamina.maxStamina(), Stamina.STAMINA_PER_WHEEL * 3)) {
 				stamina.setDepleted(false);
 				markMovementChanged();
 			}

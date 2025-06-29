@@ -20,9 +20,9 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.IntValue startingHearts;
 	private final ModConfigSpec.IntValue maxHeartContainers;
 
-	private final ModConfigSpec.IntValue maxStamina;
 	private final ModConfigSpec.IntValue startingStamina;
 	private final ModConfigSpec.IntValue maxStaminaVessels;
+	private final ModConfigSpec.IntValue staminaIncreasePerVessel;
 
 	private final ModConfigSpec.BooleanValue paraglidingConsumesStamina;
 	private final ModConfigSpec.BooleanValue runningConsumesStamina;
@@ -67,14 +67,12 @@ public class ServerConfig implements Cfg {
 						attribute system; without modifying these limits, Heart Containers won't give you extra hearts beyond that.""")
 				.defineInRange("maxHeartContainers", 20, 0, 512);
 
-		maxStamina = b.comment("Maximum amount of stamina Player can get. Do note that one third of this value is equal to one stamina wheel.")
-				.defineInRange("maxStamina", 3000, 0, Integer.MAX_VALUE);
-		startingStamina = b.comment("""
-						Amount of stamina Player starts with. Values higher than maxStamina doesn't work.
-						If you want to make starting stamina displayed as one full stamina wheel, this value should be one third of maxStamina.""")
+		startingStamina = b.comment("Amount of stamina players start with. One full stamina wheel is equivalent to 1000 stamina.")
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
-		maxStaminaVessels = b.comment("Stamina Vessels players need to obtain max out stamina. More vessels means lesser stamina increase per vessel.")
+		maxStaminaVessels = b.comment("Maximum amount of Stamina Vessels one player can consume. Higher value = higher maximum stamina.")
 				.defineInRange("maxStaminaVessels", 10, 0, Integer.MAX_VALUE);
+		staminaIncreasePerVessel = b.comment("Stamina increase per vessel. One full stamina wheel is equivalent to 1000 stamina.")
+				.defineInRange("staminaIncreasePerVessel", 200, 0, Integer.MAX_VALUE);
 		b.pop();
 
 		b.push("stamina");
@@ -124,14 +122,14 @@ public class ServerConfig implements Cfg {
 	@Override public int maxHeartContainers() {
 		return get(spec, maxHeartContainers);
 	}
-	@Override public int maxStamina() {
-		return get(spec, maxStamina);
-	}
 	@Override public int startingStamina() {
 		return get(spec, startingStamina);
 	}
 	@Override public int maxStaminaVessels() {
 		return get(spec, maxStaminaVessels);
+	}
+	@Override public int staminaIncreasePerVessel() {
+		return get(spec, staminaIncreasePerVessel);
 	}
 	@Override public boolean paraglidingConsumesStamina() {
 		return get(spec, paraglidingConsumesStamina);
