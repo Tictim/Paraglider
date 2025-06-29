@@ -15,8 +15,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 	private final StaminaWheelAnimationTracker extraWheelFillAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_FILL_DURATION);
 	private final StaminaWheelAnimationTracker extraWheelEmptyAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_EMPTY_DURATION);
 
-	private int stamina;
-	private int maxStamina, prevMaxStamina;
+	private double stamina;
+	private double maxStamina, prevMaxStamina;
 	private int prevWheelIndex = -1;
 	private boolean gainedStamina;
 	private boolean full;
@@ -32,7 +32,7 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 
-		int maxStamina = Stamina.get(player).maxStamina();
+		double maxStamina = Stamina.get(player).maxStamina();
 		if (maxStamina != this.maxStamina) {
 			// only update prevMaxStamina if stamina value has caught up on max stamina
 			if (this.maxStamina == this.stamina) {

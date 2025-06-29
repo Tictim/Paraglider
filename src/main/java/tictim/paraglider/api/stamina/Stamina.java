@@ -29,7 +29,7 @@ public interface Stamina {
 	/**
 	 * Amount of stamina represented by one stamina wheel
 	 */
-	int STAMINA_PER_WHEEL = 1000;
+	double STAMINA_PER_WHEEL = 1000;
 
 	/**
 	 * Get a stamina instance bound to specific player; if there's none, a no-op singleton implementation is returned.
@@ -44,17 +44,17 @@ public interface Stamina {
 	/**
 	 * @return Amount of stamina
 	 */
-	int stamina();
+	double stamina();
 
 	/**
 	 * @param stamina Amount of stamina to be set
 	 */
-	void setStamina(int stamina);
+	void setStamina(double stamina);
 
 	/**
 	 * @return Maximum amount of stamina, >=0
 	 */
-	int maxStamina();
+	double maxStamina();
 
 	/**
 	 * @return Whether depleted state is active
@@ -67,11 +67,6 @@ public interface Stamina {
 	void setDepleted(boolean depleted);
 
 	/**
-	 * @param staminaVessels New value for number of stamina vessels
-	 */
-	default void setStaminaVessels(int staminaVessels) {}
-
-	/**
 	 * Tries to add stamina by specific {@code amount} without exceeding {@link Stamina#maxStamina() maxStamina}.
 	 *
 	 * @param amount   Amount of stamina to be given
@@ -79,7 +74,7 @@ public interface Stamina {
 	 *                 evaluated only as a simulated result.
 	 * @return Amount of stamina given
 	 */
-	int giveStamina(int amount, boolean simulate);
+	double giveStamina(double amount, boolean simulate);
 
 	/**
 	 * Subtract stamina by specific {@code amount}. If stamina is currently in depleted state, unless
@@ -91,7 +86,7 @@ public interface Stamina {
 	 * @param ignoreDepletion Bypasses depleted state check if {@code true}
 	 * @return Amount of stamina taken
 	 */
-	int takeStamina(int amount, boolean simulate, boolean ignoreDepletion);
+	double takeStamina(double amount, boolean simulate, boolean ignoreDepletion);
 
 	/**
 	 * Renders stamina wheel if this value is {@code true}. Client side only.

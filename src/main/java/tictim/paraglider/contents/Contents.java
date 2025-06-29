@@ -3,11 +3,14 @@ package tictim.paraglider.contents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -46,7 +49,7 @@ import tictim.paraglider.impl.AttachmentProvider;
 import tictim.paraglider.impl.MovementState;
 import tictim.paraglider.impl.SimpleVesselContainer;
 import tictim.paraglider.impl.movement.PlayerMovement;
-import tictim.paraglider.impl.stamina.BotWStamina;
+import tictim.paraglider.impl.stamina.BotWStaminaData;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 import static tictim.paraglider.contents.CommonContents.*;
@@ -58,6 +61,7 @@ public class Contents {
 
 	public final DeferredRegister<Block> blocks = DeferredRegister.create(Registries.BLOCK, MODID);
 	public final DeferredRegister<Item> items = DeferredRegister.create(Registries.ITEM, MODID);
+	public final DeferredRegister<Attribute> attributes = DeferredRegister.create(Registries.ATTRIBUTE, MODID);
 	public final DeferredRegister<DataComponentType<?>> dataComponents = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
 	public final DeferredRegister<RecipeSerializer<?>> recipeSerializers = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MODID);
 	public final DeferredRegister<RecipeType<?>> recipeTypes = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
@@ -81,6 +85,9 @@ public class Contents {
 			id -> new GoddessStatueBlock(statueBlock(id)));
 	public final DeferredHolder<Block, Block> hornedStatue = blocks.register("horned_statue",
 			id -> new HornedStatueBlock(statueBlock(id)));
+
+	public final DeferredHolder<Attribute, Attribute> maxStamina = attributes.register("max_stamina",
+			() -> new RangedAttribute("attribute.name.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
 
 	public final DeferredHolder<DataComponentType<?>, DataComponentType<ParaglidingFlag>> paraglidingFlagComponent = dataComponents.register("paragliding",
 			() -> DataComponentType.<ParaglidingFlag>builder()
@@ -168,9 +175,9 @@ public class Contents {
 						"Cannot create player movement data attachment for non-player holder");
 			}).build());
 
-	public final DeferredHolder<AttachmentType<?>, AttachmentType<BotWStamina>> botwStamina = attachmentTypes.register("botw_stamina",
-			() -> AttachmentType.builder(h -> new BotWStamina(h.getExistingDataOrNull(vesselContainer())))
-					.serialize(BotWStamina.CODEC)
+	public final DeferredHolder<AttachmentType<?>, AttachmentType<BotWStaminaData>> botwStaminaData = attachmentTypes.register("botw_stamina",
+			() -> AttachmentType.builder(h -> new BotWStaminaData())
+					.serialize(BotWStaminaData.CODEC)
 					.build());
 
 	public final DeferredHolder<AttachmentType<?>, AttachmentType<SimpleVesselContainer>> vesselContainer = attachmentTypes.register("vessel_container",
@@ -193,6 +200,7 @@ public class Contents {
 	public Contents(IEventBus eventBus) {
 		this.blocks.register(eventBus);
 		this.items.register(eventBus);
+		this.attributes.register(eventBus);
 		this.dataComponents.register(eventBus);
 		this.loots.register(eventBus);
 		this.lootConditions.register(eventBus);
@@ -261,6 +269,9 @@ public class Contents {
 	public @NotNull BlockItem hornedStatueItem() {
 		return hornedStatueItem.get();
 	}
+	public @NotNull Holder<Attribute> maxStamina() {
+		return maxStamina;
+	}
 	public @NotNull DataComponentType<ParaglidingFlag> paraglidingFlagComponent() {
 		return paraglidingFlagComponent.get();
 	}
@@ -294,8 +305,8 @@ public class Contents {
 	public @NotNull AttachmentType<PlayerMovement> playerMovement() {
 		return playerMovement.get();
 	}
-	public @NotNull AttachmentType<BotWStamina> botwStamina() {
-		return botwStamina.get();
+	public @NotNull AttachmentType<BotWStaminaData> botwStaminaData() {
+		return botwStaminaData.get();
 	}
 	public @NotNull AttachmentType<SimpleVesselContainer> vesselContainer() {
 		return vesselContainer.get();

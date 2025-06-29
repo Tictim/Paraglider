@@ -3,6 +3,7 @@ package tictim.paraglider;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +14,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -255,5 +257,18 @@ public final class ParagliderUtils {
 			count += stack.getCount();
 		}
 		return count;
+	}
+
+	public static double refreshAttribute(Player player, Holder<Attribute> attribute, double value, ResourceLocation id) {
+		AttributeInstance attrib = player.getAttribute(attribute);
+		if (attrib == null) return 0;
+
+		AttributeModifier prev = attrib.getModifier(id);
+		if (prev != null) attrib.removeModifier(prev);
+		if (value != 0) {
+			attrib.addPermanentModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_VALUE));
+		}
+
+		return value - (prev != null ? prev.amount() : 0);
 	}
 }

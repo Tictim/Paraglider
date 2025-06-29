@@ -78,7 +78,7 @@ public final class StaminaWheelConstants {
 		return (float)Math.abs(currentTime % cycleTime - halfCycle) / halfCycle;
 	}
 
-	public static float toWheelPos(int stamina) {
-		return (float)stamina / Stamina.STAMINA_PER_WHEEL;
+	public static float toWheelPos(double stamina) {
+		return (float)(stamina / Stamina.STAMINA_PER_WHEEL);
 	}
 }

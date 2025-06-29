@@ -2,6 +2,7 @@ package tictim.paraglider;
 
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -11,6 +12,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -25,11 +27,11 @@ import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.api.bargain.BargainType;
+import tictim.paraglider.bargain.BargainRecipeChecker;
 import tictim.paraglider.config.*;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderVillageStructures;
-import tictim.paraglider.bargain.BargainRecipeChecker;
 import tictim.paraglider.impl.DefaultParagliderItemCapability;
 import tictim.paraglider.impl.ParagliderCauldronInteraction;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
@@ -106,6 +108,10 @@ public class ParagliderMod {
 		eventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
 			event.dataPackRegistry(BargainTypeRegistry.REGISTRY_KEY, BargainType.CODEC);
 			event.dataPackRegistry(WindSourceRegistry.REGISTRY_KEY, WindSource.CODEC, WindSource.CODEC);
+		});
+
+		eventBus.addListener((EntityAttributeModificationEvent event) -> {
+			event.add(EntityType.PLAYER, Contents.get().maxStamina());
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> {

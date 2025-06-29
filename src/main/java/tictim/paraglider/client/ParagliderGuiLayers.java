@@ -69,7 +69,7 @@ public final class ParagliderGuiLayers {
 		ParagliderClientSettings clientSettings = ParagliderClientSettings.get();
 
 		PlayerState state = movement.state();
-		int actualStaminaDelta = movement.getActualStaminaDelta();
+		int actualStaminaDelta = movement.staminaDelta();
 
 		if (state.flags().isEmpty()) {
 			consumer.accept("State: " + state.id());

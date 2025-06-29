@@ -3,8 +3,6 @@ package tictim.paraglider.impl.movement;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -93,28 +91,22 @@ public class ServerPlayerMovement extends PlayerMovement {
 		if (this.heartContainerChanged) {
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
-			double delta;
-			double value = Cfg.get().additionalMaxHealth(vessels.heartContainer());
-
-			AttributeInstance attrib = player().getAttribute(Attributes.MAX_HEALTH);
-			if (attrib != null) {
-				AttributeModifier prev = attrib.getModifier(HEART_CONTAINER_ATTRIBUTE_ID);
-				if (prev != null) attrib.removeModifier(prev);
-				if (value != 0) {
-					attrib.addPermanentModifier(new AttributeModifier(HEART_CONTAINER_ATTRIBUTE_ID,
-							value, AttributeModifier.Operation.ADD_VALUE));
-				}
-				delta = value - (prev != null ? prev.amount() : 0);
-			} else delta = 0;
+			double delta = ParagliderUtils.refreshAttribute(player(), Attributes.MAX_HEALTH,
+					Cfg.get().additionalMaxHealth(vessels.heartContainer()),
+					HEART_CONTAINER_ATTRIBUTE_ID);
 
 			player().setHealth(Math.min(player().getMaxHealth(), player().getHealth() + Math.max(0, (float)delta)));
 			this.heartContainerChanged = false;
 		}
+
 		if (this.staminaVesselChanged) {
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
+			ParagliderUtils.refreshAttribute(player(), Contents.get().maxStamina(),
+					Cfg.get().maxStamina(vessels.staminaVessel()),
+					STAMINA_VESSEL_ATTRIBUTE_ID);
+
 			Stamina stamina = stamina();
-			stamina.setStaminaVessels(vessels.staminaVessel());
 			stamina.setStamina(Math.min(stamina.stamina(), stamina.maxStamina()));
 			this.staminaVesselChanged = false;
 		}

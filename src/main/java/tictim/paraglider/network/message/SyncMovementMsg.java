@@ -11,7 +11,7 @@ import static tictim.paraglider.api.ParagliderAPI.id;
 
 public record SyncMovementMsg(
 		@NotNull ResourceLocation state,
-		int stamina,
+		double stamina,
 		boolean depleted,
 		int recoveryDelay,
 		double reductionRate
@@ -19,7 +19,7 @@ public record SyncMovementMsg(
 	public static final Type<SyncMovementMsg> TYPE = new Type<>(id("sync_movement"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncMovementMsg> CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, SyncMovementMsg::state,
-			ByteBufCodecs.VAR_INT, SyncMovementMsg::stamina,
+			ByteBufCodecs.DOUBLE, SyncMovementMsg::stamina,
 			ByteBufCodecs.BOOL, SyncMovementMsg::depleted,
 			ByteBufCodecs.VAR_INT, SyncMovementMsg::recoveryDelay,
 			ByteBufCodecs.DOUBLE, SyncMovementMsg::reductionRate,

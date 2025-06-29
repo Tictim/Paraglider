@@ -53,7 +53,6 @@ public final class ClientPacketHandler {
 		vessels.setHeartContainer(msg.heartContainers(), false, false);
 		vessels.setStaminaVessel(msg.staminaVessels(), false, false);
 		Stamina stamina = Stamina.get(mc.player);
-		stamina.setStaminaVessels(msg.staminaVessels());
 		stamina.setStamina(msg.stamina());
 	}
 

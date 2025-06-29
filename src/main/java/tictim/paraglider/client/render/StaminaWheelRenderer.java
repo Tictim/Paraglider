@@ -256,21 +256,21 @@ public abstract class StaminaWheelRenderer {
 
 	public static final class Wheel {
 		private final List<Segment> segments = new ArrayList<>();
-		private int stamina;
-		private int maxStamina;
+		private double stamina;
+		private double maxStamina;
 		private int count;
 
 		private int extraWheelIndicatorColor;
 
-		public int stamina() {
+		public double stamina() {
 			return stamina;
 		}
 
-		public int maxStamina() {
+		public double maxStamina() {
 			return this.maxStamina;
 		}
 
-		public void setProperties(int stamina, int maxStamina) {
+		public void setProperties(double stamina, double maxStamina) {
 			this.stamina = stamina;
 			this.maxStamina = maxStamina;
 		}
@@ -284,11 +284,12 @@ public abstract class StaminaWheelRenderer {
 		}
 
 		public float staminaWheelPos() {
-			return toWheelPos(Math.min(maxStamina(), stamina()));
+			return toWheelPos((int)Math.min(maxStamina(), stamina()));
 		}
 
-		public void fillStamina(int from, int to, int color) {
-			fillWheel(toWheelPos(Math.clamp(from, 0, this.maxStamina)), toWheelPos(Math.clamp(to, 0, this.maxStamina)), color);
+		public void fillStamina(double from, double to, int color) {
+			fillWheel(toWheelPos(Math.clamp(from, 0, this.maxStamina)),
+					toWheelPos(Math.clamp(to, 0, this.maxStamina)), color);
 		}
 
 		public void fillWheel(float from, float to, int color) {

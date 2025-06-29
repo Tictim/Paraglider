@@ -42,8 +42,8 @@ public interface Movement {
 	double staminaReductionRate();
 
 	/**
-	 * @return Actual stamina delta based on {@link #state() player state} and
-	 * {@link #staminaReductionRate() reduction rate}
+	 * @return Stamina delta currently being applied to this movement instance; calculated based on
+	 * {@link #state() player state} and {@link #staminaReductionRate() reduction rate}.
 	 */
-	int getActualStaminaDelta();
+	int staminaDelta();
 }

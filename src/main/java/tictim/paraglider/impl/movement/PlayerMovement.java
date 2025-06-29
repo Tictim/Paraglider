@@ -60,7 +60,7 @@ public abstract class PlayerMovement implements Movement {
 		return staminaReductionRate;
 	}
 
-	@Override public int getActualStaminaDelta() {
+	@Override public int staminaDelta() {
 		return ParagliderUtils.applyReductionToDelta(state().staminaDelta(), staminaReductionRate());
 	}
 
@@ -91,7 +91,7 @@ public abstract class PlayerMovement implements Movement {
 		PlayerState state = state();
 		int recoveryDelay = recoveryDelay();
 		int newRecoveryDelay = recoveryDelay;
-		int delta = getActualStaminaDelta();
+		int delta = staminaDelta();
 
 		if (delta < 0) {
 			if (!stamina.isDepleted()) stamina.takeStamina(-delta, false, false);

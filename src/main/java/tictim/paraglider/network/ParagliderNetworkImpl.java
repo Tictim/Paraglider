@@ -63,7 +63,7 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 
 	@Override public void syncMovement(@NotNull ServerPlayer player,
 	                                   @NotNull ResourceLocation state,
-	                                   int stamina,
+	                                   double stamina,
 	                                   boolean depleted,
 	                                   int recoveryDelay,
 	                                   double reductionRate) {
@@ -85,7 +85,7 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToPlayer(target, msg);
 	}
 
-	@Override public void syncVessels(@NotNull ServerPlayer player, int stamina, int heartContainers, int staminaVessels) {
+	@Override public void syncVessels(@NotNull ServerPlayer player, double stamina, int heartContainers, int staminaVessels) {
 		SyncVesselMsg msg = new SyncVesselMsg(stamina, heartContainers, staminaVessels);
 		traceSendToPlayer(Kind.VESSEL, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);

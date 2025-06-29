@@ -31,11 +31,11 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
 		Stamina s = Stamina.get(player);
-		int maxStamina = s.maxStamina();
-		int stamina = s.stamina();
+		double maxStamina = s.maxStamina();
+		double stamina = s.stamina();
 
 		Movement movement = Movement.get(player);
-		int staminaDelta = movement.getActualStaminaDelta();
+		int staminaDelta = movement.staminaDelta();
 
 		wheel.setProperties(stamina, maxStamina);
 

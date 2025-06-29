@@ -29,7 +29,7 @@ public interface ParagliderNetwork {
 
 	void syncMovement(@NotNull ServerPlayer player,
 	                  @NotNull ResourceLocation state,
-	                  int stamina,
+	                  double stamina,
 	                  boolean depleted,
 	                  int recoveryDelay,
 	                  double reductionRate);
@@ -38,7 +38,7 @@ public interface ParagliderNetwork {
 	void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull ResourceLocation state);
 
 	void syncVessels(@NotNull ServerPlayer player,
-	                 int stamina,
+	                 double stamina,
 	                 int heartContainers,
 	                 int staminaVessels);
 
