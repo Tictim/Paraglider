@@ -14,6 +14,7 @@ import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.screen.DisableStaminaRender;
 import tictim.paraglider.config.DebugCfg;
+import tictim.paraglider.impl.movement.ClientPlayerMovement;
 
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
@@ -59,6 +60,7 @@ public final class ParagliderGuiLayers {
 		});
 	}
 
+	private static final DecimalFormat STAMINA = new DecimalFormat("0.#");
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final DecimalFormat PERCENTAGE_SIGNED = new DecimalFormat("+#.#%;-#.#%");
 
@@ -69,7 +71,7 @@ public final class ParagliderGuiLayers {
 		ParagliderClientSettings clientSettings = ParagliderClientSettings.get();
 
 		PlayerState state = movement.state();
-		int actualStaminaDelta = movement.staminaDelta();
+		double staminaDelta = movement.staminaDelta();
 
 		if (state.flags().isEmpty()) {
 			consumer.accept("State: " + state.id());
@@ -78,20 +80,25 @@ public final class ParagliderGuiLayers {
 					.map(Object::toString)
 					.collect(Collectors.joining(" ")) + ")");
 		}
-		consumer.accept((stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " + stamina.stamina() + " / " + stamina.maxStamina());
+		consumer.accept((stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +
+				STAMINA.format(stamina.stamina()) + " / " + STAMINA.format(stamina.maxStamina()));
 
 		StringBuilder stb = new StringBuilder().append("Stamina Delta: ");
 
-		if (state.staminaDelta() != actualStaminaDelta) {
-			stb.append(state.staminaDelta());
-			int diff = actualStaminaDelta - state.staminaDelta();
+		int baseStaminaDelta = state.staminaDelta();
+		if (baseStaminaDelta != staminaDelta) {
+			stb.append(STAMINA.format(baseStaminaDelta));
+			double diff = staminaDelta - baseStaminaDelta;
 			if (diff > 0) stb.append("+");
-			stb.append(diff);
+			stb.append(STAMINA.format(diff));
 		} else {
-			stb.append(actualStaminaDelta);
+			stb.append(STAMINA.format(staminaDelta));
 		}
-		double reductionRate = movement.staminaReductionRate();
-		if (reductionRate != 0) stb.append(" (").append(PERCENTAGE_SIGNED.format(reductionRate));
+
+		if (movement instanceof ClientPlayerMovement cpm) {
+			double efficiency = cpm.staminaEfficiency();
+			if (efficiency != 0) stb.append(" (").append(PERCENTAGE_SIGNED.format(efficiency));
+		}
 
 		consumer.accept(stb.toString());
 

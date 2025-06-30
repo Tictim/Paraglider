@@ -5,7 +5,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderMod;
-import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
@@ -21,8 +20,6 @@ public abstract class PlayerMovement implements Movement {
 
 	private boolean staminaInitialized;
 	private @Nullable Stamina stamina;
-
-	protected double staminaReductionRate;
 
 	public PlayerMovement(@NotNull Player player) {
 		this.player = Objects.requireNonNull(player, "player == null");
@@ -56,14 +53,6 @@ public abstract class PlayerMovement implements Movement {
 		this.state = state;
 	}
 
-	@Override public double staminaReductionRate() {
-		return staminaReductionRate;
-	}
-
-	@Override public int staminaDelta() {
-		return ParagliderUtils.applyReductionToDelta(state().staminaDelta(), staminaReductionRate());
-	}
-
 	public abstract void update();
 
 	protected void applyMovement() {
@@ -91,7 +80,7 @@ public abstract class PlayerMovement implements Movement {
 		PlayerState state = state();
 		int recoveryDelay = recoveryDelay();
 		int newRecoveryDelay = recoveryDelay;
-		int delta = staminaDelta();
+		double delta = staminaDelta();
 
 		if (delta < 0) {
 			if (!stamina.isDepleted()) stamina.takeStamina(-delta, false, false);

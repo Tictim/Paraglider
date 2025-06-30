@@ -35,7 +35,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		double stamina = s.stamina();
 
 		Movement movement = Movement.get(player);
-		int staminaDelta = movement.staminaDelta();
+		double staminaDelta = movement.staminaDelta();
 
 		wheel.setProperties(stamina, maxStamina);
 

@@ -37,7 +37,8 @@ import tictim.paraglider.impl.ParagliderCauldronInteraction;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.PlayerStateMapLoader;
-import tictim.paraglider.impl.movement.StaminaReductionLogicHandler;
+import tictim.paraglider.impl.stamina.StaminaEfficiencyLogicHandlerImpl;
+import tictim.paraglider.impl.stamina.StaminaEfficiencyLogicLoader;
 import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
 import tictim.paraglider.network.ParagliderNetwork;
 import tictim.paraglider.network.ParagliderNetworkImpl;
@@ -87,7 +88,8 @@ public class ParagliderMod {
 		this.stateMapConfig = new PlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
 		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
-		StaminaReductionLogicHandler.init();
+		ParagliderAPI.setStaminaEfficiencyLogicHandler(new StaminaEfficiencyLogicHandlerImpl(
+				StaminaEfficiencyLogicLoader.loadStaminaEfficiencyLogics()));
 
 		ParagliderAPI.setDefaultParagliderItemCapability(new DefaultParagliderItemCapability());
 

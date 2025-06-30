@@ -10,15 +10,11 @@ import java.lang.annotation.Target;
 
 /**
  * Marker annotation for Paraglider plugins. Can load various type of plugins. All plugins need public no-args
- * constructor in order to be instantiated by Paraglider.<br/>
- * This annotation loads plugins in Forge environment. On Fabric environment, they are loaded with entrypoint system
- * with key {@link ParagliderPlugin#FABRIC_ENTRYPOINT}.
+ * constructor in order to be instantiated by Paraglider.
  *
  * @see StaminaPlugin
  * @see MovementPlugin
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParagliderPlugin {
-	String FABRIC_ENTRYPOINT = "paraglider-plugin";
-}
+public @interface ParagliderPlugin {}

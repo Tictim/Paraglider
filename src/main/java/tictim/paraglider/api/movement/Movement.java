@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import tictim.paraglider.api.ParagliderAPI;
+import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 
 /**
  * Interface providing access to movement state of the player.
@@ -37,13 +38,7 @@ public interface Movement {
 	void setRecoveryDelay(int recoveryDelay);
 
 	/**
-	 * @return Stamina reduction rate
+	 * @return Stamina delta currently being applied by this movement instance.
 	 */
-	double staminaReductionRate();
-
-	/**
-	 * @return Stamina delta currently being applied to this movement instance; calculated based on
-	 * {@link #state() player state} and {@link #staminaReductionRate() reduction rate}.
-	 */
-	int staminaDelta();
+	double staminaDelta();
 }

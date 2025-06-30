@@ -12,6 +12,7 @@ import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.contents.Contents;
@@ -42,7 +43,8 @@ public class ServerPlayerMovement extends PlayerMovement {
 	 */
 	private double accumulatedFallDistance;
 
-	private double prevStaminaReduction;
+	private double staminaEfficiency;
+	private double prevStaminaEfficiency;
 
 	private final ArrayDeque<Effect> particleEffectQueue = new ArrayDeque<>(10);
 
@@ -81,6 +83,10 @@ public class ServerPlayerMovement extends PlayerMovement {
 
 	@Override public void setRecoveryDelay(int recoveryDelay) {
 		movementState().setRecoveryDelay(recoveryDelay);
+	}
+
+	@Override public double staminaDelta() {
+		return this.staminaEfficiency;
 	}
 
 	@Override public void update() {
@@ -122,13 +128,12 @@ public class ServerPlayerMovement extends PlayerMovement {
 								movementState().canDoPanicParagliding(),
 						this.accumulatedFallDistance));
 
-		this.staminaReductionRate = state().staminaDelta() != 0 ?
-				StaminaReductionLogicHandler.getReductionRate(player(), state()) : 0;
-		if (this.prevStaminaReduction != this.staminaReductionRate) {
-			markMovementChanged();
+		this.staminaEfficiency = StaminaEfficiencyLogic.handler().getEfficiencySum(state().staminaDelta(), player(), state());
+		if (this.prevStaminaEfficiency != this.staminaEfficiency) {
+			this.movementChanged = true;
 		}
 
-		if (!prevState.equals(state())) markMovementChanged();
+		if (!prevState.equals(state())) this.movementChanged = true;
 
 		updateStamina();
 
@@ -145,7 +150,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 					stamina().stamina(),
 					stamina().isDepleted(),
 					recoveryDelay(),
-					staminaReductionRate());
+					this.staminaEfficiency);
 			this.movementChanged = false;
 		}
 
@@ -165,7 +170,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 		}
 
 		this.prevY = player().getY();
-		this.prevStaminaReduction = this.staminaReductionRate;
+		this.prevStaminaEfficiency = this.staminaEfficiency;
 
 		for (int i = 0; i < player().getInventory().getContainerSize(); i++) {
 			ItemStack stack = player().getInventory().getItem(i);
@@ -225,15 +230,15 @@ public class ServerPlayerMovement extends PlayerMovement {
 		if (stamina.isDepleted()) {
 			if (stamina.stamina() >= Math.min(stamina.maxStamina(), Stamina.STAMINA_PER_WHEEL * 3)) {
 				stamina.setDepleted(false);
-				markMovementChanged();
+				this.movementChanged = true;
 			}
 		} else if (stamina.stamina() <= 0) {
 			stamina.setDepleted(true);
 			movementState().resetPanicParaglidingState();
-			markMovementChanged();
+			this.movementChanged = true;
 		}
 
-		if (wasDepleted != stamina.isDepleted()) markMovementChanged();
+		if (wasDepleted != stamina.isDepleted()) this.movementChanged = true;
 	}
 
 	/**
@@ -241,13 +246,6 @@ public class ServerPlayerMovement extends PlayerMovement {
 	 */
 	public void markForSync() {
 		this.resync = true;
-	}
-
-	/**
-	 * Causes movement information to be synced to client on next tick.
-	 */
-	public void markMovementChanged() {
-		this.movementChanged = true;
 	}
 
 	protected void spawnParticle(@NotNull ParticleOptions particle, int count) {

@@ -14,7 +14,7 @@ public record SyncMovementMsg(
 		double stamina,
 		boolean depleted,
 		int recoveryDelay,
-		double reductionRate
+		double efficiency
 ) implements CustomPacketPayload {
 	public static final Type<SyncMovementMsg> TYPE = new Type<>(id("sync_movement"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncMovementMsg> CODEC = StreamCodec.composite(
@@ -22,7 +22,7 @@ public record SyncMovementMsg(
 			ByteBufCodecs.DOUBLE, SyncMovementMsg::stamina,
 			ByteBufCodecs.BOOL, SyncMovementMsg::depleted,
 			ByteBufCodecs.VAR_INT, SyncMovementMsg::recoveryDelay,
-			ByteBufCodecs.DOUBLE, SyncMovementMsg::reductionRate,
+			ByteBufCodecs.DOUBLE, SyncMovementMsg::efficiency,
 			SyncMovementMsg::new
 	);
 

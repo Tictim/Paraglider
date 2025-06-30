@@ -66,8 +66,8 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 	                                   double stamina,
 	                                   boolean depleted,
 	                                   int recoveryDelay,
-	                                   double reductionRate) {
-		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, depleted, recoveryDelay, reductionRate);
+	                                   double efficiency) {
+		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, depleted, recoveryDelay, efficiency);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
 		syncRemoteMovement(player.server, player, state);

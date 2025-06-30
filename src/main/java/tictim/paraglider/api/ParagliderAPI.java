@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.item.Paraglider;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.api.stamina.StaminaEfficiencyLogicHandler;
 import tictim.paraglider.api.stamina.StaminaFactory;
 import tictim.paraglider.api.vessel.VesselContainer;
 
@@ -20,15 +21,16 @@ import java.util.function.Function;
 public class ParagliderAPI {
 	public static final String MODID = "paraglider";
 
-	public static @NotNull ResourceLocation id(String path) {
+	public static @NotNull ResourceLocation id(@NotNull String path) {
 		return ResourceLocation.fromNamespaceAndPath(MODID, path);
 	}
 
-	private static Function<@NotNull Player, @NotNull Movement> movementSupplier;
-	private static Function<@NotNull Player, @NotNull Stamina> staminaSupplier;
-	private static Function<@NotNull Player, @NotNull VesselContainer> vesselContainerSupplier;
+	private static @Nullable Function<@NotNull Player, @NotNull Movement> movementSupplier;
+	private static @Nullable Function<@NotNull Player, @NotNull Stamina> staminaSupplier;
+	private static @Nullable Function<@NotNull Player, @NotNull VesselContainer> vesselContainerSupplier;
 	private static @Nullable StaminaFactory staminaFactory;
 	private static @Nullable Paraglider defaultParagliderItemCapability;
+	private static @Nullable StaminaEfficiencyLogicHandler staminaEfficiencyLogicHandler;
 
 	@ApiStatus.Internal
 	public static @NotNull Function<Player, Movement> movementSupplier() {
@@ -58,6 +60,12 @@ public class ParagliderAPI {
 	public static @NotNull Paraglider defaultParagliderItemCapability() {
 		if (defaultParagliderItemCapability != null) return defaultParagliderItemCapability;
 		throw new IllegalStateException("defaultParagliderItemCapability is not available yet");
+	}
+
+	@ApiStatus.Internal
+	public static @NotNull StaminaEfficiencyLogicHandler staminaEfficiencyLogicHandler() {
+		if (staminaEfficiencyLogicHandler != null) return staminaEfficiencyLogicHandler;
+		throw new IllegalStateException("staminaEfficiencyLogicHandler is not available yet");
 	}
 
 	@ApiStatus.Internal
@@ -98,5 +106,12 @@ public class ParagliderAPI {
 		Objects.requireNonNull(c);
 		if (ParagliderAPI.defaultParagliderItemCapability == null) ParagliderAPI.defaultParagliderItemCapability = c;
 		else throw new IllegalStateException("Trying to set defaultParagliderItemCapability twice");
+	}
+
+	@ApiStatus.Internal
+	public static void setStaminaEfficiencyLogicHandler(StaminaEfficiencyLogicHandler h) {
+		Objects.requireNonNull(h);
+		if (ParagliderAPI.staminaEfficiencyLogicHandler == null) ParagliderAPI.staminaEfficiencyLogicHandler = h;
+		else throw new IllegalStateException("Trying to set staminaEfficiencyLogicHandler twice");
 	}
 }

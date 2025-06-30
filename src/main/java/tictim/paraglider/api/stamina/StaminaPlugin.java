@@ -18,14 +18,29 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 	 * If two or more plugins attempt to provide stamina implementation, it will create a conflict; see
 	 * {@link ConflictResolver}.
 	 */
-	@Nullable default StaminaFactory getStaminaFactory() {
+	default @Nullable StaminaFactory getStaminaFactory() {
 		return null;
 	}
+
+	default void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {}
 
 	/**
 	 * @return Implementation of {@link ConflictResolver} for this {@link StaminaPlugin} instance
 	 */
-	@NotNull default ConflictResolver<StaminaPlugin, StaminaPluginAction> getStaminaPluginConflictResolver() {
+	default @NotNull ConflictResolver<StaminaPlugin, StaminaPluginAction> getStaminaPluginConflictResolver() {
 		return ConflictResolver.proceed();
+	}
+
+	/**
+	 * Interface for registering stamina efficiency logic.
+	 */
+	interface StaminaEfficiencyLogicRegister {
+		/**
+		 * Register stamina efficiency logic instance.
+		 *
+		 * @param logic Logic
+		 * @throws NullPointerException If {@code logic == null}
+		 */
+		void register(@NotNull StaminaEfficiencyLogic logic);
 	}
 }

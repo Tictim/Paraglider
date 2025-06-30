@@ -8,10 +8,12 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 import tictim.paraglider.network.SyncMovementHandle;
 
 public class RemotePlayerMovement extends PlayerMovement implements SyncMovementHandle {
 	private int recoveryDelay;
+	private double staminaEfficiency;
 
 	public RemotePlayerMovement(@NotNull Player player) {
 		super(player);
@@ -28,7 +30,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 	@Override public void update() {}
 
 	@Override public void syncMovement(@NotNull ResourceLocation stateId, double stamina, boolean depleted,
-	                                   int recoveryDelay, double reductionRate) {
+	                                   int recoveryDelay, double efficiency) {
 		PlayerStateMap stateMap = ParagliderMod.instance().getPlayerStateMap();
 		PlayerState state = stateMap.getState(stateId);
 		setState(state == null ? stateMap.getIdleState() : state);
@@ -38,7 +40,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 
 		setRecoveryDelay(recoveryDelay);
 
-		this.staminaReductionRate = reductionRate;
+		this.staminaEfficiency = efficiency;
 	}
 
 	@Range(from = 0, to = Integer.MAX_VALUE)
@@ -47,5 +49,12 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 	}
 	@Override public void setRecoveryDelay(int recoveryDelay) {
 		this.recoveryDelay = Math.max(0, recoveryDelay);
+	}
+	@Override public double staminaDelta() {
+		return StaminaEfficiencyLogic.applyEfficiency(state().staminaDelta(), staminaEfficiency());
+	}
+
+	public double staminaEfficiency() {
+		return this.staminaEfficiency;
 	}
 }
