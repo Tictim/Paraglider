@@ -13,7 +13,7 @@ public interface ParagliderPlayerStates {
 	int RECOVERY_DELAY = 10;
 
 	/**
-	 * Idle state (just standing). This is considered a default value.
+	 * Idle state (just standing). This is considered a default state, and also an entrypoint for state connections.
 	 */
 	ResourceLocation IDLE = ParagliderAPI.id("idle");
 	int IDLE_STAMINA_DELTA = 20;
@@ -110,35 +110,52 @@ public interface ParagliderPlayerStates {
 	 */
 	interface Flags {
 		/**
-		 * This flag achieves two things:
-		 * <ul>
-		 * <li>
-		 * Marks the state as paragliding state, which will be used to  alter visuals on paraglider items and such.
-		 * </li>
-		 * <li>
-		 * Additionally, if the config {@code paraglidingConsumesStamina} is set to {@code false}, negative stamina
-		 * delta will be considered as zero.
-		 * </li>
-		 * </ul>
-		 * Used by {@link ParagliderPlayerStates#PARAGLIDING} and {@link ParagliderPlayerStates#ASCENDING}.
+		 * If a player is on a state marked by this flag, applies paragliding movement logic to the player. Used by
+		 * {@link ParagliderPlayerStates#PARAGLIDING}, {@link ParagliderPlayerStates#PANIC_PARAGLIDING}, and
+		 * {@link ParagliderPlayerStates#ASCENDING}.
 		 */
-		ResourceLocation FLAG_PARAGLIDING = PARAGLIDING;
+		ResourceLocation PARAGLIDING = ParagliderPlayerStates.PARAGLIDING;
+
+		/**
+		 * If a player is on a state marked by this flag and {@link Flags#PARAGLIDING}, it will slowly move the
+		 * player upwards. Used by {@link ParagliderPlayerStates#ASCENDING}.
+		 */
+		ResourceLocation ASCENDING = ParagliderPlayerStates.ASCENDING;
+
+		/**
+		 * If the config {@code paraglidingConsumesStamina} is set to {@code false}, negative stamina
+		 * delta will be considered as zero. Used by {@link ParagliderPlayerStates#PARAGLIDING},
+		 * {@link ParagliderPlayerStates#PANIC_PARAGLIDING}, and {@link ParagliderPlayerStates#ASCENDING}.
+		 */
+		ResourceLocation DISABLED_BY_PARAGLIDING_CONFIG = ParagliderAPI.id("disabled_by_paragliding_config");
+
 		/**
 		 * If the config {@code runningConsumesStamina} is set to {@code false}, and the state has negative stamina
 		 * delta, it will be considered as zero. Used by {@link ParagliderPlayerStates#SWIMMING},
 		 * {@link ParagliderPlayerStates#UNDERWATER}, {@link ParagliderPlayerStates#BREATHING_UNDERWATER}, and
 		 * {@link ParagliderPlayerStates#RUNNING}.
 		 */
-		ResourceLocation FLAG_RUNNING = RUNNING;
+		ResourceLocation DISABLED_BY_RUNNING_CONFIG = ParagliderAPI.id("disabled_by_running_config");
+
 		/**
-		 * No inherent functionality. Used by {@link ParagliderPlayerStates#SWIMMING},
+		 * No inherent functionality. States with this flag are eligible for stamina efficiency effect applied by
+		 * {@code paraglider:paragliding_stamina_efficiency} attribute. Used by
+		 * {@link ParagliderPlayerStates#PARAGLIDING}, {@link ParagliderPlayerStates#PANIC_PARAGLIDING}, and
+		 * {@link ParagliderPlayerStates#ASCENDING}.
+		 */
+		ResourceLocation IS_PARAGLIDING = ParagliderAPI.id("is_paragliding");
+
+		/**
+		 * No inherent functionality. Used by {@link ParagliderPlayerStates#SWIMMING} and
+		 * {@link ParagliderPlayerStates#RUNNING}.
+		 */
+		ResourceLocation IS_SPRINTING = ParagliderAPI.id("is_sprinting");
+
+		/**
+		 * No inherent functionality.States with this flag are eligible for stamina efficiency effect applied by
+		 * {@code paraglider:paragliding_stamina_efficiency} attribute. Used by {@link ParagliderPlayerStates#SWIMMING},
 		 * {@link ParagliderPlayerStates#UNDERWATER}, and {@link ParagliderPlayerStates#BREATHING_UNDERWATER}.
 		 */
-		ResourceLocation FLAG_UNDERWATER = UNDERWATER;
-		/**
-		 * If a player is on a state marked by this flag and {@link Flags#FLAG_PARAGLIDING}, it will slowly move the
-		 * player upwards. Used by {@link ParagliderPlayerStates#ASCENDING}.
-		 */
-		ResourceLocation FLAG_ASCENDING = ASCENDING;
+		ResourceLocation IS_UNDERWATER = ParagliderAPI.id("is_underwater");
 	}
 }

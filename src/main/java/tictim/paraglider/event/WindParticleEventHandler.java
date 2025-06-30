@@ -3,13 +3,13 @@ package tictim.paraglider.event;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.particles.ParticleTypes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.client.ParagliderClientSettings;
+import tictim.paraglider.client.WindParticleProvider;
 import tictim.paraglider.wind.Wind;
 import tictim.paraglider.wind.WindChunk;
 import tictim.paraglider.wind.WindNode;
@@ -61,11 +61,11 @@ public final class WindParticleEventHandler {
 			int z = xyzList.getInt(i + 2);
 
 			if (ParagliderUtils.PARTICLE_RNG.nextInt(bound) == 0) {
-				level.addAlwaysVisibleParticle(ParticleTypes.FIREWORK, // TODO custom firework particle
+				level.addAlwaysVisibleParticle(WindParticleProvider.PARTICLE_TYPE, // TODO custom firework particle
 						x + ParagliderUtils.PARTICLE_RNG.nextDouble(),
 						y + 0.5, // TODO might need to move offset around if a full block source is used
 						z + ParagliderUtils.PARTICLE_RNG.nextDouble(),
-						0, 1, 0);
+						0, 0, 0);
 			}
 		}
 

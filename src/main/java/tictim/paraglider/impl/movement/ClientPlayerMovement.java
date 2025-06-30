@@ -5,8 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
 
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
-
 public class ClientPlayerMovement extends RemotePlayerMovement {
 	private boolean wasParagliding;
 
@@ -25,7 +23,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement {
 	@Override public void update() {
 		updateStamina();
 
-		boolean paragliding = state().hasFlag(FLAG_PARAGLIDING);
+		boolean paragliding = state().paragliding();
 		if (!player().isCreative() && stamina().isDepleted()) {
 			player().setSprinting(false);
 			player().setSwimming(false);

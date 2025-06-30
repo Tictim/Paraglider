@@ -63,25 +63,6 @@ public final class WindChunk {
 		return (byte)((x << 4 & 0b1111_0000) | (z & 0b1111));
 	}
 
-	public boolean isInsideWind(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		int xs = Math.max(this.chunkPos.getMinBlockX(), minX);
-		int xe = Math.min(this.chunkPos.getMaxBlockX(), maxX);
-		int zs = Math.max(this.chunkPos.getMinBlockZ(), minZ);
-		int ze = Math.min(this.chunkPos.getMaxBlockZ(), maxZ);
-
-		for (int x = xs; x <= xe; x++) {
-			for (int z = zs; z <= ze; z++) {
-				WindNode node = getNode(x, z);
-				while (node != null) {
-					if (node.y < maxY && node.y + node.height > minY) return true;
-					node = node.next;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	public boolean add(int x, int y, int z, int height, long gameTime) {
 		byte xz = encode(x, z);
 		WindNode node = this.nodes.get(xz);

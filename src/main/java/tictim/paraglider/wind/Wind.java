@@ -206,31 +206,54 @@ public final class Wind {
 		return node;
 	}
 
-	public static boolean isInside(@NotNull Level level, @NotNull AABB boundingBox) {
-		return isInside(level,
-				Mth.floor(boundingBox.minX),
-				Mth.floor(boundingBox.minY),
-				Mth.floor(boundingBox.minZ),
-				Mth.ceil(boundingBox.maxX),
-				Mth.ceil(boundingBox.maxY),
-				Mth.ceil(boundingBox.maxZ));
+	public static double getWindAbove(@NotNull Level level, @NotNull AABB boundingBox) {
+		int maxWindY = getMaxWindY(level,
+				Mth.floor(boundingBox.minX), Mth.floor(boundingBox.minY), Mth.floor(boundingBox.minZ),
+				Mth.ceil(boundingBox.maxX), Mth.ceil(boundingBox.maxY), Mth.ceil(boundingBox.maxZ));
+		return Math.max(0, (double)maxWindY - boundingBox.minY);
 	}
 
-	public static boolean isInside(@NotNull Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	private static int getMaxWindY(@NotNull Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		Wind wind = of(level);
-		if (wind == null) return false;
+		if (wind == null) return 0;
 
 		int chunkXStart = minX >> 4;
 		int chunkXEnd = maxX >> 4;
 		int chunkZStart = minZ >> 4;
 		int chunkZEnd = maxZ >> 4;
+		int maxWindY = Integer.MIN_VALUE;
 
 		for (int x = chunkXStart; x <= chunkXEnd; x++) {
 			for (int z = chunkZStart; z <= chunkZEnd; z++) {
 				WindChunk windChunk = wind.getChunk(x, z);
-				if (windChunk != null && windChunk.isInsideWind(minX, minY, minZ, maxX, maxY, maxZ)) return true;
+				if (windChunk != null) {
+					maxWindY = Math.max(maxWindY, getMaxWindY(windChunk, minX, minY, minZ, maxX, maxY, maxZ));
+				}
 			}
 		}
-		return false;
+
+		return maxWindY;
+	}
+
+	private static int getMaxWindY(WindChunk chunk, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		int xs = Math.max(chunk.chunkPos.getMinBlockX(), minX);
+		int xe = Math.min(chunk.chunkPos.getMaxBlockX(), maxX);
+		int zs = Math.max(chunk.chunkPos.getMinBlockZ(), minZ);
+		int ze = Math.min(chunk.chunkPos.getMaxBlockZ(), maxZ);
+		int maxWindY = Integer.MIN_VALUE;
+
+		for (int x = xs; x <= xe; x++) {
+			for (int z = zs; z <= ze; z++) {
+				WindNode node = chunk.getNode(x, z);
+				while (node != null) {
+					if (node.y < maxY && node.y + node.height > minY) {
+						maxWindY = Math.max(maxWindY, node.y + node.height);
+					}
+					node = node.next;
+				}
+			}
+		}
+
+		return maxWindY;
 	}
 }

@@ -16,7 +16,6 @@ import tictim.paraglider.client.screen.BargainScreen;
 import tictim.paraglider.client.screen.ParagliderSettingsScreen;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
 
 @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public final class ParagliderClientEventHandler {
@@ -28,7 +27,7 @@ public final class ParagliderClientEventHandler {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement m = Movement.get(player);
-		if (m.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (m.state().paragliding()) event.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -54,7 +53,7 @@ public final class ParagliderClientEventHandler {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().hasFlag(FLAG_PARAGLIDING)) {
+		if (movement.state().paragliding()) {
 			event.setSwingHand(false);
 			event.setCanceled(true);
 		}
@@ -67,7 +66,7 @@ public final class ParagliderClientEventHandler {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (movement.state().paragliding()) event.setCanceled(true);
 	}
 
 	@SubscribeEvent

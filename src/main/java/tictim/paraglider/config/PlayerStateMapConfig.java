@@ -9,6 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.SimplePlayerState;
@@ -21,8 +22,6 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_RUNNING;
 
 public class PlayerStateMapConfig {
 	public static final String FILENAME = "paraglider-player-states.toml";
@@ -160,10 +159,10 @@ public class PlayerStateMapConfig {
 				staminaDelta = 0;
 			}
 
-			if (state.hasFlag(FLAG_RUNNING)) {
+			if (state.hasFlag(ParagliderPlayerStates.Flags.DISABLED_BY_RUNNING_CONFIG)) {
 				if (staminaDelta < 0 && !runningConsumesStamina) staminaDelta = 0;
 			}
-			if (state.hasFlag(FLAG_PARAGLIDING)) {
+			if (state.hasFlag(ParagliderPlayerStates.Flags.DISABLED_BY_PARAGLIDING_CONFIG)) {
 				if (staminaDelta < 0 && !paraglidingConsumesStamina) staminaDelta = 0;
 			}
 

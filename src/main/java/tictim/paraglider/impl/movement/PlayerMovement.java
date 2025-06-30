@@ -1,5 +1,6 @@
 package tictim.paraglider.impl.movement;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -8,11 +9,11 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.wind.Wind;
 
 import java.util.Objects;
 
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_ASCENDING;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
+import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.ASCENDING;
 
 public abstract class PlayerMovement implements Movement {
 	private final Player player;
@@ -59,15 +60,17 @@ public abstract class PlayerMovement implements Movement {
 		Player player = player();
 		PlayerState state = state();
 
-		if (state.hasFlag(FLAG_PARAGLIDING)) {
+		if (state.paragliding()) {
 			player.fallDistance = 0;
 
 			Vec3 m = player.getDeltaMovement();
-			if (state.hasFlag(FLAG_ASCENDING)) {
-				if (m.y < 0.25) player.setDeltaMovement(new Vec3(m.x, Math.max(m.y + 0.05, 0.25), m.z));
-			} else {
-				if (m.y < -0.05) player.setDeltaMovement(new Vec3(m.x, -0.05, m.z));
+			double dy = Math.max(m.y, -0.05);
+			if (state.hasFlag(ASCENDING)) {
+				double windAbove = Math.clamp(Wind.getWindAbove(player.level(), player.getBoundingBox()), 0, 2);
+				// larger windAbove = stronger updraft force
+				dy = Math.max(m.y, 0 + Math.max(0, Mth.lerp(windAbove / 2, -0.05, 0.25)));
 			}
+			player.setDeltaMovement(m.x, dy, m.z);
 		}
 	}
 

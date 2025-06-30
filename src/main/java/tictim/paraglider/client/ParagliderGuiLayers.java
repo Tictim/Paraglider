@@ -8,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
+import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.vessel.VesselContainer;
@@ -15,6 +16,7 @@ import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.screen.DisableStaminaRender;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.impl.movement.ClientPlayerMovement;
+import tictim.paraglider.wind.Wind;
 
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
@@ -61,6 +63,7 @@ public final class ParagliderGuiLayers {
 	}
 
 	private static final DecimalFormat STAMINA = new DecimalFormat("0.#");
+	private static final DecimalFormat WIND_HEIGHT = new DecimalFormat("0.00");
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final DecimalFormat PERCENTAGE_SIGNED = new DecimalFormat("+#.#%;-#.#%");
 
@@ -80,6 +83,11 @@ public final class ParagliderGuiLayers {
 					.map(Object::toString)
 					.collect(Collectors.joining(" ")) + ")");
 		}
+		consumer.accept("Recovery Delay: " + state.recoveryDelay());
+		if (state.hasFlag(ParagliderPlayerStates.Flags.ASCENDING)) {
+			consumer.accept("Wind height above: " + WIND_HEIGHT.format(Wind.getWindAbove(p.level(), p.getBoundingBox())));
+		}
+
 		consumer.accept((stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +
 				STAMINA.format(stamina.stamina()) + " / " + STAMINA.format(stamina.maxStamina()));
 
@@ -102,7 +110,6 @@ public final class ParagliderGuiLayers {
 
 		consumer.accept(stb.toString());
 
-		consumer.accept("Recovery Delay: " + state.recoveryDelay());
 		consumer.accept(vessels.staminaVessel() + " Stamina Vessels, " + vessels.heartContainer() + " Heart Containers");
 		consumer.accept(movement.recoveryDelay() + " Recovery Delay");
 		consumer.accept("Stamina Wheel X: " + PERCENTAGE.format(clientSettings.staminaWheelX()) +

@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.Unmodifiable;
+import tictim.paraglider.api.movement.ParagliderPlayerStates.Flags;
 
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +26,7 @@ public interface PlayerState {
 
 	/**
 	 * @return Flag of the state
-	 * @see ParagliderPlayerStates.Flags
+	 * @see Flags
 	 */
 	@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags();
 
@@ -62,14 +63,6 @@ public interface PlayerState {
 	}
 
 	/**
-	 * @deprecated Use {@link #hasFlag(ResourceLocation)}
-	 */
-	@Deprecated
-	default boolean has(@NotNull ResourceLocation flag) {
-		return hasFlag(flag);
-	}
-
-	/**
 	 * Check if this state has given flag.
 	 *
 	 * @param flag Flag
@@ -78,5 +71,12 @@ public interface PlayerState {
 	default boolean hasFlag(@NotNull ResourceLocation flag) {
 		Objects.requireNonNull(flag, "flag == null");
 		return flags().contains(flag);
+	}
+
+	/**
+	 * @return Whether this state has the flag {@link Flags#PARAGLIDING}
+	 */
+	default boolean paragliding() {
+		return hasFlag(Flags.PARAGLIDING);
 	}
 }

@@ -24,7 +24,6 @@ import tictim.paraglider.network.ParagliderNetwork;
 
 import java.util.ArrayDeque;
 
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
 import static tictim.paraglider.impl.movement.PlayerMovementValues.*;
 
 public class ServerPlayerMovement extends PlayerMovement {
@@ -176,7 +175,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 			ItemStack stack = player().getInventory().getItem(i);
 			if (stack.is(ParagliderTags.PARAGLIDERS)) {
 				ParagliderUtils.getCaps(stack).setParagliding(stack,
-						i == player().getInventory().getSelectedSlot() && state().hasFlag(FLAG_PARAGLIDING));
+						i == player().getInventory().getSelectedSlot() && state().paragliding());
 			}
 		}
 
@@ -192,7 +191,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 	@Override protected void applyMovement() {
 		super.applyMovement();
 
-		boolean paragliding = state().hasFlag(FLAG_PARAGLIDING);
+		boolean paragliding = state().paragliding();
 		if (paragliding) {
 			player().connection.aboveGroundTickCount = 0;
 			ItemStack stack = player().getMainHandItem();

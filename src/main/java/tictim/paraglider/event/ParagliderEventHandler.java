@@ -21,7 +21,6 @@ import tictim.paraglider.impl.movement.ServerPlayerMovement;
 import tictim.paraglider.network.ParagliderNetwork;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
 
 @EventBusSubscriber(modid = MODID)
 public final class ParagliderEventHandler {
@@ -42,7 +41,7 @@ public final class ParagliderEventHandler {
 
 		if (event.getHand() == InteractionHand.OFF_HAND) {
 			Movement movement = Movement.get(event.getEntity());
-			if (movement.state().hasFlag(FLAG_PARAGLIDING)) cancellable.setCanceled(true);
+			if (movement.state().paragliding()) cancellable.setCanceled(true);
 		}
 	}
 
@@ -50,14 +49,14 @@ public final class ParagliderEventHandler {
 	public static void onPlayerStartUseItem(LivingEntityUseItemEvent.Start event) {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (movement.state().paragliding()) event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event) {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().hasFlag(FLAG_PARAGLIDING)) player.stopUsingItem();
+		if (movement.state().paragliding()) player.stopUsingItem();
 	}
 
 	@SubscribeEvent

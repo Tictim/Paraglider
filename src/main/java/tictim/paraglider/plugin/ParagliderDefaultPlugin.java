@@ -17,7 +17,6 @@ import tictim.paraglider.contents.ParagliderTags;
 import tictim.paraglider.wind.Wind;
 
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.*;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.*;
 import static tictim.paraglider.impl.movement.PlayerMovementValues.PARAGLIDING_FALL_DISTANCE;
 
 @ParagliderPlugin
@@ -28,13 +27,13 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.register(CREATIVE_FLYING, CREATIVE_FLYING_STAMINA_DELTA);
 		register.register(ELYTRA_FLYING, ELYTRA_FLYING_STAMINA_DELTA);
 		register.register(ON_VEHICLE, ON_VEHICLE_STAMINA_DELTA);
-		register.register(SWIMMING, SWIMMING_STAMINA_DELTA, FLAG_RUNNING);
-		register.register(UNDERWATER, UNDERWATER_STAMINA_DELTA, FLAG_RUNNING);
-		register.register(BREATHING_UNDERWATER, BREATHING_UNDERWATER_STAMINA_DELTA, FLAG_RUNNING);
-		register.register(PARAGLIDING, PARAGLIDING_STAMINA_DELTA, FLAG_PARAGLIDING);
-		register.register(PANIC_PARAGLIDING, PANIC_PARAGLIDING_STAMINA_DELTA, FLAG_PARAGLIDING);
-		register.register(ASCENDING, ASCENDING_STAMINA_DELTA, FLAG_PARAGLIDING, FLAG_ASCENDING);
-		register.register(RUNNING, RUNNING_STAMINA_DELTA, FLAG_RUNNING);
+		register.register(SWIMMING, SWIMMING_STAMINA_DELTA, Flags.DISABLED_BY_RUNNING_CONFIG, Flags.IS_SPRINTING, Flags.IS_UNDERWATER);
+		register.register(UNDERWATER, UNDERWATER_STAMINA_DELTA, Flags.DISABLED_BY_RUNNING_CONFIG, Flags.IS_UNDERWATER);
+		register.register(BREATHING_UNDERWATER, BREATHING_UNDERWATER_STAMINA_DELTA, Flags.DISABLED_BY_RUNNING_CONFIG, Flags.IS_UNDERWATER);
+		register.register(PARAGLIDING, PARAGLIDING_STAMINA_DELTA, Flags.DISABLED_BY_PARAGLIDING_CONFIG, Flags.PARAGLIDING, Flags.IS_PARAGLIDING);
+		register.register(PANIC_PARAGLIDING, PANIC_PARAGLIDING_STAMINA_DELTA, Flags.PARAGLIDING, Flags.DISABLED_BY_PARAGLIDING_CONFIG, Flags.IS_PARAGLIDING);
+		register.register(ASCENDING, ASCENDING_STAMINA_DELTA, Flags.PARAGLIDING, Flags.ASCENDING, Flags.DISABLED_BY_PARAGLIDING_CONFIG, Flags.IS_PARAGLIDING);
+		register.register(RUNNING, RUNNING_STAMINA_DELTA, Flags.DISABLED_BY_RUNNING_CONFIG, Flags.IS_SPRINTING);
 		register.register(MIDAIR, MIDAIR_STAMINA_DELTA);
 	}
 
@@ -76,11 +75,11 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 				PANIC_PARAGLIDING);
 
 		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> Cfg.get().updraft() && Wind.isInside(p.level(), p.getBoundingBox()),
+				(p, s, b, f) -> Cfg.get().updraft() && Wind.getWindAbove(p.level(), p.getBoundingBox()) > 0,
 				ASCENDING);
 
 		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> f < PARAGLIDING_FALL_DISTANCE && !s.hasFlag(FLAG_PARAGLIDING),
+				(p, s, b, f) -> f < PARAGLIDING_FALL_DISTANCE && !s.paragliding(),
 				IDLE);
 
 		register.addBranch(IDLE,
@@ -98,9 +97,9 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.registerAttribute(contents::staminaRecovery, (d, c, p) -> d > 0);
 		register.registerAttribute(contents::movementStaminaEfficiency, (d, c, p) -> d < 0 && c.state() != null);
 		register.registerAttribute(contents::movementStaminaRecovery, (d, c, p) -> d > 0 && c.state() != null);
-		register.registerAttribute(contents::paraglidingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(FLAG_PARAGLIDING));
+		register.registerAttribute(contents::paraglidingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(Flags.IS_PARAGLIDING));
 		register.registerAttribute(contents::runningStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(RUNNING));
-		register.registerAttribute(contents::underwaterStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(FLAG_UNDERWATER));
+		register.registerAttribute(contents::underwaterStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(Flags.IS_UNDERWATER));
 		register.registerAttribute(contents::swimmingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(SWIMMING));
 	}
 

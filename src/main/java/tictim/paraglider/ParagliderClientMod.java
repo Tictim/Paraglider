@@ -3,16 +3,14 @@ package tictim.paraglider;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -20,6 +18,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -77,6 +76,16 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		});
 
 		eventBus.addListener((RegisterRenderPipelinesEvent event) -> event.registerPipeline(ParagliderRenderTypes.STAMINA_WHEEL_PIPELINE));
+
+		eventBus.addListener((RegisterEvent event) -> {
+			event.register(Registries.PARTICLE_TYPE, h -> h.register(
+					WindParticleProvider.PARTICLE_TYPE_ID, WindParticleProvider.PARTICLE_TYPE
+			));
+		});
+
+		eventBus.addListener((RegisterParticleProvidersEvent event) -> {
+			event.registerSpriteSet(WindParticleProvider.PARTICLE_TYPE, WindParticleProvider::new);
+		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> this.syncedStateMap = null);
 

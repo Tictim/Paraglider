@@ -9,7 +9,6 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.config.Cfg;
 
 import static org.spongepowered.asm.mixin.injection.At.Shift.BY;
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.FLAG_PARAGLIDING;
 
 @Mixin(Player.class)
 public abstract class MixinPlayer {
@@ -30,7 +29,7 @@ public abstract class MixinPlayer {
 
 		final float defaultSprintingSpeed = 0.025999999F;
 
-		if (movement.state().hasFlag(FLAG_PARAGLIDING)) {
+		if (movement.state().paragliding()) {
 			double v = Cfg.get().paraglidingSpeed();
 			info.setReturnValue((float)(defaultSprintingSpeed * v));
 		}
