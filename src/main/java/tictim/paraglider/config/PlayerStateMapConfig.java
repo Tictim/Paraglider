@@ -68,7 +68,7 @@ public class PlayerStateMapConfig {
 				b.push(e2.getKey());
 				PlayerState state = e2.getValue();
 
-				ModConfigSpec.IntValue staminaDelta = b.defineInRange("staminaDelta", state.staminaDelta(), Integer.MIN_VALUE, Integer.MAX_VALUE);
+				ModConfigSpec.DoubleValue staminaDelta = b.defineInRange("staminaDelta", state.staminaDelta(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 				ModConfigSpec.IntValue recoveryDelay = b.defineInRange("recoveryDelay", state.recoveryDelay(), 0, Integer.MAX_VALUE);
 				configSpecs.put(state.id(), new Config(staminaDelta, recoveryDelay));
 
@@ -153,8 +153,12 @@ public class PlayerStateMapConfig {
 
 			Config config = this.configSpecs.get(id);
 
-			int staminaDelta = config.staminaDelta.get();
+			double staminaDelta = config.staminaDelta.get();
 			int recoveryDelay = config.recoveryDelay.get();
+
+			if (Double.isNaN(staminaDelta)) {
+				staminaDelta = 0;
+			}
 
 			if (state.has(FLAG_RUNNING)) {
 				if (staminaDelta < 0 && !runningConsumesStamina) staminaDelta = 0;
@@ -184,7 +188,7 @@ public class PlayerStateMapConfig {
 	}
 
 	protected record Config(
-			@NotNull ModConfigSpec.IntValue staminaDelta,
+			@NotNull ModConfigSpec.DoubleValue staminaDelta,
 			@NotNull ModConfigSpec.IntValue recoveryDelay
 	) {}
 }

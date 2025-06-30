@@ -191,39 +191,6 @@ public final class ParagliderUtils {
 		ParagliderMod.LOGGER.debug(stb.toString());
 	}
 
-	/**
-	 * <p>
-	 * Im just copypasting this from stamina reduction logic's docs
-	 * </p>
-	 * <p>
-	 * Stamina reduction rate is a proportion of change to be made to stamina delta. Function of stamina reduction rate
-	 * changes based on the sign of original stamina delta - positive reduction rate increases stamina regeneration on
-	 * positive stamina delta (+N%), and decreases stamina consumption on negative stamina delta (-N%). For example,
-	 * reduction rate of {@code 0.5} corresponds to +-50%, which could either increase stamina regeneration by half
-	 * (+50%), or reduce stamina consumption by half (-50%). Negative reduction rate will do the opposite. Note that the
-	 * system cannot make stamina delta positive from negative, or vice versa; reduction rate below -100% will just set
-	 * stamina delta to 0.
-	 * </p>
-	 * <p>
-	 * Nice docs dude how about you reduce some of your fats? increase some muscle mass? go study in real life?
-	 * </p>
-	 *
-	 * @param staminaDelta Stamina delta
-	 * @param reduction    Reduction
-	 * @return Stamina delta with reduction applied
-	 */
-	public static int applyReductionToDelta(int staminaDelta, double reduction) {
-		if (staminaDelta == 0) return 0;
-		if (Double.isNaN(reduction) || reduction == 0) return staminaDelta;
-		if (staminaDelta > 0) {
-			if (reduction <= -1) return 0;
-			return Math.max(1, (int)Math.round(staminaDelta + staminaDelta * reduction));
-		} else {
-			if (reduction >= 1) return 0;
-			return Math.min(-1, (int)Math.round(staminaDelta - staminaDelta * reduction));
-		}
-	}
-
 	public static boolean canBreatheUnderwater(@NotNull Player player) {
 		if (player.hasEffect(MobEffects.WATER_BREATHING)) return true;
 		if (player.onGround()) {

@@ -22,16 +22,19 @@ public interface PlayerState {
 	 * @return ID of the state
 	 */
 	@NotNull ResourceLocation id();
+
 	/**
 	 * @return Flag of the state
 	 * @see ParagliderPlayerStates.Flags
 	 */
 	@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags();
+
 	/**
 	 * @return Stamina delta of the state; positive values indicate this state replenishes stamina, negative values
 	 * indicate this state consumes stamina, and {@code 0} indicates this state is stamina-neutral.
 	 */
-	int staminaDelta();
+	double staminaDelta();
+
 	/**
 	 * @return <p>
 	 * Recovery delay of this player state; when the player is in this state, the recovery delay will be set to

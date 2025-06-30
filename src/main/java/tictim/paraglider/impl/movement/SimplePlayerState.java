@@ -12,21 +12,21 @@ import java.util.Set;
 public record SimplePlayerState(
 		@NotNull ResourceLocation id,
 		@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags,
-		int staminaDelta,
+		double staminaDelta,
 		int recoveryDelay
 ) implements PlayerState {
-	@NotNull public static SimplePlayerState read(@NotNull FriendlyByteBuf buffer) {
+	public static @NotNull SimplePlayerState read(@NotNull FriendlyByteBuf buffer) {
 		ResourceLocation id = buffer.readResourceLocation();
 		Set<ResourceLocation> flags = new ObjectOpenHashSet<>();
 		for (int i = 0, count = buffer.readVarInt(); i < count; i++) {
 			flags.add(buffer.readResourceLocation());
 		}
-		int staminaDelta = buffer.readInt();
+		double staminaDelta = buffer.readDouble();
 		int recoveryDelay = buffer.readVarInt();
 		return new SimplePlayerState(id, flags, staminaDelta, recoveryDelay);
 	}
 
-	public SimplePlayerState(@NotNull PlayerState originalState, int staminaDelta, int recoveryDelay) {
+	public SimplePlayerState(@NotNull PlayerState originalState, double staminaDelta, int recoveryDelay) {
 		this(originalState.id(), originalState.flags(), staminaDelta, recoveryDelay);
 	}
 
@@ -37,18 +37,15 @@ public record SimplePlayerState(
 		for (ResourceLocation flag : flags) {
 			buffer.writeResourceLocation(flag);
 		}
-		buffer.writeInt(state.staminaDelta());
+		buffer.writeDouble(state.staminaDelta());
 		buffer.writeVarInt(state.recoveryDelay());
 	}
 
-	public void write(@NotNull FriendlyByteBuf buffer) {
-		write(buffer, this);
+	@Override public boolean equals(Object obj) {
+		return this == obj || obj instanceof PlayerState another && this.id.equals(another.id());
 	}
 
-	@Override public boolean equals(Object obj) {
-		return this == obj || obj instanceof PlayerState another && id.equals(another.id());
-	}
 	@Override public int hashCode() {
-		return id.hashCode();
+		return this.id.hashCode();
 	}
 }

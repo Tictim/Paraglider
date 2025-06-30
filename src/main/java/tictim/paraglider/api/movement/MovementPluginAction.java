@@ -14,7 +14,7 @@ public sealed interface MovementPluginAction {
 
 		record Regular(
 				@NotNull ResourceLocation id,
-				int defaultStaminaDelta,
+				double defaultStaminaDelta,
 				@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags
 		) implements NewState {
 			public Regular {
@@ -33,7 +33,7 @@ public sealed interface MovementPluginAction {
 
 	record ChangeDefaultStaminaDelta(
 			@NotNull ResourceLocation id,
-			int defaultStaminaDelta
+			double defaultStaminaDelta
 	) implements MovementPluginAction {
 		public ChangeDefaultStaminaDelta {
 			Objects.requireNonNull(id, "id == null");

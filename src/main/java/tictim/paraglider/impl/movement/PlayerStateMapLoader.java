@@ -92,9 +92,12 @@ public final class PlayerStateMapLoader {
 
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().registerNewStates(new PlayerStateRegister() {
-				@Override public void register(@NotNull ResourceLocation id, int defaultStaminaDelta, @NotNull ResourceLocation @NotNull ... flags) {
+				@Override public void register(@NotNull ResourceLocation id, double defaultStaminaDelta, @NotNull ResourceLocation @NotNull ... flags) {
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
+					if (Double.isNaN(defaultStaminaDelta))
+						throw new IllegalArgumentException("defaultStaminaDelta is NaN");
+
 					for (ResourceLocation flag : flags) Objects.requireNonNull(flag);
 					idToCountMap.put(id, idToCountMap.getInt(id) + 1);
 					newStates.add(new PluginAction<>(plugin, new NewState.Regular(id, defaultStaminaDelta, Set.of(flags))));
@@ -142,8 +145,11 @@ public final class PlayerStateMapLoader {
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
 
-				@Override public void changeDefaultStaminaDelta(@NotNull ResourceLocation id, int defaultStaminaDelta) {
+				@Override public void changeDefaultStaminaDelta(@NotNull ResourceLocation id, double defaultStaminaDelta) {
 					Objects.requireNonNull(id, "id == null");
+					if (Double.isNaN(defaultStaminaDelta))
+						throw new IllegalArgumentException("defaultStaminaDelta is NaN");
+
 					State state = states.get(id);
 					if (state == null) throw new NoSuchElementException("No state with ID " + id + " exists");
 					if (state.synthetic)
@@ -181,7 +187,7 @@ public final class PlayerStateMapLoader {
 			var list = removeAll(staminaDeltaChanges, pa -> pa.action().id().equals(e.getKey()));
 
 			if (list.isEmpty()) continue;
-			int delta = list.get(0).action().defaultStaminaDelta();
+			double delta = list.get(0).action().defaultStaminaDelta();
 			boolean same = true;
 			for (int i = 1; i < list.size(); i++) {
 				if (list.get(i).action().defaultStaminaDelta() != delta) {
@@ -354,7 +360,7 @@ public final class PlayerStateMapLoader {
 
 	private static final class State implements PlayerState {
 		final @NotNull ResourceLocation id;
-		int defaultStaminaDelta;
+		double defaultStaminaDelta;
 		final @NotNull Set<@NotNull ResourceLocation> flags = new ObjectOpenHashSet<>();
 		final boolean synthetic;
 
@@ -423,7 +429,7 @@ public final class PlayerStateMapLoader {
 		@Override public @NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags() {
 			return this.flags;
 		}
-		@Override public int staminaDelta() {
+		@Override public double staminaDelta() {
 			return this.defaultStaminaDelta;
 		}
 		@Range(from = 0, to = Integer.MAX_VALUE)

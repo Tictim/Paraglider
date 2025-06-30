@@ -85,7 +85,7 @@ public final class ParagliderGuiLayers {
 
 		StringBuilder stb = new StringBuilder().append("Stamina Delta: ");
 
-		int baseStaminaDelta = state.staminaDelta();
+		double baseStaminaDelta = state.staminaDelta();
 		if (baseStaminaDelta != staminaDelta) {
 			stb.append(STAMINA.format(baseStaminaDelta));
 			double diff = staminaDelta - baseStaminaDelta;

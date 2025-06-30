@@ -43,7 +43,7 @@ import tictim.paraglider.api.movement.PlayerState;
  * efficiency values is used for the efficiency function's input.
  * </p>
  * <p>
- * For base mod's movement delta, stamina reduction is evaluated each tick on server-side. Then, if the value differs
+ * For base mod's movement delta, stamina efficiency is evaluated each tick on server-side. Then, if the value differs
  * from last tick, it is synced to the client.
  * </p>
  * <p>
@@ -78,7 +78,7 @@ public interface StaminaEfficiencyLogic {
 
 	/**
 	 * <p>
-	 * Return whether this logic is applicable for given player and player state. If this method returns {@code false},
+	 * Return whether this logic is applicable for given context. If this method returns {@code false},
 	 * the logic is excluded from evaluation.
 	 * </p>
 	 * <p>
@@ -87,17 +87,13 @@ public interface StaminaEfficiencyLogic {
 	 *
 	 * @param baseStaminaDelta Base stamina delta, not {@code 0} nor {@code NaN} in most circumstances.
 	 * @param context          Context
-	 * @return Whether the stamina reduction is applicable
+	 * @return Whether the logic is applicable
 	 */
 	boolean isApplicable(double baseStaminaDelta, @NotNull Context context);
 
 	/**
 	 * <p>
-	 * Get a reduction rate of the player state based on the player's state. The reduction rate is a proportion of
-	 * change to be made to stamina delta; for example, reduction rate of {@code 0.5} corresponds to -50% to stamina
-	 * delta, which could either reduce stamina consumption by half, or reduce stamina regeneration by half. When
-	 * multiple stamina reduction function returns a nonzero value, the values will be added together. Return value of
-	 * {@code NaN} is ignored.
+	 * Evaluate stamina efficiency with given context. Return value of {@code NaN} will be ignored.
 	 * </p>
 	 * <p>
 	 * This method is only called on server-side.
@@ -105,7 +101,7 @@ public interface StaminaEfficiencyLogic {
 	 *
 	 * @param baseStaminaDelta Base stamina delta, not {@code 0} nor {@code NaN} in most circumstances.
 	 * @param context          Context
-	 * @return Reduction rate of the player state
+	 * @return Efficiency
 	 */
 	double getEfficiency(double baseStaminaDelta, @NotNull Context context);
 

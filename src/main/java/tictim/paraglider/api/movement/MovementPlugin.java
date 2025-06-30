@@ -45,10 +45,11 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *                            0 represents a neutral state. Note this value is only for providing default
 		 *                            values; the final value used by the game can be changed with configs.
 		 * @param flags               Flags of the state
-		 * @throws NullPointerException If {@code id == null}, {@code defaultFlags == null}, or any element of {@code
-		 *                              flags} is null
+		 * @throws NullPointerException     If {@code id == null}, {@code defaultFlags == null}, or any element of {@code
+		 *                                  flags} is null
+		 * @throws IllegalArgumentException If {@code Double.isNaN(defaultStaminaDelta) == true}
 		 */
-		void register(@NotNull ResourceLocation id, int defaultStaminaDelta, @NotNull ResourceLocation @NotNull ... flags);
+		void register(@NotNull ResourceLocation id, double defaultStaminaDelta, @NotNull ResourceLocation @NotNull ... flags);
 
 		/**
 		 * Register a synthetic state. If another state has been registered with same ID, it will create a conflict;
@@ -100,11 +101,12 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *
 		 * @param id                  ID of the state
 		 * @param defaultStaminaDelta New value for stamina data
-		 * @throws NullPointerException   If {@code id == null}
-		 * @throws NoSuchElementException If there's no state with ID {@code id}
-		 * @throws IllegalStateException  If the state is synthetic state
+		 * @throws NullPointerException     If {@code id == null}
+		 * @throws NoSuchElementException   If there's no state with ID {@code id}
+		 * @throws IllegalStateException    If the state is synthetic state
+		 * @throws IllegalArgumentException If {@code Double.isNaN(defaultStaminaDelta) == true}
 		 */
-		void changeDefaultStaminaDelta(@NotNull ResourceLocation id, int defaultStaminaDelta);
+		void changeDefaultStaminaDelta(@NotNull ResourceLocation id, double defaultStaminaDelta);
 
 		/**
 		 * Add flags to the state. Trying to use this method against synthetic states will result in error. If the

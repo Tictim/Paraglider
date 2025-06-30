@@ -69,8 +69,8 @@ public final class PlayerStateMap {
 	}
 
 	public void write(@NotNull FriendlyByteBuf buffer) {
-		buffer.writeVarInt(states.size());
-		for (PlayerState state : states.values()) {
+		buffer.writeVarInt(this.states.size());
+		for (PlayerState state : this.states.values()) {
 			SimplePlayerState.write(buffer, state);
 		}
 	}
@@ -82,7 +82,7 @@ public final class PlayerStateMap {
 	}
 
 	@Override public int hashCode() {
-		return Objects.hash(states);
+		return Objects.hash(this.states);
 	}
 
 	@Override public String toString() {
