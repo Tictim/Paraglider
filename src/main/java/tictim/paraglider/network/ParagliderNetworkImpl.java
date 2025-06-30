@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
@@ -28,7 +29,11 @@ import java.util.List;
 public class ParagliderNetworkImpl implements ParagliderNetwork {
 	public static final String NETVERSION = "3";
 
-	public void register(RegisterPayloadHandlersEvent event) {
+	public ParagliderNetworkImpl(IEventBus eventBus) {
+		eventBus.addListener(this::register);
+	}
+
+	private void register(RegisterPayloadHandlersEvent event) {
 		PayloadRegistrar reg = event.registrar(NETVERSION);
 		reg.commonToClient(SyncPlayerStateMapMsg.TYPE, SyncPlayerStateMapMsg.CODEC, ClientPacketHandler::handleSyncPlayerStateMap);
 

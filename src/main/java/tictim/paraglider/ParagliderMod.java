@@ -66,7 +66,7 @@ public class ParagliderMod {
 	private final Contents contents;
 	private final ServerConfig config = new ServerConfig();
 
-	private final ParagliderNetworkImpl network = new ParagliderNetworkImpl();
+	private final ParagliderNetworkImpl network;
 	private final NeoForgeParagliderPluginLoader pluginLoader = new NeoForgeParagliderPluginLoader();
 
 	private final PlayerStateMapConfig stateMapConfig;
@@ -154,7 +154,7 @@ public class ParagliderMod {
 			map.put(this.contents.dekuLeaf(), ParagliderCauldronInteraction.INSTANCE);
 		}));
 
-		eventBus.addListener(this.network::register);
+		this.network = new ParagliderNetworkImpl(eventBus);
 	}
 
 	public @NotNull Cfg getConfig() {
