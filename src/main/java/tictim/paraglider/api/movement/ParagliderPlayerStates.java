@@ -118,6 +118,11 @@ public interface ParagliderPlayerStates {
 		 */
 		ResourceLocation FLAG_RUNNING = RUNNING;
 		/**
+		 * No inherent functionality. Used by {@link ParagliderPlayerStates#SWIMMING},
+		 * {@link ParagliderPlayerStates#UNDERWATER}, and {@link ParagliderPlayerStates#BREATHING_UNDERWATER}.
+		 */
+		ResourceLocation FLAG_UNDERWATER = UNDERWATER;
+		/**
 		 * If a player is on a state marked by this flag and {@link Flags#FLAG_PARAGLIDING}, it will slowly move the
 		 * player upwards. Used by {@link ParagliderPlayerStates#ASCENDING}.
 		 */

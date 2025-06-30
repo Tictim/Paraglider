@@ -31,6 +31,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.ParagliderAPI;
+import tictim.paraglider.api.StaminaEfficiencyAttribute;
 import tictim.paraglider.api.bargain.Bargain;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.contents.block.GoddessStatueBlock;
@@ -88,6 +89,22 @@ public class Contents {
 
 	public final DeferredHolder<Attribute, Attribute> maxStamina = attributes.register("max_stamina",
 			() -> new RangedAttribute("attribute.name.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
+	public final DeferredHolder<Attribute, Attribute> staminaEfficiency = attributes.register("stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> staminaRecovery = attributes.register("stamina_recovery",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.stamina_recovery"));
+	public final DeferredHolder<Attribute, Attribute> movementStaminaEfficiency = attributes.register("movement_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.movement_stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> movementStaminaRecovery = attributes.register("movement_stamina_recovery",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.movement_stamina_recovery"));
+	public final DeferredHolder<Attribute, Attribute> paraglidingStaminaEfficiency = attributes.register("paragliding_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.paragliding_stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> runningStaminaEfficiency = attributes.register("running_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.running_stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> underwaterStaminaEfficiency = attributes.register("underwater_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.underwater_stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> swimmingStaminaEfficiency = attributes.register("swimming_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.swimming_stamina_efficiency"));
 
 	public final DeferredHolder<DataComponentType<?>, DataComponentType<ParaglidingFlag>> paraglidingFlagComponent = dataComponents.register("paragliding",
 			() -> DataComponentType.<ParaglidingFlag>builder()
@@ -271,6 +288,30 @@ public class Contents {
 	}
 	public @NotNull Holder<Attribute> maxStamina() {
 		return maxStamina;
+	}
+	public @NotNull Holder<Attribute> staminaEfficiency() {
+		return staminaEfficiency;
+	}
+	public @NotNull Holder<Attribute> staminaRecovery() {
+		return staminaRecovery;
+	}
+	public @NotNull Holder<Attribute> movementStaminaEfficiency() {
+		return movementStaminaEfficiency;
+	}
+	public @NotNull Holder<Attribute> movementStaminaRecovery() {
+		return movementStaminaRecovery;
+	}
+	public @NotNull Holder<Attribute> paraglidingStaminaEfficiency() {
+		return paraglidingStaminaEfficiency;
+	}
+	public @NotNull Holder<Attribute> runningStaminaEfficiency() {
+		return runningStaminaEfficiency;
+	}
+	public @NotNull Holder<Attribute> underwaterStaminaEfficiency() {
+		return underwaterStaminaEfficiency;
+	}
+	public @NotNull Holder<Attribute> swimmingStaminaEfficiency() {
+		return swimmingStaminaEfficiency;
 	}
 	public @NotNull DataComponentType<ParaglidingFlag> paraglidingFlagComponent() {
 		return paraglidingFlagComponent.get();

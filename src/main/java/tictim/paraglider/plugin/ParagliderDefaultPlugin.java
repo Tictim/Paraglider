@@ -10,7 +10,9 @@ import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ConflictResolver.Resolution;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.api.stamina.StaminaPlugin;
 import tictim.paraglider.config.Cfg;
+import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
 import tictim.paraglider.wind.Wind;
 
@@ -19,7 +21,7 @@ import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.*;
 import static tictim.paraglider.impl.movement.PlayerMovementValues.PARAGLIDING_FALL_DISTANCE;
 
 @ParagliderPlugin
-public class ParagliderDefaultPlugin implements MovementPlugin {
+public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 	@Override public void registerNewStates(@NotNull PlayerStateRegister register) {
 		register.register(IDLE, IDLE_STAMINA_DELTA);
 		register.register(FLYING, FLYING_STAMINA_DELTA);
@@ -68,7 +70,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin {
 				ASCENDING);
 
 		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> f < PARAGLIDING_FALL_DISTANCE && !s.has(FLAG_PARAGLIDING),
+				(p, s, b, f) -> f < PARAGLIDING_FALL_DISTANCE && !s.hasFlag(FLAG_PARAGLIDING),
 				IDLE);
 
 		register.addBranch(IDLE,
@@ -80,13 +82,22 @@ public class ParagliderDefaultPlugin implements MovementPlugin {
 				MIDAIR, MIDAIR_PRIORITY);
 	}
 
-	private static final ConflictResolver<MovementPlugin, MovementPluginAction> RESOLVER = (a, p) -> {
-		if (a instanceof NewState) return Resolution.PROCEED; // proceed with initial state registration
-		else return Resolution.ABORT; // otherwise abort the change to enable other mods to Do Things
-	};
+	@Override public void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {
+		Contents contents = Contents.get();
+		register.registerAttribute(contents::staminaEfficiency, (d, c, p) -> d < 0);
+		register.registerAttribute(contents::staminaRecovery, (d, c, p) -> d > 0);
+		register.registerAttribute(contents::movementStaminaEfficiency, (d, c, p) -> d < 0 && c.state() != null);
+		register.registerAttribute(contents::movementStaminaRecovery, (d, c, p) -> d > 0 && c.state() != null);
+		register.registerAttribute(contents::paraglidingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(FLAG_PARAGLIDING));
+		register.registerAttribute(contents::runningStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(RUNNING));
+		register.registerAttribute(contents::underwaterStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(FLAG_UNDERWATER));
+		register.registerAttribute(contents::swimmingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(SWIMMING));
+	}
 
-	@Override
-	public @NotNull ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
-		return RESOLVER;
+	@Override public @NotNull ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
+		return (a, p) -> {
+			if (a instanceof NewState) return Resolution.PROCEED; // proceed with initial state registration
+			else return Resolution.ABORT; // otherwise abort the change to enable other mods to Do Things
+		};
 	}
 }

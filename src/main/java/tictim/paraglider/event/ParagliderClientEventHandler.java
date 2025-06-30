@@ -28,7 +28,7 @@ public final class ParagliderClientEventHandler {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement m = Movement.get(player);
-		if (m.state().has(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (m.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -54,7 +54,7 @@ public final class ParagliderClientEventHandler {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().has(FLAG_PARAGLIDING)) {
+		if (movement.state().hasFlag(FLAG_PARAGLIDING)) {
 			event.setSwingHand(false);
 			event.setCanceled(true);
 		}
@@ -67,7 +67,7 @@ public final class ParagliderClientEventHandler {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().has(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (movement.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
 	}
 
 	@SubscribeEvent

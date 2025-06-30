@@ -25,7 +25,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement {
 	@Override public void update() {
 		updateStamina();
 
-		boolean paragliding = state().has(FLAG_PARAGLIDING);
+		boolean paragliding = state().hasFlag(FLAG_PARAGLIDING);
 		if (!player().isCreative() && stamina().isDepleted()) {
 			player().setSprinting(false);
 			player().setSwimming(false);

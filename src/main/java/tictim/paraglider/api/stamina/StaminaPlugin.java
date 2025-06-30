@@ -10,6 +10,8 @@ import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.plugin.ParagliderPluginBase;
 
+import java.util.function.Supplier;
+
 /**
  * Plugin for stamina-related features.
  *
@@ -56,7 +58,7 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException If {@code attribute == null || condition == null}
 		 * @see StaminaEfficiencyAttribute
 		 */
-		void registerAttribute(@NotNull Holder<Attribute> attribute, @NotNull AttributeEfficiencyCondition condition);
+		void registerAttribute(@NotNull Supplier<Holder<Attribute>> attribute, @NotNull AttributeEfficiencyCondition condition);
 	}
 
 	@FunctionalInterface

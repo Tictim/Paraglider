@@ -160,10 +160,10 @@ public class PlayerStateMapConfig {
 				staminaDelta = 0;
 			}
 
-			if (state.has(FLAG_RUNNING)) {
+			if (state.hasFlag(FLAG_RUNNING)) {
 				if (staminaDelta < 0 && !runningConsumesStamina) staminaDelta = 0;
 			}
-			if (state.has(FLAG_PARAGLIDING)) {
+			if (state.hasFlag(FLAG_PARAGLIDING)) {
 				if (staminaDelta < 0 && !paraglidingConsumesStamina) staminaDelta = 0;
 			}
 

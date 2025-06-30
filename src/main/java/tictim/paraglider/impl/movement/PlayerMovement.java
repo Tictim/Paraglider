@@ -59,11 +59,11 @@ public abstract class PlayerMovement implements Movement {
 		Player player = player();
 		PlayerState state = state();
 
-		if (state.has(FLAG_PARAGLIDING)) {
+		if (state.hasFlag(FLAG_PARAGLIDING)) {
 			player.fallDistance = 0;
 
 			Vec3 m = player.getDeltaMovement();
-			if (state.has(FLAG_ASCENDING)) {
+			if (state.hasFlag(FLAG_ASCENDING)) {
 				if (m.y < 0.25) player.setDeltaMovement(new Vec3(m.x, Math.max(m.y + 0.05, 0.25), m.z));
 			} else {
 				if (m.y < -0.05) player.setDeltaMovement(new Vec3(m.x, -0.05, m.z));

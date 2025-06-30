@@ -12,6 +12,7 @@ import tictim.paraglider.plugin.ParagliderPluginLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class StaminaEfficiencyLogicLoader {
 	private StaminaEfficiencyLogicLoader() {}
@@ -33,7 +34,7 @@ public final class StaminaEfficiencyLogicLoader {
 				}
 
 				@Override public void registerAttribute(
-						@NotNull Holder<Attribute> attribute,
+						@NotNull Supplier<Holder<Attribute>> attribute,
 						StaminaPlugin.@NotNull AttributeEfficiencyCondition condition) {
 					Objects.requireNonNull(attribute, "attribute == null");
 					Objects.requireNonNull(condition, "condition == null");

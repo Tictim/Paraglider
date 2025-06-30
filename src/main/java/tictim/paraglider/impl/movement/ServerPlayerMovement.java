@@ -86,7 +86,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 	}
 
 	@Override public double staminaDelta() {
-		return this.staminaEfficiency;
+		return StaminaEfficiencyLogic.applyEfficiency(state().staminaDelta(), this.staminaEfficiency);
 	}
 
 	@Override public void update() {
@@ -176,7 +176,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 			ItemStack stack = player().getInventory().getItem(i);
 			if (stack.is(ParagliderTags.PARAGLIDERS)) {
 				ParagliderUtils.getCaps(stack).setParagliding(stack,
-						i == player().getInventory().getSelectedSlot() && state().has(FLAG_PARAGLIDING));
+						i == player().getInventory().getSelectedSlot() && state().hasFlag(FLAG_PARAGLIDING));
 			}
 		}
 
@@ -192,7 +192,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 	@Override protected void applyMovement() {
 		super.applyMovement();
 
-		boolean paragliding = state().has(FLAG_PARAGLIDING);
+		boolean paragliding = state().hasFlag(FLAG_PARAGLIDING);
 		if (paragliding) {
 			player().connection.aboveGroundTickCount = 0;
 			ItemStack stack = player().getMainHandItem();

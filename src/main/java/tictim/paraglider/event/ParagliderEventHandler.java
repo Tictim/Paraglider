@@ -42,7 +42,7 @@ public final class ParagliderEventHandler {
 
 		if (event.getHand() == InteractionHand.OFF_HAND) {
 			Movement movement = Movement.get(event.getEntity());
-			if (movement.state().has(FLAG_PARAGLIDING)) cancellable.setCanceled(true);
+			if (movement.state().hasFlag(FLAG_PARAGLIDING)) cancellable.setCanceled(true);
 		}
 	}
 
@@ -50,14 +50,14 @@ public final class ParagliderEventHandler {
 	public static void onPlayerStartUseItem(LivingEntityUseItemEvent.Start event) {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().has(FLAG_PARAGLIDING)) event.setCanceled(true);
+		if (movement.state().hasFlag(FLAG_PARAGLIDING)) event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public static void onPlayerTickUseItem(LivingEntityUseItemEvent.Tick event) {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Movement movement = Movement.get(player);
-		if (movement.state().has(FLAG_PARAGLIDING)) player.stopUsingItem();
+		if (movement.state().hasFlag(FLAG_PARAGLIDING)) player.stopUsingItem();
 	}
 
 	@SubscribeEvent

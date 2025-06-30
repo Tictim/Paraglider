@@ -113,7 +113,15 @@ public class ParagliderMod {
 		});
 
 		eventBus.addListener((EntityAttributeModificationEvent event) -> {
-			event.add(EntityType.PLAYER, Contents.get().maxStamina());
+			event.add(EntityType.PLAYER, this.contents.maxStamina());
+			event.add(EntityType.PLAYER, this.contents.staminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.staminaRecovery());
+			event.add(EntityType.PLAYER, this.contents.movementStaminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.movementStaminaRecovery());
+			event.add(EntityType.PLAYER, this.contents.paraglidingStaminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.runningStaminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.underwaterStaminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.swimmingStaminaEfficiency());
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> {
@@ -142,8 +150,8 @@ public class ParagliderMod {
 
 		eventBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> {
 			var map = CauldronInteraction.WATER.map();
-			map.put(Contents.get().paraglider(), ParagliderCauldronInteraction.INSTANCE);
-			map.put(Contents.get().dekuLeaf(), ParagliderCauldronInteraction.INSTANCE);
+			map.put(this.contents.paraglider(), ParagliderCauldronInteraction.INSTANCE);
+			map.put(this.contents.dekuLeaf(), ParagliderCauldronInteraction.INSTANCE);
 		}));
 
 		eventBus.addListener(this.network::register);

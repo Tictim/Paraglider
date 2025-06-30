@@ -51,12 +51,31 @@ public interface PlayerState {
 	@Range(from = 0, to = Integer.MAX_VALUE) int recoveryDelay();
 
 	/**
-	 * Checks if this state has given flag.
+	 * Check if this state has given ID.
+	 *
+	 * @param id ID
+	 * @return Whether this state has given ID
+	 */
+	default boolean is(@NotNull ResourceLocation id) {
+		Objects.requireNonNull(id, "id == null");
+		return id().equals(id);
+	}
+
+	/**
+	 * @deprecated Use {@link #hasFlag(ResourceLocation)}
+	 */
+	@Deprecated
+	default boolean has(@NotNull ResourceLocation flag) {
+		return hasFlag(flag);
+	}
+
+	/**
+	 * Check if this state has given flag.
 	 *
 	 * @param flag Flag
 	 * @return Whether this state has given flag
 	 */
-	default boolean has(@NotNull ResourceLocation flag) {
+	default boolean hasFlag(@NotNull ResourceLocation flag) {
 		Objects.requireNonNull(flag, "flag == null");
 		return flags().contains(flag);
 	}

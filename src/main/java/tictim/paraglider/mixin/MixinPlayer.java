@@ -30,7 +30,7 @@ public abstract class MixinPlayer {
 
 		final float defaultSprintingSpeed = 0.025999999F;
 
-		if (movement.state().has(FLAG_PARAGLIDING)) {
+		if (movement.state().hasFlag(FLAG_PARAGLIDING)) {
 			double v = Cfg.get().paraglidingSpeed();
 			info.setReturnValue((float)(defaultSprintingSpeed * v));
 		}
