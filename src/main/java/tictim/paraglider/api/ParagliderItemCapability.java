@@ -1,10 +1,9 @@
-package tictim.paraglider.api.item;
+package tictim.paraglider.api;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.NotNull;
-import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.impl.DefaultParagliderItemCapability;
 
 /**
@@ -17,14 +16,14 @@ import tictim.paraglider.impl.DefaultParagliderItemCapability;
  * Paraglider will use default implementation - see {@link DefaultParagliderItemCapability}.
  * </p>
  */
-public interface Paraglider {
-	ItemCapability<Paraglider, Void> CAPABILITY = ItemCapability.createVoid(ParagliderAPI.id("paraglider"), Paraglider.class);
+public interface ParagliderItemCapability {
+	ItemCapability<ParagliderItemCapability, Void> CAPABILITY = ItemCapability.createVoid(ParagliderAPI.id("paraglider"), ParagliderItemCapability.class);
 
 	/**
 	 * @return Default implementation
 	 * @see DefaultParagliderItemCapability
 	 */
-	static @NotNull Paraglider defaultImpl() {
+	static @NotNull ParagliderItemCapability defaultImpl() {
 		return ParagliderAPI.defaultParagliderItemCapability();
 	}
 

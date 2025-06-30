@@ -5,11 +5,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import tictim.paraglider.api.item.Paraglider;
+import tictim.paraglider.api.ParagliderItemCapability;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParaglidingFlag;
 
-public class DefaultParagliderItemCapability implements Paraglider {
+public class DefaultParagliderItemCapability implements ParagliderItemCapability {
 	@Override public boolean canDoParagliding(@NotNull ItemStack stack) {
 		return !stack.isDamaged() || stack.getMaxDamage() > stack.getDamageValue();
 	}

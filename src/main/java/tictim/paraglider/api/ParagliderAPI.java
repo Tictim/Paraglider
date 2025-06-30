@@ -5,7 +5,6 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tictim.paraglider.api.item.Paraglider;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.stamina.StaminaEfficiencyLogicHandler;
@@ -29,7 +28,7 @@ public class ParagliderAPI {
 	private static @Nullable Function<@NotNull Player, @NotNull Stamina> staminaSupplier;
 	private static @Nullable Function<@NotNull Player, @NotNull VesselContainer> vesselContainerSupplier;
 	private static @Nullable StaminaFactory staminaFactory;
-	private static @Nullable Paraglider defaultParagliderItemCapability;
+	private static @Nullable ParagliderItemCapability defaultParagliderItemCapability;
 	private static @Nullable StaminaEfficiencyLogicHandler staminaEfficiencyLogicHandler;
 
 	@ApiStatus.Internal
@@ -57,7 +56,7 @@ public class ParagliderAPI {
 	}
 
 	@ApiStatus.Internal
-	public static @NotNull Paraglider defaultParagliderItemCapability() {
+	public static @NotNull ParagliderItemCapability defaultParagliderItemCapability() {
 		if (defaultParagliderItemCapability != null) return defaultParagliderItemCapability;
 		throw new IllegalStateException("defaultParagliderItemCapability is not available yet");
 	}
@@ -102,7 +101,7 @@ public class ParagliderAPI {
 	}
 
 	@ApiStatus.Internal
-	public static void setDefaultParagliderItemCapability(@Nullable Paraglider c) {
+	public static void setDefaultParagliderItemCapability(@Nullable ParagliderItemCapability c) {
 		Objects.requireNonNull(c);
 		if (ParagliderAPI.defaultParagliderItemCapability == null) ParagliderAPI.defaultParagliderItemCapability = c;
 		else throw new IllegalStateException("Trying to set defaultParagliderItemCapability twice");

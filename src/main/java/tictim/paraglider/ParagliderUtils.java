@@ -29,7 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
-import tictim.paraglider.api.item.Paraglider;
+import tictim.paraglider.api.ParagliderItemCapability;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
@@ -200,9 +200,9 @@ public final class ParagliderUtils {
 		return !feet.isEmpty() && feet.getEnchantmentLevel(enchantments.getOrThrow(Enchantments.DEPTH_STRIDER)) > 0;
 	}
 
-	public static @NotNull Paraglider getCaps(@NotNull ItemStack stack) {
-		var p = stack.getCapability(Paraglider.CAPABILITY);
-		return p != null ? p : Paraglider.defaultImpl();
+	public static @NotNull ParagliderItemCapability getCaps(@NotNull ItemStack stack) {
+		var p = stack.getCapability(ParagliderItemCapability.CAPABILITY);
+		return p != null ? p : ParagliderItemCapability.defaultImpl();
 	}
 
 	public static int countIngredient(Player player, Ingredient ingredient) {
