@@ -17,7 +17,7 @@ public record BargainMsg(int sessionId, @NotNull ResourceLocation bargain) imple
 			BargainMsg::new
 	);
 
-	@Override @NotNull public Type<? extends CustomPacketPayload> type() {
+	@Override public @NotNull Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

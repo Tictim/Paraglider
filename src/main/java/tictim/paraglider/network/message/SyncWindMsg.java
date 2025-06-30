@@ -15,7 +15,7 @@ public record SyncWindMsg(@NotNull WindChunk windChunk) implements CustomPacketP
 			SyncWindMsg::new
 	);
 
-	@Override @NotNull public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+	@Override public @NotNull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

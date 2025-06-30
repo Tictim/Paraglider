@@ -276,7 +276,7 @@ public final class ParagliderCommands {
 			throw new IllegalStateException("Unreachable");
 		}
 
-		@NotNull private VesselContainer.SetResult set(@NotNull VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
+		private @NotNull VesselContainer.SetResult set(@NotNull VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
 			return switch (this) {
 				case HEART -> vessels.setHeartContainer(amount, simulate, playEffect);
 				case STAMINA -> vessels.setStaminaVessel(amount, simulate, playEffect);

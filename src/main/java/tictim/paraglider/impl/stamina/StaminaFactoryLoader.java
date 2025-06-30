@@ -17,11 +17,11 @@ import static tictim.paraglider.plugin.ParagliderPluginUtils.resolve;
 public final class StaminaFactoryLoader {
 	private StaminaFactoryLoader() {}
 
-	@NotNull public static StaminaFactory loadStaminaFactory() {
+	public static @NotNull StaminaFactory loadStaminaFactory() {
 		return loadStaminaFactory(ParagliderPluginLoader.get().getStaminaPlugins());
 	}
 
-	@NotNull private static StaminaFactory loadStaminaFactory(
+	private static @NotNull StaminaFactory loadStaminaFactory(
 			@NotNull List<@NotNull PluginInstance<StaminaPlugin>> plugins
 	) {
 		List<PluginAction<StaminaPlugin, ProvideStaminaFactory>> factories = new ArrayList<>();

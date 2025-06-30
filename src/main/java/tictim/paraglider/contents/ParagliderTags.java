@@ -27,7 +27,7 @@ public interface ParagliderTags {
 		TagKey<Biome> HAS_STRUCTURE_NETHER_HORNED_STATUE = hasStructure(id("nether_horned_statue"));
 		TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(id("tarrey_town_goddess_statue"));
 
-		@NotNull private static TagKey<Biome> hasStructure(@NotNull ResourceLocation id) {
+		private static @NotNull TagKey<Biome> hasStructure(@NotNull ResourceLocation id) {
 			return TagKey.create(Registries.BIOME, id.withPrefix("has_structure/"));
 		}
 	}

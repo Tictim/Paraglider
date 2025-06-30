@@ -37,14 +37,14 @@ public record QuantifiedItem(@NotNull ItemStack item, int quantity) {
 		this.quantity = Math.max(0, quantity);
 	}
 
-	@NotNull public ItemStack getItem() {
+	public @NotNull ItemStack getItem() {
 		return item;
 	}
 	public int getQuantity() {
 		return quantity;
 	}
 
-	@NotNull public ItemStack getItemWithQuantity() {
+	public @NotNull ItemStack getItemWithQuantity() {
 		ItemStack copy = item.copy();
 		copy.setCount(quantity);
 		return copy;

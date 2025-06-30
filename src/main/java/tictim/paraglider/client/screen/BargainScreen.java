@@ -1,7 +1,6 @@
 package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4fStack;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.client.render.BargainScreenStaminaWheelRenderer;

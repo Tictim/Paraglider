@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public final class ParagliderPluginUtils {
 	private ParagliderPluginUtils() {}
 
-	@NotNull public static <T> List<T> removeAll(@NotNull Collection<T> collection, @NotNull Predicate<T> condition) {
+	public static <T> @NotNull List<T> removeAll(@NotNull Collection<T> collection, @NotNull Predicate<T> condition) {
 		List<T> newList = new ArrayList<>();
 		for (var it = collection.iterator(); it.hasNext(); ) {
 			T t = it.next();
@@ -36,7 +36,7 @@ public final class ParagliderPluginUtils {
 	 * @param <A>                Type of the action
 	 * @return List of proceeded actions, or {@code null} if it should error the fuck out
 	 */
-	@Nullable public static <P extends ParagliderPluginBase, A> List<@NotNull PluginAction<P, A>> resolve(
+	public static <P extends ParagliderPluginBase, A> @Nullable List<@NotNull PluginAction<P, A>> resolve(
 			@NotNull Function<P, ConflictResolver<P, ? super A>> resolverGetter,
 			@NotNull List<@NotNull PluginAction<P, A>> conflictingActions
 	) {
@@ -69,7 +69,7 @@ public final class ParagliderPluginUtils {
 		return proceededActions;
 	}
 
-	@NotNull public static <P extends ParagliderPluginBase, A> RuntimeException composePluginLoadingError(
+	public static <P extends ParagliderPluginBase, A> @NotNull RuntimeException composePluginLoadingError(
 			@NotNull List<@NotNull PluginAction<P, A>> conflictingActions
 	) {
 		return new RuntimeException("Cannot continue loading paraglider plugins due to conflicting actions between plugins\n  "

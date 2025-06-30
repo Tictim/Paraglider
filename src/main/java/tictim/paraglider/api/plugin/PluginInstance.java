@@ -27,7 +27,7 @@ public record PluginInstance<T extends ParagliderPluginBase>(@NotNull T instance
 	 * @throws NullPointerException If {@code clazz == null}
 	 */
 	@SuppressWarnings("unchecked")
-	@NotNull public <T2 extends ParagliderPluginBase> PluginInstance<T2> cast(@NotNull Class<T2> clazz) {
+	public <T2 extends ParagliderPluginBase> @NotNull PluginInstance<T2> cast(@NotNull Class<T2> clazz) {
 		if (!clazz.isInstance(instance)) {
 			throw new ClassCastException("Cannot cast plugin " + instance + " to " + clazz);
 		}

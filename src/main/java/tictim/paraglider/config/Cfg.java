@@ -155,7 +155,7 @@ public interface Cfg {
 		 * Default option, spawn Deku Leaf in ocean tower chests and Paraglider in normal tower chests
 		 */
 		DEFAULT,
-		/**a
+		/**
 		 * Don't spawn anything
 		 */
 		DISABLE,

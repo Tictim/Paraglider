@@ -18,7 +18,7 @@ public record SyncLookAtMsg(int sessionId, @Nullable Vec3 lookAt) implements Cus
 			SyncLookAtMsg::new
 	);
 
-	@Override @NotNull public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+	@Override public @NotNull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

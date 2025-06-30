@@ -4,7 +4,6 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import tictim.paraglider.api.ParagliderAPI;
-import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 
 /**
  * Interface providing access to movement state of the player.

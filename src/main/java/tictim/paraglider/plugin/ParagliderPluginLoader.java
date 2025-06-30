@@ -10,7 +10,7 @@ import tictim.paraglider.api.stamina.StaminaPlugin;
 import java.util.List;
 
 public interface ParagliderPluginLoader {
-	@NotNull static ParagliderPluginLoader get() {
+	static @NotNull ParagliderPluginLoader get() {
 		return ParagliderMod.instance().getPluginLoader();
 	}
 

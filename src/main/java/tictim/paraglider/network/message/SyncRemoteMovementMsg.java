@@ -20,7 +20,7 @@ public record SyncRemoteMovementMsg(@NotNull UUID entityId,
 			SyncRemoteMovementMsg::new
 	);
 
-	@Override @NotNull public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+	@Override public @NotNull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

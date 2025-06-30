@@ -18,7 +18,7 @@ public record BargainDialogMsg(int sessionId, @NotNull Component dialog) impleme
 			BargainDialogMsg::new
 	);
 
-	@Override @NotNull public Type<? extends CustomPacketPayload> type() {
+	@Override public @NotNull Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }
