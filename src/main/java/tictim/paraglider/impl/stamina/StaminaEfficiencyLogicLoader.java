@@ -1,5 +1,7 @@
 package tictim.paraglider.impl.stamina;
 
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import tictim.paraglider.api.plugin.PluginInstance;
@@ -24,9 +26,20 @@ public final class StaminaEfficiencyLogicLoader {
 		List<StaminaEfficiencyLogic> list = new ArrayList<>();
 
 		for (PluginInstance<StaminaPlugin> plugin : plugins) {
-			plugin.instance().registerStaminaEfficiencyLogic(logic -> {
-				Objects.requireNonNull(logic, "logic == null");
-				list.add(logic);
+			plugin.instance().registerStaminaEfficiencyLogic(new StaminaPlugin.StaminaEfficiencyLogicRegister() {
+				@Override public void register(@NotNull StaminaEfficiencyLogic logic) {
+					Objects.requireNonNull(logic, "logic == null");
+					list.add(logic);
+				}
+
+				@Override public void registerAttribute(
+						@NotNull Holder<Attribute> attribute,
+						StaminaPlugin.@NotNull AttributeEfficiencyCondition condition) {
+					Objects.requireNonNull(attribute, "attribute == null");
+					Objects.requireNonNull(condition, "condition == null");
+
+					list.add(new AttributeStaminaEfficiencyLogic(attribute, condition));
+				}
 			});
 		}
 

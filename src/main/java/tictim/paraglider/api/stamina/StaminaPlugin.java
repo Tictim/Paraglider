@@ -1,7 +1,11 @@
 package tictim.paraglider.api.stamina;
 
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tictim.paraglider.api.StaminaEfficiencyAttribute;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.plugin.ParagliderPluginBase;
@@ -42,5 +46,23 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException If {@code logic == null}
 		 */
 		void register(@NotNull StaminaEfficiencyLogic logic);
+
+		/**
+		 * Register stamina efficiency logic using attributes. Note that in addition to the condition supplied, whether
+		 * player has the attribute is also checked.
+		 *
+		 * @param attribute Attribute
+		 * @param condition Condition to apply this attribute
+		 * @throws NullPointerException If {@code attribute == null || condition == null}
+		 * @see StaminaEfficiencyAttribute
+		 */
+		void registerAttribute(@NotNull Holder<Attribute> attribute, @NotNull AttributeEfficiencyCondition condition);
+	}
+
+	@FunctionalInterface
+	interface AttributeEfficiencyCondition {
+		boolean isApplicable(double baseStaminaDelta,
+		                     @NotNull StaminaEfficiencyLogic.Context context,
+		                     @NotNull Player player);
 	}
 }
