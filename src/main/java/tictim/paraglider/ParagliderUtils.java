@@ -91,22 +91,20 @@ public final class ParagliderUtils {
 						null;
 	}
 
-	private static final ResourceLocation EXHAUSTION_ID = ParagliderAPI.id("exhaustion");
-	private static final double EXHAUSTION_AMOUNT = -0.30;
+	private static final AttributeModifier EXHAUSTION = new AttributeModifier(
+			ParagliderAPI.id("exhaustion"), -0.3, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+	);
 
 	public static void addExhaustion(@NotNull LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-		if (attr == null || attr.getModifier(EXHAUSTION_ID) != null) return;
-		attr.addTransientModifier(new AttributeModifier(
-				EXHAUSTION_ID,
-				EXHAUSTION_AMOUNT,
-				AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+		if (attr == null || attr.getModifier(EXHAUSTION.id()) != null) return;
+		attr.addTransientModifier(EXHAUSTION);
 	}
 
 	public static void removeExhaustion(@NotNull LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (attr == null) return;
-		attr.removeModifier(EXHAUSTION_ID);
+		attr.removeModifier(EXHAUSTION.id());
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
