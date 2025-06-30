@@ -25,6 +25,8 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 	@Override public void registerNewStates(@NotNull PlayerStateRegister register) {
 		register.register(IDLE, IDLE_STAMINA_DELTA);
 		register.register(FLYING, FLYING_STAMINA_DELTA);
+		register.register(CREATIVE_FLYING, CREATIVE_FLYING_STAMINA_DELTA);
+		register.register(ELYTRA_FLYING, ELYTRA_FLYING_STAMINA_DELTA);
 		register.register(ON_VEHICLE, ON_VEHICLE_STAMINA_DELTA);
 		register.register(SWIMMING, SWIMMING_STAMINA_DELTA, FLAG_RUNNING);
 		register.register(UNDERWATER, UNDERWATER_STAMINA_DELTA, FLAG_RUNNING);
@@ -38,8 +40,16 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 
 	@Override public void registerStateConnections(@NotNull PlayerStateConnectionRegister register) {
 		register.addBranch(IDLE,
-				(p, s, b, f) -> p.getAbilities().flying || p.isFallFlying(),
+				(p, s, b, f) -> p.getAbilities().flying,
 				FLYING, FLYING_PRIORITY);
+
+		register.addBranch(FLYING,
+				(p, s, b, f) -> p.isCreative(),
+				CREATIVE_FLYING);
+
+		register.addBranch(IDLE,
+				(p, s, b, f) -> p.isFallFlying(),
+				ELYTRA_FLYING, ELYTRA_FLYING_PRIORITY);
 		register.addBranch(IDLE,
 				(p, s, b, f) -> p.getVehicle() != null,
 				ON_VEHICLE, ON_VEHICLE_PRIORITY);

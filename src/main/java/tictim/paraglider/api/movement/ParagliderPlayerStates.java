@@ -23,7 +23,20 @@ public interface ParagliderPlayerStates {
 	 */
 	ResourceLocation FLYING = ParagliderAPI.id("flying");
 	int FLYING_STAMINA_DELTA = IDLE_STAMINA_DELTA;
-	double FLYING_PRIORITY = 7;
+	double FLYING_PRIORITY = 8;
+
+	/**
+	 * Creative mode flying, but actually creative.
+	 */
+	ResourceLocation CREATIVE_FLYING = ParagliderAPI.id("creative_flying");
+	int CREATIVE_FLYING_STAMINA_DELTA = IDLE_STAMINA_DELTA;
+
+	/**
+	 * Elytra flying.
+	 */
+	ResourceLocation ELYTRA_FLYING = ParagliderAPI.id("elytra_flying");
+	int ELYTRA_FLYING_STAMINA_DELTA = 0;
+	double ELYTRA_FLYING_PRIORITY = 7;
 
 	/**
 	 * Riding a vehicle.
