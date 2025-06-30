@@ -330,10 +330,12 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		return (float)Mth.lerp(percentage, start < end ? (end - start > 180 ? start + 360 : start) : (start - end > 180 ? start - 360 : start), end);
 	}
 
-	@Override public boolean mouseScrolled(double mouseX, double mouseY, double delta, double idk) {
-		int bargainSize = this.catalogs.length;
-		if (bargainSize > 7) {
-			this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset - delta), 0, bargainSize - 7);
+	@Override public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (!super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+			int bargainSize = this.catalogs.length;
+			if (bargainSize > 7) {
+				this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset - scrollY), 0, bargainSize - 7);
+			}
 		}
 		return true;
 	}
