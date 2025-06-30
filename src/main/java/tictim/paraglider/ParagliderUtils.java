@@ -117,15 +117,6 @@ public final class ParagliderUtils {
 		return advancement != null && advancements.award(advancement, criterion);
 	}
 
-	public static void damageItemWithoutBreaking(@NotNull Player player, @NotNull ItemStack stack) {
-		int prevCount = stack.getCount();
-		stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-		if (stack.getCount() < prevCount) {
-			stack.setCount(prevCount);
-			stack.setDamageValue(stack.getMaxDamage());
-		}
-	}
-
 	/**
 	 * Tries to calculate item consumption for ingredient
 	 *

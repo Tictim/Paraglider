@@ -61,7 +61,6 @@ public interface Paraglider {
 	 *
 	 * @param player Player
 	 * @param stack  Item stack
-	 * @see tictim.paraglider.ParagliderUtils#damageItemWithoutBreaking(Player, ItemStack)
 	 */
 	void damageParaglider(@NotNull Player player, @NotNull ItemStack stack);
 }

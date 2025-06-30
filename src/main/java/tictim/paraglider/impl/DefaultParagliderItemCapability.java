@@ -1,17 +1,17 @@
 package tictim.paraglider.impl;
 
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.item.Paraglider;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParaglidingFlag;
 
 public class DefaultParagliderItemCapability implements Paraglider {
 	@Override public boolean canDoParagliding(@NotNull ItemStack stack) {
-		return !stack.isDamageableItem() || stack.getMaxDamage() > stack.getDamageValue();
+		return !stack.isDamaged() || stack.getMaxDamage() > stack.getDamageValue();
 	}
 
 	@Override public boolean isParagliding(@NotNull ItemStack stack) {
@@ -28,6 +28,11 @@ public class DefaultParagliderItemCapability implements Paraglider {
 	}
 
 	@Override public void damageParaglider(@NotNull Player player, @NotNull ItemStack stack) {
-		ParagliderUtils.damageItemWithoutBreaking(player, stack);
+		int prevCount = stack.getCount();
+		stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+		if (stack.getCount() < prevCount) {
+			stack.setCount(prevCount);
+			stack.setDamageValue(stack.getMaxDamage());
+		}
 	}
 }
