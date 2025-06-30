@@ -1,7 +1,10 @@
 package tictim.paraglider.impl.movement;
 
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
 
@@ -29,6 +32,9 @@ public class ClientPlayerMovement extends RemotePlayerMovement {
 			player().setSwimming(false);
 		} else if (this.wasParagliding != paragliding) {
 			player().setSprinting(paragliding);
+			if (!this.wasParagliding && paragliding) {
+				ParagliderUtils.playParagliderDeploySound(player());
+			}
 		}
 
 		applyMovement();

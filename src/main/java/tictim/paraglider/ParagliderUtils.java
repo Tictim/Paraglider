@@ -10,6 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -226,5 +228,11 @@ public final class ParagliderUtils {
 		}
 
 		return value - (prev != null ? prev.amount() : 0);
+	}
+
+	public static void playParagliderDeploySound(Player player) {
+		player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
+				SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS,
+				1.0f, .85f);
 	}
 }

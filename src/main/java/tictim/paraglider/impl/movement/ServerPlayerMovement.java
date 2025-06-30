@@ -132,7 +132,13 @@ public class ServerPlayerMovement extends PlayerMovement {
 			this.movementChanged = true;
 		}
 
-		if (!prevState.equals(state())) this.movementChanged = true;
+		if (!prevState.equals(state())) {
+			this.movementChanged = true;
+
+			if (!prevState.paragliding() && state().paragliding()) {
+				ParagliderUtils.playParagliderDeploySound(player());
+			}
+		}
 
 		updateStamina();
 
