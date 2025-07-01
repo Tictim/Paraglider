@@ -3,6 +3,7 @@ package datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
@@ -34,5 +35,16 @@ public class BlockTagGen extends BlockTagsProvider {
 		tag(ParagliderTags.Blocks.STATUES)
 				.add(contents.hornedStatue())
 				.addTag(ParagliderTags.Blocks.STATUES_GODDESS);
+
+		tag(ParagliderTags.Blocks.WIND_CAN_PASS_THROUGH).add(
+				Blocks.COPPER_GRATE,
+				Blocks.EXPOSED_COPPER_GRATE,
+				Blocks.WEATHERED_COPPER_GRATE,
+				Blocks.OXIDIZED_COPPER_GRATE,
+				Blocks.WAXED_COPPER_GRATE,
+				Blocks.WAXED_EXPOSED_COPPER_GRATE,
+				Blocks.WAXED_WEATHERED_COPPER_GRATE,
+				Blocks.WAXED_OXIDIZED_COPPER_GRATE
+		);
 	}
 }

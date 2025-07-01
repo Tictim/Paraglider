@@ -29,7 +29,7 @@ public class WindParticleProvider implements ParticleProvider<SimpleParticleType
 	}
 
 	public static class WindParticle extends SimpleAnimatedParticle {
-		private boolean blocked;
+		private boolean outsideWind;
 
 		public WindParticle(
 				ClientLevel level, double x, double y, double z,
@@ -46,20 +46,28 @@ public class WindParticleProvider implements ParticleProvider<SimpleParticleType
 		}
 
 		@Override public void tick() {
-			if (!this.blocked) {
+			if (!this.outsideWind) {
 				double windAbove = Wind.getWindAbove(this.level, getBoundingBox());
 				if (windAbove > 1) {
 					this.lifetime++;
 					this.yd = 0.5;
 				} else {
-					this.blocked = true;
+					this.outsideWind = true;
 					this.friction = 0.8f;
 				}
 			}
 
 			super.tick();
 
-			if (!this.blocked && this.y == this.yo) this.blocked = true;
+			if (!this.outsideWind && this.y == this.yo) this.outsideWind = true;
+		}
+
+		@Override public void move(double x, double y, double z) {
+			if (this.outsideWind) super.move(x, y, z);
+			else {
+				setBoundingBox(getBoundingBox().move(x, y, z));
+				setLocationFromBoundingbox();
+			}
 		}
 	}
 }
