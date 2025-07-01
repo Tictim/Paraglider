@@ -61,9 +61,9 @@ public final class WindParticleEventHandler {
 			int z = xyzList.getInt(i + 2);
 
 			if (ParagliderUtils.PARTICLE_RNG.nextInt(bound) == 0) {
-				level.addAlwaysVisibleParticle(WindParticleProvider.PARTICLE_TYPE, // TODO custom firework particle
+				level.addAlwaysVisibleParticle(WindParticleProvider.PARTICLE_TYPE,
 						x + ParagliderUtils.PARTICLE_RNG.nextDouble(),
-						y + 0.5, // TODO might need to move offset around if a full block source is used
+						y + 0.5,
 						z + ParagliderUtils.PARTICLE_RNG.nextDouble(),
 						0, 0, 0);
 			}
