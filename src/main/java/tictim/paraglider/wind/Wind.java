@@ -6,19 +6,18 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import tictim.paraglider.ParagliderUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -141,12 +140,10 @@ public final class Wind {
 
 					if (foundWindSource) {
 						int height = y - windSourceY;
-						if (height >= windSourceHeight ||
+						if (height > windSourceHeight || // go 1 block beyond to provide margin for top part
 								blockStateWindSourceHeight > 0 ||
-								state.blocksMotion() ||
-								Block.canSupportCenter(level, this.mpos, Direction.DOWN) ||
-								Block.canSupportCenter(level, this.mpos, Direction.UP)) {
-							if (height > 2) writeWind(x, windSourceY, z, height, level.getGameTime());
+								!ParagliderUtils.windCanPassThrough(level, this.mpos, state)) {
+							if (height > 1) writeWind(x, windSourceY, z, height, level.getGameTime());
 							foundWindSource = false;
 						} else continue;
 					}
@@ -209,7 +206,7 @@ public final class Wind {
 	public static double getWindAbove(@NotNull Level level, @NotNull AABB boundingBox) {
 		int maxWindY = getMaxWindY(level,
 				Mth.floor(boundingBox.minX), Mth.floor(boundingBox.minY), Mth.floor(boundingBox.minZ),
-				Mth.ceil(boundingBox.maxX), Mth.ceil(boundingBox.maxY), Mth.ceil(boundingBox.maxZ));
+				Mth.ceil(boundingBox.maxX) - 1, Mth.ceil(boundingBox.maxY) - 1, Mth.ceil(boundingBox.maxZ) - 1);
 		return Math.max(0, (double)maxWindY - boundingBox.minY);
 	}
 
@@ -246,7 +243,7 @@ public final class Wind {
 			for (int z = zs; z <= ze; z++) {
 				WindNode node = chunk.getNode(x, z);
 				while (node != null) {
-					if (node.y < maxY && node.y + node.height > minY) {
+					if (node.y <= maxY && node.y + node.height > minY) {
 						maxWindY = Math.max(maxWindY, node.y + node.height);
 					}
 					node = node.next;

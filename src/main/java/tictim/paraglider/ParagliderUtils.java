@@ -1,8 +1,11 @@
 package tictim.paraglider;
 
+import com.mojang.math.OctahedralGroup;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -27,7 +30,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
@@ -35,6 +42,7 @@ import tictim.paraglider.api.ParagliderItemCapability;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
+import tictim.paraglider.contents.ParagliderTags;
 import tictim.paraglider.contents.recipe.QuantifiedIngredient;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
 import tictim.paraglider.impl.movement.PlayerStateMap;
@@ -234,5 +242,38 @@ public final class ParagliderUtils {
 		player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
 				SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS,
 				1.0f, .85f);
+	}
+
+	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<BlockState>> blockStatePassThroughCache = ThreadLocal.withInitial(() -> {
+		var m = new Object2ByteLinkedOpenHashMap<BlockState>();
+		m.defaultReturnValue((byte)127);
+		return m;
+	});
+
+	// based on FlowingFluid#canPassThroughWall
+	@SuppressWarnings("deprecation")
+	public static boolean windCanPassThrough(Level level, BlockPos pos, BlockState state) {
+		if (state.is(ParagliderTags.Blocks.WIND_CAN_PASS_THROUGH)) return true;
+		if (!state.blocksMotion()) return true; // deprecated, but seems like it's still being used around
+		VoxelShape shape = state.getCollisionShape(level, pos);
+		if (shape == Shapes.block()) return false;
+		if (shape == Shapes.empty()) return true;
+
+		var cache = state.getBlock().hasDynamicShape() ? null : blockStatePassThroughCache.get();
+		if (cache != null) {
+			byte b = cache.getAndMoveToFirst(state);
+			if (b != 127) return b != 0;
+		}
+
+		VoxelShape invert = Shapes.rotate(shape, OctahedralGroup.INVERT_Y);
+		boolean canPassThrough = !(Shapes.mergedFaceOccludes(shape, invert, Direction.UP) ||
+				Shapes.mergedFaceOccludes(invert, shape, Direction.UP));
+
+		if (cache != null) {
+			if (cache.size() == 200) cache.removeLastByte();
+			cache.putAndMoveToFirst(state, (byte)(canPassThrough ? 1 : 0));
+		}
+
+		return canPassThrough;
 	}
 }

@@ -1,6 +1,7 @@
 package datagen;
 
 import datagen.test.TestRecipeGen;
+import datagen.test.TestWindSourceGen;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -28,6 +29,7 @@ public class Datagen {
 			ParagliderMod.LOGGER.info("Generating test datagen");
 
 			event.createProvider(TestRecipeGen.Runner::new);
+			event.createProvider(TestWindSourceGen::new);
 		}
 	}
 }

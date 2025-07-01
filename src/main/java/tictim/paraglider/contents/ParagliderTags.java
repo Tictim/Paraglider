@@ -20,6 +20,7 @@ public interface ParagliderTags {
 	interface Blocks {
 		TagKey<Block> STATUES = TagKey.create(BLOCK, id("statues"));
 		TagKey<Block> STATUES_GODDESS = TagKey.create(BLOCK, id("statues/goddess"));
+		TagKey<Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
 	}
 
 	interface Biomes {
