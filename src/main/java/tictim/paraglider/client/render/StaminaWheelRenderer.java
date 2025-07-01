@@ -9,6 +9,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import tictim.paraglider.api.ParagliderAPI;
+import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.client.ParagliderRenderTypes;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.contents.ParagliderTags;
@@ -31,8 +34,11 @@ import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public abstract class StaminaWheelRenderer {
 	private static final DecimalFormat DEBUG = new DecimalFormat("#.00");
+	private static final Style SMALL_NUMBER_STYLE = Style.EMPTY.withFont(ParagliderAPI.id("small_numbers"));
+	private static final int FONT_HEIGHT = 7;
 
-	private final Wheel wheel = new Wheel();
+	protected final Wheel mainWheel = new Wheel();
+	protected final Wheel extraWheel = new Wheel();
 
 	private boolean debug;
 	private @Nullable List<StaminaWheelAnimationTracker> debugAnims;
@@ -46,9 +52,12 @@ public abstract class StaminaWheelRenderer {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		this.debug = isDebugEnabled(player);
-		makeWheel(player, this.wheel, partialTicks);
-		render(guiGraphics, this.wheel, x, y, z, isDebugEnabled(player));
-		this.wheel.reset();
+
+		makeWheel(player, partialTicks);
+		render(guiGraphics, x, y, z, isDebugEnabled(player));
+
+		this.mainWheel.reset();
+		this.extraWheel.reset();
 
 		if (this.debug) {
 			this.debug = false;
@@ -71,9 +80,9 @@ public abstract class StaminaWheelRenderer {
 		this.debugAnimNames.add(name);
 	}
 
-	protected abstract void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks);
+	protected abstract void makeWheel(@NotNull Player player, float partialTicks);
 
-	protected void render(@NotNull GuiGraphics guiGraphics, @NotNull Wheel wheel,
+	protected void render(@NotNull GuiGraphics guiGraphics,
 	                      float x, float y, float z, boolean debug) {
 		if (debug) {
 			Font font = Minecraft.getInstance().font;
@@ -96,8 +105,8 @@ public abstract class StaminaWheelRenderer {
 			int lineStart = lines;
 			int maxWidth = 0;
 
-			for (int i = 0; i < wheel.count; i++) {
-				Wheel.Segment s = wheel.segments.get(i);
+			for (int i = 0; i < this.mainWheel.count; i++) {
+				Wheel.Segment s = this.mainWheel.segments.get(i);
 				String segmentString = DEBUG.format(s.from) + " ~ " + DEBUG.format(s.to) + ": ";
 
 				guiGraphics.drawString(font, segmentString,
@@ -108,11 +117,11 @@ public abstract class StaminaWheelRenderer {
 
 			lines = lineStart;
 
-			for (int i = 0; i < wheel.count; i++) {
-				Wheel.Segment s = wheel.segments.get(i);
+			for (int i = 0; i < this.mainWheel.count; i++) {
+				Wheel.Segment s = this.mainWheel.segments.get(i);
 				guiGraphics.drawString(font, String.format("#%X", s.color),
 						20 + maxWidth, 10 + font.lineHeight * lines++,
-						ARGB.color(Math.max(255, ARGB.alpha(s.color) * 2), s.color));
+						ARGB.color(Math.max(255, alpha(s.color) * 2), s.color));
 			}
 		}
 
@@ -120,7 +129,7 @@ public abstract class StaminaWheelRenderer {
 		pose.pushPose();
 		pose.translate(x, y, z);
 
-		draw(guiGraphics, wheel, WHEEL_RADIUS);
+		drawWheels(guiGraphics);
 
 		if (this.debugVertices != null) {
 			Font font = Minecraft.getInstance().font;
@@ -143,24 +152,54 @@ public abstract class StaminaWheelRenderer {
 
 	private static final float[] edgePoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
 
-	protected void draw(GuiGraphics guiGraphics, Wheel wheel, float radius) {
+	protected void drawWheels(GuiGraphics guiGraphics) {
 		guiGraphics.drawSpecial(s -> {
-			drawWheel(guiGraphics, s, wheel, WheelLevel.FIRST, radius);
-			drawWheel(guiGraphics, s, wheel, WheelLevel.SECOND, radius);
-			drawWheel(guiGraphics, s, wheel, WheelLevel.THIRD, radius);
+			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.FIRST, WHEEL_RADIUS);
+			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.SECOND, WHEEL_RADIUS);
+			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.THIRD, WHEEL_RADIUS);
+
+			if (this.extraWheel.stamina() > 0) {
+				PoseStack pose = guiGraphics.pose();
+				pose.pushPose();
+				pose.translate(-WHEEL_RADIUS - EXTRA_WHEEL_RADIUS
+						- Math.min(3, Math.ceil(toWheelPos(this.mainWheel.maxStamina)) - 1) * 1 - 0.5, 0, 0);
+				drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_1, EXTRA_WHEEL_RADIUS);
+				if (this.extraWheel.stamina > Stamina.STAMINA_PER_WHEEL) {
+					pose.translate(-EXTRA_WHEEL_RADIUS * 2 - 2.5, 0, 0);
+					drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_2, EXTRA_WHEEL_RADIUS);
+				}
+				pose.popPose();
+			}
 		});
 
-		int color = wheel.extraWheelIndicatorColor();
-		if (ARGB.alpha(color) >= 4) {
-			Font font = Minecraft.getInstance().font;
-			int x = Math.round(radius);
-			//noinspection IntegerDivisionInFloatingPointContext
-			int y = Math.round(-radius - font.lineHeight / 2);
-
-			guiGraphics.drawString(font,
-					"+" + Math.max(1, (int)(Math.ceil(wheel.staminaWheelPos()) - 3)),
-					x, y, color);
+		int color = this.mainWheel.extraWheelIndicatorColor();
+		if (alpha(color) >= 4) {
+			drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
+					false, WHEEL_RADIUS - 1, 1 - WHEEL_RADIUS, color);
 		}
+
+		if (this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL * 2) {
+			color = this.extraWheel.extraWheelIndicatorColor();
+			if (alpha(color) >= 4) {
+				drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
+						true, 1 - WHEEL_RADIUS, 1 - WHEEL_RADIUS, color);
+			}
+		}
+	}
+
+	protected void drawText(GuiGraphics guiGraphics, String text, boolean alignRight,
+	                        int x, int y, int color) {
+		Font font = Minecraft.getInstance().font;
+		PoseStack pose = guiGraphics.pose();
+
+		pose.pushPose();
+		pose.translate(x, y, 0);
+		pose.scale(.5f, .5f, 1);
+
+		guiGraphics.drawString(font, Component.literal(text).setStyle(SMALL_NUMBER_STYLE),
+				alignRight ? -font.width(text) : 0, -FONT_HEIGHT / 2, color);
+
+		pose.popPose();
 	}
 
 	protected void drawWheel(GuiGraphics guiGraphics, MultiBufferSource bufferSource,
@@ -168,7 +207,9 @@ public abstract class StaminaWheelRenderer {
 		float wheelStart = switch (wheelLevel) {
 			case FIRST -> 0;
 			case SECOND -> 1;
-			case THIRD -> Math.max(2, (int)Math.ceil(wheel.staminaWheelPos()) - 1);
+			case THIRD -> Math.max(2, (float)Math.ceil(wheel.staminaWheelPos()) - 1);
+			case EXTRA_1 -> (float)Math.ceil(wheel.staminaWheelPos()) - 1;
+			case EXTRA_2 -> (float)Math.ceil(wheel.staminaWheelPos()) - 2;
 		};
 
 		for (int i = 0; i < wheel.count; i++) {
@@ -358,7 +399,9 @@ public abstract class StaminaWheelRenderer {
 	public enum WheelLevel {
 		FIRST(ParagliderAPI.id("textures/stamina/first.png")),
 		SECOND(ParagliderAPI.id("textures/stamina/second.png")),
-		THIRD(ParagliderAPI.id("textures/stamina/third.png"));
+		THIRD(ParagliderAPI.id("textures/stamina/third.png")),
+		EXTRA_1(ParagliderAPI.id("textures/stamina/extra.png")),
+		EXTRA_2(EXTRA_1.texture);
 
 		public final ResourceLocation texture;
 

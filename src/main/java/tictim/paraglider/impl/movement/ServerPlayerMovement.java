@@ -149,14 +149,16 @@ public class ServerPlayerMovement extends PlayerMovement {
 		}
 		applyMovement();
 
-		if (resync || this.movementChanged) {
+		if (resync || this.movementChanged || stamina().isDirty()) {
 			ParagliderNetwork.get().syncMovement(player(),
 					state().id(),
 					stamina().stamina(),
+					stamina().extraStamina(),
 					stamina().isDepleted(),
 					recoveryDelay(),
 					this.staminaEfficiency);
 			this.movementChanged = false;
+			stamina().setDirty(false);
 		}
 
 		if (resync || vesselsChanged) {
@@ -164,6 +166,8 @@ public class ServerPlayerMovement extends PlayerMovement {
 
 			ParagliderNetwork.get().syncVessels(player(),
 					stamina().stamina(),
+					stamina().extraStamina(),
+					stamina().isDepleted(),
 					vessels.heartContainer(),
 					vessels.staminaVessel());
 
@@ -234,11 +238,11 @@ public class ServerPlayerMovement extends PlayerMovement {
 
 		if (stamina.isDepleted()) {
 			if (stamina.stamina() >= Math.min(stamina.maxStamina(), Stamina.STAMINA_PER_WHEEL * 3)) {
-				stamina.setDepleted(false);
+				stamina.setDepleted(false, true);
 				this.movementChanged = true;
 			}
-		} else if (stamina.stamina() <= 0) {
-			stamina.setDepleted(true);
+		} else if (stamina.stamina() <= 0 && stamina.extraStamina() <= 0) {
+			stamina.setDepleted(true, true);
 			movementState().resetPanicParaglidingState();
 			this.movementChanged = true;
 		}

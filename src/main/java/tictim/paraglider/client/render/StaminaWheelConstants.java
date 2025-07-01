@@ -13,6 +13,7 @@ public final class StaminaWheelConstants {
 	public static final int DEPLETED_1 = ARGB.color(150, 2, 2);
 	public static final int DEPLETED_2 = ARGB.color(255, 150, 2);
 	public static final int EMPTY = ARGB.color(150, 2, 2, 2);
+	public static final int EXTRA = 0xFFFFFF00;
 
 	public static final long GLOW_FADE_START = 100;
 	public static final long GLOW_FADE_DURATION = 250;
@@ -24,10 +25,11 @@ public final class StaminaWheelConstants {
 	public static final long BLINK = 300;
 	public static final long DEPLETED_BLINK = 600;
 
-	public static final long EXTRA_WHEEL_FILL_DURATION = 250;
-	public static final long EXTRA_WHEEL_EMPTY_DURATION = 250;
+	public static final long OUTER_WHEEL_FILL_DURATION = 250;
+	public static final long OUTER_WHEEL_EMPTY_DURATION = 250;
 
 	public static final int WHEEL_RADIUS = 10;
+	public static final int EXTRA_WHEEL_RADIUS = 5;
 
 	// pair of idle/background colors for stamina - first is the basic green color
 	// later ones are used for 4th wheel and beyond, cycling through each entry
@@ -63,6 +65,13 @@ public final class StaminaWheelConstants {
 		if (time < GLOW_FADE_START) return GLOW;
 		if (time < GLOW_FADE_END) return lerp(
 				(float)(time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
+		return baseColor;
+	}
+
+	public static int getFadeColor(long time, int baseColor) {
+		if (time < FADE_START) return baseColor;
+		if (time < FADE_END) return lerp(
+				(float)(time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
 		return baseColor;
 	}
 

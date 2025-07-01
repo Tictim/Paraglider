@@ -88,8 +88,12 @@ public final class ParagliderGuiLayers {
 			consumer.accept("Wind height above: " + WIND_HEIGHT.format(Wind.getWindAbove(p.level(), p.getBoundingBox())));
 		}
 
-		consumer.accept((stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +
-				STAMINA.format(stamina.stamina()) + " / " + STAMINA.format(stamina.maxStamina()));
+		String staminaText = (stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +
+				STAMINA.format(stamina.stamina()) + " / " + STAMINA.format(stamina.maxStamina());
+		if(stamina.extraStamina()>0){
+			staminaText += " + "+stamina.extraStamina();
+		}
+		consumer.accept(staminaText);
 
 		StringBuilder stb = new StringBuilder().append("Stamina Delta: ");
 

@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -13,6 +14,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -37,6 +40,8 @@ import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.contents.block.GoddessStatueBlock;
 import tictim.paraglider.contents.block.HornedStatueBlock;
 import tictim.paraglider.contents.item.*;
+import tictim.paraglider.contents.item.consumeeffect.GiveExtraStaminaConsumeEffect;
+import tictim.paraglider.contents.item.consumeeffect.RestoreStaminaConsumeEffect;
 import tictim.paraglider.contents.loot.*;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.SimpleBargain;
@@ -63,6 +68,7 @@ public class Contents {
 	public final DeferredRegister<Block> blocks = DeferredRegister.create(Registries.BLOCK, MODID);
 	public final DeferredRegister<Item> items = DeferredRegister.create(Registries.ITEM, MODID);
 	public final DeferredRegister<Attribute> attributes = DeferredRegister.create(Registries.ATTRIBUTE, MODID);
+	public final DeferredRegister<ConsumeEffect.Type<?>> consumeEffectTypes = DeferredRegister.create(Registries.CONSUME_EFFECT_TYPE, MODID);
 	public final DeferredRegister<DataComponentType<?>> dataComponents = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
 	public final DeferredRegister<RecipeSerializer<?>> recipeSerializers = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MODID);
 	public final DeferredRegister<RecipeType<?>> recipeTypes = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
@@ -106,6 +112,11 @@ public class Contents {
 	public final DeferredHolder<Attribute, Attribute> swimmingStaminaEfficiency = attributes.register("swimming_stamina_efficiency",
 			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.swimming_stamina_efficiency"));
 
+	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<RestoreStaminaConsumeEffect>> restoreStaminaConsumeEffectType =
+			consumeEffectTypes.register("restore_stamina", () -> RestoreStaminaConsumeEffect.TYPE);
+	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<GiveExtraStaminaConsumeEffect>> giveExtraStaminaConsumeEffectType =
+			consumeEffectTypes.register("give_extra_stamina", () -> GiveExtraStaminaConsumeEffect.TYPE);
+
 	public final DeferredHolder<DataComponentType<?>, DataComponentType<ParaglidingFlag>> paraglidingFlagComponent = dataComponents.register("paragliding",
 			() -> DataComponentType.<ParaglidingFlag>builder()
 					.persistent(Codec.unit(ParaglidingFlag.INSTANCE))
@@ -126,6 +137,25 @@ public class Contents {
 			id -> new AntiVesselItem(p(id).rarity(Rarity.EPIC)));
 	public final DeferredHolder<Item, Item> essence = items.register("essence",
 			id -> new EssenceItem(p(id).rarity(Rarity.RARE)));
+	public final DeferredHolder<Item, Item> staminaPotion1 = items.register("stamina_potion_1",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new RestoreStaminaConsumeEffect(1000)).build())));
+	public final DeferredHolder<Item, Item> staminaPotion2 = items.register("stamina_potion_2",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new RestoreStaminaConsumeEffect(2000)).build())));
+	public final DeferredHolder<Item, Item> staminaPotion3 = items.register("stamina_potion_3",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new RestoreStaminaConsumeEffect(3000)).build())));
+	public final DeferredHolder<Item, Item> maxStaminaPotion1 = items.register("max_stamina_potion_1",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new GiveExtraStaminaConsumeEffect(1000)).build())));
+	public final DeferredHolder<Item, Item> maxStaminaPotion2 = items.register("max_stamina_potion_2",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new GiveExtraStaminaConsumeEffect(2000)).build())));
+	public final DeferredHolder<Item, Item> maxStaminaPotion3 = items.register("max_stamina_potion_3",
+			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+					.onConsume(new GiveExtraStaminaConsumeEffect(3000)).build())));
+
 	public final DeferredHolder<Item, BlockItem> goddessStatueItem = items.register("goddess_statue",
 			id -> new BlockItem(goddessStatue(), p(id).rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, BlockItem> kakarikoGoddessStatueItem = items.register("kakariko_goddess_statue",
@@ -178,6 +208,13 @@ public class Contents {
 				out.accept(spiritOrb());
 				out.accept(antiVessel());
 				out.accept(essence());
+				out.accept(this.staminaPotion1.get());
+				out.accept(this.staminaPotion2.get());
+				out.accept(this.staminaPotion3.get());
+				out.accept(this.maxStaminaPotion1.get());
+				out.accept(this.maxStaminaPotion2.get());
+				out.accept(this.maxStaminaPotion3.get());
+
 				out.accept(goddessStatue());
 				out.accept(kakarikoGoddessStatue());
 				out.accept(goronGoddessStatue());

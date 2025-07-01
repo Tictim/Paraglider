@@ -8,10 +8,18 @@ import org.jetbrains.annotations.NotNull;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
-public record SyncVesselMsg(double stamina, int heartContainers, int staminaVessels) implements CustomPacketPayload {
+public record SyncVesselMsg(
+		double stamina,
+		double extraStamina,
+		boolean depleted,
+		int heartContainers,
+		int staminaVessels
+) implements CustomPacketPayload {
 	public static final Type<SyncVesselMsg> TYPE = new Type<>(id("sync_vessel"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncVesselMsg> CODEC = StreamCodec.composite(
 			ByteBufCodecs.DOUBLE, SyncVesselMsg::stamina,
+			ByteBufCodecs.DOUBLE, SyncVesselMsg::extraStamina,
+			ByteBufCodecs.BOOL, SyncVesselMsg::depleted,
 			ByteBufCodecs.VAR_INT, SyncVesselMsg::heartContainers,
 			ByteBufCodecs.VAR_INT, SyncVesselMsg::staminaVessels,
 			SyncVesselMsg::new

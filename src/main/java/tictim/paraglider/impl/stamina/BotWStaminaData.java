@@ -5,29 +5,19 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public final class BotWStaminaData {
 	public static final Codec<BotWStaminaData> CODEC = RecordCodecBuilder.create(b -> b.group(
-			Codec.DOUBLE.fieldOf("stamina").forGetter(BotWStaminaData::stamina),
-			Codec.BOOL.fieldOf("depleted").forGetter(BotWStaminaData::isDepleted)
+			Codec.DOUBLE.fieldOf("stamina").forGetter(d -> d.stamina),
+			Codec.DOUBLE.optionalFieldOf("extraStamina", 0.0).forGetter(d -> d.extraStamina),
+			Codec.BOOL.fieldOf("depleted").forGetter(d -> d.depleted)
 	).apply(b, BotWStaminaData::new));
 
-	private double stamina;
-	private boolean depleted;
+	public double stamina;
+	public double extraStamina;
+	public boolean depleted;
 
 	public BotWStaminaData() {}
-	public BotWStaminaData(double stamina, boolean depleted) {
+	public BotWStaminaData(double stamina, double extraStamina, boolean depleted) {
 		this.stamina = stamina;
-		this.depleted = depleted;
-	}
-
-	public double stamina() {
-		return stamina;
-	}
-	public void setStamina(double stamina) {
-		this.stamina = stamina;
-	}
-	public boolean isDepleted() {
-		return depleted;
-	}
-	public void setDepleted(boolean depleted) {
+		this.extraStamina = extraStamina;
 		this.depleted = depleted;
 	}
 }

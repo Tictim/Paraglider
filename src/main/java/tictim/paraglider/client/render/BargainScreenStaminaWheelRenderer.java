@@ -12,8 +12,8 @@ import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
-	private final StaminaWheelAnimationTracker extraWheelFillAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_FILL_DURATION);
-	private final StaminaWheelAnimationTracker extraWheelEmptyAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_EMPTY_DURATION);
+	private final StaminaWheelAnimationTracker outerWheelFillAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_FILL_DURATION);
+	private final StaminaWheelAnimationTracker outerWheelEmptyAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_EMPTY_DURATION);
 
 	private double stamina;
 	private double maxStamina, prevMaxStamina;
@@ -52,33 +52,33 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.full = this.gainedStamina && this.stamina >= maxStamina;
 	}
 
-	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
-		wheel.setProperties(this.stamina, Math.max(this.stamina, this.maxStamina));
+	@Override protected void makeWheel(@NotNull Player player, float partialTicks) {
+		this.mainWheel.setProperties(this.stamina, Math.max(this.stamina, this.maxStamina));
 
-		int wheelIndex = (int)Math.ceil(wheel.staminaWheelPos());
+		int wheelIndex = (int)Math.ceil(this.mainWheel.staminaWheelPos());
 
 		this.fullAnim.update(this.full);
-		this.extraWheelFillAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
-		this.extraWheelEmptyAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
+		this.outerWheelFillAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
+		this.outerWheelEmptyAnim.update(this.full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
 
 		this.prevWheelIndex = wheelIndex;
 
-		wheel.fillStamina(0, Math.min(this.maxStamina, this.stamina), wheelColor(0));
+		this.mainWheel.fillStamina(0, Math.min(this.maxStamina, this.stamina), wheelColor(0));
 
 		if (this.stamina > this.maxStamina) {
-			wheel.fillStamina(this.maxStamina, this.stamina, EVIL_GLOW);
+			this.mainWheel.fillStamina(this.maxStamina, this.stamina, EVIL_GLOW);
 		} else if (this.full) {
-			wheel.fillStamina(this.prevMaxStamina, this.maxStamina, this.fullAnim.getGlowColor(wheelColor(0)));
+			this.mainWheel.fillStamina(this.prevMaxStamina, this.maxStamina, this.fullAnim.getGlowColor(wheelColor(0)));
 		}
 
-		makeExtraWheel(wheel); // idk?
+		makeOuterWheel(this.mainWheel); // idk?
 
 		debugAnim("full", this.fullAnim);
-		debugAnim("extraWheelFill", this.extraWheelFillAnim);
-		debugAnim("extraWheelEmpty", this.extraWheelEmptyAnim);
+		debugAnim("outerWheelFill", this.outerWheelFillAnim);
+		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
 	}
 
-	private void makeExtraWheel(Wheel wheel) {
+	private void makeOuterWheel(Wheel wheel) {
 		float staminaWheelPos = wheel.staminaWheelPos();
 		if (staminaWheelPos <= 2) return;
 
@@ -86,8 +86,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		int color = wheelColor(wheels - 3);
 		int wheelIndicatorColor = wheels == 3 ? 0 : color;
 
-		if (this.extraWheelEmptyAnim.isActive()) {
-			float d = Math.min(1, (float)this.extraWheelEmptyAnim.activeDuration() / EXTRA_WHEEL_EMPTY_DURATION);
+		if (this.outerWheelEmptyAnim.isActive()) {
+			float d = Math.min(1, (float)this.outerWheelEmptyAnim.activeDuration() / OUTER_WHEEL_EMPTY_DURATION);
 			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
 			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
 					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
@@ -112,8 +112,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		if (wheels >= 4) {
 			int bgColor = wheelBgColor(wheels - 4);
 
-			if (this.extraWheelFillAnim.isActive()) {
-				float d = Math.min(1, (float)this.extraWheelFillAnim.activeDuration() / EXTRA_WHEEL_FILL_DURATION);
+			if (this.outerWheelFillAnim.isActive()) {
+				float d = Math.min(1, (float)this.outerWheelFillAnim.activeDuration() / OUTER_WHEEL_FILL_DURATION);
 				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
 				wheelIndicatorColor = ARGB.lerp(d,
 						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),

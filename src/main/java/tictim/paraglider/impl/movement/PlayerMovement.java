@@ -86,10 +86,10 @@ public abstract class PlayerMovement implements Movement {
 		double delta = staminaDelta();
 
 		if (delta < 0) {
-			if (!stamina.isDepleted()) stamina.takeStamina(-delta, false, false);
+			if (!stamina.isDepleted()) stamina.takeStamina(-delta, false, false, true);
 		} else {
 			if (recoveryDelay > 0) newRecoveryDelay--;
-			else if (delta > 0) stamina.giveStamina(delta, false);
+			else if (delta > 0) stamina.giveStamina(delta, false, true);
 		}
 
 		//noinspection DataFlowIssue

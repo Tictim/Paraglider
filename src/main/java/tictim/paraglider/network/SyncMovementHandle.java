@@ -4,9 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public interface SyncMovementHandle {
-	void syncMovement(@NotNull ResourceLocation stateId, double stamina, boolean depleted, int recoveryDelay, double efficiency);
+	void syncMovement(@NotNull ResourceLocation stateId, int recoveryDelay, double efficiency);
 
 	default void syncRemoteMovement(@NotNull ResourceLocation stateId) {
-		syncMovement(stateId, 0, false, 0, 0);
+		syncMovement(stateId, 0, 0);
 	}
 }

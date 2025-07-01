@@ -30,8 +30,9 @@ public final class ClientPacketHandler {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) return;
 		if (Movement.get(mc.player) instanceof SyncMovementHandle smh) {
-			smh.syncMovement(msg.state(), msg.stamina(), msg.depleted(), msg.recoveryDelay(), msg.efficiency());
+			smh.syncMovement(msg.state(), msg.recoveryDelay(), msg.efficiency());
 		}
+		Stamina.get(mc.player).syncProperties(msg.stamina(), msg.extraStamina(), msg.depleted());
 	}
 
 	public static void handleSyncRemoteMovement(SyncRemoteMovementMsg msg, IPayloadContext ctx) {
@@ -52,8 +53,7 @@ public final class ClientPacketHandler {
 		VesselContainer vessels = VesselContainer.get(mc.player);
 		vessels.setHeartContainer(msg.heartContainers(), false, false);
 		vessels.setStaminaVessel(msg.staminaVessels(), false, false);
-		Stamina stamina = Stamina.get(mc.player);
-		stamina.setStamina(msg.stamina());
+		Stamina.get(mc.player).syncProperties(msg.stamina(), msg.extraStamina(), msg.depleted());
 	}
 
 	// bargain

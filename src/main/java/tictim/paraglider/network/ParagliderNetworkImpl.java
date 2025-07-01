@@ -66,13 +66,10 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToAllPlayers(msg);
 	}
 
-	@Override public void syncMovement(@NotNull ServerPlayer player,
-	                                   @NotNull ResourceLocation state,
-	                                   double stamina,
-	                                   boolean depleted,
-	                                   int recoveryDelay,
-	                                   double efficiency) {
-		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, depleted, recoveryDelay, efficiency);
+	@Override public void syncMovement(@NotNull ServerPlayer player, @NotNull ResourceLocation state,
+	                                   double stamina, double extraStamina, boolean depleted,
+	                                   int recoveryDelay, double efficiency) {
+		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, extraStamina, depleted, recoveryDelay, efficiency);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
 		syncRemoteMovement(player.server, player, state);
@@ -90,8 +87,10 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToPlayer(target, msg);
 	}
 
-	@Override public void syncVessels(@NotNull ServerPlayer player, double stamina, int heartContainers, int staminaVessels) {
-		SyncVesselMsg msg = new SyncVesselMsg(stamina, heartContainers, staminaVessels);
+	@Override public void syncVessels(@NotNull ServerPlayer player,
+	                                  double stamina, double extraStamina, boolean depleted,
+	                                  int heartContainers, int staminaVessels) {
+		SyncVesselMsg msg = new SyncVesselMsg(stamina, extraStamina, depleted, heartContainers, staminaVessels);
 		traceSendToPlayer(Kind.VESSEL, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
 	}

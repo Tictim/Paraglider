@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {
+      "type": "reference",
+      "id": "minecraft:include/space"
+    },
+    {
+      "type": "bitmap",
+      "file": "paraglider:font/small_numbers.png",
+      "height": 7,
+      "ascent": 5,
+      "chars": [
+        "012345",
+        "6789+\u0000"
+      ]
+    }
+  ]
+}

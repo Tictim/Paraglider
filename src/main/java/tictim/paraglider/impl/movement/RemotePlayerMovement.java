@@ -29,17 +29,11 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 
 	@Override public void update() {}
 
-	@Override public void syncMovement(@NotNull ResourceLocation stateId, double stamina, boolean depleted,
-	                                   int recoveryDelay, double efficiency) {
+	@Override public void syncMovement(@NotNull ResourceLocation stateId, int recoveryDelay, double efficiency) {
 		PlayerStateMap stateMap = ParagliderMod.instance().getPlayerStateMap();
 		PlayerState state = stateMap.getState(stateId);
 		setState(state == null ? stateMap.getIdleState() : state);
-
-		stamina().setStamina(stamina);
-		stamina().setDepleted(depleted);
-
 		setRecoveryDelay(recoveryDelay);
-
 		this.staminaEfficiency = efficiency;
 	}
 

@@ -48,13 +48,40 @@ public interface Stamina {
 
 	/**
 	 * @param stamina Amount of stamina to be set
+	 * @see #setStamina(double, boolean)
 	 */
-	void setStamina(double stamina);
+	default void setStamina(double stamina) {
+		setStamina(stamina, false);
+	}
+
+	/**
+	 * @param stamina Amount of stamina to be set
+	 * @param silent  If {@code true}, changes will not be sent to the client on server-side
+	 */
+	void setStamina(double stamina, boolean silent);
 
 	/**
 	 * @return Maximum amount of stamina, >=0
 	 */
 	double maxStamina();
+
+	/**
+	 * @return Extra stamina, the value represented by yellow stamina wheels left to the main wheel
+	 */
+	double extraStamina();
+
+	/**
+	 * @param extraStamina Amount of extra stamina, the value represented by yellow stamina wheels left to the main wheel
+	 */
+	default void setExtraStamina(double extraStamina) {
+		setExtraStamina(extraStamina, false);
+	}
+
+	/**
+	 * @param extraStamina Amount of extra stamina, the value represented by yellow stamina wheels left to the main wheel
+	 * @param silent       If {@code true}, changes will not be sent to the client on server-side
+	 */
+	void setExtraStamina(double extraStamina, boolean silent);
 
 	/**
 	 * @return Whether depleted state is active
@@ -64,7 +91,21 @@ public interface Stamina {
 	/**
 	 * @param depleted Whether depleted state should be active
 	 */
-	void setDepleted(boolean depleted);
+	default void setDepleted(boolean depleted) {
+		setDepleted(depleted, false);
+	}
+
+	void setDepleted(boolean depleted, boolean silent);
+
+	/**
+	 * @return Whether this stamina instance needs to sync its state to client
+	 */
+	boolean isDirty();
+
+	/**
+	 * @param dirty Whether this stamina instance needs to sync its state to client
+	 */
+	void setDirty(boolean dirty);
 
 	/**
 	 * Tries to add stamina by specific {@code amount} without exceeding {@link Stamina#maxStamina() maxStamina}.
@@ -73,20 +114,84 @@ public interface Stamina {
 	 * @param simulate If {@code true}, this method call does not affect the game state; instead the return value is
 	 *                 evaluated only as a simulated result.
 	 * @return Amount of stamina given
+	 * @see #giveStamina(double, boolean, boolean)
 	 */
-	double giveStamina(double amount, boolean simulate);
+	default double giveStamina(double amount, boolean simulate) {
+		return giveStamina(amount, simulate, false);
+	}
 
 	/**
+	 * Tries to add stamina by specific {@code amount} without exceeding {@link Stamina#maxStamina() maxStamina}.
+	 *
+	 * @param amount   Amount of stamina to be given
+	 * @param simulate If {@code true}, this method call does not affect the game state; instead the return value is
+	 *                 evaluated only as a simulated result.
+	 * @param silent   If {@code true}, changes will not be sent to the client on server-side
+	 * @return Amount of stamina given
+	 */
+	double giveStamina(double amount, boolean simulate, boolean silent);
+
+	/**
+	 * <p>
 	 * Subtract stamina by specific {@code amount}. If stamina is currently in depleted state, unless
 	 * {@code ignoreDepletion} is {@code true}, no stamina will be subtracted.
+	 * </p>
+	 * <p>
+	 * This method will also use {@link #extraStamina()}. Base stamina will always be used before extra stamina.
+	 * </p>
 	 *
 	 * @param amount          Amount of stamina to be taken
 	 * @param simulate        If {@code true}, this method call does not affect the game state; instead the return value is
 	 *                        evaluated only as a simulated result.
 	 * @param ignoreDepletion Bypasses depleted state check if {@code true}
 	 * @return Amount of stamina taken
+	 * @see #takeStamina(double, boolean, boolean, boolean, boolean, boolean)
 	 */
-	double takeStamina(double amount, boolean simulate, boolean ignoreDepletion);
+	default double takeStamina(double amount, boolean simulate, boolean ignoreDepletion) {
+		return takeStamina(amount, simulate, ignoreDepletion, false);
+	}
+
+	/**
+	 * <p>
+	 * Subtract stamina by specific {@code amount}. If stamina is currently in depleted state, unless
+	 * {@code ignoreDepletion} is {@code true}, no stamina will be subtracted.
+	 * </p>
+	 * <p>
+	 * This method will also use {@link #extraStamina()}. Base stamina will always be used before extra stamina.
+	 * </p>
+	 *
+	 * @param amount          Amount of stamina to be taken
+	 * @param simulate        If {@code true}, this method call does not affect the game state; instead the return value is
+	 *                        evaluated only as a simulated result.
+	 * @param ignoreDepletion Bypasses depleted state check if {@code true}
+	 * @param silent          If {@code true}, changes will not be sent to the client on server-side
+	 * @return Amount of stamina taken
+	 * @see #takeStamina(double, boolean, boolean, boolean, boolean, boolean)
+	 */
+	default double takeStamina(double amount, boolean simulate, boolean ignoreDepletion, boolean silent) {
+		return takeStamina(amount, simulate, ignoreDepletion, true, true, silent);
+	}
+
+	/**
+	 * <p>
+	 * Subtract stamina by specific {@code amount}. If stamina is currently in depleted state, unless
+	 * {@code ignoreDepletion} is {@code true}, no stamina will be subtracted.
+	 * </p>
+	 * <p>
+	 * If {@code takeExtraStamina} is {@code true}, this method will also use {@link #extraStamina()}. Base stamina will
+	 * always be used before extra stamina.
+	 * </p>
+	 *
+	 * @param amount           Amount of stamina to be taken
+	 * @param simulate         If {@code true}, this method call does not affect the game state; instead the return value is
+	 *                         evaluated only as a simulated result.
+	 * @param ignoreDepletion  Bypasses depleted state check if {@code true}
+	 * @param takeBaseStamina  Whether to use {@link #stamina()} or not
+	 * @param takeExtraStamina Whether to use {@link #extraStamina()} or not
+	 * @param silent           If {@code true}, changes will not be sent to the client on server-side
+	 * @return Amount of stamina taken
+	 */
+	double takeStamina(double amount, boolean simulate, boolean ignoreDepletion, boolean takeBaseStamina, boolean takeExtraStamina, boolean silent);
 
 	/**
 	 * Renders stamina wheel if this value is {@code true}. Client side only.
@@ -99,9 +204,18 @@ public interface Stamina {
 	}
 
 	/**
-	 * Update this stamina instance with Paraglider's default logic. Return {@code false} to disable.
+	 * Whether to update this stamina instance with Paraglider's default logic. Return {@code false} to disable.
 	 */
 	default boolean updateWithDefaultLogic(boolean client) {
 		return true;
+	}
+
+	/**
+	 * Sync properties from Paraglider's packet.
+	 */
+	default void syncProperties(double stamina, double extraStamina, boolean depleted) {
+		setStamina(stamina);
+		setExtraStamina(extraStamina);
+		setDepleted(depleted);
 	}
 }

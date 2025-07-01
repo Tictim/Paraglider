@@ -51,6 +51,10 @@ public class StaminaWheelAnimationTracker {
 		return this.active ? StaminaWheelConstants.getGlowColor(this.activeDuration, baseColor) : baseColor;
 	}
 
+	public int getFadeColor(int baseColor) {
+		return this.active ? StaminaWheelConstants.getFadeColor(this.activeDuration, baseColor) : baseColor;
+	}
+
 	public void update(boolean active) {
 		update(active ? UpdateMode.RETAIN_ACTIVE : UpdateMode.SET_INACTIVE);
 	}

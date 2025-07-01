@@ -18,8 +18,8 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 	}
 
 	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
-	private final StaminaWheelAnimationTracker extraWheelFillAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_FILL_DURATION);
-	private final StaminaWheelAnimationTracker extraWheelEmptyAnim = new StaminaWheelAnimationTracker(EXTRA_WHEEL_EMPTY_DURATION);
+	private final StaminaWheelAnimationTracker outerWheelFillAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_FILL_DURATION);
+	private final StaminaWheelAnimationTracker outerWheelEmptyAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_EMPTY_DURATION);
 	private final StaminaWheelAnimationTracker recoverAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
 
 	private boolean prevDepleted;
@@ -29,61 +29,85 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		reset();
 	}
 
-	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
+	@Override protected void makeWheel(@NotNull Player player, float partialTicks) {
 		Stamina s = Stamina.get(player);
 		double maxStamina = s.maxStamina();
 		double stamina = s.stamina();
+		double extraStamina = s.extraStamina();
 
 		Movement movement = Movement.get(player);
 		double staminaDelta = movement.staminaDelta();
 
-		wheel.setProperties(stamina, maxStamina);
+		this.mainWheel.setProperties(stamina, maxStamina);
+		this.extraWheel.setProperties(extraStamina, extraStamina);
 
 		boolean full = stamina >= maxStamina;
-		int wheelIndex = (int)Math.ceil(wheel.staminaWheelPos());
+		int wheelIndex = (int)Math.ceil(this.mainWheel.staminaWheelPos());
 
 		this.fullAnim.update(full);
-		this.extraWheelFillAnim.update(full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
-		this.extraWheelEmptyAnim.update(full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
+		this.outerWheelFillAnim.update(full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
+		this.outerWheelEmptyAnim.update(full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
 		this.recoverAnim.update(full ? SET_INACTIVE : this.prevDepleted && !s.isDepleted() ? SET_ACTIVE : RETAIN);
 
 		this.prevWheelIndex = wheelIndex;
 		this.prevDepleted = s.isDepleted();
 
+		double staminaDeltaHighlightRemaining = 0;
+		int blinkColor = 0;
+
 		if (full) {
 			int color = this.fullAnim.getGlowAndFadeColor(wheelColor(0));
 			if (ARGB.alpha(color) <= 0) return;
-			wheel.fillStamina(0, maxStamina, color);
-			makeExtraWheel(wheel);
+			this.mainWheel.fillStamina(0, maxStamina, color);
+			makeOuterWheel(this.mainWheel);
 		} else {
-			wheel.fillStamina(0, maxStamina, EMPTY);
+			this.mainWheel.fillStamina(0, maxStamina, EMPTY);
 			if (s.isDepleted()) {
-				wheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(getBlinkColor(ms(), true)));
+				this.mainWheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(getBlinkColor(ms(), true)));
 			} else {
-				wheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(wheelColor(0)));
-				makeExtraWheel(wheel);
+				this.mainWheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(wheelColor(0)));
+				makeOuterWheel(this.mainWheel);
 
 				if (staminaDelta < 0) {
-					long ms = ms();
-					int color = this.recoverAnim.getGlowColor(getBlinkColor(ms, false));
-					wheel.fillStamina(stamina + staminaDelta * 10, stamina, color);
+					blinkColor = getBlinkColor(ms(), false);
+					int color = this.recoverAnim.getGlowColor(blinkColor);
+					double staminaDeltaHighlightStart = stamina + staminaDelta * 10;
+					this.mainWheel.fillStamina(staminaDeltaHighlightStart, stamina, color);
 
-					if (wheel.staminaWheelPos() > 3) {
-						wheel.fillWheel(
-								1 + toWheelPos(stamina + staminaDelta * 10),
+					if (staminaDeltaHighlightStart < 0) {
+						staminaDeltaHighlightRemaining = -staminaDeltaHighlightStart;
+					}
+
+					if (this.mainWheel.staminaWheelPos() > 3) {
+						this.mainWheel.fillWheel(
+								1 + toWheelPos(staminaDeltaHighlightStart),
 								1 + toWheelPos(stamina), color);
 					}
 				}
 			}
 		}
 
+		if (extraStamina > 0) {
+			int extraWheelColor = this.fullAnim.getFadeColor(EXTRA);
+			this.extraWheel.fillStamina(0, extraStamina, extraWheelColor);
+			float staminaEndWheePos = toWheelPos(extraStamina);
+			this.extraWheel.fillWheel(staminaEndWheePos, (float)Math.ceil(staminaEndWheePos), EMPTY);
+			this.extraWheel.setExtraWheelIndicatorColor(extraWheelColor);
+
+			if (staminaDeltaHighlightRemaining > 0) {
+				this.extraWheel.fillWheel(
+						staminaEndWheePos - toWheelPos(staminaDeltaHighlightRemaining),
+						staminaEndWheePos, blinkColor);
+			}
+		}
+
 		debugAnim("full", this.fullAnim);
-		debugAnim("extraWheelFill", this.extraWheelFillAnim);
-		debugAnim("extraWheelEmpty", this.extraWheelEmptyAnim);
+		debugAnim("outerWheelFill", this.outerWheelFillAnim);
+		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
 		debugAnim("recoverAnim", this.recoverAnim);
 	}
 
-	private void makeExtraWheel(Wheel wheel) {
+	private void makeOuterWheel(Wheel wheel) {
 		float staminaWheelPos = wheel.staminaWheelPos();
 		if (staminaWheelPos <= 2) return;
 
@@ -91,8 +115,8 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		int color = wheelColor(wheels - 3);
 		int wheelIndicatorColor = wheels == 3 ? 0 : color;
 
-		if (this.extraWheelEmptyAnim.isActive()) {
-			float d = Math.min(1, (float)this.extraWheelEmptyAnim.activeDuration() / EXTRA_WHEEL_EMPTY_DURATION);
+		if (this.outerWheelEmptyAnim.isActive()) {
+			float d = Math.min(1, (float)this.outerWheelEmptyAnim.activeDuration() / OUTER_WHEEL_EMPTY_DURATION);
 			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
 			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
 					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
@@ -110,8 +134,8 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		if (wheels >= 4) {
 			int bgColor = wheelBgColor(wheels - 4);
 
-			if (this.extraWheelFillAnim.isActive()) {
-				float d = Math.min(1, (float)this.extraWheelFillAnim.activeDuration() / EXTRA_WHEEL_FILL_DURATION);
+			if (this.outerWheelFillAnim.isActive()) {
+				float d = Math.min(1, (float)this.outerWheelFillAnim.activeDuration() / OUTER_WHEEL_FILL_DURATION);
 				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
 				wheelIndicatorColor = ARGB.lerp(d,
 						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
@@ -135,8 +159,8 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.fullAnim.setActive(true);
 		this.fullAnim.setActiveDuration(FADE_END);
 
-		this.extraWheelFillAnim.reset();
-		this.extraWheelEmptyAnim.reset();
+		this.outerWheelFillAnim.reset();
+		this.outerWheelEmptyAnim.reset();
 		this.recoverAnim.reset();
 
 		this.prevDepleted = false;

@@ -17,9 +17,9 @@ public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.wheels = Mth.clamp(wheels, 1, 3);
 	}
 
-	@Override protected void makeWheel(@NotNull Player player, @NotNull Wheel wheel, float partialTicks) {
-		wheel.setProperties(this.wheels * Stamina.STAMINA_PER_WHEEL, this.wheels * Stamina.STAMINA_PER_WHEEL);
-		wheel.fillWheel(0f, this.wheels, wheelColor(0));
+	@Override protected void makeWheel(@NotNull Player player, float partialTicks) {
+		this.mainWheel.setProperties(this.wheels * Stamina.STAMINA_PER_WHEEL, this.wheels * Stamina.STAMINA_PER_WHEEL);
+		this.mainWheel.fillWheel(0f, this.wheels, wheelColor(0));
 	}
 
 	@Override protected boolean isDebugEnabled(@NotNull Player player) {
