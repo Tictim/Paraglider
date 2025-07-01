@@ -1,12 +1,16 @@
 package tictim.paraglider.contents;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -15,6 +19,16 @@ public interface CommonContents {
 	static Item.Properties p(ResourceLocation id) {
 		return new Item.Properties()
 				.setId(ResourceKey.create(Registries.ITEM, id));
+	}
+
+	static Item.Properties staminaPotion(ResourceLocation id, ConsumeEffect consumeEffect) {
+		return p(id)
+				.stacksTo(1)
+				.component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+						.onConsume(consumeEffect)
+						.build())
+				.craftRemainder(Items.GLASS_BOTTLE)
+				.usingConvertsTo(Items.GLASS_BOTTLE);
 	}
 
 	static BlockBehaviour.Properties statueBlock(ResourceLocation id) {

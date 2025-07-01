@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -138,23 +136,17 @@ public class Contents {
 	public final DeferredHolder<Item, Item> essence = items.register("essence",
 			id -> new EssenceItem(p(id).rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, Item> staminaPotion1 = items.register("stamina_potion_1",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new RestoreStaminaConsumeEffect(1000)).build())));
+			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(1000))));
 	public final DeferredHolder<Item, Item> staminaPotion2 = items.register("stamina_potion_2",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new RestoreStaminaConsumeEffect(2000)).build())));
+			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(2000))));
 	public final DeferredHolder<Item, Item> staminaPotion3 = items.register("stamina_potion_3",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new RestoreStaminaConsumeEffect(3000)).build())));
+			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(3000))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion1 = items.register("max_stamina_potion_1",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new GiveExtraStaminaConsumeEffect(1000)).build())));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(1000))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion2 = items.register("max_stamina_potion_2",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new GiveExtraStaminaConsumeEffect(2000)).build())));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(2000))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion3 = items.register("max_stamina_potion_3",
-			id -> new Item(p(id).component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-					.onConsume(new GiveExtraStaminaConsumeEffect(3000)).build())));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(3000))));
 
 	public final DeferredHolder<Item, BlockItem> goddessStatueItem = items.register("goddess_statue",
 			id -> new BlockItem(goddessStatue(), p(id).rarity(Rarity.RARE)));
@@ -208,12 +200,12 @@ public class Contents {
 				out.accept(spiritOrb());
 				out.accept(antiVessel());
 				out.accept(essence());
-				out.accept(this.staminaPotion1.get());
-				out.accept(this.staminaPotion2.get());
-				out.accept(this.staminaPotion3.get());
-				out.accept(this.maxStaminaPotion1.get());
-				out.accept(this.maxStaminaPotion2.get());
-				out.accept(this.maxStaminaPotion3.get());
+				out.accept(staminaPotion1());
+				out.accept(staminaPotion2());
+				out.accept(staminaPotion3());
+				out.accept(maxStaminaPotion1());
+				out.accept(maxStaminaPotion2());
+				out.accept(maxStaminaPotion3());
 
 				out.accept(goddessStatue());
 				out.accept(kakarikoGoddessStatue());
@@ -292,6 +284,24 @@ public class Contents {
 	}
 	public @NotNull Item essence() {
 		return essence.get();
+	}
+	public @NotNull Item staminaPotion1() {
+		return staminaPotion1.get();
+	}
+	public @NotNull Item staminaPotion2() {
+		return staminaPotion2.get();
+	}
+	public @NotNull Item staminaPotion3() {
+		return staminaPotion3.get();
+	}
+	public @NotNull Item maxStaminaPotion1() {
+		return maxStaminaPotion1.get();
+	}
+	public @NotNull Item maxStaminaPotion2() {
+		return maxStaminaPotion2.get();
+	}
+	public @NotNull Item maxStaminaPotion3() {
+		return maxStaminaPotion3.get();
 	}
 	public @NotNull Block goddessStatue() {
 		return goddessStatue.get();
