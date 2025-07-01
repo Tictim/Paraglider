@@ -142,11 +142,11 @@ public class Contents {
 	public final DeferredHolder<Item, Item> staminaPotion3 = items.register("stamina_potion_3",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(3000))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion1 = items.register("max_stamina_potion_1",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(1000))));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(500))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion2 = items.register("max_stamina_potion_2",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(2000))));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(1000))));
 	public final DeferredHolder<Item, Item> maxStaminaPotion3 = items.register("max_stamina_potion_3",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(3000))));
+			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(2000))));
 
 	public final DeferredHolder<Item, BlockItem> goddessStatueItem = items.register("goddess_statue",
 			id -> new BlockItem(goddessStatue(), p(id).rarity(Rarity.RARE)));

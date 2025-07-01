@@ -97,9 +97,15 @@
   "item.paraglider.heart_container": "생명의 그릇",
   "item.paraglider.horned_statue": "악마상",
   "item.paraglider.kakariko_goddess_statue": "여신상",
+  "item.paraglider.max_stamina_potion_1": "스태미나 물약",
+  "item.paraglider.max_stamina_potion_2": "스태미나 물약",
+  "item.paraglider.max_stamina_potion_3": "스태미나 물약",
   "item.paraglider.paraglider": "패러세일",
   "item.paraglider.rito_goddess_statue": "여신상",
   "item.paraglider.spirit_orb": "극복의 증표",
+  "item.paraglider.stamina_potion_1": "원기 물약",
+  "item.paraglider.stamina_potion_2": "원기 물약",
+  "item.paraglider.stamina_potion_3": "원기 물약",
   "item.paraglider.stamina_vessel": "스태미나의 그릇",
 
   "itemGroup.paraglider": "패러세일",
@@ -134,6 +140,8 @@
   "tooltip.paraglider.horned_statue.0": "저주받음",
   "tooltip.paraglider.kakariko_goddess_statue.0": "카카리코 스타일",
   "tooltip.paraglider.paraglider_broken": "고장남",
+  "tooltip.paraglider.restore_stamina": "스태미나를 %s 바퀴만큼 회복합니다.",
   "tooltip.paraglider.rito_goddess_statue.0": "리토 스타일",
-  "tooltip.paraglider.stamina_vessel.1": "스태미나를 최대 %s번까지 올립니다."
+  "tooltip.paraglider.stamina_vessel.1": "스태미나를 최대 %s번까지 올립니다.",
+  "tooltip.paraglider.give_extra_stamina": "스태미나를 최대치까지 회복합니다. 추가 스태미나를 %s 바퀴만큼 부여합니다."
 }

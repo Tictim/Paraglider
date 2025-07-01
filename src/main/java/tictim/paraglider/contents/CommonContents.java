@@ -25,6 +25,7 @@ public interface CommonContents {
 		return p(id)
 				.stacksTo(1)
 				.component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
+						.consumeSeconds(0.6F)
 						.onConsume(consumeEffect)
 						.build())
 				.craftRemainder(Items.GLASS_BOTTLE)
