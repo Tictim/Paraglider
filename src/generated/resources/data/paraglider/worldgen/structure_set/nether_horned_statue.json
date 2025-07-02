@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1973135446,
+    "separation": 8,
+    "spacing": 32
+  },
+  "structures": [
+    {
+      "structure": "paraglider:nether_horned_statue",
+      "weight": 1
+    }
+  ]
+}

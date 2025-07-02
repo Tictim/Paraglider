@@ -1,0 +1,15 @@
+{
+  "type": "paraglider:nether_horned_statue",
+  "biomes": "#paraglider:has_structure/nether_horned_statue",
+  "height": {
+    "type": "minecraft:uniform",
+    "max_inclusive": {
+      "below_top": 2
+    },
+    "min_inclusive": {
+      "absolute": 32
+    }
+  },
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

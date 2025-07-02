@@ -24,7 +24,7 @@ public final class ParagliderVillageStructures {
 	private ParagliderVillageStructures() {}
 
 	public static void addVillageStructures(RegistryAccess registryAccess) {
-		if (!FeatureCfg.get().enableStructures()) return;
+		if (!FeatureCfg.get().enableVillageStructures()) return;
 
 		Registry<StructureTemplatePool> reg = registryAccess.lookupOrThrow(Registries.TEMPLATE_POOL);
 

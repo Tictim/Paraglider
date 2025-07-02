@@ -30,7 +30,7 @@ public interface FeatureCfg {
 	 * <li>Heart Containers obtained by "challenges" (i.e. Killing dragon, wither, raid)</li>
 	 * <li>Bargains using Heart Containers (custom recipes won't be affected)</li>
 	 * </ul>
-	 * Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop stamina vessels instead.
+	 * Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop Stamina Vessels instead.
 	 *
 	 * @return Config value
 	 */
@@ -47,9 +47,10 @@ public interface FeatureCfg {
 	boolean enableStaminaVessels();
 
 	/**
-	 * For those who wants to remove all structures added by this mod. Requires restart.
+	 * For those who wants to remove village structures added by this mod. Requires datapack reload. Note that the
+	 * structures generated in other places are NOT disabled by this option, and requires a datapack to remove.
 	 *
 	 * @return Config value
 	 */
-	boolean enableStructures();
+	boolean enableVillageStructures();
 }

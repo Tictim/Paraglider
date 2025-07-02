@@ -8,7 +8,7 @@ public class CommonConfig implements FeatureCfg, DebugCfg {
 	private final ModConfigSpec.BooleanValue enableSpiritOrbGens;
 	private final ModConfigSpec.BooleanValue enableHeartContainers;
 	private final ModConfigSpec.BooleanValue enableStaminaVessels;
-	private final ModConfigSpec.BooleanValue enableStructures;
+	private final ModConfigSpec.BooleanValue enableVillageStructures;
 
 	private final ModConfigSpec.BooleanValue debugPlayerMovement;
 	private final ModConfigSpec.BooleanValue traceMovementPacket;
@@ -34,14 +34,16 @@ public class CommonConfig implements FeatureCfg, DebugCfg {
 						For those who wants to remove entirety of Heart Containers from the game, more specifically...
 						  * Heart Containers obtained by "challenges" (i.e. Killing dragon, wither, raid)
 						  * Bargains using Heart Containers (custom recipes won't be affected)
-						Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop stamina vessels instead.""")
+						Note that if this option is disabled while staminaVessels is enabled, "challenges" will drop Stamina Vessels instead.""")
 				.define("heartContainers", true);
 		enableStaminaVessels = b.comment("""
 						For those who wants to remove entirety of Stamina Vessels from the game, more specifically...
 						  * Bargains using Stamina Vessels (custom recipes won't be affected)""")
 				.define("staminaVessels", true);
-		enableStructures = b.comment("For those who wants to remove all structures added by this mod. Requires restart.")
-				.define("structures", true);
+		enableVillageStructures = b.comment("""
+						For those who wants to remove village structures added by this mod. Requires datapack reload.
+						Note that the structures generated in other places are NOT disabled by this option, and requires a datapack to remove.""")
+				.define("villageStructures", true);
 		b.pop();
 
 		b.push("debug");
@@ -65,8 +67,8 @@ public class CommonConfig implements FeatureCfg, DebugCfg {
 	@Override public boolean enableStaminaVessels() {
 		return enableStaminaVessels.get();
 	}
-	@Override public boolean enableStructures() {
-		return enableStructures.get();
+	@Override public boolean enableVillageStructures() {
+		return enableVillageStructures.get();
 	}
 
 	@Override public boolean debugPlayerMovement() {

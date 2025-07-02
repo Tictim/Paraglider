@@ -23,6 +23,7 @@ public class Datagen {
 		event.createProvider(AdvancementGen::new);
 		event.createProvider(BargainTypeGen::new);
 		event.createProvider(WindSourceGen::new);
+		event.createProvider(DatapackEntryGen::new);
 
 		String paragliderTestDatagen = System.getenv("PARAGLIDER_TEST_DATAGEN");
 		if (paragliderTestDatagen != null && !paragliderTestDatagen.isEmpty()) {

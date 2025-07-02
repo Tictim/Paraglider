@@ -1,0 +1,6 @@
+{
+  "type": "paraglider:underground_horned_statue",
+  "biomes": "#paraglider:has_structure/underground_horned_statue",
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}
