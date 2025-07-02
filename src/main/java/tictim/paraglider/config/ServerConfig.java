@@ -15,6 +15,8 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.BooleanValue witherDropsVessel;
 	private final ModConfigSpec.BooleanValue raidGivesVessel;
 	private final ModConfigSpec.DoubleValue spawnerSpiritOrbDrops;
+	private final ModConfigSpec.DoubleValue trialSpiritOrbDrops;
+	private final ModConfigSpec.DoubleValue ominousTrialSpiritOrbDrops;
 	private final ModConfigSpec.BooleanValue spiritOrbLoots;
 
 	private final ModConfigSpec.IntValue startingHearts;
@@ -54,6 +56,12 @@ public class ServerConfig implements Cfg {
 		spawnerSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop," +
 						" in addition to whole values which is guaranteed to drop.")
 				.defineInRange("spawnerSpiritOrbDrops", 1.0, 0, 64);
+		trialSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from completing trial. Fractional values are treated as a chanced drop, in addition " +
+						"to whole values which is guaranteed to drop.")
+				.defineInRange("trialSpiritOrbDrops", 2.0, 0, 64);
+		ominousTrialSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from completing ominous trial. Fractional values are treated as a chanced drop, in " +
+						"addition to whole values which is guaranteed to drop.")
+				.defineInRange("ominousTrialSpiritOrbDrops", 4.0, 0, 64);
 		spiritOrbLoots = b.comment("""
 						If true, various types of chest will have chances of having Spirit Orbs inside.
 						Does not change contents of already generated chests.""")
@@ -114,6 +122,12 @@ public class ServerConfig implements Cfg {
 	}
 	@Override public double spawnerSpiritOrbDrops() {
 		return get(spec, spawnerSpiritOrbDrops);
+	}
+	@Override public double trialSpiritOrbDrops() {
+		return get(spec, trialSpiritOrbDrops);
+	}
+	@Override public double ominousTrialSpiritOrbDrops() {
+		return get(spec, ominousTrialSpiritOrbDrops);
 	}
 	@Override public boolean spiritOrbLoots() {
 		return get(spec, spiritOrbLoots);

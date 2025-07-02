@@ -68,6 +68,22 @@ public interface Cfg {
 	double spawnerSpiritOrbDrops();
 
 	/**
+	 * Amount of Spirit Orbs dropped from completing trial. Fractional values are treated as a chanced drop, in addition
+	 * to whole values which is guaranteed to drop.
+	 *
+	 * @return Config value
+	 */
+	double trialSpiritOrbDrops();
+
+	/**
+	 * Amount of Spirit Orbs dropped from completing ominous trial. Fractional values are treated as a chanced drop, in
+	 * addition to whole values which is guaranteed to drop.
+	 *
+	 * @return Config value
+	 */
+	double ominousTrialSpiritOrbDrops();
+
+	/**
 	 * If true, various types of chest will have chances of having Spirit Orbs inside.<br/>
 	 * Does not change contents of already generated chests.
 	 *

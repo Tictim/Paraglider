@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
@@ -46,7 +47,18 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		));
 
 		addSpiritOrbItemModifier("spawner", new SpawnerSpiritOrbLoot(
+				SpawnerSpiritOrbLoot.Type.SPAWNER,
 				LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SPAWNER).build()
+		));
+
+		addSpiritOrbItemModifier("trial_reward", new SpawnerSpiritOrbLoot(
+				SpawnerSpiritOrbLoot.Type.TRIAL,
+				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD.location()).build()
+		));
+
+		addSpiritOrbItemModifier("ominous_trial_reward", new SpawnerSpiritOrbLoot(
+				SpawnerSpiritOrbLoot.Type.OMINOUS_TRIAL,
+				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS.location()).build()
 		));
 
 		addChestSpiritOrbItemModifier("underwater_ruin_big", .5f);

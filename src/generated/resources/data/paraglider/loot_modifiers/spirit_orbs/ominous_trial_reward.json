@@ -1,0 +1,10 @@
+{
+  "type": "paraglider:spawner_spirit_orb",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/trial_chambers/reward_ominous"
+    }
+  ],
+  "lootType": "ominous_trial"
+}
