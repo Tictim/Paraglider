@@ -14,7 +14,7 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.BooleanValue enderDragonDropsVessel;
 	private final ModConfigSpec.BooleanValue witherDropsVessel;
 	private final ModConfigSpec.BooleanValue raidGivesVessel;
-	private final ModConfigSpec.IntValue spawnerSpiritOrbDrops;
+	private final ModConfigSpec.DoubleValue spawnerSpiritOrbDrops;
 	private final ModConfigSpec.BooleanValue spiritOrbLoots;
 
 	private final ModConfigSpec.IntValue startingHearts;
@@ -51,8 +51,9 @@ public class ServerConfig implements Cfg {
 				.define("enderDragonDropsVessel", true);
 		raidGivesVessel = b.comment("If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.")
 				.define("raidGivesVessel", true);
-		spawnerSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from spawners.")
-				.defineInRange("spawnerSpiritOrbDrops", 2, 0, 64);
+		spawnerSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop," +
+						" in addition to whole values which is guaranteed to drop.")
+				.defineInRange("spawnerSpiritOrbDrops", 1.0, 0, 64);
 		spiritOrbLoots = b.comment("""
 						If true, various types of chest will have chances of having Spirit Orbs inside.
 						Does not change contents of already generated chests.""")
@@ -111,7 +112,7 @@ public class ServerConfig implements Cfg {
 	@Override public boolean raidGivesVessel() {
 		return get(spec, raidGivesVessel);
 	}
-	@Override public int spawnerSpiritOrbDrops() {
+	@Override public double spawnerSpiritOrbDrops() {
 		return get(spec, spawnerSpiritOrbDrops);
 	}
 	@Override public boolean spiritOrbLoots() {

@@ -60,11 +60,12 @@ public interface Cfg {
 	boolean raidGivesVessel();
 
 	/**
-	 * Amount of Spirit Orbs dropped from spawners.
+	 * Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop, in addition to
+	 * whole values which is guaranteed to drop.
 	 *
 	 * @return Config value
 	 */
-	int spawnerSpiritOrbDrops();
+	double spawnerSpiritOrbDrops();
 
 	/**
 	 * If true, various types of chest will have chances of having Spirit Orbs inside.<br/>
@@ -121,6 +122,7 @@ public interface Cfg {
 	 * @return Config value
 	 */
 	boolean paraglidingConsumesStamina();
+
 	/**
 	 * Certain non-paragliding actions, such as running and swimming, will consume stamina.
 	 *

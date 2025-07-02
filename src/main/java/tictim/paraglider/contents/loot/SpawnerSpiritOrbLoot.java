@@ -23,11 +23,18 @@ public class SpawnerSpiritOrbLoot extends LootModifier {
 
 	@Override protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
 		if (FeatureCfg.get().enableSpiritOrbGens()) {
-			int drops = Cfg.get().spawnerSpiritOrbDrops();
+			double drops = Cfg.get().spawnerSpiritOrbDrops();
 			if (drops > 0) {
-				generatedLoot.add(new ItemStack(Contents.get().spiritOrb(), drops));
+				int count = (int)drops;
+				double frac = drops % 1;
+				if (frac > 0) {
+					if (context.getRandom().nextDouble() < frac) count++;
+				}
+
+				if (count > 0) generatedLoot.add(new ItemStack(Contents.get().spiritOrb(), count));
 			}
 		}
+
 		return generatedLoot;
 	}
 

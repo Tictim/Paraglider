@@ -13,7 +13,6 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderClientMod;
-import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.client.ParagliderClientSettings;
 import tictim.paraglider.client.render.SettingsWidgetStaminaWheelRenderer;
 
@@ -44,7 +43,6 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	@Override protected void init() {
 		this.staminaWheel = addRenderableWidget(new StaminaWheel(initialStaminaWheelX, initialStaminaWheelY));
 		this.saveButton = addRenderableWidget(Button.builder(Component.translatable("paraglider.settings.stamina_wheel_settings.save"), button -> {
-					ParagliderMod.LOGGER.debug("Save?");
 					ParagliderClientSettings clientSettings = ParagliderClientSettings.get();
 					clientSettings.setStaminaWheel(staminaWheel.getStaminaWheelX(), staminaWheel.getStaminaWheelY());
 					if (parent != null) parent.saveSettings();
