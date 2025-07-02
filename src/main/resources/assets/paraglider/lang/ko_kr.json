@@ -91,21 +91,23 @@
 
   "item.paraglider.anti_vessel": "반물질 그릇",
   "item.paraglider.deku_leaf": "데크나무 잎",
+  "item.paraglider.enduring_elixir_1": "스태미나 물약",
+  "item.paraglider.enduring_elixir_2": "스태미나 물약",
+  "item.paraglider.enduring_elixir_3": "스태미나 물약",
+  "item.paraglider.enduring_mixture": "스태미나 혼합물",
+  "item.paraglider.energizing_elixir_1": "원기 물약",
+  "item.paraglider.energizing_elixir_2": "원기 물약",
+  "item.paraglider.energizing_elixir_3": "원기 물약",
+  "item.paraglider.energizing_mixture": "원기 혼합물",
   "item.paraglider.essence": "그릇의 정수",
   "item.paraglider.goddess_statue": "여신상",
   "item.paraglider.goron_goddess_statue": "여신상",
   "item.paraglider.heart_container": "생명의 그릇",
   "item.paraglider.horned_statue": "악마상",
   "item.paraglider.kakariko_goddess_statue": "여신상",
-  "item.paraglider.max_stamina_potion_1": "스태미나 물약",
-  "item.paraglider.max_stamina_potion_2": "스태미나 물약",
-  "item.paraglider.max_stamina_potion_3": "스태미나 물약",
   "item.paraglider.paraglider": "패러세일",
   "item.paraglider.rito_goddess_statue": "여신상",
   "item.paraglider.spirit_orb": "극복의 증표",
-  "item.paraglider.stamina_potion_1": "원기 물약",
-  "item.paraglider.stamina_potion_2": "원기 물약",
-  "item.paraglider.stamina_potion_3": "원기 물약",
   "item.paraglider.stamina_vessel": "스태미나의 그릇",
 
   "itemGroup.paraglider": "패러세일",
@@ -134,6 +136,7 @@
 
   "tooltip.paraglider.anti_vessel.0": "소모한 모든 생명과 스태미나의 그릇을 아이템으로 돌려줍니다.",
   "tooltip.paraglider.essence.0": "형태 잃은 그릇",
+  "tooltip.paraglider.give_extra_stamina": "스태미나를 최대치까지 회복합니다. 추가 스태미나를 %s 바퀴만큼 부여합니다.",
   "tooltip.paraglider.goron_goddess_statue.0": "고론 스타일",
   "tooltip.paraglider.heart_container.1": "최대 생명력을 %s만큼, 최대 %s번까지 올립니다.",
   "tooltip.paraglider.heart_container.1.hearts": "하트 1개",
@@ -142,6 +145,5 @@
   "tooltip.paraglider.paraglider_broken": "고장남",
   "tooltip.paraglider.restore_stamina": "스태미나를 %s 바퀴만큼 회복합니다.",
   "tooltip.paraglider.rito_goddess_statue.0": "리토 스타일",
-  "tooltip.paraglider.stamina_vessel.1": "스태미나를 최대 %s번까지 올립니다.",
-  "tooltip.paraglider.give_extra_stamina": "스태미나를 최대치까지 회복합니다. 추가 스태미나를 %s 바퀴만큼 부여합니다."
+  "tooltip.paraglider.stamina_vessel.1": "스태미나를 최대 %s번까지 올립니다."
 }
