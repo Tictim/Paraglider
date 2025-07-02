@@ -76,8 +76,9 @@ public class ServerConfig implements Cfg {
 		b.pop();
 
 		b.push("stamina");
-		paraglidingConsumesStamina = b.comment("Paragliding will consume stamina.").define("paraglidingConsumesStamina", true);
-		runningConsumesStamina = b.comment("Certain non-paragliding actions, such as running and swimming, will consume stamina.")
+		paraglidingConsumesStamina = b.comment("Paragliding will consume stamina. Run /paraglider reloadPlayerStates after change.")
+				.define("paraglidingConsumesStamina", true);
+		runningConsumesStamina = b.comment("Certain non-paragliding actions, such as running and swimming, will consume stamina. Run /paraglider reloadPlayerStates after change.")
 				.define("runningAndSwimmingConsumesStamina", false);
 		b.pop();
 
