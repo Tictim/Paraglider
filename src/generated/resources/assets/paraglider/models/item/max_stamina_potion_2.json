@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "paraglider:item/max_stamina_potion"
+    "layer0": "paraglider:item/max_stamina_potion_2"
   }
 }

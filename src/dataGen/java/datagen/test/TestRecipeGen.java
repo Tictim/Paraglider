@@ -9,7 +9,9 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.bargain.ParagliderBargainTypes;
@@ -68,6 +70,32 @@ public class TestRecipeGen extends RecipeProvider {
 				.demand(Items.IRON_INGOT, 10)
 				.offer(Items.DIRT, 1)
 				.save(this.output, id("bargain_test/11"));
+		new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE)
+				.demand(Ingredient.of(Blocks.COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.EXPOSED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.WEATHERED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.OXIDIZED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.WAXED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.WAXED_EXPOSED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.WAXED_WEATHERED_COPPER_GRATE), 64)
+				.demand(Ingredient.of(Blocks.WAXED_OXIDIZED_COPPER_GRATE), 64)
+				.offer(Blocks.COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.EXPOSED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.WEATHERED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.OXIDIZED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.WAXED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.WAXED_EXPOSED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.WAXED_WEATHERED_COPPER_GRATE.asItem(), 64)
+				.offer(Blocks.WAXED_OXIDIZED_COPPER_GRATE.asItem(), 64)
+				.save(this.output, id("bargain_test/things"));
+		new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE)
+				.demand(Ingredient.of(Items.STICK), 1)
+				.offerHeartContainer(2)
+				.save(this.output, id("bargain_test/heart"));
+		new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE)
+				.demand(Ingredient.of(Items.STICK), 1)
+				.offerHeartContainer(100)
+				.save(this.output, id("bargain_test/heart100"));
 	}
 
 	private static ResourceKey<Recipe<?>> id(String id) {
