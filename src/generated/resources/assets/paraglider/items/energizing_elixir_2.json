@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "paraglider:item/stamina_potion_2"
+    "model": "paraglider:item/energizing_elixir_2"
   }
 }

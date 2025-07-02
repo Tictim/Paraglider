@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_energizing_mixture": {
+      "conditions": {
+        "items": [
+          {
+            "items": "paraglider:energizing_mixture"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "paraglider:campfire_cooking/energizing_elixir_1"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_energizing_mixture"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "paraglider:campfire_cooking/energizing_elixir_1"
+    ]
+  }
+}

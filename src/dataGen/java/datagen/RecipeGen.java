@@ -21,8 +21,11 @@ import tictim.paraglider.api.bargain.ParagliderBargainTypes;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderConfigCondition;
 import tictim.paraglider.contents.ParagliderTags;
+import tictim.paraglider.contents.recipe.WaterBottleIngredientType;
 
 import java.util.concurrent.CompletableFuture;
+
+import static net.minecraft.data.recipes.SimpleCookingRecipeBuilder.*;
 
 public class RecipeGen extends RecipeProvider {
 	public RecipeGen(@NotNull HolderLookup.Provider registries, @NotNull RecipeOutput output) {
@@ -40,6 +43,39 @@ public class RecipeGen extends RecipeProvider {
 				.define('2', Tags.Items.LEATHERS)
 				.unlockedBy("has_stick", has(Tags.Items.RODS_WOODEN))
 				.save(this.output);
+
+		shapeless(RecipeCategory.MISC, contents.energizingMixture())
+				.requires(new Ingredient(WaterBottleIngredientType.INSTANCE))
+				.requires(Items.CARROT)
+				.unlockedBy("has_carrot", has(Items.CARROT))
+				.save(this.output);
+
+		shapeless(RecipeCategory.MISC, contents.enduringMixture())
+				.requires(new Ingredient(WaterBottleIngredientType.INSTANCE))
+				.requires(Items.GOLDEN_CARROT)
+				.unlockedBy("has_golden_carrot", has(Items.GOLDEN_CARROT))
+				.save(this.output);
+
+		smelting(Ingredient.of(contents.energizingMixture()), RecipeCategory.MISC, contents.energizingElixir1(), 0.35F, 200)
+				.unlockedBy("has_energizing_mixture", has(contents.energizingMixture()))
+				.save(this.output, id("smelting/energizing_elixir_1"));
+		smelting(Ingredient.of(contents.enduringMixture()), RecipeCategory.MISC, contents.enduringElixir1(), 0.35F, 200)
+				.unlockedBy("has_enduring_mixture", has(contents.enduringMixture()))
+				.save(this.output, id("smelting/enduring_elixir_1"));
+
+		smoking(Ingredient.of(contents.energizingMixture()), RecipeCategory.MISC, contents.energizingElixir1(), 0.35F, 100)
+				.unlockedBy("has_energizing_mixture", has(contents.energizingMixture()))
+				.save(this.output, id("smoking/energizing_elixir_1"));
+		smoking(Ingredient.of(contents.enduringMixture()), RecipeCategory.MISC, contents.enduringElixir1(), 0.35F, 100)
+				.unlockedBy("has_enduring_mixture", has(contents.enduringMixture()))
+				.save(this.output, id("smoking/enduring_elixir_1"));
+
+		campfireCooking(Ingredient.of(contents.energizingMixture()), RecipeCategory.MISC, contents.energizingElixir1(), 0.35F, 600)
+				.unlockedBy("has_energizing_mixture", has(contents.energizingMixture()))
+				.save(this.output, id("campfire_cooking/energizing_elixir_1"));
+		campfireCooking(Ingredient.of(contents.enduringMixture()), RecipeCategory.MISC, contents.enduringElixir1(), 0.35F, 600)
+				.unlockedBy("has_enduring_mixture", has(contents.enduringMixture()))
+				.save(this.output, id("campfire_cooking/enduring_elixir_1"));
 
 		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.dekuLeaf(),
 				tag(ParagliderTags.PARAGLIDERS), Ingredient.of(Blocks.DIRT))

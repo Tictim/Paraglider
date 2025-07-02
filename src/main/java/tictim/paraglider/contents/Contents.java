@@ -25,6 +25,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -44,6 +45,7 @@ import tictim.paraglider.contents.loot.*;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.SimpleBargain;
 import tictim.paraglider.contents.recipe.SimpleBargainSerializer;
+import tictim.paraglider.contents.recipe.WaterBottleIngredientType;
 import tictim.paraglider.contents.recipe.preview.SimplePreview;
 import tictim.paraglider.contents.recipe.preview.VesselPreview;
 import tictim.paraglider.contents.worldgen.NetherHornedStatue;
@@ -78,7 +80,8 @@ public class Contents {
 	public final DeferredRegister<AttachmentType<?>> attachmentTypes = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MODID);
 	public final DeferredRegister<MapCodec<? extends ICondition>> conditionSerializers = DeferredRegister.create(NeoForgeRegistries.CONDITION_SERIALIZERS, MODID);
 	public final DeferredRegister<SlotDisplay.Type<?>> slotDisplays = DeferredRegister.create(Registries.SLOT_DISPLAY, MODID);
-	public final DeferredRegister<BargainPreview.Type<?>> bargainPreviewType = DeferredRegister.create(BargainPreview.TYPE_REGISTRY_KEY, MODID);
+	public final DeferredRegister<IngredientType<?>> ingredientTypes = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, MODID);
+	public final DeferredRegister<BargainPreview.Type<?>> bargainPreviewTypes = DeferredRegister.create(BargainPreview.TYPE_REGISTRY_KEY, MODID);
 
 	public final DeferredHolder<Block, Block> goddessStatue = blocks.register("goddess_statue",
 			id -> new GoddessStatueBlock(statueBlock(id)));
@@ -135,18 +138,22 @@ public class Contents {
 			id -> new AntiVesselItem(p(id).rarity(Rarity.EPIC)));
 	public final DeferredHolder<Item, Item> essence = items.register("essence",
 			id -> new EssenceItem(p(id).rarity(Rarity.RARE)));
-	public final DeferredHolder<Item, Item> staminaPotion1 = items.register("stamina_potion_1",
+	public final DeferredHolder<Item, Item> energizingElixir1 = items.register("energizing_elixir_1",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(1000))));
-	public final DeferredHolder<Item, Item> staminaPotion2 = items.register("stamina_potion_2",
+	public final DeferredHolder<Item, Item> energizingElixir2 = items.register("energizing_elixir_2",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(2000))));
-	public final DeferredHolder<Item, Item> staminaPotion3 = items.register("stamina_potion_3",
+	public final DeferredHolder<Item, Item> energizingElixir3 = items.register("energizing_elixir_3",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(3000))));
-	public final DeferredHolder<Item, Item> maxStaminaPotion1 = items.register("max_stamina_potion_1",
+	public final DeferredHolder<Item, Item> enduringElixir1 = items.register("enduring_elixir_1",
 			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(500))));
-	public final DeferredHolder<Item, Item> maxStaminaPotion2 = items.register("max_stamina_potion_2",
+	public final DeferredHolder<Item, Item> enduringElixir2 = items.register("enduring_elixir_2",
 			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(1000))));
-	public final DeferredHolder<Item, Item> maxStaminaPotion3 = items.register("max_stamina_potion_3",
+	public final DeferredHolder<Item, Item> enduringElixir3 = items.register("enduring_elixir_3",
 			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(2000))));
+	public final DeferredHolder<Item, Item> energizingMixture = items.register("energizing_mixture",
+			id -> new Item(p(id).stacksTo(1)));
+	public final DeferredHolder<Item, Item> enduringMixture = items.register("enduring_mixture",
+			id -> new Item(p(id).stacksTo(1)));
 
 	public final DeferredHolder<Item, BlockItem> goddessStatueItem = items.register("goddess_statue",
 			id -> new BlockItem(goddessStatue(), p(id).rarity(Rarity.RARE)));
@@ -200,12 +207,14 @@ public class Contents {
 				out.accept(spiritOrb());
 				out.accept(antiVessel());
 				out.accept(essence());
-				out.accept(staminaPotion1());
-				out.accept(staminaPotion2());
-				out.accept(staminaPotion3());
-				out.accept(maxStaminaPotion1());
-				out.accept(maxStaminaPotion2());
-				out.accept(maxStaminaPotion3());
+				out.accept(energizingElixir1());
+				out.accept(energizingElixir2());
+				out.accept(energizingElixir3());
+				out.accept(enduringElixir1());
+				out.accept(enduringElixir2());
+				out.accept(enduringElixir3());
+				out.accept(energizingMixture());
+				out.accept(enduringMixture());
 
 				out.accept(goddessStatue());
 				out.accept(kakarikoGoddessStatue());
@@ -237,10 +246,12 @@ public class Contents {
 					.serialize(MovementState.CODEC)
 					.build());
 
-	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<SimplePreview>> simplePreviewType = bargainPreviewType.register("simple",
+	public final DeferredHolder<IngredientType<?>, IngredientType<?>> waterBottle = ingredientTypes.register("water_bottle", WaterBottleIngredientType.INSTANCE::getType);
+
+	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<SimplePreview>> simplePreviewType = bargainPreviewTypes.register("simple",
 			() -> SimplePreview.TYPE);
 
-	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<VesselPreview>> vesselPreviewType = bargainPreviewType.register("vessel",
+	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<VesselPreview>> vesselPreviewType = bargainPreviewTypes.register("vessel",
 			() -> VesselPreview.TYPE);
 
 	public Contents(IEventBus eventBus) {
@@ -258,7 +269,8 @@ public class Contents {
 		this.attachmentTypes.register(eventBus);
 		this.conditionSerializers.register(eventBus);
 		this.slotDisplays.register(eventBus);
-		this.bargainPreviewType.register(eventBus);
+		this.ingredientTypes.register(eventBus);
+		this.bargainPreviewTypes.register(eventBus);
 
 		ParagliderConfigCondition.register(this.conditionSerializers);
 		VesselSlotDisplay.register(this.slotDisplays);
@@ -285,23 +297,29 @@ public class Contents {
 	public @NotNull Item essence() {
 		return essence.get();
 	}
-	public @NotNull Item staminaPotion1() {
-		return staminaPotion1.get();
+	public @NotNull Item energizingElixir1() {
+		return energizingElixir1.get();
 	}
-	public @NotNull Item staminaPotion2() {
-		return staminaPotion2.get();
+	public @NotNull Item energizingElixir2() {
+		return energizingElixir2.get();
 	}
-	public @NotNull Item staminaPotion3() {
-		return staminaPotion3.get();
+	public @NotNull Item energizingElixir3() {
+		return energizingElixir3.get();
 	}
-	public @NotNull Item maxStaminaPotion1() {
-		return maxStaminaPotion1.get();
+	public @NotNull Item enduringElixir1() {
+		return enduringElixir1.get();
 	}
-	public @NotNull Item maxStaminaPotion2() {
-		return maxStaminaPotion2.get();
+	public @NotNull Item enduringElixir2() {
+		return enduringElixir2.get();
 	}
-	public @NotNull Item maxStaminaPotion3() {
-		return maxStaminaPotion3.get();
+	public @NotNull Item enduringElixir3() {
+		return enduringElixir3.get();
+	}
+	public @NotNull Item energizingMixture() {
+		return energizingMixture.get();
+	}
+	public @NotNull Item enduringMixture() {
+		return enduringMixture.get();
 	}
 	public @NotNull Block goddessStatue() {
 		return goddessStatue.get();

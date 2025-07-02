@@ -3,6 +3,9 @@ package tictim.paraglider;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -12,6 +15,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -32,6 +36,7 @@ import tictim.paraglider.config.*;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderVillageStructures;
+import tictim.paraglider.contents.recipe.WaterBottleIngredientType;
 import tictim.paraglider.impl.DefaultParagliderItemCapability;
 import tictim.paraglider.impl.ParagliderCauldronInteraction;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
@@ -153,6 +158,23 @@ public class ParagliderMod {
 			map.put(this.contents.paraglider(), ParagliderCauldronInteraction.INSTANCE);
 			map.put(this.contents.dekuLeaf(), ParagliderCauldronInteraction.INSTANCE);
 		}));
+
+		NeoForge.EVENT_BUS.addListener((RegisterBrewingRecipesEvent event) -> {
+			event.getBuilder().addRecipe(new Ingredient(WaterBottleIngredientType.INSTANCE),
+					Ingredient.of(Items.CARROT), new ItemStack(this.contents.energizingElixir2()));
+
+			event.getBuilder().addRecipe(Ingredient.of(this.contents.energizingElixir2()),
+					Ingredient.of(Items.GLOWSTONE_DUST), new ItemStack(this.contents.energizingElixir3()));
+
+			event.getBuilder().addRecipe(Ingredient.of(this.contents.energizingElixir2()),
+					Ingredient.of(Items.GOLDEN_CARROT), new ItemStack(this.contents.enduringElixir2()));
+
+			event.getBuilder().addRecipe(Ingredient.of(this.contents.enduringElixir2()),
+					Ingredient.of(Items.GLOWSTONE_DUST), new ItemStack(this.contents.enduringElixir3()));
+
+			event.getBuilder().addRecipe(Ingredient.of(this.contents.energizingElixir3()),
+					Ingredient.of(Items.GOLDEN_CARROT), new ItemStack(this.contents.enduringElixir3()));
+		});
 
 		this.network = new ParagliderNetworkImpl(eventBus);
 	}

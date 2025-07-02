@@ -70,12 +70,14 @@ public class ModelGen extends ModelProvider {
 		itemModels.generateFlatItem(c.antiVessel(), ModelTemplates.FLAT_ITEM);
 		itemModels.generateFlatItem(c.essence(), ModelTemplates.FLAT_ITEM);
 
-		itemModels.generateFlatItem(c.staminaPotion1(), ModelTemplates.FLAT_ITEM);
-		itemModels.generateFlatItem(c.staminaPotion2(), ModelTemplates.FLAT_ITEM);
-		itemModels.generateFlatItem(c.staminaPotion3(), ModelTemplates.FLAT_ITEM);
-		itemModels.generateFlatItem(c.maxStaminaPotion1(), ModelTemplates.FLAT_ITEM);
-		itemModels.generateFlatItem(c.maxStaminaPotion2(), ModelTemplates.FLAT_ITEM);
-		itemModels.generateFlatItem(c.maxStaminaPotion3(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.energizingElixir1(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.energizingElixir2(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.energizingElixir3(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.enduringElixir1(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.enduringElixir2(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.enduringElixir3(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.energizingMixture(), ModelTemplates.FLAT_ITEM);
+		itemModels.generateFlatItem(c.enduringMixture(), ModelTemplates.FLAT_ITEM);
 	}
 
 	private void statueModel(BlockModelGenerators blockModels, Block block) {

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "neoforge:ingredient_type": "paraglider:water_bottle"
+    },
+    "minecraft:golden_carrot"
+  ],
+  "result": {
+    "count": 1,
+    "id": "paraglider:enduring_mixture"
+  }
+}

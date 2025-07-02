@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "paraglider:item/stamina_potion_1"
+    "layer0": "paraglider:item/enduring_elixir_1"
   }
 }
