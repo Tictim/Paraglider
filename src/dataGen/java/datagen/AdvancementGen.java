@@ -30,7 +30,7 @@ public class AdvancementGen extends AdvancementProvider {
 			AdvancementHolder root = advancement(
 					new ItemStack(contents.paraglider()),
 					"advancement.paraglider",
-					ParagliderAPI.id("textures/gui/advancement_background.png"),
+					ParagliderAPI.id("gui/advancement_background"),
 					AdvancementType.TASK,
 					false,
 					false,
