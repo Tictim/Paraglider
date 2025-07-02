@@ -155,9 +155,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 	}
 
 	public void reset() {
-		this.fullAnim.reset();
-		this.fullAnim.setActive(true);
-		this.fullAnim.setActiveDuration(FADE_END);
+		this.fullAnim.setActive(FADE_END);
 
 		this.outerWheelFillAnim.reset();
 		this.outerWheelEmptyAnim.reset();

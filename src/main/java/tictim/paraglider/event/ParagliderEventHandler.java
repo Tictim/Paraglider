@@ -22,7 +22,6 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.bargain.BargainHandler;
-import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.item.consumeeffect.GiveExtraStaminaConsumeEffect;
 import tictim.paraglider.contents.item.consumeeffect.RestoreStaminaConsumeEffect;
 import tictim.paraglider.impl.movement.PlayerMovement;
@@ -68,18 +67,6 @@ public final class ParagliderEventHandler {
 		if (!(event.getEntity() instanceof Player player)) return;
 		Movement movement = Movement.get(player);
 		if (movement.state().paragliding()) player.stopUsingItem();
-	}
-
-	@SubscribeEvent
-	public static void onClone(PlayerEvent.Clone event) {
-		if (!event.isWasDeath()) return;
-
-		PlayerMovement prev = event.getOriginal().getExistingDataOrNull(Contents.get().playerMovement());
-		if (prev == null) return;
-
-		PlayerMovement current = event.getEntity().getData(Contents.get().playerMovement());
-
-		current.stamina().setStamina(current.stamina().maxStamina());
 	}
 
 	@SubscribeEvent

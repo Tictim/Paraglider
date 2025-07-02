@@ -119,6 +119,11 @@ public class ServerPlayerMovement extends PlayerMovement {
 		if (player().onGround() || player().getY() > this.prevY) this.accumulatedFallDistance = 0;
 		else accumulatedFallDistance += this.prevY - player().getY();
 
+		if (!player().getData(Contents.get().movementInitialized())) {
+			player().setData(Contents.get().movementInitialized(), true);
+			stamina().setStamina(stamina().maxStamina());
+		}
+
 		PlayerState prevState = state();
 		setState(ParagliderMod.instance().getPlayerConnectionMap()
 				.evaluate(ParagliderMod.instance().getLocalPlayerStateMap(),

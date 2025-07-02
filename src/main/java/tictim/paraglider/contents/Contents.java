@@ -246,6 +246,11 @@ public class Contents {
 					.serialize(MovementState.CODEC)
 					.build());
 
+	public final DeferredHolder<AttachmentType<?>, AttachmentType<Boolean>> movementInitialized = attachmentTypes.register("movement_init",
+			() -> AttachmentType.builder(h -> false)
+					.serialize(Codec.BOOL)
+					.build());
+
 	public final DeferredHolder<IngredientType<?>, IngredientType<?>> waterBottle = ingredientTypes.register("water_bottle", WaterBottleIngredientType.INSTANCE::getType);
 
 	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<SimplePreview>> simplePreviewType = bargainPreviewTypes.register("simple",
@@ -419,5 +424,8 @@ public class Contents {
 	}
 	public @NotNull AttachmentType<MovementState> movementState() {
 		return movementState.get();
+	}
+	public @NotNull AttachmentType<Boolean> movementInitialized() {
+		return movementInitialized.get();
 	}
 }

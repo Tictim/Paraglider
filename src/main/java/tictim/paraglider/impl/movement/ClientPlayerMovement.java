@@ -1,8 +1,6 @@
 package tictim.paraglider.impl.movement;
 
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;

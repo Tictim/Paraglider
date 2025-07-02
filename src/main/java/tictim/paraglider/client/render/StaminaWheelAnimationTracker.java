@@ -21,15 +21,15 @@ public class StaminaWheelAnimationTracker {
 	public boolean isActive() {
 		return this.active;
 	}
-	public void setActive(boolean active) {
-		this.active = active;
-		if (active) {
-			this.activeTime = ms();
-			this.activeDuration = 0;
-		} else {
-			this.activeTime = 0;
-			this.activeDuration = 0;
-		}
+
+	public void setActive() {
+		setActive(0);
+	}
+
+	public void setActive(long activeDuration) {
+		this.active = true;
+		this.activeTime = ms() - activeDuration;
+		this.activeDuration = activeDuration;
 	}
 
 	public long activeTime() {
