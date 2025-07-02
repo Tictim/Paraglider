@@ -28,6 +28,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement {
 		if (!player().isCreative() && stamina().isDepleted()) {
 			player().setSprinting(false);
 			player().setSwimming(false);
+			if (player().isFallFlying()) player().stopFallFlying();
 		} else if (this.wasParagliding != paragliding) {
 			player().setSprinting(paragliding);
 			if (!this.wasParagliding && paragliding) {

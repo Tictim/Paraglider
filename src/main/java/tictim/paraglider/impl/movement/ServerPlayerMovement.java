@@ -149,8 +149,10 @@ public class ServerPlayerMovement extends PlayerMovement {
 
 		if (!player().isCreative() && stamina().isDepleted()) {
 			ParagliderUtils.addExhaustion(player());
+			ParagliderUtils.addFlyingBan(player());
 		} else {
 			ParagliderUtils.removeExhaustion(player());
+			ParagliderUtils.removeFlyingBan(player());
 		}
 		applyMovement();
 

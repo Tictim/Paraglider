@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
@@ -102,8 +103,7 @@ public final class ParagliderUtils {
 	}
 
 	private static final AttributeModifier EXHAUSTION = new AttributeModifier(
-			ParagliderAPI.id("exhaustion"), -0.3, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
-	);
+			ParagliderAPI.id("exhaustion"), -0.3, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
 	public static void addExhaustion(@NotNull LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -115,6 +115,21 @@ public final class ParagliderUtils {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (attr == null) return;
 		attr.removeModifier(EXHAUSTION.id());
+	}
+
+	private static final AttributeModifier NO_FLIGHT = new AttributeModifier(
+			ParagliderAPI.id("no_flight"), -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+
+	public static void addFlyingBan(@NotNull LivingEntity entity) {
+		AttributeInstance attr = entity.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
+		if (attr == null || attr.getModifier(NO_FLIGHT.id()) != null) return;
+		attr.addTransientModifier(NO_FLIGHT);
+	}
+
+	public static void removeFlyingBan(@NotNull LivingEntity entity) {
+		AttributeInstance attr = entity.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
+		if (attr == null) return;
+		attr.removeModifier(NO_FLIGHT.id());
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
