@@ -15,14 +15,16 @@ import tictim.paraglider.api.ParagliderAPI;
  * changed with custom implementation via plugin system; see {@link StaminaPlugin}.
  * </p>
  * <p>
- * In the base mod, the stamina implementation is server-oriented; changes made in client-side instance do not affect
- * the server-side instance, and could even cause state desync between the two sides. Manual state sync is required if
- * you want to sync other values, aside from the stamina value, which can get synced with built-in packets; see the base
- * implementation for details.
+ * The stamina API is written with server-oriented architecture in mind; as result, base mod's stamina implementation
+ * does not allow changes made in client-side instance to affect the server-side instance.
  * </p>
  * <p>
- * If stamina is gained/consumed each tick based on certain player state, then using
- * {@link tictim.paraglider.api.movement.PlayerState PlayerState} is recommended.
+ * Use this interface when dealing with discrete changes to stamina value. If the change happens per-tick basis,
+ * mediated by a player's state exclusive to other physical actions such as paragliding, running or swimming, consider
+ * using custom {@link tictim.paraglider.api.movement.PlayerState PlayerState} instead. If the change happens per-tick
+ * basis, but is not based on any player state, use this interface; applying same changes on both server and client side
+ * with {@code silent} parameter set to {@code true} can improve both user experience and reduce the amount of sync
+ * packets created.
  * </p>
  */
 public interface Stamina {
@@ -32,10 +34,10 @@ public interface Stamina {
 	double STAMINA_PER_WHEEL = 1000;
 
 	/**
-	 * Get a stamina instance bound to specific player; if there's none, a no-op singleton implementation is returned.
+	 * Get a stamina instance bound to specific player.
 	 *
 	 * @param player Player
-	 * @return A stamina instance bound to specific player, or a no-op singleton implementation
+	 * @return A stamina instance bound to specific player
 	 */
 	static @NotNull Stamina get(@NotNull Player player) {
 		return ParagliderAPI.staminaSupplier().apply(player);

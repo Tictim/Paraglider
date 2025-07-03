@@ -11,11 +11,45 @@ import java.util.Set;
 
 /**
  * <p>
- * Defines a specific state of player's movement. Paraglider's stamina consumption/regeneration is based on player
- * state, which is evaluated and synced from server to clients, each tick.
+ * A specific state of a player. Player states are evaluated from the server, and synced to client. Each player can have
+ * only one active state at a time.
  * </p>
  * <p>
- * To register new player states, see {@link MovementPlugin}.
+ * Paraglider's stamina consumption/regeneration is done through player states - specifically,
+ * {@link #staminaDelta()} and {@link #recoveryDelay()}. Both values can be modified either by paraglider plugin
+ * targeting specific states, or a config file by users. List of existing player states and their stamina delta /
+ * recovery delay properties are synced to client.
+ * </p>
+ * <p>
+ * Evaluation of player state is done through player state connections, which forms a directional graph. You may think
+ * of player state connections as a behavior tree, with support for recursion among connections. Connections have two
+ * flavors:
+ * <ul>
+ *     <li>Conditional connections have an {@link PlayerStateCondition} instance associated, and is not considered as a
+ *     connection unless the condition returns {@code true}. A state can have multiple conditional connections attached,
+ *     both incoming and outgoing.</li>
+ *     <li>Fallback connections do not have any conditions. A state may have zero to one outgoing fallback connection;
+ *     trying to register multiple fallback connections from same state will either create a conflict, or overwrite one,
+ *     depending on their priority value.</li>
+ * </ul>
+ * A player state evaluation starts from root state {@link ParagliderPlayerStates#IDLE paraglider:idle}, and traverses
+ * each connections' condition for a match. If a match is found, then the current state is set to the connected state,
+ * and resumes connection evaluation. It is possible for current state to re-visit previously visited state; in that
+ * case, connections already checked are skipped.
+ * </p>
+ * <p>
+ * Once a state fails to find its connected state, that is, there are no conditional connections that matched its
+ * condition, the evaluation will check the presence of a fallback connection on the player state.
+ * <ul>
+ *     <li>If there is a fallback connection, the current state will move to the connected state, and evaluation will
+ *     resume.</li>
+ *     <li>If not, the evaluation is concluded, and current state is returned as result.</li>
+ * </ul>
+ * Trying to create recursion via fallback connection will create a registration error.
+ * </p>
+ * <p>
+ * To register new player states or connections, see {@link MovementPlugin}. To see Paraglider's default set of states
+ * and flags, see {@link ParagliderPlayerStates} and {@link ParagliderPlayerStates.Flags}.
  * </p>
  */
 public interface PlayerState {

@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * Plugin for movement-related features.
+ * Plugin for movement-related features. Refer to {@link PlayerState} for explanations on player state and connections.
  *
  * @see ParagliderPlugin
  */
@@ -45,8 +45,8 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *                            0 represents a neutral state. Note this value is only for providing default
 		 *                            values; the final value used by the game can be changed with configs.
 		 * @param flags               Flags of the state
-		 * @throws NullPointerException     If {@code id == null}, {@code defaultFlags == null}, or any element of {@code
-		 *                                  flags} is null
+		 * @throws NullPointerException     If {@code id == null}, {@code defaultFlags == null}, or any element of
+		 *                                  {@code flags} is null
 		 * @throws IllegalArgumentException If {@code Double.isNaN(defaultStaminaDelta) == true}
 		 */
 		void register(@NotNull ResourceLocation id, double defaultStaminaDelta, @NotNull ResourceLocation @NotNull ... flags);
@@ -55,9 +55,9 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * Register a synthetic state. If another state has been registered with same ID, it will create a conflict;
 		 * see {@link ConflictResolver}.
 		 * <p/>
-		 * Synthetic states are purely used for creating connection with other states. Fallback branches are required
-		 * for synthetic states. Not providing the fallback branch will result in an error. To register fallback
-		 * branches, see {@link PlayerStateConnectionRegister#setFallback(ResourceLocation, ResourceLocation)}.
+		 * Synthetic states are purely used for creating connection with other states. Fallback connections are required
+		 * for synthetic states. Not providing the fallback connection will result in an error. To register fallback
+		 * connections, see {@link PlayerStateConnectionRegister#setFallback(ResourceLocation, ResourceLocation)}.
 		 *
 		 * @param id ID of the new state
 		 * @throws NullPointerException If {@code id == null}
@@ -161,38 +161,38 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		}
 
 		/**
-		 * Add a conditioned branch from {@code parent} to {@code state} with given condition and priority of {@code 0}.
-		 * If {@code state} is equal to {@code parent}, the branch will do nothing.
+		 * Add a connection from {@code parent} to {@code state} with given condition and priority of {@code 0}.
+		 * If {@code state} is equal to {@code parent}, the connection will do nothing.
 		 *
 		 * @param parent    ID of the parent state
-		 * @param condition Condition of the branch
+		 * @param condition Condition of the connection
 		 * @param state     ID of the state
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
-		 * @see #addBranch(ResourceLocation, PlayerStateCondition, ResourceLocation, double)
+		 * @see #connect(ResourceLocation, ResourceLocation, PlayerStateCondition, double)
 		 */
-		default void addBranch(@NotNull ResourceLocation parent, @NotNull PlayerStateCondition condition, @NotNull ResourceLocation state) {
-			addBranch(parent, condition, state, 0);
+		default void connect(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @NotNull PlayerStateCondition condition) {
+			connect(parent, state, condition, 0);
 		}
 
 		/**
-		 * Add a conditioned branch from {@code parent} to {@code state} with given condition and priority. If
-		 * {@code state} is equal to {@code parent}, the branch will do nothing.
+		 * Add a connection from {@code parent} to {@code state} with given condition and priority. If
+		 * {@code state} is equal to {@code parent}, the connection will do nothing.
 		 *
 		 * @param parent    ID of the parent state
-		 * @param condition Condition of the branch
+		 * @param condition Condition of the connection
 		 * @param state     ID of the state
 		 * @param priority  Priority of the condition; connection with higher priority has precedence over other
-		 *                  connections with lower priorities. If two branches share same priority, they will be
+		 *                  connections with lower priorities. If two connections share same priority, they will be
 		 *                  evaluated on registration order.
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
 		 */
-		void addBranch(@NotNull ResourceLocation parent, @NotNull PlayerStateCondition condition, @NotNull ResourceLocation state, double priority);
+		void connect(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @NotNull PlayerStateCondition condition, double priority);
 
 		/**
-		 * Remove all conditioned branches that matches given property. This method takes precedence over additions via
-		 * {@link #addBranch(ResourceLocation, PlayerStateCondition, ResourceLocation, double)}.
+		 * Remove all <i>conditioned</i> connections that match given property. This method takes precedence over
+		 * additions via {@link #connect(ResourceLocation, ResourceLocation, PlayerStateCondition, double)}.
 		 *
 		 * @param parent   ID of the parent state
 		 * @param state    ID of the state
@@ -201,19 +201,19 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
 		 */
-		void removeBranch(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @Nullable Double priority);
+		void disconnect(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @Nullable Double priority);
 
 		/**
-		 * Set a fallback branch from {@code parent} to {@code fallback}, or remove preexisting fallback branch if
-		 * {@code null} is given for the {@code fallback} parameter. If a fallback branch is present, when all
-		 * the conditioned branches for {@code parent} state are failed to match, evaluation will jump to
+		 * Set a fallback connection from {@code parent} to {@code fallback}, or remove preexisting fallback connection
+		 * if {@code null} is given for the {@code fallback} parameter. If a fallback connection is present, when all
+		 * the conditioned connections for {@code parent} state are failed to match, evaluation will jump to
 		 * {@code fallback} state and continue from there instead of terminating and outputting the
 		 * {@code parent} state. Trying to set itself as fallback state will produce an exception.
 		 * <p/>
-		 * Contrary to conditioned branches, fallback branches cannot form circular dependencies. Attempting to create
-		 * circular dependency will result in an error.
+		 * Contrary to conditioned connections, fallback connections cannot form circular dependencies. Attempting to
+		 * create circular dependency will result in an error.
 		 * <p/>
-		 * If two fallback branches have same parent, same priority, and different target, then it will create a
+		 * If two fallback connections have same parent, same priority, and different target, then it will create a
 		 * conflict; see {@link ConflictResolver}.
 		 *
 		 * @param parent   ID of the parent state
@@ -228,22 +228,22 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		}
 
 		/**
-		 * Set a fallback branch from {@code parent} to {@code fallback}, or remove preexisting fallback branch if
-		 * {@code null} is given for the {@code fallback} parameter. If a fallback branch is present, when all
-		 * the conditioned branches for {@code parent} state are failed to match, evaluation will jump to
+		 * Set a fallback connection from {@code parent} to {@code fallback}, or remove preexisting fallback connection
+		 * if {@code null} is given for the {@code fallback} parameter. If a fallback connection is present, when all
+		 * the conditioned connections for {@code parent} state are failed to match, evaluation will jump to
 		 * {@code fallback} state and continue from there instead of terminating and outputting the
 		 * {@code parent} state. Trying to set itself as fallback state will produce an exception.
 		 * <p/>
-		 * Contrary to conditioned branches, fallback branches cannot form circular dependencies. Attempting to create
-		 * circular dependency will result in an error.
+		 * Contrary to conditioned connections, fallback connections cannot form circular dependencies. Attempting to
+		 * create circular dependency will result in an error.
 		 * <p/>
-		 * If two fallback branches have same parent, same priority and different target, then it will create a
+		 * If two fallback connections have same parent, same priority and different target, then it will create a
 		 * conflict; see {@link ConflictResolver}.
 		 *
 		 * @param parent   ID of the parent state
 		 * @param fallback ID of the fallback state
-		 * @param priority Priority of this fallback branch; only the fallback branch with the <b>highest</b> priority
-		 *                 will be applied.
+		 * @param priority Priority of this fallback connection; only the fallback connection with the <b>highest</b>
+		 *                 priority will be applied.
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code fallback}
 		 */

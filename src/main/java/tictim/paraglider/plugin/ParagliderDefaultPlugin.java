@@ -9,7 +9,6 @@ import tictim.paraglider.api.movement.MovementPluginAction.NewState;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ConflictResolver.Resolution;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
-import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.stamina.StaminaPlugin;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.contents.Contents;
@@ -38,57 +37,29 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 	}
 
 	@Override public void registerStateConnections(@NotNull PlayerStateConnectionRegister register) {
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.getAbilities().flying,
-				FLYING, FLYING_PRIORITY);
+		register.connect(IDLE, FLYING, c -> c.player().getAbilities().flying, FLYING_PRIORITY);
 
-		register.addBranch(FLYING,
-				(p, s, b, f) -> p.isCreative(),
-				CREATIVE_FLYING);
+		register.connect(FLYING, CREATIVE_FLYING, c -> c.player().isCreative());
 
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.isFallFlying(),
-				ELYTRA_FLYING, ELYTRA_FLYING_PRIORITY);
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.getVehicle() != null,
-				ON_VEHICLE, ON_VEHICLE_PRIORITY);
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.isSwimming(),
-				SWIMMING, SWIMMING_PRIORITY);
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.isInWater(),
-				UNDERWATER, UNDERWATER_PRIORITY);
-		register.addBranch(UNDERWATER,
-				(p, s, b, f) -> ParagliderUtils.canBreatheUnderwater(p),
-				BREATHING_UNDERWATER);
+		register.connect(IDLE, ELYTRA_FLYING, c -> c.player().isFallFlying(), ELYTRA_FLYING_PRIORITY);
+		register.connect(IDLE, ON_VEHICLE, c -> c.player().getVehicle() != null, ON_VEHICLE_PRIORITY);
+		register.connect(IDLE, SWIMMING, c -> c.player().isSwimming(), SWIMMING_PRIORITY);
+		register.connect(IDLE, UNDERWATER, c -> c.player().isInWater(), UNDERWATER_PRIORITY);
+		register.connect(UNDERWATER, BREATHING_UNDERWATER, c -> ParagliderUtils.canBreatheUnderwater(c.player()));
 
-		register.addBranch(IDLE,
-				(p, s, b, f) -> {
-					if (!b || p.onGround() || p.isFallFlying()) return false;
-					ItemStack stack = p.getMainHandItem();
-					return stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).canDoParagliding(stack);
-				},
-				PARAGLIDING, PARAGLIDING_PRIORITY);
+		register.connect(IDLE, PARAGLIDING, c -> {
+			if (c.player().onGround()) return false;
+			if (!ParagliderUtils.canUseParaglider(c)) return false;
+			ItemStack stack = c.player().getMainHandItem();
+			return stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).canDoParagliding(stack);
+		}, PARAGLIDING_PRIORITY);
 
-		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> f >= PARAGLIDING_FALL_DISTANCE && !p.isCreative() && Stamina.get(p).isDepleted(),
-				PANIC_PARAGLIDING);
+		register.connect(PARAGLIDING, PANIC_PARAGLIDING, c -> c.accumulatedFallDistance() >= PARAGLIDING_FALL_DISTANCE && c.stamina().isDepleted());
+		register.connect(PARAGLIDING, ASCENDING, c -> Cfg.get().updraft() && Wind.getWindAbove(c.player().level(), c.player().getBoundingBox()) > 0);
+		register.connect(PARAGLIDING, IDLE, c -> c.accumulatedFallDistance() < PARAGLIDING_FALL_DISTANCE && !c.prevState().paragliding());
 
-		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> Cfg.get().updraft() && Wind.getWindAbove(p.level(), p.getBoundingBox()) > 0,
-				ASCENDING);
-
-		register.addBranch(PARAGLIDING,
-				(p, s, b, f) -> f < PARAGLIDING_FALL_DISTANCE && !s.paragliding(),
-				IDLE);
-
-		register.addBranch(IDLE,
-				(p, s, b, f) -> p.isSprinting() && !p.isUsingItem(),
-				RUNNING, RUNNING_PRIORITY);
-
-		register.addBranch(IDLE,
-				(p, s, b, f) -> !p.onGround(),
-				MIDAIR, MIDAIR_PRIORITY);
+		register.connect(IDLE, RUNNING, c -> c.player().isSprinting() && !c.player().isUsingItem(), RUNNING_PRIORITY);
+		register.connect(IDLE, MIDAIR, c -> !c.player().onGround(), MIDAIR_PRIORITY);
 	}
 
 	@Override public void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {

@@ -20,6 +20,7 @@ public class MovementState {
 	 * {@code panicParagliding == true}
 	 */
 	private int panicParaglidingDelay = PANIC_INITIAL_DELAY;
+
 	/**
 	 * {@code false} means panic paragliding mode is recharging. {@code true} means panic paragliding mode is currently
 	 * active.

@@ -10,10 +10,10 @@ import tictim.paraglider.api.ParagliderAPI;
  */
 public interface Movement {
 	/**
-	 * Get a movement instance bound to specific player; if there's none, a no-op singleton implementation is returned.
+	 * Get a movement instance bound to specific player.
 	 *
 	 * @param player Player
-	 * @return A movement instance bound to specific player, or a no-op singleton implementation
+	 * @return A movement instance bound to specific player
 	 */
 	static @NotNull Movement get(@NotNull Player player) {
 		return ParagliderAPI.movementSupplier().apply(player);

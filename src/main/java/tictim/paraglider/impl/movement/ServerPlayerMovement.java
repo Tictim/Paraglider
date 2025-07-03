@@ -10,7 +10,9 @@ import org.jetbrains.annotations.Range;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
+import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
+import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 import tictim.paraglider.api.vessel.VesselContainer;
@@ -26,7 +28,7 @@ import java.util.ArrayDeque;
 
 import static tictim.paraglider.impl.movement.PlayerMovementValues.*;
 
-public class ServerPlayerMovement extends PlayerMovement {
+public class ServerPlayerMovement extends PlayerMovement implements PlayerStateCondition.Context {
 	private boolean resync;
 	private boolean heartContainerChanged = true;
 	private boolean staminaVesselChanged = true;
@@ -88,6 +90,22 @@ public class ServerPlayerMovement extends PlayerMovement {
 		return StaminaEfficiencyLogic.applyEfficiency(state().staminaDelta(), this.staminaEfficiency);
 	}
 
+	@Override public @NotNull Movement movement() {
+		return this;
+	}
+
+	@Override public @NotNull PlayerState prevState() {
+		return state(); // for PlayerStateCondition the "current" state would be the "previous" state
+	}
+
+	@Override public double accumulatedFallDistance() {
+		return this.accumulatedFallDistance;
+	}
+
+	@Override public boolean canDoPanicParagliding() {
+		return movementState().canDoPanicParagliding();
+	}
+
 	@Override public void update() {
 		boolean resync = this.resync;
 		this.resync = false;
@@ -126,11 +144,7 @@ public class ServerPlayerMovement extends PlayerMovement {
 
 		PlayerState prevState = state();
 		setState(ParagliderMod.instance().getPlayerConnectionMap()
-				.evaluate(ParagliderMod.instance().getLocalPlayerStateMap(),
-						player(), state(),
-						player().isCreative() || !stamina().isDepleted() ||
-								movementState().canDoPanicParagliding(),
-						this.accumulatedFallDistance));
+				.evaluate(ParagliderMod.instance().getLocalPlayerStateMap(), this));
 
 		this.staminaEfficiency = StaminaEfficiencyLogic.handler().getEfficiencySum(state().staminaDelta(), player(), state());
 		if (this.prevStaminaEfficiency != this.staminaEfficiency) {

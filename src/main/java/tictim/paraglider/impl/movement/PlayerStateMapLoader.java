@@ -11,13 +11,13 @@ import tictim.paraglider.api.movement.MovementPlugin.PlayerStateModifier;
 import tictim.paraglider.api.movement.MovementPlugin.PlayerStateRegister;
 import tictim.paraglider.api.movement.MovementPluginAction.ChangeDefaultStaminaDelta;
 import tictim.paraglider.api.movement.MovementPluginAction.NewState;
-import tictim.paraglider.api.movement.MovementPluginAction.SetFallbackBranch;
+import tictim.paraglider.api.movement.MovementPluginAction.SetFallbackConnection;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.api.plugin.PluginAction;
 import tictim.paraglider.api.plugin.PluginInstance;
-import tictim.paraglider.impl.movement.PlayerStateConnectionMap.Branch;
+import tictim.paraglider.impl.movement.PlayerStateConnectionMap.Connection;
 import tictim.paraglider.plugin.ParagliderPluginLoader;
 
 import java.util.*;
@@ -50,12 +50,12 @@ public final class PlayerStateMapLoader {
 		Set<String> issues = new ObjectOpenHashSet<>();
 		// validate time
 		for (State state : states.values()) {
-			if (state.synthetic && state.fallbackBranch == null) {
-				issues.add("Fallback branch of the state " + state.id + " should be set");
+			if (state.synthetic && state.fallbackConnection == null) {
+				issues.add("Fallback connection of the state " + state.id + " should be set");
 			}
 			List<State> circularLoop = state.checkCircularLoop(states);
 			if (circularLoop != null) {
-				issues.add("Circular loop on fallback branches detected: " + circularLoop.stream()
+				issues.add("Circular loop on fallback connections detected: " + circularLoop.stream()
 						.map(s -> s.id.toString())
 						.collect(Collectors.joining(" -> ")));
 			}
@@ -77,10 +77,10 @@ public final class PlayerStateMapLoader {
 								Object2ObjectOpenHashMap::new
 						))),
 				new PlayerStateConnectionMap(states.values().stream()
-						.filter(s -> !s.branches.isEmpty() || s.fallbackBranch != null)
+						.filter(s -> !s.connections.isEmpty() || s.fallbackConnection != null)
 						.collect(Collectors.toMap(
 								s -> s.id,
-								s -> new PlayerStateConnectionMap.ConnectionList(s.branches, s.fallbackBranch),
+								s -> new PlayerStateConnectionMap.ConnectionList(s.connections, s.fallbackConnection),
 								(s1, s2) -> s1,
 								Object2ObjectOpenHashMap::new
 						))));
@@ -232,13 +232,12 @@ public final class PlayerStateMapLoader {
 	}
 
 	private static void gatherStateConnections(List<PluginInstance<MovementPlugin>> plugins, Map<ResourceLocation, State> states) {
-		record AddBranch(@NotNull PlayerStateCondition condition,
-		                 @NotNull ResourceLocation state, double priority) {}
-		record RemoveBranch(@NotNull ResourceLocation state, @Nullable Double priority) {}
+		record Connect(@NotNull PlayerStateCondition condition, @NotNull ResourceLocation state, double priority) {}
+		record Disconnect(@NotNull ResourceLocation state, @Nullable Double priority) {}
 
-		Map<ResourceLocation, List<PluginAction<MovementPlugin, SetFallbackBranch>>> fallbackBranches = new Object2ObjectLinkedOpenHashMap<>();
-		Map<ResourceLocation, List<AddBranch>> branchAdditions = new Object2ObjectLinkedOpenHashMap<>();
-		Map<ResourceLocation, List<RemoveBranch>> branchRemovals = new Object2ObjectLinkedOpenHashMap<>();
+		Map<ResourceLocation, List<PluginAction<MovementPlugin, SetFallbackConnection>>> fallbacks = new Object2ObjectLinkedOpenHashMap<>();
+		Map<ResourceLocation, List<Connect>> connections = new Object2ObjectLinkedOpenHashMap<>();
+		Map<ResourceLocation, List<Disconnect>> disconnections = new Object2ObjectLinkedOpenHashMap<>();
 
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().registerStateConnections(new PlayerStateConnectionRegister() {
@@ -250,26 +249,26 @@ public final class PlayerStateMapLoader {
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
 
-				@Override public void addBranch(@NotNull ResourceLocation parent,
-				                                @NotNull PlayerStateCondition condition,
-				                                @NotNull ResourceLocation state,
-				                                double priority) {
+				@Override public void connect(@NotNull ResourceLocation parent,
+				                              @NotNull ResourceLocation state,
+				                              @NotNull PlayerStateCondition condition,
+				                              double priority) {
 					Objects.requireNonNull(condition, "condition == null");
 					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
 					if (!states.containsKey(Objects.requireNonNull(state, "state == null")))
 						throw new NoSuchElementException("No state with ID " + state + " exists");
 					if (parent.equals(state)) return; // does nothing
-					branchAdditions.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new AddBranch(condition, state, priority));
+					connections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Connect(condition, state, priority));
 				}
 
-				@Override public void removeBranch(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @Nullable Double priority) {
+				@Override public void disconnect(@NotNull ResourceLocation parent, @NotNull ResourceLocation state, @Nullable Double priority) {
 					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
 					if (!states.containsKey(Objects.requireNonNull(state, "state == null")))
 						throw new NoSuchElementException("No state with ID " + state + " exists");
 					if (parent.equals(state)) return; // does nothing
-					branchRemovals.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new RemoveBranch(state, priority));
+					disconnections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Disconnect(state, priority));
 				}
 
 				@Override public void setFallback(@NotNull ResourceLocation parent, @Nullable ResourceLocation fallback, double priority) {
@@ -281,19 +280,19 @@ public final class PlayerStateMapLoader {
 					if (parent.equals(fallback))
 						throw new IllegalArgumentException("Trying to set itself as fallback state");
 
-					List<PluginAction<MovementPlugin, SetFallbackBranch>> branchList = fallbackBranches.computeIfAbsent(parent, $ -> new ArrayList<>());
-					if (!branchList.isEmpty()) {
-						double p = branchList.get(0).action().priority();
+					List<PluginAction<MovementPlugin, SetFallbackConnection>> connections = fallbacks.computeIfAbsent(parent, $ -> new ArrayList<>());
+					if (!connections.isEmpty()) {
+						double p = connections.get(0).action().priority();
 						if (p > priority) return;
-						if (p < priority) branchList.clear();
+						if (p < priority) connections.clear();
 					}
-					branchList.add(new PluginAction<>(plugin, new SetFallbackBranch(parent, fallback, priority)));
+					connections.add(new PluginAction<>(plugin, new SetFallbackConnection(parent, fallback, priority)));
 				}
 			});
 		}
 
-		for (var e : fallbackBranches.entrySet()) {
-			List<PluginAction<MovementPlugin, SetFallbackBranch>> list = e.getValue();
+		for (var e : fallbacks.entrySet()) {
+			List<PluginAction<MovementPlugin, SetFallbackConnection>> list = e.getValue();
 
 			if (list.size() <= 1) continue;
 
@@ -334,12 +333,12 @@ public final class PlayerStateMapLoader {
 			}
 		}
 
-		for (var e : branchAdditions.entrySet()) {
-			@Nullable List<RemoveBranch> removals = branchRemovals.get(e.getKey());
-			List<AddBranch> list = e.getValue();
-			if (removals != null) {
+		for (var e : connections.entrySet()) {
+			@Nullable List<Disconnect> disconnect = disconnections.get(e.getKey());
+			List<Connect> list = e.getValue();
+			if (disconnect != null) {
 				list.removeIf(b -> {
-					for (RemoveBranch r : removals) {
+					for (Disconnect r : disconnect) {
 						if (r.state.equals(b.state) && (r.priority == null || r.priority == b.priority)) {
 							return true;
 						}
@@ -347,14 +346,14 @@ public final class PlayerStateMapLoader {
 					return false;
 				});
 			}
-			list.sort(Comparator.comparingDouble(AddBranch::priority).reversed());
+			list.sort(Comparator.comparingDouble(Connect::priority).reversed());
 			State state = states.get(e.getKey());
-			for (AddBranch b : list) state.branches.add(new Branch(b.condition, b.state));
+			for (Connect c : list) state.connections.add(new Connection(c.condition, c.state));
 		}
 
-		for (var e : fallbackBranches.entrySet()) {
+		for (var e : fallbacks.entrySet()) {
 			if (!e.getValue().isEmpty())
-				states.get(e.getKey()).fallbackBranch = e.getValue().get(0).action().fallback();
+				states.get(e.getKey()).fallbackConnection = e.getValue().get(0).action().fallback();
 		}
 	}
 
@@ -364,8 +363,8 @@ public final class PlayerStateMapLoader {
 		final @NotNull Set<@NotNull ResourceLocation> flags = new ObjectOpenHashSet<>();
 		final boolean synthetic;
 
-		final @NotNull List<@NotNull Branch> branches = new ArrayList<>();
-		@Nullable ResourceLocation fallbackBranch;
+		final @NotNull List<@NotNull Connection> connections = new ArrayList<>();
+		@Nullable ResourceLocation fallbackConnection;
 
 		State(@NotNull NewState newState) {
 			this.id = newState.id();
@@ -396,25 +395,25 @@ public final class PlayerStateMapLoader {
 		 * @return List of states visited (if there's a circular loop) or {@code null} if it isn't there
 		 */
 		@Nullable List<State> checkCircularLoop(@NotNull Map<ResourceLocation, State> states) {
-			return switch (circularLoopCheckStatus) {
+			return switch (this.circularLoopCheckStatus) {
 				case UNCHECKED -> {
-					if (this.fallbackBranch == null) {
-						circularLoopCheckStatus = CheckStatus.CHECKED;
+					if (this.fallbackConnection == null) {
+						this.circularLoopCheckStatus = CheckStatus.CHECKED;
 						yield null;
 					}
-					circularLoopCheckStatus = CheckStatus.CHECKING;
-					List<State> circularLoop = states.get(this.fallbackBranch).checkCircularLoop(states);
+					this.circularLoopCheckStatus = CheckStatus.CHECKING;
+					List<State> circularLoop = states.get(this.fallbackConnection).checkCircularLoop(states);
 					if (circularLoop != null) {
 						if (circularLoop.size() <= 1 ||
 								circularLoop.get(circularLoop.size() - 1) != circularLoop.get(0)) {
 							circularLoop.add(this);
 						}
 					}
-					circularLoopCheckStatus = CheckStatus.CHECKED;
+					this.circularLoopCheckStatus = CheckStatus.CHECKED;
 					yield circularLoop;
 				}
 				case CHECKING -> { // a second call to this method while checking = circular loop
-					circularLoopCheckStatus = CheckStatus.CHECKED;
+					this.circularLoopCheckStatus = CheckStatus.CHECKED;
 					ArrayList<State> list = new ArrayList<>();
 					list.add(this);
 					yield list;

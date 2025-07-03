@@ -40,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.ParagliderItemCapability;
+import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
@@ -193,8 +194,8 @@ public final class ParagliderUtils {
 
 		for (var e : connectionMap.connections().entrySet()) {
 			stb.append("\n  ").append(e.getKey());
-			for (PlayerStateConnectionMap.Branch branch : e.getValue().branches()) {
-				stb.append("\n    -> ").append(branch.state());
+			for (PlayerStateConnectionMap.Connection c : e.getValue().connections()) {
+				stb.append("\n    -> ").append(c.state());
 			}
 			if (e.getValue().fallback() != null) {
 				stb.append("\n    fallback: ").append(e.getValue().fallback());
@@ -290,5 +291,9 @@ public final class ParagliderUtils {
 		}
 
 		return canPassThrough;
+	}
+
+	public static boolean canUseParaglider(PlayerStateCondition.Context context) {
+		return context.player().isCreative() || !context.stamina().isDepleted() || context.canDoPanicParagliding();
 	}
 }

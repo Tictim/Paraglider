@@ -40,7 +40,7 @@ public sealed interface MovementPluginAction {
 		}
 	}
 
-	record SetFallbackBranch(
+	record SetFallbackConnection(
 			@NotNull ResourceLocation parent,
 			@Nullable ResourceLocation fallback,
 			double priority
