@@ -1,5 +1,6 @@
 package tictim.paraglider.client;
 
+import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.entity.HumanoidArm;
@@ -24,5 +25,8 @@ public final class ParaglidingArmPose {
 		model.rightArm.zRot = 0;
 		model.leftLeg.xRot = 0f;
 		model.rightLeg.xRot = 0f;
+
+		AnimationUtils.bobModelPart(model.rightArm, entity.ageInTicks, -1f);
+		AnimationUtils.bobModelPart(model.leftArm, entity.ageInTicks, 1f);
 	}
 }
