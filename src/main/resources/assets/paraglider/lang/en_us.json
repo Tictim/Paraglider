@@ -10,6 +10,15 @@
   "advancement.paraglider.statues_bargain": "Statue's Bargain",
   "advancement.paraglider.statues_bargain.desc": "Complete your first bargain",
 
+  "attribute.paraglider.global_stamina_efficiency": "Global Stamina Efficiency",
+  "attribute.paraglider.global_stamina_recovery": "Global Stamina Recovery",
+  "attribute.paraglider.max_stamina": "Max Stamina",
+  "attribute.paraglider.movement_stamina_efficiency": "Stamina Efficiency",
+  "attribute.paraglider.movement_stamina_recovery": "Stamina Recovery",
+  "attribute.paraglider.paragliding_stamina_efficiency": "Paragliding Stamina Efficiency",
+  "attribute.paraglider.running_stamina_efficiency": "Running Stamina Efficiency",
+  "attribute.paraglider.swimming_stamina_efficiency": "Swimming Stamina Efficiency",
+
   "bargain.dialog.goddess_statue.failure.fallback.0": "I can't do that.",
   "bargain.dialog.goddess_statue.failure.full.0": "Increasing your power any further may destroy you.",
   "bargain.dialog.goddess_statue.failure.heart_full.0": "Your being overflows with life force.",

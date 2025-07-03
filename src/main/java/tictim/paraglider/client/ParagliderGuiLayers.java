@@ -62,8 +62,8 @@ public final class ParagliderGuiLayers {
 		});
 	}
 
-	private static final DecimalFormat STAMINA = new DecimalFormat("0.#");
-	private static final DecimalFormat WIND_HEIGHT = new DecimalFormat("0.00");
+	private static final DecimalFormat D1 = new DecimalFormat("0.0");
+	private static final DecimalFormat D2 = new DecimalFormat("0.00");
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final DecimalFormat PERCENTAGE_SIGNED = new DecimalFormat("+#.#%;-#.#%");
 
@@ -85,31 +85,28 @@ public final class ParagliderGuiLayers {
 		}
 		consumer.accept("Recovery Delay: " + state.recoveryDelay());
 		if (state.hasFlag(ParagliderPlayerStates.Flags.ASCENDING)) {
-			consumer.accept("Wind height above: " + WIND_HEIGHT.format(Wind.getWindAbove(p.level(), p.getBoundingBox())));
+			consumer.accept("Wind height above: " + D2.format(Wind.getWindAbove(p.level(), p.getBoundingBox())));
 		}
 
 		String staminaText = (stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +
-				STAMINA.format(stamina.stamina()) + " / " + STAMINA.format(stamina.maxStamina());
-		if(stamina.extraStamina()>0){
-			staminaText += " + "+stamina.extraStamina();
+				D1.format(stamina.stamina()) + " / " + D1.format(stamina.maxStamina());
+		if (stamina.extraStamina() > 0) {
+			staminaText += " + " + stamina.extraStamina();
 		}
 		consumer.accept(staminaText);
 
 		StringBuilder stb = new StringBuilder().append("Stamina Delta: ");
+		stb.append(D1.format(staminaDelta));
 
 		double baseStaminaDelta = state.staminaDelta();
 		if (baseStaminaDelta != staminaDelta) {
-			stb.append(STAMINA.format(baseStaminaDelta));
-			double diff = staminaDelta - baseStaminaDelta;
-			if (diff > 0) stb.append("+");
-			stb.append(STAMINA.format(diff));
-		} else {
-			stb.append(STAMINA.format(staminaDelta));
+			double diff = (staminaDelta - baseStaminaDelta) / baseStaminaDelta;
+			stb.append(" (").append(PERCENTAGE_SIGNED.format(diff)).append(")");
 		}
 
 		if (movement instanceof ClientPlayerMovement cpm) {
 			double efficiency = cpm.staminaEfficiency();
-			if (efficiency != 0) stb.append(" (").append(PERCENTAGE_SIGNED.format(efficiency));
+			if (efficiency != 0) stb.append(" E: ").append(D2.format(efficiency));
 		}
 
 		consumer.accept(stb.toString());

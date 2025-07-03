@@ -152,8 +152,7 @@ public interface ParagliderPlayerStates {
 		ResourceLocation IS_SPRINTING = ParagliderAPI.id("is_sprinting");
 
 		/**
-		 * No inherent functionality.States with this flag are eligible for stamina efficiency effect applied by
-		 * {@code paraglider:paragliding_stamina_efficiency} attribute. Used by {@link ParagliderPlayerStates#SWIMMING},
+		 * No inherent functionality. Used by {@link ParagliderPlayerStates#SWIMMING},
 		 * {@link ParagliderPlayerStates#UNDERWATER}, and {@link ParagliderPlayerStates#BREATHING_UNDERWATER}.
 		 */
 		ResourceLocation IS_UNDERWATER = ParagliderAPI.id("is_underwater");

@@ -95,23 +95,21 @@ public class Contents {
 			id -> new HornedStatueBlock(statueBlock(id)));
 
 	public final DeferredHolder<Attribute, Attribute> maxStamina = attributes.register("max_stamina",
-			() -> new RangedAttribute("attribute.name.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
-	public final DeferredHolder<Attribute, Attribute> staminaEfficiency = attributes.register("stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.stamina_efficiency"));
-	public final DeferredHolder<Attribute, Attribute> staminaRecovery = attributes.register("stamina_recovery",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.stamina_recovery"));
+			() -> new RangedAttribute("attribute.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
+	public final DeferredHolder<Attribute, Attribute> globalStaminaEfficiency = attributes.register("global_stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.global_stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> globalStaminaRecovery = attributes.register("global_stamina_recovery",
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.global_stamina_recovery"));
 	public final DeferredHolder<Attribute, Attribute> movementStaminaEfficiency = attributes.register("movement_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.movement_stamina_efficiency"));
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.movement_stamina_efficiency"));
 	public final DeferredHolder<Attribute, Attribute> movementStaminaRecovery = attributes.register("movement_stamina_recovery",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.movement_stamina_recovery"));
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.movement_stamina_recovery"));
 	public final DeferredHolder<Attribute, Attribute> paraglidingStaminaEfficiency = attributes.register("paragliding_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.paragliding_stamina_efficiency"));
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.paragliding_stamina_efficiency"));
 	public final DeferredHolder<Attribute, Attribute> runningStaminaEfficiency = attributes.register("running_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.running_stamina_efficiency"));
-	public final DeferredHolder<Attribute, Attribute> underwaterStaminaEfficiency = attributes.register("underwater_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.underwater_stamina_efficiency"));
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.running_stamina_efficiency"));
 	public final DeferredHolder<Attribute, Attribute> swimmingStaminaEfficiency = attributes.register("swimming_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.name.paraglider.swimming_stamina_efficiency"));
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.swimming_stamina_efficiency"));
 
 	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<RestoreStaminaConsumeEffect>> restoreStaminaConsumeEffectType =
 			consumeEffectTypes.register("restore_stamina", () -> RestoreStaminaConsumeEffect.TYPE);
@@ -359,11 +357,11 @@ public class Contents {
 	public @NotNull Holder<Attribute> maxStamina() {
 		return maxStamina;
 	}
-	public @NotNull Holder<Attribute> staminaEfficiency() {
-		return staminaEfficiency;
+	public @NotNull Holder<Attribute> globalStaminaEfficiency() {
+		return globalStaminaEfficiency;
 	}
-	public @NotNull Holder<Attribute> staminaRecovery() {
-		return staminaRecovery;
+	public @NotNull Holder<Attribute> globalStaminaRecovery() {
+		return globalStaminaRecovery;
 	}
 	public @NotNull Holder<Attribute> movementStaminaEfficiency() {
 		return movementStaminaEfficiency;
@@ -376,9 +374,6 @@ public class Contents {
 	}
 	public @NotNull Holder<Attribute> runningStaminaEfficiency() {
 		return runningStaminaEfficiency;
-	}
-	public @NotNull Holder<Attribute> underwaterStaminaEfficiency() {
-		return underwaterStaminaEfficiency;
 	}
 	public @NotNull Holder<Attribute> swimmingStaminaEfficiency() {
 		return swimmingStaminaEfficiency;
