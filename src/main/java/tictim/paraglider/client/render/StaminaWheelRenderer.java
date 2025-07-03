@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -196,8 +197,9 @@ public abstract class StaminaWheelRenderer {
 		pose.translate(x, y, 0);
 		pose.scale(.5f, .5f, 1);
 
-		guiGraphics.drawString(font, Component.literal(text).setStyle(SMALL_NUMBER_STYLE),
-				alignRight ? -font.width(text) : 0, -FONT_HEIGHT / 2, color);
+		MutableComponent component = Component.literal(text).setStyle(SMALL_NUMBER_STYLE);
+		guiGraphics.drawString(font, component,
+				alignRight ? -font.width(component) : 0, -FONT_HEIGHT / 2, color);
 
 		pose.popPose();
 	}
