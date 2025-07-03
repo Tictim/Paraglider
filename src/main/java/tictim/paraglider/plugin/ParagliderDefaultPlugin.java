@@ -64,10 +64,8 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 
 	@Override public void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {
 		Contents contents = Contents.get();
-		register.registerAttribute(contents::globalStaminaEfficiency, (d, c, p) -> d < 0);
-		register.registerAttribute(contents::globalStaminaRecovery, (d, c, p) -> d > 0);
-		register.registerAttribute(contents::movementStaminaEfficiency, (d, c, p) -> d < 0 && c.state() != null);
-		register.registerAttribute(contents::movementStaminaRecovery, (d, c, p) -> d > 0 && c.state() != null);
+		register.registerAttribute(contents::staminaEfficiency, (d, c, p) -> d < 0 && c.state() != null);
+		register.registerAttribute(contents::staminaRecovery, (d, c, p) -> d > 0 && c.state() != null);
 		register.registerAttribute(contents::paraglidingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateHasFlag(Flags.IS_PARAGLIDING));
 		register.registerAttribute(contents::runningStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(RUNNING));
 		register.registerAttribute(contents::swimmingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(SWIMMING));

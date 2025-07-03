@@ -10,11 +10,9 @@
   "advancement.paraglider.statues_bargain": "Statue's Bargain",
   "advancement.paraglider.statues_bargain.desc": "Complete your first bargain",
 
-  "attribute.paraglider.global_stamina_efficiency": "Global Stamina Efficiency",
-  "attribute.paraglider.global_stamina_recovery": "Global Stamina Recovery",
   "attribute.paraglider.max_stamina": "Max Stamina",
-  "attribute.paraglider.movement_stamina_efficiency": "Stamina Efficiency",
-  "attribute.paraglider.movement_stamina_recovery": "Stamina Recovery",
+  "attribute.paraglider.stamina_efficiency": "Stamina Efficiency",
+  "attribute.paraglider.stamina_recovery": "Stamina Recovery",
   "attribute.paraglider.paragliding_stamina_efficiency": "Paragliding Stamina Efficiency",
   "attribute.paraglider.running_stamina_efficiency": "Running Stamina Efficiency",
   "attribute.paraglider.swimming_stamina_efficiency": "Swimming Stamina Efficiency",

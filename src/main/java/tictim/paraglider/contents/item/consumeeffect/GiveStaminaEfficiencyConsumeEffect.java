@@ -33,6 +33,6 @@ public record GiveStaminaEfficiencyConsumeEffect(
 	}
 
 	@Override public boolean apply(@NotNull Level level, @NotNull ItemStack stack, @NotNull LivingEntity entity) {
-		return entity.addEffect(new MobEffectInstance(Contents.get().staminaEfficiency, this.duration, this.level));
+		return entity.addEffect(new MobEffectInstance(Contents.get().staminaEfficiencyEffect, this.duration, this.level));
 	}
 }

@@ -11,7 +11,7 @@ public class StaminaEfficiencyMobEffect extends MobEffect {
 
 	public StaminaEfficiencyMobEffect() {
 		super(MobEffectCategory.BENEFICIAL, 0xff00df53);
-		addAttributeModifier(Contents.get().movementStaminaEfficiency(),
+		addAttributeModifier(Contents.get().staminaEfficiency(),
 				ParagliderAPI.id("stamina_efficiency"),
 				EFFICIENCY_PER_LEVEL,
 				AttributeModifier.Operation.ADD_MULTIPLIED_BASE);

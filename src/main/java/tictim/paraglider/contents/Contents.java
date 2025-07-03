@@ -100,14 +100,10 @@ public class Contents {
 
 	public final DeferredHolder<Attribute, Attribute> maxStamina = attributes.register("max_stamina",
 			() -> new RangedAttribute("attribute.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
-	public final DeferredHolder<Attribute, Attribute> globalStaminaEfficiency = attributes.register("global_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.paraglider.global_stamina_efficiency"));
-	public final DeferredHolder<Attribute, Attribute> globalStaminaRecovery = attributes.register("global_stamina_recovery",
-			() -> new StaminaEfficiencyAttribute("attribute.paraglider.global_stamina_recovery"));
-	public final DeferredHolder<Attribute, Attribute> movementStaminaEfficiency = attributes.register("movement_stamina_efficiency",
-			() -> new StaminaEfficiencyAttribute("attribute.paraglider.movement_stamina_efficiency"));
-	public final DeferredHolder<Attribute, Attribute> movementStaminaRecovery = attributes.register("movement_stamina_recovery",
-			() -> new StaminaEfficiencyAttribute("attribute.paraglider.movement_stamina_recovery"));
+	public final DeferredHolder<Attribute, Attribute> staminaEfficiency = attributes.register("stamina_efficiency",
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.stamina_efficiency"));
+	public final DeferredHolder<Attribute, Attribute> staminaRecovery = attributes.register("stamina_recovery",
+			() -> new StaminaEfficiencyAttribute("attribute.paraglider.stamina_recovery"));
 	public final DeferredHolder<Attribute, Attribute> paraglidingStaminaEfficiency = attributes.register("paragliding_stamina_efficiency",
 			() -> new StaminaEfficiencyAttribute("attribute.paraglider.paragliding_stamina_efficiency"));
 	public final DeferredHolder<Attribute, Attribute> runningStaminaEfficiency = attributes.register("running_stamina_efficiency",
@@ -192,7 +188,7 @@ public class Contents {
 	public final DeferredHolder<LootItemConditionType, LootItemConditionType> spiritOrbLootsConfigCondition = lootConditions.register("config_spirit_orb_loots",
 			() -> new LootItemConditionType(MapCodec.unit(LootConditions.SPIRIT_ORB_LOOTS)));
 
-	public final DeferredHolder<MobEffect, MobEffect> staminaEfficiency = mobEffects.register("stamina_efficiency", StaminaEfficiencyMobEffect::new);
+	public final DeferredHolder<MobEffect, MobEffect> staminaEfficiencyEffect = mobEffects.register("stamina_efficiency", StaminaEfficiencyMobEffect::new);
 
 	public final DeferredHolder<StructureType<?>, StructureType<TarreyTownGoddessStatue>> tarreyTownGoddessStatue = structureType("tarrey_town_goddess_statue", TarreyTownGoddessStatue.CODEC);
 	public final DeferredHolder<StructureType<?>, StructureType<NetherHornedStatue>> netherHornedStatue = structureType("nether_horned_statue", NetherHornedStatue.CODEC);
@@ -370,17 +366,11 @@ public class Contents {
 	public @NotNull Holder<Attribute> maxStamina() {
 		return maxStamina;
 	}
-	public @NotNull Holder<Attribute> globalStaminaEfficiency() {
-		return globalStaminaEfficiency;
+	public @NotNull Holder<Attribute> staminaEfficiency() {
+		return staminaEfficiency;
 	}
-	public @NotNull Holder<Attribute> globalStaminaRecovery() {
-		return globalStaminaRecovery;
-	}
-	public @NotNull Holder<Attribute> movementStaminaEfficiency() {
-		return movementStaminaEfficiency;
-	}
-	public @NotNull Holder<Attribute> movementStaminaRecovery() {
-		return movementStaminaRecovery;
+	public @NotNull Holder<Attribute> staminaRecovery() {
+		return staminaRecovery;
 	}
 	public @NotNull Holder<Attribute> paraglidingStaminaEfficiency() {
 		return paraglidingStaminaEfficiency;

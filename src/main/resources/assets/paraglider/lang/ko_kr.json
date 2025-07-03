@@ -10,11 +10,9 @@
   "advancement.paraglider.statues_bargain": "그릇의 조종자",
   "advancement.paraglider.statues_bargain.desc": "첫 번째 거래를 완료하세요",
 
-  "attribute.paraglider.global_stamina_efficiency": "모든 종류 스태미나 효율",
-  "attribute.paraglider.global_stamina_recovery": "모든 종류 스태미나 회복",
   "attribute.paraglider.max_stamina": "최대 스태미나",
-  "attribute.paraglider.movement_stamina_efficiency": "스태미나 효율",
-  "attribute.paraglider.movement_stamina_recovery": "스태미나 회복",
+  "attribute.paraglider.stamina_efficiency": "스태미나 효율",
+  "attribute.paraglider.stamina_recovery": "스태미나 회복",
   "attribute.paraglider.paragliding_stamina_efficiency": "패러세일 스태미나 효율",
   "attribute.paraglider.running_stamina_efficiency": "달리기 스태미나 효율",
   "attribute.paraglider.swimming_stamina_efficiency": "수영 스태미나 효율",

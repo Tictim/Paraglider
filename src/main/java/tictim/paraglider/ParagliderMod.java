@@ -119,10 +119,8 @@ public class ParagliderMod {
 
 		eventBus.addListener((EntityAttributeModificationEvent event) -> {
 			event.add(EntityType.PLAYER, this.contents.maxStamina());
-			event.add(EntityType.PLAYER, this.contents.globalStaminaEfficiency());
-			event.add(EntityType.PLAYER, this.contents.globalStaminaRecovery());
-			event.add(EntityType.PLAYER, this.contents.movementStaminaEfficiency());
-			event.add(EntityType.PLAYER, this.contents.movementStaminaRecovery());
+			event.add(EntityType.PLAYER, this.contents.staminaEfficiency());
+			event.add(EntityType.PLAYER, this.contents.staminaRecovery());
 			event.add(EntityType.PLAYER, this.contents.paraglidingStaminaEfficiency());
 			event.add(EntityType.PLAYER, this.contents.runningStaminaEfficiency());
 			event.add(EntityType.PLAYER, this.contents.swimmingStaminaEfficiency());
