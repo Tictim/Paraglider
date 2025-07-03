@@ -21,9 +21,11 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 	private final StaminaWheelAnimationTracker outerWheelFillAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_FILL_DURATION);
 	private final StaminaWheelAnimationTracker outerWheelEmptyAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_EMPTY_DURATION);
 	private final StaminaWheelAnimationTracker recoverAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
+	private final StaminaWheelAnimationTracker gainExtraStaminaAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
 
 	private boolean prevDepleted;
 	private int prevWheelIndex = -1;
+	private double prevExtraStamina;
 
 	public InGameStaminaWheelRenderer() {
 		reset();
@@ -43,14 +45,17 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		boolean full = stamina >= maxStamina;
 		int wheelIndex = (int)Math.ceil(this.mainWheel.staminaWheelPos());
+		boolean gainedExtraStamina = !this.gainExtraStaminaAnim.isActive() && this.prevExtraStamina < extraStamina;
 
-		this.fullAnim.update(full);
+		this.fullAnim.update(full ? gainedExtraStamina ? SET_ACTIVE : RETAIN_ACTIVE : SET_INACTIVE);
 		this.outerWheelFillAnim.update(full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
 		this.outerWheelEmptyAnim.update(full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
 		this.recoverAnim.update(full ? SET_INACTIVE : this.prevDepleted && !s.isDepleted() ? SET_ACTIVE : RETAIN);
+		this.gainExtraStaminaAnim.update(gainedExtraStamina ? SET_ACTIVE : RETAIN);
 
 		this.prevWheelIndex = wheelIndex;
 		this.prevDepleted = s.isDepleted();
+		if (!this.gainExtraStaminaAnim.isActive()) this.prevExtraStamina = extraStamina;
 
 		double staminaDeltaHighlightRemaining = 0;
 		int blinkColor = 0;
@@ -90,6 +95,12 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		if (extraStamina > 0) {
 			int extraWheelColor = this.fullAnim.getFadeColor(EXTRA);
 			this.extraWheel.fillStamina(0, extraStamina, extraWheelColor);
+
+			if (this.gainExtraStaminaAnim.isActive()) {
+				extraWheelColor = this.fullAnim.getFadeColor(this.gainExtraStaminaAnim.getGlowColor(EXTRA));
+				this.extraWheel.fillStamina(this.prevExtraStamina, extraStamina, extraWheelColor);
+			}
+
 			float staminaEndWheePos = toWheelPos(extraStamina);
 			this.extraWheel.fillWheel(staminaEndWheePos, (float)Math.ceil(staminaEndWheePos), EMPTY);
 			this.extraWheel.setExtraWheelIndicatorColor(extraWheelColor);
@@ -105,6 +116,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		debugAnim("outerWheelFill", this.outerWheelFillAnim);
 		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
 		debugAnim("recoverAnim", this.recoverAnim);
+		debugAnim("gainExtraStamina", this.gainExtraStaminaAnim);
 	}
 
 	private void makeOuterWheel(Wheel wheel) {
@@ -160,8 +172,10 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.outerWheelFillAnim.reset();
 		this.outerWheelEmptyAnim.reset();
 		this.recoverAnim.reset();
+		this.gainExtraStaminaAnim.reset();
 
 		this.prevDepleted = false;
 		this.prevWheelIndex = -1;
+		this.prevExtraStamina = 0;
 	}
 }
