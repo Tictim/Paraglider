@@ -100,6 +100,8 @@
   "commands.paraglider.take.stamina_vessel.fail": "Failed to take %2$s Stamina Vessels from %1$s.",
   "commands.paraglider.take.stamina_vessel.success": "Took %2$s Stamina Vessels from %1$s.",
 
+  "effect.paraglider.stamina_efficiency": "Stamina Efficiency",
+
   "item.paraglider.anti_vessel": "Anti-Vessel",
   "item.paraglider.deku_leaf": "Deku Leaf",
   "item.paraglider.enduring_elixir_1": "Enduring Elixir",
@@ -199,6 +201,7 @@
   "tooltip.paraglider.anti_vessel.1": "§5§k§oasdfasdfasdfas dfasdfasdfasfd sfn §c§k§o가나다§5§k§ofdadff§r",
   "tooltip.paraglider.essence.0": "Vessel lost form",
   "tooltip.paraglider.give_extra_stamina": "Fully replenish all stamina wheels. Give %s wheel(s) of extra stamina.",
+  "tooltip.paraglider.give_stamina_efficiency": "Stamina usage is %s more efficient for %s seconds.",
   "tooltip.paraglider.goron_goddess_statue.0": "Goron style",
   "tooltip.paraglider.heart_container.1": "Increases maximum health by %s, up to %s times.",
   "tooltip.paraglider.heart_container.1.hearts": "1 heart",

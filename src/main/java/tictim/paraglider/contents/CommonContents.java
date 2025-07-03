@@ -21,13 +21,13 @@ public interface CommonContents {
 				.setId(ResourceKey.create(Registries.ITEM, id));
 	}
 
-	static Item.Properties staminaPotion(ResourceLocation id, ConsumeEffect consumeEffect) {
+	static Item.Properties staminaPotion(ResourceLocation id, ConsumeEffect... consumeEffects) {
+		var consumable = Consumables.defaultDrink().consumeSeconds(0.6F);
+		for (ConsumeEffect e : consumeEffects) consumable.onConsume(e);
+
 		return p(id)
 				.stacksTo(1)
-				.component(DataComponents.CONSUMABLE, Consumables.defaultDrink()
-						.consumeSeconds(0.6F)
-						.onConsume(consumeEffect)
-						.build())
+				.component(DataComponents.CONSUMABLE, consumable.build())
 				.craftRemainder(Items.GLASS_BOTTLE)
 				.usingConvertsTo(Items.GLASS_BOTTLE);
 	}

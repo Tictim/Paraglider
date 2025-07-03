@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
@@ -40,8 +41,10 @@ import tictim.paraglider.contents.block.GoddessStatueBlock;
 import tictim.paraglider.contents.block.HornedStatueBlock;
 import tictim.paraglider.contents.item.*;
 import tictim.paraglider.contents.item.consumeeffect.GiveExtraStaminaConsumeEffect;
+import tictim.paraglider.contents.item.consumeeffect.GiveStaminaEfficiencyConsumeEffect;
 import tictim.paraglider.contents.item.consumeeffect.RestoreStaminaConsumeEffect;
 import tictim.paraglider.contents.loot.*;
+import tictim.paraglider.contents.mobeffect.StaminaEfficiencyMobEffect;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.SimpleBargain;
 import tictim.paraglider.contents.recipe.SimpleBargainSerializer;
@@ -74,6 +77,7 @@ public class Contents {
 	public final DeferredRegister<RecipeType<?>> recipeTypes = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
 	public final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> loots = DeferredRegister.create(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MODID);
 	public final DeferredRegister<LootItemConditionType> lootConditions = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, MODID);
+	public final DeferredRegister<MobEffect> mobEffects = DeferredRegister.create(Registries.MOB_EFFECT, MODID);
 	public final DeferredRegister<StructureType<?>> structureTypes = DeferredRegister.create(Registries.STRUCTURE_TYPE, MODID);
 	public final DeferredRegister<StructurePieceType> pieces = DeferredRegister.create(Registries.STRUCTURE_PIECE, MODID);
 	public final DeferredRegister<CreativeModeTab> creativeTabs = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
@@ -115,6 +119,8 @@ public class Contents {
 			consumeEffectTypes.register("restore_stamina", () -> RestoreStaminaConsumeEffect.TYPE);
 	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<GiveExtraStaminaConsumeEffect>> giveExtraStaminaConsumeEffectType =
 			consumeEffectTypes.register("give_extra_stamina", () -> GiveExtraStaminaConsumeEffect.TYPE);
+	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<GiveStaminaEfficiencyConsumeEffect>> giveStaminaEfficiency =
+			consumeEffectTypes.register("give_stamina_efficiency", () -> GiveStaminaEfficiencyConsumeEffect.TYPE);
 
 	public final DeferredHolder<DataComponentType<?>, DataComponentType<ParaglidingFlag>> paraglidingFlagComponent = dataComponents.register("paragliding",
 			() -> DataComponentType.<ParaglidingFlag>builder()
@@ -139,9 +145,13 @@ public class Contents {
 	public final DeferredHolder<Item, Item> energizingElixir1 = items.register("energizing_elixir_1",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(1000))));
 	public final DeferredHolder<Item, Item> energizingElixir2 = items.register("energizing_elixir_2",
-			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(2000))));
+			id -> new Item(staminaPotion(id,
+					new RestoreStaminaConsumeEffect(2000),
+					new GiveStaminaEfficiencyConsumeEffect(0, 60 * 20))));
 	public final DeferredHolder<Item, Item> energizingElixir3 = items.register("energizing_elixir_3",
-			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(3000))));
+			id -> new Item(staminaPotion(id,
+					new RestoreStaminaConsumeEffect(3000),
+					new GiveStaminaEfficiencyConsumeEffect(1, 120 * 20))));
 	public final DeferredHolder<Item, Item> enduringElixir1 = items.register("enduring_elixir_1",
 			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(500))));
 	public final DeferredHolder<Item, Item> enduringElixir2 = items.register("enduring_elixir_2",
@@ -181,6 +191,8 @@ public class Contents {
 			() -> new LootItemConditionType(MapCodec.unit(LootConditions.WITHER_DROPS_VESSEL)));
 	public final DeferredHolder<LootItemConditionType, LootItemConditionType> spiritOrbLootsConfigCondition = lootConditions.register("config_spirit_orb_loots",
 			() -> new LootItemConditionType(MapCodec.unit(LootConditions.SPIRIT_ORB_LOOTS)));
+
+	public final DeferredHolder<MobEffect, MobEffect> staminaEfficiency = mobEffects.register("stamina_efficiency", StaminaEfficiencyMobEffect::new);
 
 	public final DeferredHolder<StructureType<?>, StructureType<TarreyTownGoddessStatue>> tarreyTownGoddessStatue = structureType("tarrey_town_goddess_statue", TarreyTownGoddessStatue.CODEC);
 	public final DeferredHolder<StructureType<?>, StructureType<NetherHornedStatue>> netherHornedStatue = structureType("nether_horned_statue", NetherHornedStatue.CODEC);
@@ -264,6 +276,7 @@ public class Contents {
 		this.dataComponents.register(eventBus);
 		this.loots.register(eventBus);
 		this.lootConditions.register(eventBus);
+		this.mobEffects.register(eventBus);
 		this.recipeSerializers.register(eventBus);
 		this.recipeTypes.register(eventBus);
 		this.structureTypes.register(eventBus);

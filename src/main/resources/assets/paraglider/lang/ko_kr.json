@@ -10,6 +10,15 @@
   "advancement.paraglider.statues_bargain": "그릇의 조종자",
   "advancement.paraglider.statues_bargain.desc": "첫 번째 거래를 완료하세요",
 
+  "attribute.paraglider.global_stamina_efficiency": "모든 종류 스태미나 효율",
+  "attribute.paraglider.global_stamina_recovery": "모든 종류 스태미나 회복",
+  "attribute.paraglider.max_stamina": "최대 스태미나",
+  "attribute.paraglider.movement_stamina_efficiency": "스태미나 효율",
+  "attribute.paraglider.movement_stamina_recovery": "스태미나 회복",
+  "attribute.paraglider.paragliding_stamina_efficiency": "패러세일 스태미나 효율",
+  "attribute.paraglider.running_stamina_efficiency": "달리기 스태미나 효율",
+  "attribute.paraglider.swimming_stamina_efficiency": "수영 스태미나 효율",
+
   "bargain.dialog.goddess_statue.failure.fallback.0": "그것은 해 드릴 수 없습니다.",
   "bargain.dialog.goddess_statue.failure.full.0": "더 이상의 힘을 바라서는 안 됩니다.",
   "bargain.dialog.goddess_statue.failure.heart_full.0": "지금 당신의 생명력은 흘러넘치고 있습니다.",
@@ -89,6 +98,8 @@
   "commands.paraglider.take.stamina_vessel.fail": "%1$s에게서 스태미나의 그릇 %2$s개를 제거하는 데 실패했습니다.",
   "commands.paraglider.take.stamina_vessel.success": "%1$s에게서 스태미나의 그릇 %2$s개를 제거했습니다.",
 
+  "effect.paraglider.stamina_efficiency": "스태미나 효율",
+
   "item.paraglider.anti_vessel": "반물질 그릇",
   "item.paraglider.deku_leaf": "데크나무 잎",
   "item.paraglider.enduring_elixir_1": "스태미나 물약",
@@ -136,14 +147,15 @@
 
   "tooltip.paraglider.anti_vessel.0": "소모한 모든 생명과 스태미나의 그릇을 아이템으로 돌려줍니다.",
   "tooltip.paraglider.essence.0": "형태 잃은 그릇",
-  "tooltip.paraglider.give_extra_stamina": "스태미나를 최대치까지 회복합니다. 추가 스태미나를 %s 바퀴만큼 부여합니다.",
+  "tooltip.paraglider.give_extra_stamina": "스태미나를 최대치까지 회복합니다. 추가 스태미나를 %s바퀴만큼 부여합니다.",
+  "tooltip.paraglider.give_stamina_efficiency": "%2$s초 동안 스태미나 사용이 %1$s 더 효율적입니다.",
   "tooltip.paraglider.goron_goddess_statue.0": "고론 스타일",
   "tooltip.paraglider.heart_container.1": "최대 생명력을 %s만큼, 최대 %s번까지 올립니다.",
   "tooltip.paraglider.heart_container.1.hearts": "하트 1개",
   "tooltip.paraglider.horned_statue.0": "저주받음",
   "tooltip.paraglider.kakariko_goddess_statue.0": "카카리코 스타일",
   "tooltip.paraglider.paraglider_broken": "고장남",
-  "tooltip.paraglider.restore_stamina": "스태미나를 %s 바퀴만큼 회복합니다.",
+  "tooltip.paraglider.restore_stamina": "스태미나를 %s바퀴만큼 회복합니다.",
   "tooltip.paraglider.rito_goddess_statue.0": "리토 스타일",
   "tooltip.paraglider.stamina_vessel.1": "스태미나를 최대 %s번까지 올립니다."
 }
