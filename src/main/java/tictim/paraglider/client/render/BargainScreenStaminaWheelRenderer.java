@@ -7,13 +7,13 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.stamina.Stamina;
 
-import static tictim.paraglider.client.render.StaminaWheelAnimationTracker.UpdateMode.*;
+import static tictim.paraglider.client.render.EffectTimer.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
-	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
-	private final StaminaWheelAnimationTracker outerWheelFillAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_FILL_DURATION);
-	private final StaminaWheelAnimationTracker outerWheelEmptyAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_EMPTY_DURATION);
+	private final EffectTimer fullAnim = new EffectTimer();
+	private final EffectTimer outerWheelFillAnim = new EffectTimer(OUTER_WHEEL_FILL_DURATION);
+	private final EffectTimer outerWheelEmptyAnim = new EffectTimer(OUTER_WHEEL_EMPTY_DURATION);
 
 	private double stamina;
 	private double maxStamina, prevMaxStamina;

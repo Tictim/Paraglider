@@ -42,7 +42,7 @@ public abstract class StaminaWheelRenderer {
 	protected final Wheel extraWheel = new Wheel();
 
 	private boolean debug;
-	private @Nullable List<StaminaWheelAnimationTracker> debugAnims;
+	private @Nullable List<EffectTimer> debugAnims;
 	private @Nullable List<String> debugAnimNames;
 	private @Nullable FloatList debugVertices; // xy
 
@@ -73,7 +73,7 @@ public abstract class StaminaWheelRenderer {
 		return DebugCfg.get().debugPlayerMovement() && player.getOffhandItem().is(ParagliderTags.PARAGLIDERS);
 	}
 
-	protected void debugAnim(String name, StaminaWheelAnimationTracker anim) {
+	protected void debugAnim(String name, EffectTimer anim) {
 		if (!this.debug) return;
 		if (this.debugAnims == null) this.debugAnims = new ArrayList<>();
 		if (this.debugAnimNames == null) this.debugAnimNames = new ArrayList<>();
@@ -92,7 +92,7 @@ public abstract class StaminaWheelRenderer {
 			if (this.debugAnimNames != null && this.debugAnims != null) {
 				for (int i = 0; i < this.debugAnimNames.size(); i++) {
 					String name = this.debugAnimNames.get(i);
-					StaminaWheelAnimationTracker anim = this.debugAnims.get(i);
+					EffectTimer anim = this.debugAnims.get(i);
 
 					guiGraphics.drawString(font,
 							name + ": " + (anim.isActive() ? "active " + anim.activeDuration() : "inactive"),

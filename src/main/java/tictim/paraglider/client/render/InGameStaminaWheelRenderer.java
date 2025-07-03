@@ -7,7 +7,7 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 
 import static tictim.paraglider.ParagliderUtils.ms;
-import static tictim.paraglider.client.render.StaminaWheelAnimationTracker.UpdateMode.*;
+import static tictim.paraglider.client.render.EffectTimer.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
@@ -17,11 +17,11 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		return instance;
 	}
 
-	private final StaminaWheelAnimationTracker fullAnim = new StaminaWheelAnimationTracker();
-	private final StaminaWheelAnimationTracker outerWheelFillAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_FILL_DURATION);
-	private final StaminaWheelAnimationTracker outerWheelEmptyAnim = new StaminaWheelAnimationTracker(OUTER_WHEEL_EMPTY_DURATION);
-	private final StaminaWheelAnimationTracker recoverAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
-	private final StaminaWheelAnimationTracker gainExtraStaminaAnim = new StaminaWheelAnimationTracker(GLOW_FADE_END);
+	private final EffectTimer fullAnim = new EffectTimer();
+	private final EffectTimer outerWheelFillAnim = new EffectTimer(OUTER_WHEEL_FILL_DURATION);
+	private final EffectTimer outerWheelEmptyAnim = new EffectTimer(OUTER_WHEEL_EMPTY_DURATION);
+	private final EffectTimer recoverAnim = new EffectTimer(GLOW_FADE_END);
+	private final EffectTimer gainExtraStaminaAnim = new EffectTimer(GLOW_FADE_END);
 
 	private boolean prevDepleted;
 	private int prevWheelIndex = -1;

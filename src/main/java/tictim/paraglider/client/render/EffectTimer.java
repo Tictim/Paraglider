@@ -4,17 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 import static tictim.paraglider.ParagliderUtils.ms;
 
-public class StaminaWheelAnimationTracker {
+public class EffectTimer {
 	private final long finishAt;
 
 	private boolean active;
 	private long activeTime;
 	private long activeDuration;
 
-	public StaminaWheelAnimationTracker(long finishAt) {
+	public EffectTimer(long finishAt) {
 		this.finishAt = finishAt;
 	}
-	public StaminaWheelAnimationTracker() {
+	public EffectTimer() {
 		this(-1);
 	}
 
