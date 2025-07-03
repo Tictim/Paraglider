@@ -51,7 +51,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 			if (c.player().onGround()) return false;
 			if (!ParagliderUtils.canUseParaglider(c)) return false;
 			ItemStack stack = c.player().getMainHandItem();
-			return stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).canDoParagliding(stack);
+			return stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).canDoParagliding(c.player(), stack);
 		}, PARAGLIDING_PRIORITY);
 
 		register.connect(PARAGLIDING, PANIC_PARAGLIDING, c -> c.accumulatedFallDistance() >= PARAGLIDING_FALL_DISTANCE && c.stamina().isDepleted());

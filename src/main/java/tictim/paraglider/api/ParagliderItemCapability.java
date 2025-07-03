@@ -8,8 +8,9 @@ import tictim.paraglider.impl.DefaultParagliderItemCapability;
 
 /**
  * <p>
- * Optional capability type for paraglider items. Note that this does not inherently give items functionality; the main
- * functionality is handled by item tag {@code paraglider:paragliders}.
+ * Optional capability for paraglider items. Note that this does not give items functionality of a paraglider by itself;
+ * whether an item is paraglider or not, is decided via item tag
+ * {@link ParagliderAPI#PARAGLIDERS paraglider:paragliders}.
  * </p>
  * <p>
  * You can attach a custom capability on your paraglider item to alter some of its behavior. If there's no capabilities,
@@ -28,12 +29,13 @@ public interface ParagliderItemCapability {
 	}
 
 	/**
-	 * Checks if the stack can perform paragliding. Note that this value is called
+	 * Checks if the stack can perform paragliding. Used only on server side.
 	 *
-	 * @param stack Item stack
+	 * @param player Player
+	 * @param stack  Item stack
 	 * @return Whether the stack can perform paragliding
 	 */
-	boolean canDoParagliding(@NotNull ItemStack stack);
+	boolean canDoParagliding(@NotNull Player player, @NotNull ItemStack stack);
 
 	/**
 	 * Checks if the paraglider is deployed, i.e. "paragliding". This method is used on client side, and the value set

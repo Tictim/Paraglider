@@ -1,7 +1,10 @@
 package tictim.paraglider.api;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,11 +17,25 @@ import tictim.paraglider.api.vessel.VesselContainer;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static net.minecraft.core.registries.Registries.BLOCK;
+import static net.minecraft.core.registries.Registries.ITEM;
+
 /**
  * Mod ID and a bunch of internal part of paraglider mod's API.
  */
 public class ParagliderAPI {
 	public static final String MODID = "paraglider";
+
+	/**
+	 * Item tag used for checking whether the item is paraglider.
+	 */
+	public static final TagKey<Item> PARAGLIDERS = TagKey.create(ITEM, id("paragliders"));
+
+	/**
+	 * Block tag used for marking a block to be skipped on wind placement check, allowing wind to pass through the
+	 * block.
+	 */
+	public static final TagKey<Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
 
 	public static @NotNull ResourceLocation id(@NotNull String path) {
 		return ResourceLocation.fromNamespaceAndPath(MODID, path);

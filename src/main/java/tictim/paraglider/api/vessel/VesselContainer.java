@@ -15,11 +15,10 @@ import tictim.paraglider.api.ParagliderAPI;
  */
 public interface VesselContainer {
 	/**
-	 * Get a vessel container instance bound to specific player; if there's none, a no-op singleton implementation is
-	 * returned.
+	 * Get a vessel container instance bound to the player.
 	 *
 	 * @param player Player
-	 * @return A vessel container instance bound to specific player, or a no-op singleton implementation
+	 * @return A vessel container instance bound to the player
 	 */
 	static @NotNull VesselContainer get(@NotNull Player player) {
 		return ParagliderAPI.vesselContainerSupplier().apply(player);
@@ -39,7 +38,8 @@ public interface VesselContainer {
 	int essence();
 
 	/**
-	 * Attempts to set the amount of Heart Containers equal to {@code amount}. Depending on
+	 * Attempt to set the amount of Heart Containers to {@code amount}. The state is only changed when the return
+	 * value is {@link SetResult#OK}, and {@code simulate == false}.
 	 *
 	 * @param amount     Amount of the Heart Container
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -52,7 +52,8 @@ public interface VesselContainer {
 	@NotNull SetResult setHeartContainer(int amount, boolean simulate, boolean playEffect);
 
 	/**
-	 * Attempts to set the amount of Stamina Vessels equal to {@code amount}. Depending on
+	 * Attempt to set the amount of Stamina Vessels to {@code amount}. The state is only changed when the return
+	 * value is {@link SetResult#OK}, and {@code simulate == false}.
 	 *
 	 * @param amount     Amount of the Stamina Vessel
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -65,7 +66,8 @@ public interface VesselContainer {
 	@NotNull SetResult setStaminaVessel(int amount, boolean simulate, boolean playEffect);
 
 	/**
-	 * Attempts to set the amount of Essences equal to {@code amount}. Depending on
+	 * Attempt to set the amount of Essences to {@code amount}. The state is only changed when the return
+	 * value is {@link SetResult#OK}, and {@code simulate == false}.
 	 *
 	 * @param amount     Amount of the Essence
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -78,7 +80,7 @@ public interface VesselContainer {
 	@NotNull SetResult setEssence(int amount, boolean simulate, boolean playEffect);
 
 	/**
-	 * Attempts to give this container Heart Containers to the maximum amount of {@code amount}.
+	 * Attempt to give this container Heart Containers to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Heart Containers
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -90,7 +92,7 @@ public interface VesselContainer {
 	 */
 	int giveHeartContainers(int amount, boolean simulate, boolean playEffect);
 	/**
-	 * Attempts to give this container Stamina Vessels to the maximum amount of {@code amount}.
+	 * Attempt to give this container Stamina Vessels to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Stamina Vessels
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -102,7 +104,7 @@ public interface VesselContainer {
 	 */
 	int giveStaminaVessels(int amount, boolean simulate, boolean playEffect);
 	/**
-	 * Attempts to give this container Essences to the maximum amount of {@code amount}.
+	 * Attempt to give this container Essences to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Essences
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -115,7 +117,7 @@ public interface VesselContainer {
 	int giveEssences(int amount, boolean simulate, boolean playEffect);
 
 	/**
-	 * Attempts to take away Heart Containers from this container to the maximum amount of {@code amount}.
+	 * Attempt to take away Heart Containers from this container to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Heart Containers
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -127,7 +129,7 @@ public interface VesselContainer {
 	 */
 	int takeHeartContainers(int amount, boolean simulate, boolean playEffect);
 	/**
-	 * Attempts to take away Stamina Vessels from this container to the maximum amount of {@code amount}.
+	 * Attempt to take away Stamina Vessels from this container to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Stamina Vessels
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned
@@ -139,7 +141,7 @@ public interface VesselContainer {
 	 */
 	int takeStaminaVessels(int amount, boolean simulate, boolean playEffect);
 	/**
-	 * Attempts to take away Essences from this container to the maximum amount of {@code amount}.
+	 * Attempt to take away Essences from this container to the maximum amount of {@code amount}.
 	 *
 	 * @param amount     Amount of the Essences
 	 * @param simulate   If {@code true}, the result of the action won't be applied to this container; the returned

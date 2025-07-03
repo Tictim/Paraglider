@@ -34,10 +34,10 @@ public interface Stamina {
 	double STAMINA_PER_WHEEL = 1000;
 
 	/**
-	 * Get a stamina instance bound to specific player.
+	 * Get a stamina instance bound to the player.
 	 *
 	 * @param player Player
-	 * @return A stamina instance bound to specific player
+	 * @return A stamina instance bound to the player
 	 */
 	static @NotNull Stamina get(@NotNull Player player) {
 		return ParagliderAPI.staminaSupplier().apply(player);

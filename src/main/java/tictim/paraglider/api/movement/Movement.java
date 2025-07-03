@@ -10,10 +10,10 @@ import tictim.paraglider.api.ParagliderAPI;
  */
 public interface Movement {
 	/**
-	 * Get a movement instance bound to specific player.
+	 * Get a movement instance bound to the player.
 	 *
 	 * @param player Player
-	 * @return A movement instance bound to specific player
+	 * @return A movement instance bound to the player
 	 */
 	static @NotNull Movement get(@NotNull Player player) {
 		return ParagliderAPI.movementSupplier().apply(player);

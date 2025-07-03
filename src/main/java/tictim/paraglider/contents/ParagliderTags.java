@@ -7,20 +7,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
+import tictim.paraglider.api.ParagliderAPI;
 
 import static net.minecraft.core.registries.Registries.BLOCK;
 import static net.minecraft.core.registries.Registries.ITEM;
 import static tictim.paraglider.api.ParagliderAPI.id;
 
 public interface ParagliderTags {
-	TagKey<Item> PARAGLIDERS = TagKey.create(ITEM, id("paragliders"));
+	TagKey<Item> PARAGLIDERS = ParagliderAPI.PARAGLIDERS;
 	TagKey<Item> STATUES = TagKey.create(ITEM, id("statues"));
 	TagKey<Item> STATUES_GODDESS = TagKey.create(ITEM, id("statues/goddess"));
 
 	interface Blocks {
 		TagKey<Block> STATUES = TagKey.create(BLOCK, id("statues"));
 		TagKey<Block> STATUES_GODDESS = TagKey.create(BLOCK, id("statues/goddess"));
-		TagKey<Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
+		TagKey<Block> WIND_CAN_PASS_THROUGH = ParagliderAPI.WIND_CAN_PASS_THROUGH;
 	}
 
 	interface Biomes {

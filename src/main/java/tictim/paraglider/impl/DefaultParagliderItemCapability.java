@@ -10,7 +10,7 @@ import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParaglidingFlag;
 
 public class DefaultParagliderItemCapability implements ParagliderItemCapability {
-	@Override public boolean canDoParagliding(@NotNull ItemStack stack) {
+	@Override public boolean canDoParagliding(@NotNull Player player, @NotNull ItemStack stack) {
 		return !stack.isDamaged() || stack.getMaxDamage() > stack.getDamageValue();
 	}
 
