@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,9 @@ public enum WaterBottleIngredientType implements ICustomIngredient {
 		return this.type;
 	}
 
+	@Override public @NotNull SlotDisplay display() {
+		return new SlotDisplay.ItemStackSlotDisplay(PotionContents.createItemStack(Items.POTION, Potions.WATER));
+	}
 
 	@Override public String toString() {
 		return "WaterBottleIngredientType";
