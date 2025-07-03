@@ -35,23 +35,33 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 
 	private void register(RegisterPayloadHandlersEvent event) {
 		PayloadRegistrar reg = event.registrar(NETVERSION);
-		reg.commonToClient(SyncPlayerStateMapMsg.TYPE, SyncPlayerStateMapMsg.CODEC, ClientPacketHandler::handleSyncPlayerStateMap);
+		reg.commonToClient(SyncPlayerStateMapMsg.TYPE, SyncPlayerStateMapMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncPlayerStateMap(msg));
 
-		reg.playToClient(SyncMovementMsg.TYPE, SyncMovementMsg.CODEC, ClientPacketHandler::handleSyncMovement);
-		reg.playToClient(SyncRemoteMovementMsg.TYPE, SyncRemoteMovementMsg.CODEC, ClientPacketHandler::handleSyncRemoteMovement);
-		reg.playToClient(SyncVesselMsg.TYPE, SyncVesselMsg.CODEC, ClientPacketHandler::handleSyncVessel);
+		reg.playToClient(SyncMovementMsg.TYPE, SyncMovementMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncMovement(msg));
+		reg.playToClient(SyncRemoteMovementMsg.TYPE, SyncRemoteMovementMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncRemoteMovement(msg));
+		reg.playToClient(SyncVesselMsg.TYPE, SyncVesselMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncVessel(msg));
 
-		reg.playToClient(BargainInitMsg.TYPE, BargainInitMsg.CODEC, ClientPacketHandler::handleBargainInit);
-		reg.playToClient(SyncCatalogMsg.TYPE, SyncCatalogMsg.CODEC, ClientPacketHandler::handleSyncCatalog);
-		reg.playToClient(SyncLookAtMsg.TYPE, SyncLookAtMsg.CODEC, ClientPacketHandler::handleSyncLookAt);
-		reg.playToClient(BargainDialogMsg.TYPE, BargainDialogMsg.CODEC, ClientPacketHandler::handleBargainDialog);
+		reg.playToClient(BargainInitMsg.TYPE, BargainInitMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleBargainInit(msg));
+		reg.playToClient(SyncCatalogMsg.TYPE, SyncCatalogMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncCatalog(msg));
+		reg.playToClient(SyncLookAtMsg.TYPE, SyncLookAtMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncLookAt(msg));
+		reg.playToClient(BargainDialogMsg.TYPE, BargainDialogMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleBargainDialog(msg));
 
-		reg.playToClient(SyncWindMsg.TYPE, SyncWindMsg.CODEC, ClientPacketHandler::handleSyncWind);
+		reg.playToClient(SyncWindMsg.TYPE, SyncWindMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncWind(msg));
 
 		reg.playToServer(BargainMsg.TYPE, BargainMsg.CODEC, ServerPacketHandler::handleBargain);
 
 		reg.playBidirectional(BargainEndMsg.TYPE, BargainEndMsg.CODEC, new DirectionalPayloadHandler<>(
-				ClientPacketHandler::handleBargainEnd, ServerPacketHandler::handleBargainEnd));
+				(msg, ctx) -> ClientPacketHandler.handleBargainEnd(msg),
+				ServerPacketHandler::handleBargainEnd));
 	}
 
 	@Override public void syncStateMap(@NotNull ServerPlayer player, @NotNull PlayerStateMap stateMap) {

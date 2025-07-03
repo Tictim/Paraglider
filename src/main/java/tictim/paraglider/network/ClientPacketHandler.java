@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.ParagliderMod;
@@ -20,12 +19,12 @@ public final class ClientPacketHandler {
 
 	// movement
 
-	public static void handleSyncPlayerStateMap(SyncPlayerStateMapMsg msg, IPayloadContext ctx) {
+	public static void handleSyncPlayerStateMap(SyncPlayerStateMapMsg msg) {
 		trace(Kind.MOVEMENT, msg);
 		ParagliderClientMod.instance().setSyncedStateMap(msg.stateMap());
 	}
 
-	public static void handleSyncMovement(SyncMovementMsg msg, IPayloadContext ctx) {
+	public static void handleSyncMovement(SyncMovementMsg msg) {
 		trace(Kind.MOVEMENT, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) return;
@@ -35,7 +34,7 @@ public final class ClientPacketHandler {
 		Stamina.get(mc.player).syncProperties(msg.stamina(), msg.extraStamina(), msg.depleted());
 	}
 
-	public static void handleSyncRemoteMovement(SyncRemoteMovementMsg msg, IPayloadContext ctx) {
+	public static void handleSyncRemoteMovement(SyncRemoteMovementMsg msg) {
 		trace(Kind.MOVEMENT, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
@@ -46,7 +45,7 @@ public final class ClientPacketHandler {
 		}
 	}
 
-	public static void handleSyncVessel(SyncVesselMsg msg, IPayloadContext ctx) {
+	public static void handleSyncVessel(SyncVesselMsg msg) {
 		trace(Kind.VESSEL, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) return;
@@ -58,13 +57,13 @@ public final class ClientPacketHandler {
 
 	// bargain
 
-	public static void handleBargainInit(BargainInitMsg msg, IPayloadContext ctx) {
+	public static void handleBargainInit(BargainInitMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		mc.setScreen(new BargainScreen(msg.sessionId(), msg.catalog(), msg.lookAt(), msg.dialog()));
 	}
 
-	public static void handleSyncCatalog(SyncCatalogMsg msg, IPayloadContext ctx) {
+	public static void handleSyncCatalog(SyncCatalogMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
@@ -72,7 +71,7 @@ public final class ClientPacketHandler {
 		}
 	}
 
-	public static void handleSyncLookAt(SyncLookAtMsg msg, IPayloadContext ctx) {
+	public static void handleSyncLookAt(SyncLookAtMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
@@ -80,7 +79,7 @@ public final class ClientPacketHandler {
 		}
 	}
 
-	public static void handleBargainDialog(BargainDialogMsg msg, IPayloadContext ctx) {
+	public static void handleBargainDialog(BargainDialogMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
@@ -88,7 +87,7 @@ public final class ClientPacketHandler {
 		}
 	}
 
-	public static void handleBargainEnd(BargainEndMsg msg, IPayloadContext ctx) {
+	public static void handleBargainEnd(BargainEndMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
@@ -98,7 +97,7 @@ public final class ClientPacketHandler {
 
 	// wind
 
-	public static void handleSyncWind(SyncWindMsg msg, IPayloadContext ctx) {
+	public static void handleSyncWind(SyncWindMsg msg) {
 		trace(Kind.WIND, msg);
 		ClientLevel world = Minecraft.getInstance().level;
 		if (world == null) return;
