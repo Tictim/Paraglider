@@ -1,9 +1,10 @@
 package tictim.paraglider.api;
 
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.stamina.StaminaPlugin;
+
+import java.util.function.Supplier;
 
 /**
  * Standard implementation for stamina efficiency attributes. Use {@link
@@ -11,7 +12,7 @@ import tictim.paraglider.api.stamina.StaminaPlugin;
  * all modifiers. Syncing is not a de facto requirement since stamina efficiency evaluation is handled entirely on
  * server-side.
  *
- * @see tictim.paraglider.api.stamina.StaminaPlugin.StaminaEfficiencyLogicRegister#registerAttribute(Holder, StaminaPlugin.AttributeEfficiencyCondition)
+ * @see tictim.paraglider.api.stamina.StaminaPlugin.StaminaEfficiencyLogicRegister#registerAttribute(Supplier, StaminaPlugin.AttributeEfficiencyCondition)
  */
 public class StaminaEfficiencyAttribute extends Attribute {
 	public StaminaEfficiencyAttribute(String descriptionId) {
