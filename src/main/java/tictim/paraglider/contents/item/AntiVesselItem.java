@@ -51,8 +51,6 @@ public class AntiVesselItem extends Item {
 			@NotNull TooltipFlag flag) {
 		tooltipAdder.accept(Component.translatable("tooltip.paraglider.anti_vessel.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
-		tooltipAdder.accept(Component.translatable("tooltip.paraglider.anti_vessel.1")
-				.setStyle(Style.EMPTY));
 	}
 
 	@Override public boolean isFoil(@NotNull ItemStack stack) {
