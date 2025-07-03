@@ -13,6 +13,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -121,7 +122,6 @@ public final class Wind {
 	/**
 	 * Scans blocks in range and update wind chunks.
 	 */
-	@SuppressWarnings("deprecation")
 	private void place(@NotNull Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
@@ -136,12 +136,14 @@ public final class Wind {
 				for (int y = minY; true; y++) {
 					this.mpos.set(x, y, z);
 					BlockState state = level.getBlockState(this.mpos);
+					FluidState fluidState = level.getFluidState(this.mpos);
 					int blockStateWindSourceHeight = WindSourceRegistry.get().getWindSourceHeight(state);
 
 					if (foundWindSource) {
 						int height = y - windSourceY;
 						if (height > windSourceHeight || // go 1 block beyond to provide margin for top part
 								blockStateWindSourceHeight > 0 ||
+								!fluidState.isEmpty() ||
 								!ParagliderUtils.windCanPassThrough(level, this.mpos, state)) {
 							if (height > 1) writeWind(x, windSourceY, z, height, level.getGameTime());
 							foundWindSource = false;
