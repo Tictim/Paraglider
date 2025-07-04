@@ -1,3 +1,5 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
 license="${mod_license}"
 issueTrackerURL="https://github.com/Tictim/Paraglider/issues"
 

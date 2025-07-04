@@ -1,17 +1,32 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,waterlogged=false": {
       "model": "paraglider:block/goddess_statue",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,waterlogged=true": {
+      "model": "paraglider:block/goddess_statue",
+      "y": 90
+    },
+    "facing=north,waterlogged=false": {
       "model": "paraglider:block/goddess_statue"
     },
-    "facing=south": {
+    "facing=north,waterlogged=true": {
+      "model": "paraglider:block/goddess_statue"
+    },
+    "facing=south,waterlogged=false": {
       "model": "paraglider:block/goddess_statue",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,waterlogged=true": {
+      "model": "paraglider:block/goddess_statue",
+      "y": 180
+    },
+    "facing=west,waterlogged=false": {
+      "model": "paraglider:block/goddess_statue",
+      "y": 270
+    },
+    "facing=west,waterlogged=true": {
       "model": "paraglider:block/goddess_statue",
       "y": 270
     }

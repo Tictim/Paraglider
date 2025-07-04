@@ -5,11 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.vessel.VesselContainer;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 public class EssenceItem extends VesselItem {
 	public EssenceItem(@NotNull Properties properties) {
@@ -20,12 +19,10 @@ public class EssenceItem extends VesselItem {
 		return vessels.giveEssences(1, simulate, playEffect) == 1;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
 			@NotNull ItemStack stack, @NotNull TooltipContext context,
-			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
-			@NotNull TooltipFlag flag) {
-		tooltipAdder.accept(Component.translatable("tooltip.paraglider.essence.0")
+			@NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+		tooltipComponents.add(Component.translatable("tooltip.paraglider.essence.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)));
 	}
 }

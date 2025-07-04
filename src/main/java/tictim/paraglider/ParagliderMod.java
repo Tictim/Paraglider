@@ -13,7 +13,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
@@ -141,13 +141,10 @@ public class ParagliderMod {
 		NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> event.getDispatcher().register(ParagliderCommands.register()));
 		NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> this.stateMapConfig.removeCallbacks());
 
-		NeoForge.EVENT_BUS.addListener((AddServerReloadListenersEvent event) -> {
-			event.addListener(ParagliderAPI.id("wind_source_registry"),
-					new WindSourceRegistry.ReloadListener(this.windSourceRegistry, event.getRegistryAccess()));
-			event.addListener(ParagliderAPI.id("village_structure_injector"),
-					new ParagliderVillageStructures.ReloadListener(event.getRegistryAccess()));
-			event.addListener(ParagliderAPI.id("bargain_recipe_checker"),
-					new BargainRecipeChecker(event.getRegistryAccess(), event.getServerResources().getRecipeManager()));
+		NeoForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
+			event.addListener(new WindSourceRegistry.ReloadListener(this.windSourceRegistry, event.getRegistryAccess()));
+			event.addListener(new ParagliderVillageStructures.ReloadListener(event.getRegistryAccess()));
+			event.addListener(new BargainRecipeChecker(event.getRegistryAccess(), event.getServerResources().getRecipeManager()));
 		});
 
 		eventBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(() -> {

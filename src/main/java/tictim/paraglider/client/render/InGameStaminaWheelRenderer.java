@@ -1,11 +1,11 @@
 package tictim.paraglider.client.render;
 
-import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.stamina.Stamina;
 
+import static net.minecraft.util.FastColor.ARGB32.*;
 import static tictim.paraglider.ParagliderUtils.ms;
 import static tictim.paraglider.client.render.EffectTimer.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
@@ -62,7 +62,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		if (full) {
 			int color = this.fullAnim.getGlowAndFadeColor(wheelColor(0));
-			if (ARGB.alpha(color) <= 0) return;
+			if (alpha(color) <= 0) return;
 			this.mainWheel.fillStamina(0, maxStamina, color);
 			makeOuterWheel(this.mainWheel);
 		} else {
@@ -129,9 +129,9 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		if (this.outerWheelEmptyAnim.isActive()) {
 			float d = Math.min(1, (float)this.outerWheelEmptyAnim.activeDuration() / OUTER_WHEEL_EMPTY_DURATION);
-			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
-			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
-					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
+			color = lerp(d, wheelBgColor(wheels - 3), color);
+			wheelIndicatorColor = lerp(d, wheelColor(wheels - 2),
+					wheels == 3 ? color(0, wheelColor(1)) : wheelColor(wheels - 3));
 		}
 
 		if (this.fullAnim.isActive()) {
@@ -148,9 +148,9 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 			if (this.outerWheelFillAnim.isActive()) {
 				float d = Math.min(1, (float)this.outerWheelFillAnim.activeDuration() / OUTER_WHEEL_FILL_DURATION);
-				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
-				wheelIndicatorColor = ARGB.lerp(d,
-						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
+				bgColor = lerp(d, wheelColor(wheels - 4), bgColor);
+				wheelIndicatorColor = lerp(d,
+						wheels == 4 ? color(0, wheelColor(1)) : wheelColor(wheels - 4),
 						wheelColor(wheels - 3));
 			}
 

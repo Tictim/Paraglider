@@ -2,6 +2,7 @@ package tictim.paraglider.client;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderClientMod;
@@ -71,10 +72,10 @@ public final class ParagliderClientSettings {
 			if (Files.exists(this.configPath)) {
 				try (DataInputStream dis = new DataInputStream(Files.newInputStream(this.configPath))) {
 					CompoundTag tag = NbtIo.read(dis);
-					CompoundTag staminaWheel = tag.getCompoundOrEmpty("staminaWheel");
-					setStaminaWheelX(staminaWheel.getDoubleOr("x", DEFAULT_STAMINA_WHEEL_X));
-					setStaminaWheelY(staminaWheel.getDoubleOr("y", DEFAULT_STAMINA_WHEEL_Y));
-					setWindParticleFrequency(tag.getDoubleOr("windParticleFreq", DEFAULT_PARTICLE_FREQ));
+					CompoundTag staminaWheel = tag.getCompound("staminaWheel");
+					setStaminaWheelX(staminaWheel.contains("x", Tag.TAG_ANY_NUMERIC) ? staminaWheel.getDouble("x") : DEFAULT_STAMINA_WHEEL_X);
+					setStaminaWheelY(staminaWheel.contains("y", Tag.TAG_ANY_NUMERIC) ? staminaWheel.getDouble("y") : DEFAULT_STAMINA_WHEEL_Y);
+					setWindParticleFrequency(tag.contains("windParticleFreq", Tag.TAG_ANY_NUMERIC) ? tag.getDouble("windParticleFreq") : DEFAULT_PARTICLE_FREQ);
 				}
 			} else {
 				setStaminaWheelX(DEFAULT_STAMINA_WHEEL_X);

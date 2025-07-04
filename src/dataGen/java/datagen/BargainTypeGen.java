@@ -2,6 +2,8 @@ package datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.server.packs.PackType;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.JsonCodecProvider;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.bargain.BargainDialog;
@@ -17,8 +19,8 @@ import static tictim.paraglider.api.bargain.ParagliderBargainTags.*;
 import static tictim.paraglider.api.bargain.ParagliderFailReasons.*;
 
 public final class BargainTypeGen extends JsonCodecProvider<BargainType> {
-	public BargainTypeGen(@NotNull PackOutput output, @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider) {
-		super(output, PackOutput.Target.DATA_PACK, MODID + "/bargain_types", BargainType.CODEC, lookupProvider, MODID);
+	public BargainTypeGen(@NotNull PackOutput output, @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
+		super(output, PackOutput.Target.DATA_PACK, MODID + "/bargain_types", PackType.SERVER_DATA, BargainType.CODEC, lookupProvider, MODID, existingFileHelper);
 	}
 
 	@Override protected void gather() {

@@ -2,10 +2,11 @@ package tictim.paraglider.api.bargain;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
@@ -109,8 +110,20 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 		return true;
 	}
 
-	@Deprecated @Override default @NotNull PlacementInfo placementInfo() {
-		return PlacementInfo.NOT_PLACEABLE;
+	@Deprecated @Override default boolean canCraftInDimensions(int width, int height) {
+		return false;
+	}
+
+	@Deprecated @Override default @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+		return ItemStack.EMPTY;
+	}
+
+	@Deprecated @Override default @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull NoInput input) {
+		return NonNullList.create();
+	}
+
+	@Deprecated @Override default @NotNull NonNullList<Ingredient> getIngredients() {
+		return NonNullList.create();
 	}
 
 	final class NoInput implements RecipeInput {

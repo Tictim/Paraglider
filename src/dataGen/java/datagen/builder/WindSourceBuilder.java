@@ -80,8 +80,8 @@ public class WindSourceBuilder {
 		}
 
 		public <T extends Comparable<T>> PropertyBuilder property(Property<T> property, T value) {
-			int i = property.getInternalIndex(value);
-			if (i < 0)
+			String name = property.getName(value);
+			if (property.getValue(name).isEmpty())
 				throw new IllegalArgumentException("Invalid value " + value + " for block state property " + property);
 
 			if (this.props.containsKey(property.getName())) {
@@ -97,7 +97,7 @@ public class WindSourceBuilder {
 				}
 			}
 
-			this.props.put(property.getName(), property.getName(value));
+			this.props.put(property.getName(), name);
 			return this;
 		}
 

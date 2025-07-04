@@ -3,9 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "neoforge:ingredient_type": "paraglider:water_bottle"
+      "type": "paraglider:water_bottle"
     },
-    "minecraft:carrot"
+    {
+      "item": "minecraft:carrot"
+    }
   ],
   "result": {
     "count": 1,

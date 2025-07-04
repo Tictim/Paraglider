@@ -78,8 +78,8 @@ public class WindSourceRegistry {
 		private void readWindSources() {
 			boolean verbose = DebugCfg.get().verboseWindSourceLoading();
 
-			Registry<Block> blocks = this.registryAccess.lookupOrThrow(Registries.BLOCK);
-			Registry<WindSource> windSourceReg = this.registryAccess.lookupOrThrow(REGISTRY_KEY);
+			Registry<Block> blocks = this.registryAccess.registryOrThrow(Registries.BLOCK);
+			Registry<WindSource> windSourceReg = this.registryAccess.registryOrThrow(REGISTRY_KEY);
 			List<Block> blockCache = new ArrayList<>();
 			List<BlockState> blockStateCache = new ArrayList<>();
 

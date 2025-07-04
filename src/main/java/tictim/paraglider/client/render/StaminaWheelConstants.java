@@ -1,18 +1,18 @@
 package tictim.paraglider.client.render;
 
-import net.minecraft.util.ARGB;
 import tictim.paraglider.api.stamina.Stamina;
 
-import static net.minecraft.util.ARGB.lerp;
+import static net.minecraft.util.FastColor.ARGB32.color;
+import static net.minecraft.util.FastColor.ARGB32.lerp;
 
 public final class StaminaWheelConstants {
 	private StaminaWheelConstants() {}
 
-	public static final int GLOW = ARGB.color(255, 255, 255);
-	public static final int EVIL_GLOW = ARGB.color(248, 223, 223);
-	public static final int DEPLETED_1 = ARGB.color(150, 2, 2);
-	public static final int DEPLETED_2 = ARGB.color(255, 150, 2);
-	public static final int EMPTY = ARGB.color(150, 2, 2, 2);
+	public static final int GLOW = color(255, 255, 255);
+	public static final int EVIL_GLOW = color(248, 223, 223);
+	public static final int DEPLETED_1 = color(150, 2, 2);
+	public static final int DEPLETED_2 = color(255, 150, 2);
+	public static final int EMPTY = color(150, 2, 2, 2);
 	public static final int EXTRA = 0xFFFFFF00;
 
 	public static final long GLOW_FADE_START = 100;
@@ -57,7 +57,7 @@ public final class StaminaWheelConstants {
 				(float)(time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
 		if (time < FADE_START) return baseColor;
 		if (time < FADE_END) return lerp(
-				(float)(time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
+				(float)(time - FADE_START) / FADE_DURATION, baseColor, color(0, baseColor));
 		return 0;
 	}
 
@@ -71,12 +71,12 @@ public final class StaminaWheelConstants {
 	public static int getFadeColor(long time, int baseColor) {
 		if (time < FADE_START) return baseColor;
 		if (time < FADE_END) return lerp(
-				(float)(time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
+				(float)(time - FADE_START) / FADE_DURATION, baseColor, color(0, baseColor));
 		return baseColor;
 	}
 
 	public static int getBlinkColor(long time, boolean depleted) {
-		return ARGB.lerp(cycle(time, depleted ? DEPLETED_BLINK : BLINK), DEPLETED_1, DEPLETED_2);
+		return lerp(cycle(time, depleted ? DEPLETED_BLINK : BLINK), DEPLETED_1, DEPLETED_2);
 	}
 
 	public static float cycle(long currentTime, long cycleTime) {

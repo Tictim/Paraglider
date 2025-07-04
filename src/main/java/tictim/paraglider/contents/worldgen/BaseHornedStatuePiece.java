@@ -2,6 +2,7 @@ package tictim.paraglider.contents.worldgen;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -49,7 +50,7 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 	public static @NotNull StructureTemplateType createType(@NotNull Supplier<StructurePieceType> type, @Nullable BlockPos pivot) {
 		return (templateManager, tag) -> {
 			var oRot = tag.getString("Rot");
-			var oRotPivot = tag.read("RotPivot", BlockPos.CODEC);
+			var oRotPivot = NbtUtils.readBlockPos(tag, "RotPivot");
 
 			return new BaseHornedStatuePiece(
 					type.get(),
@@ -58,8 +59,8 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 					l -> {
 						StructurePlaceSettings s = new StructurePlaceSettings()
 								.addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
-						if (oRot.isPresent()) {
-							s.setRotation(Rotation.valueOf(oRot.get()));
+						if (!oRot.isEmpty()) {
+							s.setRotation(Rotation.valueOf(oRot));
 							if (pivot != null) {
 								s.setRotationPivot(pivot);
 							} else {
@@ -90,7 +91,7 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 		if (getRotation() != Rotation.NONE) {
 			tag.putString("Rot", getRotation().name());
 			if (this.savePivot)
-				tag.store("RotPivot", BlockPos.CODEC, this.placeSettings.getRotationPivot());
+				tag.put("RotPivot", NbtUtils.writeBlockPos(this.placeSettings.getRotationPivot()));
 		}
 	}
 

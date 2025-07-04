@@ -10,7 +10,9 @@
     "essences": 1,
     "items": [
       {
-        "ingredient": "#c:gems/emerald",
+        "ingredient": {
+          "tag": "c:gems/emerald"
+        },
         "quantity": 6
       }
     ]

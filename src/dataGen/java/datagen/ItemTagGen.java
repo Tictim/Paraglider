@@ -5,6 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
@@ -15,8 +16,9 @@ import java.util.concurrent.CompletableFuture;
 public class ItemTagGen extends ItemTagsProvider {
 	public ItemTagGen(@NotNull PackOutput output,
 	                  @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider,
-	                  @NotNull CompletableFuture<TagLookup<Block>> blockTags) {
-		super(output, lookupProvider, blockTags, ParagliderAPI.MODID);
+	                  @NotNull CompletableFuture<TagLookup<Block>> blockTags,
+	                  ExistingFileHelper existingFileHelper) {
+		super(output, lookupProvider, blockTags, ParagliderAPI.MODID, existingFileHelper);
 	}
 
 	@Override protected void addTags(@NotNull HolderLookup.Provider provider) {

@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:statues/goddess",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
   "reagents": [
-    "#c:ingots/gold"
+    {
+      "tag": "c:ingots/gold"
+    }
   ],
-  "result": {
-    "id": "paraglider:goron_goddess_statue"
-  }
+  "result": "paraglider:goron_goddess_statue"
 }

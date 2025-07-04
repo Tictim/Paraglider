@@ -2,10 +2,8 @@ package tictim.paraglider.contents.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -36,17 +34,10 @@ public abstract class BaseStatueBlock extends HorizontalDirectionalBlock impleme
 	}
 
 	@Override protected @NotNull BlockState updateShape(
-			@NotNull BlockState state,
-			@NotNull LevelReader level,
-			@NotNull ScheduledTickAccess scheduledTickAccess,
-			@NotNull BlockPos pos,
-			@NotNull Direction direction,
-			@NotNull BlockPos neighborPos,
-			@NotNull BlockState neighborState,
-			@NotNull RandomSource random
-	) {
+			BlockState state, @NotNull Direction facing, @NotNull BlockState facingState,
+			@NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
 		if (state.getValue(WATERLOGGED)) {
-			scheduledTickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+			level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
 		return state;

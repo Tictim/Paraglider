@@ -3,13 +3,13 @@ package datagen;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderAdvancements;
@@ -24,8 +24,8 @@ import static net.minecraft.advancements.critereon.ItemPredicate.Builder.item;
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
 public class AdvancementGen extends AdvancementProvider {
-	public AdvancementGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-		super(output, registries, List.of((r, s) -> {
+	public AdvancementGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, ExistingFileHelper existingFileHelper) {
+		super(output, registries, existingFileHelper, List.of((r, s, e) -> {
 			Contents contents = Contents.get();
 			AdvancementHolder root = advancement(
 					new ItemStack(contents.paraglider()),
@@ -45,7 +45,7 @@ public class AdvancementGen extends AdvancementProvider {
 					true,
 					false)
 					.parent(root)
-					.addCriterion("paraglider", hasItems(item().of(r.lookupOrThrow(Registries.ITEM), ParagliderTags.PARAGLIDERS).build()))
+					.addCriterion("paraglider", hasItems(item().of(ParagliderTags.PARAGLIDERS).build()))
 					.save(s, MODID + ":paraglider");
 			AdvancementHolder prayToTheGoddess = advancement(
 					new ItemStack(contents.goddessStatue()),

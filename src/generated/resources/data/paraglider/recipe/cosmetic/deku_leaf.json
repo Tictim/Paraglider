@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:paragliders",
+  "input": {
+    "tag": "paraglider:paragliders"
+  },
   "reagents": [
-    "minecraft:dirt"
+    {
+      "item": "minecraft:dirt"
+    }
   ],
-  "result": {
-    "id": "paraglider:deku_leaf"
-  }
+  "result": "paraglider:deku_leaf"
 }

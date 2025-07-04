@@ -1,6 +1,5 @@
 package tictim.paraglider;
 
-import com.mojang.math.OctahedralGroup;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import net.minecraft.advancements.AdvancementHolder;
@@ -33,6 +32,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -281,9 +281,13 @@ public final class ParagliderUtils {
 			if (b != 127) return b != 0;
 		}
 
-		VoxelShape invert = Shapes.rotate(shape, OctahedralGroup.INVERT_Y);
-		boolean canPassThrough = !(Shapes.mergedFaceOccludes(shape, invert, Direction.UP) ||
-				Shapes.mergedFaceOccludes(invert, shape, Direction.UP));
+		VoxelShape[] invert = new VoxelShape[]{Shapes.empty()};
+		shape.forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) ->
+				invert[0] = Shapes.joinUnoptimized(invert[0],
+						Shapes.box(minX, 1 - maxY, minZ, maxX, 1 - minY, maxZ), BooleanOp.OR));
+
+		boolean canPassThrough = !(Shapes.mergedFaceOccludes(shape, invert[0], Direction.UP) ||
+				Shapes.mergedFaceOccludes(invert[0], shape, Direction.UP));
 
 		if (cache != null) {
 			if (cache.size() == 200) cache.removeLastByte();

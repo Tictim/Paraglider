@@ -5,6 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biomes;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.ParagliderTags;
@@ -12,8 +13,8 @@ import tictim.paraglider.contents.ParagliderTags;
 import java.util.concurrent.CompletableFuture;
 
 public class BiomeTagGen extends BiomeTagsProvider {
-	public BiomeTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-		super(output, lookupProvider, ParagliderAPI.MODID);
+	public BiomeTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
+		super(output, lookupProvider, ParagliderAPI.MODID, existingFileHelper);
 	}
 
 	@Override protected void addTags(@NotNull HolderLookup.Provider provider) {

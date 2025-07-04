@@ -14,10 +14,8 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
@@ -40,16 +38,14 @@ import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.contents.block.GoddessStatueBlock;
 import tictim.paraglider.contents.block.HornedStatueBlock;
 import tictim.paraglider.contents.item.*;
-import tictim.paraglider.contents.item.consumeeffect.GiveExtraStaminaConsumeEffect;
-import tictim.paraglider.contents.item.consumeeffect.GiveStaminaEfficiencyConsumeEffect;
-import tictim.paraglider.contents.item.consumeeffect.RestoreStaminaConsumeEffect;
 import tictim.paraglider.contents.loot.*;
 import tictim.paraglider.contents.mobeffect.StaminaEfficiencyMobEffect;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 import tictim.paraglider.contents.recipe.SimpleBargain;
 import tictim.paraglider.contents.recipe.SimpleBargainSerializer;
 import tictim.paraglider.contents.recipe.WaterBottleIngredientType;
-import tictim.paraglider.contents.recipe.preview.SimplePreview;
+import tictim.paraglider.contents.recipe.preview.IngredientPreview;
+import tictim.paraglider.contents.recipe.preview.ItemPreview;
 import tictim.paraglider.contents.recipe.preview.VesselPreview;
 import tictim.paraglider.contents.worldgen.NetherHornedStatue;
 import tictim.paraglider.contents.worldgen.TarreyTownGoddessStatue;
@@ -71,7 +67,6 @@ public class Contents {
 	public final DeferredRegister<Block> blocks = DeferredRegister.create(Registries.BLOCK, MODID);
 	public final DeferredRegister<Item> items = DeferredRegister.create(Registries.ITEM, MODID);
 	public final DeferredRegister<Attribute> attributes = DeferredRegister.create(Registries.ATTRIBUTE, MODID);
-	public final DeferredRegister<ConsumeEffect.Type<?>> consumeEffectTypes = DeferredRegister.create(Registries.CONSUME_EFFECT_TYPE, MODID);
 	public final DeferredRegister<DataComponentType<?>> dataComponents = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MODID);
 	public final DeferredRegister<RecipeSerializer<?>> recipeSerializers = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MODID);
 	public final DeferredRegister<RecipeType<?>> recipeTypes = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
@@ -83,20 +78,19 @@ public class Contents {
 	public final DeferredRegister<CreativeModeTab> creativeTabs = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 	public final DeferredRegister<AttachmentType<?>> attachmentTypes = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MODID);
 	public final DeferredRegister<MapCodec<? extends ICondition>> conditionSerializers = DeferredRegister.create(NeoForgeRegistries.CONDITION_SERIALIZERS, MODID);
-	public final DeferredRegister<SlotDisplay.Type<?>> slotDisplays = DeferredRegister.create(Registries.SLOT_DISPLAY, MODID);
 	public final DeferredRegister<IngredientType<?>> ingredientTypes = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, MODID);
 	public final DeferredRegister<BargainPreview.Type<?>> bargainPreviewTypes = DeferredRegister.create(BargainPreview.TYPE_REGISTRY_KEY, MODID);
 
 	public final DeferredHolder<Block, Block> goddessStatue = blocks.register("goddess_statue",
-			id -> new GoddessStatueBlock(statueBlock(id)));
+			id -> new GoddessStatueBlock(statueBlock()));
 	public final DeferredHolder<Block, Block> kakarikoGoddessStatue = blocks.register("kakariko_goddess_statue",
-			id -> new GoddessStatueBlock(statueBlock(id)));
+			id -> new GoddessStatueBlock(statueBlock()));
 	public final DeferredHolder<Block, Block> goronGoddessStatue = blocks.register("goron_goddess_statue",
-			id -> new GoddessStatueBlock(statueBlock(id).lightLevel(value -> 15)));
+			id -> new GoddessStatueBlock(statueBlock().lightLevel(value -> 15)));
 	public final DeferredHolder<Block, Block> ritoGoddessStatue = blocks.register("rito_goddess_statue",
-			id -> new GoddessStatueBlock(statueBlock(id)));
+			id -> new GoddessStatueBlock(statueBlock()));
 	public final DeferredHolder<Block, Block> hornedStatue = blocks.register("horned_statue",
-			id -> new HornedStatueBlock(statueBlock(id)));
+			id -> new HornedStatueBlock(statueBlock()));
 
 	public final DeferredHolder<Attribute, Attribute> maxStamina = attributes.register("max_stamina",
 			() -> new RangedAttribute("attribute.paraglider.max_stamina", 0, 0, Double.MAX_VALUE).setSyncable(true));
@@ -111,13 +105,6 @@ public class Contents {
 	public final DeferredHolder<Attribute, Attribute> swimmingStaminaEfficiency = attributes.register("swimming_stamina_efficiency",
 			() -> new StaminaEfficiencyAttribute("attribute.paraglider.swimming_stamina_efficiency"));
 
-	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<RestoreStaminaConsumeEffect>> restoreStaminaConsumeEffectType =
-			consumeEffectTypes.register("restore_stamina", () -> RestoreStaminaConsumeEffect.TYPE);
-	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<GiveExtraStaminaConsumeEffect>> giveExtraStaminaConsumeEffectType =
-			consumeEffectTypes.register("give_extra_stamina", () -> GiveExtraStaminaConsumeEffect.TYPE);
-	public final DeferredHolder<ConsumeEffect.Type<?>, ConsumeEffect.Type<GiveStaminaEfficiencyConsumeEffect>> giveStaminaEfficiency =
-			consumeEffectTypes.register("give_stamina_efficiency", () -> GiveStaminaEfficiencyConsumeEffect.TYPE);
-
 	public final DeferredHolder<DataComponentType<?>, DataComponentType<ParaglidingFlag>> paraglidingFlagComponent = dataComponents.register("paragliding",
 			() -> DataComponentType.<ParaglidingFlag>builder()
 					.persistent(Codec.unit(ParaglidingFlag.INSTANCE))
@@ -125,50 +112,46 @@ public class Contents {
 					.build());
 
 	public final DeferredHolder<Item, Item> paraglider = items.register("paraglider",
-			id -> new ParagliderItem(p(id).stacksTo(1)));
+			id -> new ParagliderItem(p().stacksTo(1)));
 	public final DeferredHolder<Item, Item> dekuLeaf = items.register("deku_leaf",
-			id -> new ParagliderItem(p(id).stacksTo(1)));
+			id -> new ParagliderItem(p().stacksTo(1)));
 	public final DeferredHolder<Item, Item> heartContainer = items.register("heart_container",
-			id -> new HeartContainerItem(p(id).rarity(Rarity.RARE)));
+			id -> new HeartContainerItem(p().rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, Item> staminaVessel = items.register("stamina_vessel",
-			id -> new StaminaVesselItem(p(id).rarity(Rarity.RARE)));
+			id -> new StaminaVesselItem(p().rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, Item> spiritOrb = items.register("spirit_orb",
-			id -> new SpiritOrbItem(p(id).rarity(Rarity.UNCOMMON)));
+			id -> new SpiritOrbItem(p().rarity(Rarity.UNCOMMON)));
 	public final DeferredHolder<Item, Item> antiVessel = items.register("anti_vessel",
-			id -> new AntiVesselItem(p(id).rarity(Rarity.EPIC)));
+			id -> new AntiVesselItem(p().rarity(Rarity.EPIC)));
 	public final DeferredHolder<Item, Item> essence = items.register("essence",
-			id -> new EssenceItem(p(id).rarity(Rarity.RARE)));
+			id -> new EssenceItem(p().rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, Item> energizingElixir1 = items.register("energizing_elixir_1",
-			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(1000))));
+			id -> new BaseElixirItem.Energizing(staminaPotion(), 1000));
 	public final DeferredHolder<Item, Item> energizingElixir2 = items.register("energizing_elixir_2",
-			id -> new Item(staminaPotion(id,
-					new RestoreStaminaConsumeEffect(2000),
-					new GiveStaminaEfficiencyConsumeEffect(0, 60 * 20))));
+			id -> new BaseElixirItem.Energizing(staminaPotion(), 2000, 0, 60 * 20));
 	public final DeferredHolder<Item, Item> energizingElixir3 = items.register("energizing_elixir_3",
-			id -> new Item(staminaPotion(id,
-					new RestoreStaminaConsumeEffect(3000),
-					new GiveStaminaEfficiencyConsumeEffect(1, 120 * 20))));
+			id -> new BaseElixirItem.Energizing(staminaPotion(), 3000, 1, 120 * 20));
 	public final DeferredHolder<Item, Item> enduringElixir1 = items.register("enduring_elixir_1",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(500))));
+			id -> new BaseElixirItem.Enduring(staminaPotion(), 500));
 	public final DeferredHolder<Item, Item> enduringElixir2 = items.register("enduring_elixir_2",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(1000))));
+			id -> new BaseElixirItem.Enduring(staminaPotion(), 1000));
 	public final DeferredHolder<Item, Item> enduringElixir3 = items.register("enduring_elixir_3",
-			id -> new Item(staminaPotion(id, new GiveExtraStaminaConsumeEffect(2000))));
+			id -> new BaseElixirItem.Enduring(staminaPotion(), 2000));
 	public final DeferredHolder<Item, Item> energizingMixture = items.register("energizing_mixture",
-			id -> new Item(p(id).stacksTo(1)));
+			id -> new Item(p().stacksTo(1)));
 	public final DeferredHolder<Item, Item> enduringMixture = items.register("enduring_mixture",
-			id -> new Item(p(id).stacksTo(1)));
+			id -> new Item(p().stacksTo(1)));
 
 	public final DeferredHolder<Item, BlockItem> goddessStatueItem = items.register("goddess_statue",
-			id -> new BlockItem(goddessStatue(), p(id).rarity(Rarity.RARE)));
+			id -> new BlockItem(goddessStatue(), p().rarity(Rarity.RARE)));
 	public final DeferredHolder<Item, BlockItem> kakarikoGoddessStatueItem = items.register("kakariko_goddess_statue",
-			id -> new TooltipBlockItem(kakarikoGoddessStatue(), p(id).rarity(Rarity.RARE), kakarikoStatueTooltip()));
+			id -> new TooltipBlockItem(kakarikoGoddessStatue(), p().rarity(Rarity.RARE), kakarikoStatueTooltip()));
 	public final DeferredHolder<Item, BlockItem> goronGoddessStatueItem = items.register("goron_goddess_statue",
-			id -> new TooltipBlockItem(goronGoddessStatue(), p(id).rarity(Rarity.RARE), goronStatueTooltip()));
+			id -> new TooltipBlockItem(goronGoddessStatue(), p().rarity(Rarity.RARE), goronStatueTooltip()));
 	public final DeferredHolder<Item, BlockItem> ritoGoddessStatueItem = items.register("rito_goddess_statue",
-			id -> new TooltipBlockItem(ritoGoddessStatue(), p(id).rarity(Rarity.RARE), ritoStatueTooltip()));
+			id -> new TooltipBlockItem(ritoGoddessStatue(), p().rarity(Rarity.RARE), ritoStatueTooltip()));
 	public final DeferredHolder<Item, BlockItem> hornedStatueItem = items.register("horned_statue",
-			id -> new TooltipBlockItem(hornedStatue(), p(id).rarity(Rarity.EPIC),
+			id -> new TooltipBlockItem(hornedStatue(), p().rarity(Rarity.EPIC),
 					Component.translatable("tooltip.paraglider.horned_statue.0")
 							.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY))));
 
@@ -259,8 +242,11 @@ public class Contents {
 
 	public final DeferredHolder<IngredientType<?>, IngredientType<?>> waterBottle = ingredientTypes.register("water_bottle", WaterBottleIngredientType.INSTANCE::getType);
 
-	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<SimplePreview>> simplePreviewType = bargainPreviewTypes.register("simple",
-			() -> SimplePreview.TYPE);
+	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<ItemPreview>> itemPreviewType = bargainPreviewTypes.register("item",
+			() -> ItemPreview.TYPE);
+
+	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<IngredientPreview>> ingredientPreviewType = bargainPreviewTypes.register("ingredient",
+			() -> IngredientPreview.TYPE);
 
 	public final DeferredHolder<BargainPreview.Type<?>, BargainPreview.Type<VesselPreview>> vesselPreviewType = bargainPreviewTypes.register("vessel",
 			() -> VesselPreview.TYPE);
@@ -280,12 +266,10 @@ public class Contents {
 		this.creativeTabs.register(eventBus);
 		this.attachmentTypes.register(eventBus);
 		this.conditionSerializers.register(eventBus);
-		this.slotDisplays.register(eventBus);
 		this.ingredientTypes.register(eventBus);
 		this.bargainPreviewTypes.register(eventBus);
 
 		ParagliderConfigCondition.register(this.conditionSerializers);
-		VesselSlotDisplay.register(this.slotDisplays);
 	}
 
 	public @NotNull Item paraglider() {

@@ -7,26 +7,24 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.config.Cfg;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ParagliderItem extends Item {
 	public ParagliderItem(Properties p) {
-		super(p.durability(100).repairable(Tags.Items.LEATHERS));
+		super(p.durability(100));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
 			@NotNull ItemStack stack, @NotNull TooltipContext context,
-			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
-			@NotNull TooltipFlag flag) {
+			@NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
 		if (stack.isDamaged() && stack.getMaxDamage() <= stack.getDamageValue()) {
-			tooltipAdder.accept(Component.translatable("tooltip.paraglider.paraglider_broken")
+			tooltipComponents.add(Component.translatable("tooltip.paraglider.paraglider_broken")
 					.setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
 		}
 	}
@@ -43,8 +41,8 @@ public class ParagliderItem extends Item {
 		return false;
 	}
 
-	@Override public boolean isCombineRepairable(@NotNull ItemStack stack) {
-		return false;
+	@Override public boolean isValidRepairItem(@NotNull ItemStack stack, @NotNull ItemStack repairCandidate) {
+		return repairCandidate.is(Tags.Items.LEATHERS);
 	}
 
 	@Override public boolean shouldCauseReequipAnimation(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {

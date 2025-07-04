@@ -1,44 +1,39 @@
 package tictim.paraglider.contents.recipe;
 
-import com.google.common.collect.Streams;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.item.crafting.display.RecipeDisplay;
-import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.contents.Contents;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public class CosmeticRecipe implements CraftingRecipe {
 	private final String group;
 	private final CraftingBookCategory category;
 	private final Ingredient input;
 	private final List<Ingredient> reagents;
-	private final TransmuteResult result;
-	private @Nullable PlacementInfo placementInfoCache;
+	private final Item resultItem;
 
 	public CosmeticRecipe(String group, CraftingBookCategory category,
 	                      Ingredient input, List<Ingredient> reagents,
-	                      TransmuteResult result) {
+	                      Item resultItem) {
 		this.group = group;
 		this.category = category;
 		this.input = input;
 		this.reagents = reagents;
-		this.result = result;
+		this.resultItem = resultItem;
 	}
 
 	@Override public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
@@ -50,7 +45,7 @@ public class CosmeticRecipe implements CraftingRecipe {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
+			if (this.input.test(stack) && !stack.is(this.resultItem)) {
 				if (inputSeen) return false;
 				inputSeen = true;
 				continue;
@@ -78,23 +73,29 @@ public class CosmeticRecipe implements CraftingRecipe {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
-				return this.result.apply(stack);
+			if (this.input.test(stack) && !stack.is(this.resultItem)) {
+				ItemStack result = new ItemStack(this.resultItem, stack.getCount());
+				result.applyComponents(stack.getComponents());
+				return result;
 			}
 		}
 
 		return ItemStack.EMPTY;
 	}
 
-	@Override public @NotNull List<RecipeDisplay> display() {
-		return List.of(new ShapelessCraftingRecipeDisplay(
-				Streams.concat(
-						Stream.of(this.input.display()),
-						this.reagents.stream().map(Ingredient::display)
-				).toList(),
-				this.result.display(),
-				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
-		));
+	@Override public @NotNull NonNullList<Ingredient> getIngredients() {
+		NonNullList<Ingredient> list = NonNullList.create();
+		list.add(this.input);
+		list.addAll(this.reagents);
+		return list;
+	}
+
+	@Override public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
+		return new ItemStack(this.resultItem);
+	}
+
+	@Override public boolean canCraftInDimensions(int width, int height) {
+		return width * height >= this.reagents.size() + 1;
 	}
 
 	@Override public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
@@ -106,9 +107,9 @@ public class CosmeticRecipe implements CraftingRecipe {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (!inputSeen && this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
+			if (!inputSeen && this.input.test(stack) && !stack.is(this.resultItem)) {
 				inputSeen = true;
-				list.set(i, stack.getCraftingRemainder());
+				list.set(i, stack.getCraftingRemainingItem());
 				continue;
 			}
 
@@ -118,24 +119,12 @@ public class CosmeticRecipe implements CraftingRecipe {
 		return list;
 	}
 
-	@Override public @NotNull String group() {
+	@Override public @NotNull String getGroup() {
 		return group;
 	}
 
 	@Override public @NotNull RecipeSerializer<? extends CraftingRecipe> getSerializer() {
 		return Contents.get().cosmeticRecipeSerializer();
-	}
-
-	@Override public @NotNull PlacementInfo placementInfo() {
-		if (this.placementInfoCache == null) {
-			this.placementInfoCache = PlacementInfo.create(
-					Streams.concat(
-							Stream.of(this.input),
-							this.reagents.stream()
-					).toList()
-			);
-		}
-		return this.placementInfoCache;
 	}
 
 	@Override public @NotNull CraftingBookCategory category() {
@@ -148,7 +137,7 @@ public class CosmeticRecipe implements CraftingRecipe {
 				CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(r -> r.category),
 				Ingredient.CODEC.fieldOf("input").forGetter(r -> r.input),
 				Ingredient.CODEC.listOf(1, 8).fieldOf("reagents").forGetter(r -> r.reagents),
-				TransmuteResult.CODEC.fieldOf("result").forGetter(r -> r.result)
+				BuiltInRegistries.ITEM.byNameCodec().fieldOf("result").forGetter(r -> r.resultItem)
 		).apply(b, CosmeticRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -156,7 +145,7 @@ public class CosmeticRecipe implements CraftingRecipe {
 				CraftingBookCategory.STREAM_CODEC, r -> r.category,
 				Ingredient.CONTENTS_STREAM_CODEC, r -> r.input,
 				Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.reagents,
-				TransmuteResult.STREAM_CODEC, r -> r.result,
+				ByteBufCodecs.registry(Registries.ITEM), r -> r.resultItem,
 				CosmeticRecipe::new
 		);
 

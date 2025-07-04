@@ -336,5 +336,13 @@
 			"translation": [0, -1, 3.5],
 			"scale": [1, 1, 1.25]
 		}
-	}
+	},
+	"overrides":  [
+		{
+			"predicate": {
+				"paraglider:paragliding": 1
+			},
+			"model": "paraglider:item/deku_leaf_on"
+		}
+	]
 }

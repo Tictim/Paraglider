@@ -37,8 +37,8 @@ public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
 		Map<ResourceLocation, List<RecipeHolder<Bargain>>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
 		int count = 0;
 
-		for (RecipeHolder<Bargain> b : this.recipeManager.recipeMap()
-				.byType(Contents.get().bargainRecipeType())) {
+		for (RecipeHolder<Bargain> b : this.recipeManager
+				.getAllRecipesFor(Contents.get().bargainRecipeType())) {
 			ResourceLocation bargainType = b.value().getBargainType();
 			if (BargainTypeRegistry.getFromID(this.registryAccess, Objects.requireNonNull(bargainType)) == null) {
 				missingBargainTypes.computeIfAbsent(bargainType, s -> new ArrayList<>())
@@ -53,7 +53,7 @@ public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
 							.map(e ->
 									"Cannot resolve bargain type " + e.getKey() + " for bargain recipe(s) " +
 											e.getValue().stream()
-													.map(r -> r.id().location().toString())
+													.map(r -> r.id().toString())
 													.collect(Collectors.joining(", ")))
 							.collect(Collectors.joining("\n  ")));
 		}

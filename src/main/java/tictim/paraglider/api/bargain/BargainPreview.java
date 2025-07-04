@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
@@ -16,9 +16,10 @@ public interface BargainPreview<T extends BargainPreview<T>> {
 	ResourceKey<Registry<Type<?>>> TYPE_REGISTRY_KEY = ResourceKey.createRegistryKey(ParagliderAPI.id("bargain_preview_type"));
 
 	/**
-	 * @return Slot display of this preview
+	 * @return Item stack form of this preview
 	 */
-	@NotNull SlotDisplay display();
+	@NotNull List<ItemStack> display();
+
 	/**
 	 * @return Quantity of this preview
 	 */

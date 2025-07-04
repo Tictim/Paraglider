@@ -8,11 +8,9 @@ import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.TransmuteResult;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 
@@ -51,12 +49,12 @@ public class CosmeticRecipeBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	@Override public void save(@NotNull RecipeOutput output, @NotNull ResourceKey<Recipe<?>> resourceKey) {
-		validate(resourceKey);
+	@Override public void save(RecipeOutput recipeOutput, @NotNull ResourceLocation id) {
+		validate(id);
 
-		Advancement.Builder a = output.advancement()
-				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(resourceKey))
-				.rewards(AdvancementRewards.Builder.recipe(resourceKey))
+		Advancement.Builder a = recipeOutput.advancement()
+				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+				.rewards(AdvancementRewards.Builder.recipe(id))
 				.requirements(AdvancementRequirements.Strategy.OR);
 
 		this.criteria.forEach(a::addCriterion);
@@ -66,17 +64,16 @@ public class CosmeticRecipeBuilder implements RecipeBuilder {
 				RecipeBuilder.determineBookCategory(this.category),
 				this.input,
 				List.of(this.reagents),
-				new TransmuteResult(this.result)
+				this.result
 		);
 
-		output.accept(resourceKey, r, a.build(resourceKey.location()
-				.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+		recipeOutput.accept(id, r, a.build(id.withPrefix("recipes/" + this.category.getFolderName() + "/")));
 	}
 
-	private void validate(ResourceKey<Recipe<?>> recipe) {
+	private void validate(ResourceLocation id) {
 		if (this.criteria.isEmpty())
-			throw new IllegalStateException("No way of obtaining recipe " + recipe.location());
+			throw new IllegalStateException("No way of obtaining recipe " + id);
 		if (this.reagents.length == 0)
-			throw new IllegalStateException("No reagents specified for recipe " + recipe.location());
+			throw new IllegalStateException("No reagents specified for recipe " + id);
 	}
 }

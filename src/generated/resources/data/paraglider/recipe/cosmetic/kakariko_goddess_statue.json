@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:statues/goddess",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
   "reagents": [
-    "#minecraft:planks"
+    {
+      "tag": "minecraft:planks"
+    }
   ],
-  "result": {
-    "id": "paraglider:kakariko_goddess_statue"
-  }
+  "result": "paraglider:kakariko_goddess_statue"
 }

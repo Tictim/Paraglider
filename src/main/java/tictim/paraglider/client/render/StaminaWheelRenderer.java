@@ -8,12 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static net.minecraft.util.ARGB.alpha;
+import static net.minecraft.util.FastColor.ARGB32.alpha;
+import static net.minecraft.util.FastColor.ARGB32.color;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public abstract class StaminaWheelRenderer {
@@ -122,7 +121,7 @@ public abstract class StaminaWheelRenderer {
 				Wheel.Segment s = this.mainWheel.segments.get(i);
 				guiGraphics.drawString(font, String.format("#%X", s.color),
 						20 + maxWidth, 10 + font.lineHeight * lines++,
-						ARGB.color(Math.max(255, alpha(s.color) * 2), s.color));
+						color(Math.max(255, alpha(s.color) * 2), s.color));
 			}
 		}
 
@@ -154,24 +153,24 @@ public abstract class StaminaWheelRenderer {
 	private static final float[] edgePoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
 
 	protected void drawWheels(GuiGraphics guiGraphics) {
-		guiGraphics.drawSpecial(s -> {
-			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.FIRST, WHEEL_RADIUS);
-			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.SECOND, WHEEL_RADIUS);
-			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.THIRD, WHEEL_RADIUS);
+		drawWheel(guiGraphics, this.mainWheel, WheelLevel.FIRST, WHEEL_RADIUS);
+		drawWheel(guiGraphics, this.mainWheel, WheelLevel.SECOND, WHEEL_RADIUS);
+		drawWheel(guiGraphics, this.mainWheel, WheelLevel.THIRD, WHEEL_RADIUS);
 
-			if (this.extraWheel.stamina() > 0) {
-				PoseStack pose = guiGraphics.pose();
-				pose.pushPose();
-				pose.translate(-WHEEL_RADIUS - EXTRA_WHEEL_RADIUS
-						- Math.min(3, Math.ceil(toWheelPos(this.mainWheel.maxStamina)) - 1) * 1 - 0.5, 0, 0);
-				drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_1, EXTRA_WHEEL_RADIUS);
-				if (this.extraWheel.stamina > Stamina.STAMINA_PER_WHEEL) {
-					pose.translate(-EXTRA_WHEEL_RADIUS * 2 - 2.5, 0, 0);
-					drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_2, EXTRA_WHEEL_RADIUS);
-				}
-				pose.popPose();
+		guiGraphics.flush();
+
+		if (this.extraWheel.stamina() > 0) {
+			PoseStack pose = guiGraphics.pose();
+			pose.pushPose();
+			pose.translate(-WHEEL_RADIUS - EXTRA_WHEEL_RADIUS
+					- Math.min(3, Math.ceil(toWheelPos(this.mainWheel.maxStamina)) - 1) * 1 - 0.5, 0, 0);
+			drawWheel(guiGraphics, this.extraWheel, WheelLevel.EXTRA_1, EXTRA_WHEEL_RADIUS);
+			if (this.extraWheel.stamina > Stamina.STAMINA_PER_WHEEL) {
+				pose.translate(-EXTRA_WHEEL_RADIUS * 2 - 2.5, 0, 0);
+				drawWheel(guiGraphics, this.extraWheel, WheelLevel.EXTRA_2, EXTRA_WHEEL_RADIUS);
 			}
-		});
+			pose.popPose();
+		}
 
 		int color = this.mainWheel.extraWheelIndicatorColor();
 		if (alpha(color) >= 4) {
@@ -204,8 +203,7 @@ public abstract class StaminaWheelRenderer {
 		pose.popPose();
 	}
 
-	protected void drawWheel(GuiGraphics guiGraphics, MultiBufferSource bufferSource,
-	                         Wheel wheel, WheelLevel wheelLevel, float radius) {
+	protected void drawWheel(GuiGraphics guiGraphics, Wheel wheel, WheelLevel wheelLevel, float radius) {
 		float wheelStart = switch (wheelLevel) {
 			case FIRST -> 0;
 			case SECOND -> 1;
@@ -226,13 +224,13 @@ public abstract class StaminaWheelRenderer {
 			float end = segment.to - wheelStart;
 			if (end <= 0) continue;
 
-			drawSegment(guiGraphics, bufferSource, wheelLevel, start, end, segment.color, radius);
+			drawSegment(guiGraphics, wheelLevel, start, end, segment.color, radius);
 		}
 	}
 
-	protected void drawSegment(GuiGraphics guiGraphics, MultiBufferSource bufferSource, WheelLevel wheelLevel,
+	protected void drawSegment(GuiGraphics guiGraphics, WheelLevel wheelLevel,
 	                           float start, float end, int color, float radius) {
-		VertexConsumer vc = bufferSource.getBuffer(ParagliderRenderTypes.STAMINA_WHEEL.apply(wheelLevel.texture));
+		VertexConsumer vc = guiGraphics.bufferSource().getBuffer(ParagliderRenderTypes.STAMINA_WHEEL.apply(wheelLevel.texture));
 		vc.addVertex(guiGraphics.pose().last(), 0, 0, 0).setUv(0.5f, 0.5f).setColor(color);
 
 		int edgeIndex = 0;

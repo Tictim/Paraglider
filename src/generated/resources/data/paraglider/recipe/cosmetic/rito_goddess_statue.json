@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:statues/goddess",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
   "reagents": [
-    "#minecraft:flowers"
+    {
+      "tag": "minecraft:flowers"
+    }
   ],
-  "result": {
-    "id": "paraglider:rito_goddess_statue"
-  }
+  "result": "paraglider:rito_goddess_statue"
 }

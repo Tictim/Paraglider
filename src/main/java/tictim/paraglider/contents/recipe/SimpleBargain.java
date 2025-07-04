@@ -10,8 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeBookCategories;
-import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +20,8 @@ import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.*;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.recipe.preview.SimplePreview;
+import tictim.paraglider.contents.recipe.preview.IngredientPreview;
+import tictim.paraglider.contents.recipe.preview.ItemPreview;
 import tictim.paraglider.contents.recipe.preview.VesselPreview;
 
 import java.util.*;
@@ -122,7 +121,7 @@ public class SimpleBargain implements Bargain {
 		if (this.demandPreviews != null) return this.demandPreviews;
 		this.demandPreviews = new ArrayList<>();
 
-		for (QuantifiedIngredient i : this.itemDemands) this.demandPreviews.add(new SimplePreview(i));
+		for (QuantifiedIngredient i : this.itemDemands) this.demandPreviews.add(new IngredientPreview(i));
 
 		if (this.heartContainerDemands > 0) {
 			this.demandPreviews.add(new VesselPreview(VesselPreview.VesselType.HEART_CONTAINER, this.heartContainerDemands));
@@ -143,7 +142,7 @@ public class SimpleBargain implements Bargain {
 		if (this.offerPreviews != null) return this.offerPreviews;
 		this.offerPreviews = new ArrayList<>();
 
-		for (QuantifiedItem i : this.itemOffers) this.offerPreviews.add(new SimplePreview(i));
+		for (QuantifiedItem i : this.itemOffers) this.offerPreviews.add(new ItemPreview(i));
 
 		if (this.heartContainerOffers > 0) {
 			this.offerPreviews.add(new VesselPreview(VesselPreview.VesselType.HEART_CONTAINER, this.heartContainerOffers));
@@ -268,8 +267,5 @@ public class SimpleBargain implements Bargain {
 	}
 	@Override public @NotNull RecipeType<Bargain> getType() {
 		return Contents.get().bargainRecipeType();
-	}
-	@Override public @NotNull RecipeBookCategory recipeBookCategory() {
-		return RecipeBookCategories.CRAFTING_BUILDING_BLOCKS;
 	}
 }

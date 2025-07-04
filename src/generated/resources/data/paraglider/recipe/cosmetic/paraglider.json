@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:paragliders",
+  "input": {
+    "tag": "paraglider:paragliders"
+  },
   "reagents": [
-    "#c:rods/wooden"
+    {
+      "tag": "c:rods/wooden"
+    }
   ],
-  "result": {
-    "id": "paraglider:paraglider"
-  }
+  "result": "paraglider:paraglider"
 }

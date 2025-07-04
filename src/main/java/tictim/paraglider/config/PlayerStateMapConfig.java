@@ -135,7 +135,7 @@ public class PlayerStateMapConfig {
 	}
 
 	public @NotNull Future<?> scheduleReload(@Nullable MinecraftServer server, @Nullable Callback callback) {
-		return Util.ioPool().service().submit(() -> reload(r -> {
+		return Util.ioPool().submit(() -> reload(r -> {
 			if (server != null) server.execute(r);
 			else r.run();
 		}, callback));

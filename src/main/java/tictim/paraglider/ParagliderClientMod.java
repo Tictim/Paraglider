@@ -2,18 +2,22 @@ package tictim.paraglider;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
@@ -24,7 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.client.*;
-import tictim.paraglider.contents.ParagliderTags;
+import tictim.paraglider.contents.CommonContents;
+import tictim.paraglider.contents.Contents;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 
 @Mod(value = ParagliderAPI.MODID, dist = Dist.CLIENT)
@@ -48,10 +53,6 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 	public ParagliderClientMod(ModContainer modContainer, IEventBus eventBus) {
 		modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
-		eventBus.addListener((RegisterConditionalItemModelPropertyEvent event) -> {
-			event.register(ParagliderAPI.id("paragliding"), ParaglidingItemProperty.CODEC);
-		});
-
 		eventBus.addListener((RegisterKeyMappingsEvent event) -> {
 			event.register(this.paragliderSettingsKey = new KeyMapping(
 					"key.paraglider.paragliderSettings",
@@ -66,17 +67,6 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 			event.registerAboveAll(ParagliderAPI.id("movement_debug"), ParagliderGuiLayers::renderMovementDebug);
 		});
 
-		eventBus.addListener((RegisterRenderStateModifiersEvent event) -> {
-			event.registerEntityModifier(PlayerRenderer.class, (p, s) -> {
-				ItemStack stack = p.getMainHandItem();
-				if (stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).isParagliding(stack)) {
-					s.leftArmPose = s.rightArmPose = ParaglidingArmPose.ENUM.getValue();
-				}
-			});
-		});
-
-		eventBus.addListener((RegisterRenderPipelinesEvent event) -> event.registerPipeline(ParagliderRenderTypes.STAMINA_WHEEL_PIPELINE));
-
 		eventBus.addListener((RegisterEvent event) -> {
 			event.register(Registries.PARTICLE_TYPE, h -> h.register(
 					WindParticleProvider.PARTICLE_TYPE_ID, WindParticleProvider.PARTICLE_TYPE
@@ -85,6 +75,26 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 
 		eventBus.addListener((RegisterParticleProvidersEvent event) -> {
 			event.registerSpriteSet(WindParticleProvider.PARTICLE_TYPE, WindParticleProvider::new);
+		});
+
+		eventBus.addListener((RegisterClientExtensionsEvent event) -> {
+			Contents c = Contents.get();
+			event.registerItem(ParagliderClientItemExtension.INSTANCE, c.paraglider(), c.dekuLeaf());
+		});
+
+		eventBus.addListener((RegisterColorHandlersEvent.Item event) -> {
+			Contents c = Contents.get();
+			event.register((stack, tintIndex) ->
+							DyedItemColor.getOrDefault(stack, CommonContents.PARAGLIDER_DEFAULT_COLOR),
+					c.paraglider());
+			event.register((stack, tintIndex) ->
+							DyedItemColor.getOrDefault(stack, CommonContents.DEKU_LEAF_DEFAULT_COLOR),
+					c.dekuLeaf());
+		});
+
+		eventBus.addListener((FMLClientSetupEvent event) -> {
+			event.enqueueWork(() -> ItemProperties.register(Contents.get().paraglider(),
+					ParagliderAPI.id("paragliding"), new ParaglidingItemProperty()));
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> this.syncedStateMap = null);

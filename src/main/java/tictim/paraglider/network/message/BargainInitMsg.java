@@ -26,7 +26,7 @@ public record BargainInitMsg(
 	public static final StreamCodec<RegistryFriendlyByteBuf, BargainInitMsg> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, BargainInitMsg::sessionId,
 			BargainCatalog.STREAM_CODEC.apply(ByteBufCodecs.list()), BargainInitMsg::catalog,
-			NetUtils.nullable(Vec3.STREAM_CODEC), BargainInitMsg::lookAt,
+			NetUtils.nullable(NetUtils.VEC3), BargainInitMsg::lookAt,
 			NetUtils.nullable(ComponentSerialization.STREAM_CODEC), BargainInitMsg::dialog,
 			BargainInitMsg::new
 	);

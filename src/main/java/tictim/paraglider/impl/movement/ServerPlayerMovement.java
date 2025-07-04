@@ -206,7 +206,7 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 			ItemStack stack = player().getInventory().getItem(i);
 			if (stack.is(ParagliderTags.PARAGLIDERS)) {
 				ParagliderUtils.getCaps(stack).setParagliding(stack,
-						i == player().getInventory().getSelectedSlot() && state().paragliding());
+						i == player().getInventory().selected && state().paragliding());
 			}
 		}
 

@@ -2,11 +2,12 @@ package tictim.paraglider.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.stamina.Stamina;
 
+import static net.minecraft.util.FastColor.ARGB32.color;
+import static net.minecraft.util.FastColor.ARGB32.lerp;
 import static tictim.paraglider.client.render.EffectTimer.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
@@ -88,9 +89,9 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		if (this.outerWheelEmptyAnim.isActive()) {
 			float d = Math.min(1, (float)this.outerWheelEmptyAnim.activeDuration() / OUTER_WHEEL_EMPTY_DURATION);
-			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
-			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
-					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
+			color = lerp(d, wheelBgColor(wheels - 3), color);
+			wheelIndicatorColor = lerp(d, wheelColor(wheels - 2),
+					wheels == 3 ? color(0, wheelColor(1)) : wheelColor(wheels - 3));
 		}
 
 		wheel.fillWheel(2, staminaWheelPos, color);
@@ -114,9 +115,9 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 
 			if (this.outerWheelFillAnim.isActive()) {
 				float d = Math.min(1, (float)this.outerWheelFillAnim.activeDuration() / OUTER_WHEEL_FILL_DURATION);
-				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
-				wheelIndicatorColor = ARGB.lerp(d,
-						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
+				bgColor = lerp(d, wheelColor(wheels - 4), bgColor);
+				wheelIndicatorColor = lerp(d,
+						wheels == 4 ? color(0, wheelColor(1)) : wheelColor(wheels - 4),
 						wheelColor(wheels - 3));
 			}
 

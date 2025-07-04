@@ -9,15 +9,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +77,6 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 	private boolean dialogUpdated;
 
 	private BargainScreenStaminaWheelRenderer staminaWheelRenderer;
-	private @Nullable ContextMap contextMap;
 
 	public BargainScreen(int sessionId,
 	                     @NotNull List<@NotNull BargainCatalog> catalog,
@@ -141,9 +137,9 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			int yOffset = Math.min(113, this.buttonIndexOffset * k);
 			if (this.buttonIndexOffset == offScreenBargains - 1) yOffset = 113;
 
-			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_SPRITE, left + 90, top + 1 + yOffset, 6, 27);
+			guiGraphics.blitSprite(SCROLLER_SPRITE, left + 90, top + 1 + yOffset, 6, 27);
 		} else {
-			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_DISABLED_SPRITE, left + 90, top + 1, 6, 27);
+			guiGraphics.blitSprite(SCROLLER_DISABLED_SPRITE, left + 90, top + 1, 6, 27);
 		}
 	}
 
@@ -183,7 +179,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 	@Override public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		// no background :)
 
-		guiGraphics.blit(RenderType::guiTextured, MERCHANT_GUI_TEXTURE, getLeft(), getTop(),
+		guiGraphics.blit(MERCHANT_GUI_TEXTURE, getLeft(), getTop(),
 				4, 17,
 				SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT,
 				512, 256);
@@ -212,14 +208,6 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		return bargainIndex < 0 || bargainIndex >= this.catalogs.length ? null : this.catalogs[bargainIndex];
 	}
 
-	@SuppressWarnings("DataFlowIssue")
-	private @NotNull ContextMap contextMap() {
-		if (this.contextMap == null) {
-			this.contextMap = SlotDisplayContext.fromLevel(this.minecraft.level);
-		}
-		return this.contextMap;
-	}
-
 	private @NotNull List<List<ItemStack>> demandPreviewItem(int bargainIndex) {
 		if (bargainIndex < 0 || bargainIndex >= this.catalogs.length) return List.of();
 		BargainCatalog catalog = getBargainCatalog(bargainIndex);
@@ -228,7 +216,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		var ret = this.catalogDemandPreviews[bargainIndex];
 		if (ret == null) {
 			this.catalogDemandPreviews[bargainIndex] = ret = catalog.demands().stream()
-					.map(p -> p.display().resolveForStacks(contextMap()))
+					.map(BargainPreview::display)
 					.toList();
 		}
 		return ret;
@@ -242,7 +230,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		var ret = this.catalogOfferPreviews[bargainIndex];
 		if (ret == null) {
 			this.catalogOfferPreviews[bargainIndex] = ret = catalog.offers().stream()
-					.map(p -> p.display().resolveForStacks(contextMap()))
+					.map(BargainPreview::display)
 					.toList();
 		}
 		return ret;
@@ -287,16 +275,16 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			pose.translate(15 * mag + 2 * textMag, 16 * mag - 7 * textMag, 200);
 			pose.scale(textMag, textMag, 1);
 
-			guiGraphics.drawSpecial(bs -> this.font.drawInBatch(s,
+			this.font.drawInBatch(s,
 					-this.font.width(s),
 					0,
 					0xFFFFFFFF,
 					true,
 					pose.last().pose(),
-					bs,
+					guiGraphics.bufferSource(),
 					Font.DisplayMode.NORMAL,
 					0,
-					0xf000f0));
+					0xf000f0);
 
 			pose.popPose();
 		}
@@ -410,7 +398,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 
 		private void renderTradeArrow(GuiGraphics guiGraphics) {
 			BargainCatalog catalog = catalog();
-			guiGraphics.blitSprite(RenderType::guiTextured,
+			guiGraphics.blitSprite(
 					catalog == null || catalog.canBargain() ? TRADE_ARROW_SPRITE : TRADE_ARROW_OUT_OF_STOCK_SPRITE,
 					getX() + 39, getY() + 5,
 					10, 9);

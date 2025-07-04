@@ -63,12 +63,12 @@ public final class BargainHandler {
 				Objects.requireNonNull(bargainType, "bargainType == null"));
 		if (type == null) return false;
 
-		var bargains = serverPlayer.serverLevel().recipeAccess().recipeMap()
-				.byType(Contents.get().bargainRecipeType())
+		var bargains = serverPlayer.serverLevel().getRecipeManager()
+				.getAllRecipesFor(Contents.get().bargainRecipeType())
 				.stream()
 				.filter(h -> bargainType.equals(h.value().getBargainType()) && h.value().isAvailableFor(player, pos))
 				.collect(Collectors.toMap(
-						h -> h.id().location(),
+						RecipeHolder::id,
 						RecipeHolder::value,
 						(b1, b2) -> b1,
 						Object2ObjectOpenHashMap::new));

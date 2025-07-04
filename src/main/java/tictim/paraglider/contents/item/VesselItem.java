@@ -1,7 +1,7 @@
 package tictim.paraglider.contents.item;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ public abstract class VesselItem extends Item {
 		return true;
 	}
 
-	@Override public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+	@Override public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		VesselContainer vessels = VesselContainer.get(player);
 		if (give(vessels, true, false)) {
@@ -26,9 +26,9 @@ public abstract class VesselItem extends Item {
 				give(vessels, false, true);
 				stack.shrink(1);
 			}
-			return InteractionResult.SUCCESS_SERVER;
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
 		}
-		return InteractionResult.FAIL;
+		return InteractionResultHolder.fail(stack);
 	}
 
 	protected abstract boolean give(VesselContainer vessels, boolean simulate, boolean playEffect);

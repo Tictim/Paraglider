@@ -3,7 +3,9 @@
   "category": "food",
   "cookingtime": 100,
   "experience": 0.35,
-  "ingredient": "paraglider:enduring_mixture",
+  "ingredient": {
+    "item": "paraglider:enduring_mixture"
+  },
   "result": {
     "count": 1,
     "id": "paraglider:enduring_elixir_1"

@@ -8,11 +8,15 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.bargain.BargainPreview;
 
 public final class NetUtils {
 	private NetUtils() {}
+
+	public static final StreamCodec<FriendlyByteBuf, Vec3> VEC3 = StreamCodec.of(
+			FriendlyByteBuf::writeVec3, FriendlyByteBuf::readVec3);
 
 	public static final StreamCodec<FriendlyByteBuf, IntList> INT_LIST =
 			StreamCodec.of(FriendlyByteBuf::writeVarIntArray, FriendlyByteBuf::readVarIntArray)
@@ -24,7 +28,7 @@ public final class NetUtils {
 	@SuppressWarnings("unchecked")
 	private static <T extends BargainPreview<T>> void encodeBargainPreview(RegistryFriendlyByteBuf buffer, BargainPreview<T> preview) {
 		Registry<BargainPreview.Type<?>> bargainPreviewTypes = buffer.registryAccess()
-				.lookupOrThrow(BargainPreview.TYPE_REGISTRY_KEY);
+				.registryOrThrow(BargainPreview.TYPE_REGISTRY_KEY);
 
 		var type = preview.type();
 		int id = bargainPreviewTypes.getId(type);
@@ -35,9 +39,9 @@ public final class NetUtils {
 
 	private static BargainPreview<?> decodeBargainPreview(RegistryFriendlyByteBuf buffer) {
 		Registry<BargainPreview.Type<?>> bargainPreviewTypes = buffer.registryAccess()
-				.lookupOrThrow(BargainPreview.TYPE_REGISTRY_KEY);
+				.registryOrThrow(BargainPreview.TYPE_REGISTRY_KEY);
 
-		return bargainPreviewTypes.get(buffer.readVarInt())
+		return bargainPreviewTypes.getHolder(buffer.readVarInt())
 				.map(ref -> ref.value().streamCodec().decode(buffer))
 				.orElseThrow();
 	}

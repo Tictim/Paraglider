@@ -5,7 +5,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
@@ -14,8 +16,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockTagGen extends BlockTagsProvider {
 	public BlockTagGen(@NotNull PackOutput output,
-	                   @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider) {
-		super(output, lookupProvider, ParagliderAPI.MODID);
+	                   @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider,
+	                   ExistingFileHelper existingFileHelper) {
+		super(output, lookupProvider, ParagliderAPI.MODID, existingFileHelper);
 	}
 
 	@Override protected void addTags(@NotNull HolderLookup.Provider provider) {

@@ -7,6 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tictim.paraglider.network.NetUtils;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
@@ -14,7 +15,7 @@ public record SyncLookAtMsg(int sessionId, @Nullable Vec3 lookAt) implements Cus
 	public static final Type<SyncLookAtMsg> TYPE = new Type<>(id("sync_look_at"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncLookAtMsg> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, SyncLookAtMsg::sessionId,
-			Vec3.STREAM_CODEC, SyncLookAtMsg::lookAt,
+			NetUtils.VEC3, SyncLookAtMsg::lookAt,
 			SyncLookAtMsg::new
 	);
 

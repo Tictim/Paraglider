@@ -26,7 +26,7 @@ public final class ParagliderVillageStructures {
 	public static void addVillageStructures(RegistryAccess registryAccess) {
 		if (!FeatureCfg.get().enableVillageStructures()) return;
 
-		Registry<StructureTemplatePool> reg = registryAccess.lookupOrThrow(Registries.TEMPLATE_POOL);
+		Registry<StructureTemplatePool> reg = registryAccess.registryOrThrow(Registries.TEMPLATE_POOL);
 
 		ParagliderMod.LOGGER.debug("Start adding village structures");
 		appendPool(reg, ResourceLocation.withDefaultNamespace("village/desert/houses"),
@@ -58,13 +58,11 @@ public final class ParagliderVillageStructures {
 			ResourceLocation id,
 			Pair<Function<StructureTemplatePool.Projection, ? extends StructurePoolElement>, Integer>... elementToWeight
 	) {
-		var oPool = templatePoolRegistry.get(id);
-		if (oPool.isEmpty()) {
+		StructureTemplatePool pool = templatePoolRegistry.get(id);
+		if (pool == null) {
 			ParagliderMod.LOGGER.warn("Template pool '{}' doesn't exist", id);
 			return;
 		}
-
-		StructureTemplatePool pool = oPool.get().value();
 
 		if (elementToWeight.length == 0) return;
 

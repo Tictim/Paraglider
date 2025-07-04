@@ -2,7 +2,6 @@ package datagen;
 
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -28,8 +27,6 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 	}
 
 	@Override protected void start() {
-		var entities = registries.lookupOrThrow(Registries.ENTITY_TYPE);
-
 		add("totw_reworked/chest", new ParagliderLoot(
 				false,
 				LootTableIdCondition.builder(ResourceLocation.fromNamespaceAndPath("totw_reworked", "tower_chest")).build()
@@ -41,7 +38,8 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 
 		add("wither", new VesselLoot(
 				1,
-				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
+				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+						EntityPredicate.Builder.entity().of(EntityType.WITHER)).build(),
 				LootItemKilledByPlayerCondition.killedByPlayer().build(),
 				LootConditions.WITHER_DROPS_VESSEL
 		));

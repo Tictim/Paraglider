@@ -366,5 +366,13 @@
 			"rotation": [-90, 180, 0],
 			"translation": [0, -1.5, 0]
 		}
-	}
+	},
+	"overrides":  [
+		{
+			"predicate": {
+				"paraglider:paragliding": 1
+			},
+			"model": "paraglider:item/paraglider_on"
+		}
+	]
 }

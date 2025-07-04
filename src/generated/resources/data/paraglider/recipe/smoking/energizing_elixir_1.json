@@ -3,7 +3,9 @@
   "category": "food",
   "cookingtime": 100,
   "experience": 0.35,
-  "ingredient": "paraglider:energizing_mixture",
+  "ingredient": {
+    "item": "paraglider:energizing_mixture"
+  },
   "result": {
     "count": 1,
     "id": "paraglider:energizing_elixir_1"

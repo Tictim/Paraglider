@@ -100,8 +100,8 @@ public class StatueBargainBuilder implements RecipeBuilder {
 		return Items.AIR;
 	}
 
-	@Override public void save(RecipeOutput output, @NotNull ResourceKey<Recipe<?>> resourceKey) {
-		output.accept(resourceKey, new SimpleBargain(
+	@Override public void save(RecipeOutput output, @NotNull ResourceLocation id) {
+		output.accept(id, new SimpleBargain(
 						this.bargainType,
 						this.itemDemands,
 						this.heartContainerDemands,

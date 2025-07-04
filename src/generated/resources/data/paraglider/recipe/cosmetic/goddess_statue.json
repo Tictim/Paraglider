@@ -1,11 +1,13 @@
 {
   "type": "paraglider:cosmetic",
   "category": "misc",
-  "input": "#paraglider:statues/goddess",
+  "input": {
+    "tag": "paraglider:statues/goddess"
+  },
   "reagents": [
-    "#c:cobblestones"
+    {
+      "tag": "c:cobblestones"
+    }
   ],
-  "result": {
-    "id": "paraglider:goddess_statue"
-  }
+  "result": "paraglider:goddess_statue"
 }

@@ -1,16 +1,12 @@
 package tictim.paraglider.contents.recipe;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +26,8 @@ public enum WaterBottleIngredientType implements ICustomIngredient {
 				stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(Potions.WATER);
 	}
 
-	@Override public @NotNull Stream<Holder<Item>> items() {
-		return Stream.of(BuiltInRegistries.ITEM.wrapAsHolder(Items.POTION));
+	@Override public @NotNull Stream<ItemStack> getItems() {
+		return Stream.of(PotionContents.createItemStack(Items.POTION, Potions.WATER));
 	}
 
 	@Override public boolean isSimple() {
@@ -40,10 +36,6 @@ public enum WaterBottleIngredientType implements ICustomIngredient {
 
 	@Override public @NotNull IngredientType<?> getType() {
 		return this.type;
-	}
-
-	@Override public @NotNull SlotDisplay display() {
-		return new SlotDisplay.ItemStackSlotDisplay(PotionContents.createItemStack(Items.POTION, Potions.WATER));
 	}
 
 	@Override public String toString() {

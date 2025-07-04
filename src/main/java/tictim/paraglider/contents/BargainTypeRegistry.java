@@ -25,6 +25,6 @@ public final class BargainTypeRegistry {
 	}
 
 	public static @Nullable BargainType getFromID(@NotNull RegistryAccess registryAccess, @NotNull ResourceLocation id) {
-		return registryAccess.lookupOrThrow(REGISTRY_KEY).getValue(id);
+		return registryAccess.registryOrThrow(REGISTRY_KEY).get(id);
 	}
 }
