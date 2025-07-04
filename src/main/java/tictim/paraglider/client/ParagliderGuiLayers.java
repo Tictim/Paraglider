@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
@@ -14,6 +13,8 @@ import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.client.render.InGameStaminaWheelRenderer;
 import tictim.paraglider.client.screen.DisableStaminaRender;
+import tictim.paraglider.client.settings.ParagliderClientSettings;
+import tictim.paraglider.client.settings.StaminaWheelPosition;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.impl.movement.ClientPlayerMovement;
 import tictim.paraglider.wind.Wind;
@@ -21,8 +22,6 @@ import tictim.paraglider.wind.Wind;
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
 
 public final class ParagliderGuiLayers {
 	private ParagliderGuiLayers() {}
@@ -33,15 +32,15 @@ public final class ParagliderGuiLayers {
 				mc.screen instanceof DisableStaminaRender ||
 				!Stamina.get(mc.player).renderStaminaWheel() ||
 				!ParagliderMod.instance().getPlayerStateMap().hasStaminaConsumption()) return;
-		int w = mc.getWindow().getGuiScaledWidth();
-		int h = mc.getWindow().getGuiScaledHeight();
 
 		ParagliderClientSettings settings = ParagliderClientSettings.get();
-		int x = Mth.clamp((int)Math.round(settings.staminaWheelX() * w), 1 + WHEEL_RADIUS, w - 2 - WHEEL_RADIUS);
-		int y = Mth.clamp((int)Math.round(settings.staminaWheelY() * h), 1 + WHEEL_RADIUS, h - 2 - WHEEL_RADIUS);
+		StaminaWheelPosition pos = settings.staminaWheelPosition();
+		int x = (int)Math.round(pos.x(guiGraphics.guiWidth()));
+		int y = (int)Math.round(pos.y(guiGraphics.guiHeight()));
 
 		InGameStaminaWheelRenderer.get().render(guiGraphics, x, y, 25,
-				deltaTracker.getGameTimeDeltaPartialTick(false));
+				deltaTracker.getGameTimeDeltaPartialTick(false),
+				settings.extraWheelAttachment());
 	}
 
 	private static int yOffset;
@@ -64,7 +63,6 @@ public final class ParagliderGuiLayers {
 
 	private static final DecimalFormat D1 = new DecimalFormat("0.0");
 	private static final DecimalFormat D2 = new DecimalFormat("0.00");
-	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final DecimalFormat PERCENTAGE_SIGNED = new DecimalFormat("+#.#%;-#.#%");
 
 	private static void addDebugText(Player p, Consumer<String> consumer) {
@@ -113,7 +111,5 @@ public final class ParagliderGuiLayers {
 
 		consumer.accept(vessels.staminaVessel() + " Stamina Vessels, " + vessels.heartContainer() + " Heart Containers");
 		consumer.accept(movement.recoveryDelay() + " Recovery Delay");
-		consumer.accept("Stamina Wheel X: " + PERCENTAGE.format(clientSettings.staminaWheelX()) +
-				", Stamina Wheel Y: " + PERCENTAGE.format(clientSettings.staminaWheelY()));
 	}
 }

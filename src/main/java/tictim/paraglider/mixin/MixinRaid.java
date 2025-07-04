@@ -23,10 +23,12 @@ import java.util.UUID;
 @Mixin(Raid.class)
 public abstract class MixinRaid {
 	@Shadow @Final
+	private ServerLevel level;
+	@Shadow @Final
 	private Set<UUID> heroesOfTheVillage;
 
 	@Inject(
-			method = "tick(Lnet/minecraft/server/level/ServerLevel;)V",
+			method = "tick()V",
 			at = {
 					@At(shift = Shift.AFTER, value = "FIELD", target = "Lnet/minecraft/world/entity/raid/Raid;status:Lnet/minecraft/world/entity/raid/Raid$RaidStatus;", opcode = Opcodes.PUTFIELD)
 			},
@@ -34,12 +36,12 @@ public abstract class MixinRaid {
 					@Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/raid/Raid;isStarted()Z"))
 			}
 	)
-	public void paraglider$awardVessel(ServerLevel level, CallbackInfo info) {
+	public void paraglider$awardVessel(CallbackInfo info) {
 		if (!Cfg.get().raidGivesVessel()) return;
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if (item == null) return;
 		for (UUID uuid : this.heroesOfTheVillage) {
-			if (level.getEntity(uuid) instanceof Player player && !player.isSpectator()) {
+			if (this.level.getEntity(uuid) instanceof Player player && !player.isSpectator()) {
 				ParagliderUtils.giveItem(player, new ItemStack(item));
 			}
 		}

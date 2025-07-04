@@ -103,7 +103,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 			float staminaEndWheePos = toWheelPos(extraStamina);
 			this.extraWheel.fillWheel(staminaEndWheePos, (float)Math.ceil(staminaEndWheePos), EMPTY);
-			this.extraWheel.setExtraWheelIndicatorColor(extraWheelColor);
+			this.extraWheel.setIndicatorColor(extraWheelColor);
 
 			if (staminaDeltaHighlightRemaining > 0) {
 				this.extraWheel.fillWheel(
@@ -163,7 +163,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 			wheel.fillWheel(staminaWheelPos, (float)Math.ceil(staminaWheelPos), bgColor);
 		}
 
-		wheel.setExtraWheelIndicatorColor(wheelIndicatorColor);
+		wheel.setIndicatorColor(wheelIndicatorColor);
 	}
 
 	public void reset() {

@@ -14,7 +14,8 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderClientMod;
-import tictim.paraglider.client.ParagliderClientSettings;
+import tictim.paraglider.client.settings.ParagliderClientSettings;
+import tictim.paraglider.client.settings.ParagliderClientSettingsIO;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -38,25 +39,34 @@ public class ParagliderSettingsScreen extends Screen {
 	}
 
 	public void saveSettings() {
+		var currentSettings = ParagliderClientSettings.get();
+		var newSettings = currentSettings;
+
 		if (this.particleSliderWidget != null && this.particleSliderWidget.dirty) {
-			ParagliderClientSettings.get().setWindParticleFrequency(this.particleSliderWidget.value());
+			newSettings = new ParagliderClientSettings(
+					currentSettings.staminaWheelPosition(),
+					this.particleSliderWidget.value(),
+					currentSettings.extraWheelAttachment()
+			);
 			this.particleSliderWidget.dirty = false;
 		}
 
+		ParagliderClientMod.instance().setSettings(newSettings);
+
 		SaveLoadAction saveLoadAction = new SaveLoadAction(false, null);
-		Util.ioPool().execute(() -> saveLoadAction.notifySaveResult(ParagliderClientSettings.get().save()));
+		ParagliderClientSettingsIO.save(newSettings, saveLoadAction::notifySaveResult);
 		this.saveLoadAction = saveLoadAction;
 	}
 
 	public void loadSettings() {
 		enableWidgets(false);
 		SaveLoadAction saveLoadAction = new SaveLoadAction(true, b -> enableWidgets(true));
-		Util.ioPool().execute(() -> saveLoadAction.notifySaveResult(ParagliderClientSettings.get().load()));
+		ParagliderClientSettingsIO.load(saveLoadAction::notifySaveResult);
 		this.saveLoadAction = saveLoadAction;
 	}
 
 	private void enableWidgets(boolean enabled) {
-		for (AbstractWidget widget : widgets) widget.active = enabled;
+		for (AbstractWidget widget : this.widgets) widget.active = enabled;
 	}
 
 	@Override protected void init() {
@@ -83,7 +93,7 @@ public class ParagliderSettingsScreen extends Screen {
 				.bounds(this.width - 128 - 10, this.height - 20 - 10 - 20 - 10 - 20 - 10, 128, 20)
 				.build());
 		this.widgets.add(Button.builder(Component.translatable("paraglider.settings.open_folder"),
-						b -> Util.getPlatform().openUri(ParagliderClientSettings.get().configPath().getParent().toUri()))
+						b -> Util.getPlatform().openUri(ParagliderClientSettingsIO.FILEPATH.getParent().toUri()))
 				.bounds(this.width - 128 - 10, this.height - 20 - 10 - 20 - 10, 128, 20)
 				.tooltip(Tooltip.create(Component.translatable("paraglider.settings.open_folder.tooltip")))
 				.build());

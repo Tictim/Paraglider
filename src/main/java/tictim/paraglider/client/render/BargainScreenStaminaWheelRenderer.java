@@ -133,6 +133,6 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 			}
 		}
 
-		wheel.setExtraWheelIndicatorColor(wheelIndicatorColor);
+		wheel.setIndicatorColor(wheelIndicatorColor);
 	}
 }

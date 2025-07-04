@@ -10,7 +10,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -27,10 +26,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.api.ParagliderAPI;
-import tictim.paraglider.client.*;
+import tictim.paraglider.client.ParagliderClientItemExtension;
+import tictim.paraglider.client.ParagliderGuiLayers;
+import tictim.paraglider.client.ParaglidingItemProperty;
+import tictim.paraglider.client.WindParticleProvider;
+import tictim.paraglider.client.settings.ParagliderClientSettings;
+import tictim.paraglider.client.settings.ParagliderClientSettingsIO;
 import tictim.paraglider.contents.CommonContents;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.impl.movement.PlayerStateMap;
+
+import java.util.Objects;
 
 @Mod(value = ParagliderAPI.MODID, dist = Dist.CLIENT)
 public class ParagliderClientMod implements ParagliderMod.IClient {
@@ -46,7 +52,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		instance = this;
 	}
 
-	private final ParagliderClientSettings clientSettings = new ParagliderClientSettings(FMLPaths.GAMEDIR.get());
+	private @Nullable ParagliderClientSettings clientSettings;
 	private @Nullable PlayerStateMap syncedStateMap;
 	private @Nullable KeyMapping paragliderSettingsKey;
 
@@ -99,11 +105,15 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> this.syncedStateMap = null);
 
-		this.clientSettings.load();
+		ParagliderClientSettingsIO.load(null);
 	}
 
 	public @NotNull ParagliderClientSettings getSettings() {
-		return this.clientSettings;
+		return Objects.requireNonNullElse(this.clientSettings, ParagliderClientSettings.DEFAULT);
+	}
+
+	public void setSettings(@Nullable ParagliderClientSettings settings) {
+		this.clientSettings = settings;
 	}
 
 	public @NotNull KeyMapping getParagliderSettingsKey() {

@@ -19,7 +19,7 @@ import tictim.paraglider.contents.mobeffect.StaminaEfficiencyMobEffect;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class BaseElixirItem extends Item {
+public abstract class BaseElixirItem extends Item {
 	private static final DecimalFormat D0 = new DecimalFormat("0.#");
 	private static final DecimalFormat PCT = new DecimalFormat("+0%");
 
@@ -41,6 +41,29 @@ public class BaseElixirItem extends Item {
 		return 12; // 0.6s
 	}
 
+	@Override public @NotNull ItemStack finishUsingItem(
+			@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity) {
+		if (livingEntity instanceof Player p) {
+			applyEffect(p);
+
+			p.awardStat(Stats.ITEM_USED.get(this));
+			stack.consume(1, p);
+
+			if (!p.hasInfiniteMaterials()) {
+				if (stack.isEmpty()) {
+					return new ItemStack(Items.GLASS_BOTTLE);
+				}
+
+				p.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
+			}
+		}
+
+		livingEntity.gameEvent(GameEvent.DRINK);
+		return stack;
+	}
+
+	protected abstract void applyEffect(Player player);
+
 	public static class Energizing extends BaseElixirItem {
 		private final double staminaRecovered;
 		private final int staminaEfficiencyLevel;
@@ -57,38 +80,20 @@ public class BaseElixirItem extends Item {
 			this.staminaEfficiencyDuration = staminaEfficiencyDuration;
 		}
 
-		@Override public @NotNull ItemStack finishUsingItem(
-				@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity livingEntity) {
-			if (livingEntity instanceof Player p) {
-				Stamina stamina = Stamina.get(p);
-				stamina.giveStamina(this.staminaRecovered, false);
+		@Override protected void applyEffect(Player player) {
+			Stamina stamina = Stamina.get(player);
+			stamina.giveStamina(this.staminaRecovered, false);
 
-				if (this.staminaEfficiencyLevel >= 0 && this.staminaEfficiencyDuration > 0) {
-					p.addEffect(new MobEffectInstance(Contents.get().staminaEfficiencyEffect,
-							this.staminaEfficiencyDuration, this.staminaEfficiencyLevel));
-				}
-
-				p.awardStat(Stats.ITEM_USED.get(this));
-				stack.consume(1, p);
-
-				if (!p.hasInfiniteMaterials()) {
-					if (stack.isEmpty()) {
-						return new ItemStack(Items.GLASS_BOTTLE);
-					}
-
-					p.getInventory().add(new ItemStack(Items.GLASS_BOTTLE));
-				}
+			if (this.staminaEfficiencyLevel >= 0 && this.staminaEfficiencyDuration > 0) {
+				player.addEffect(new MobEffectInstance(Contents.get().staminaEfficiencyEffect,
+						this.staminaEfficiencyDuration, this.staminaEfficiencyLevel));
 			}
-
-			livingEntity.gameEvent(GameEvent.DRINK);
-			return stack;
 		}
 
 		@Override public void appendHoverText(
 				@NotNull ItemStack stack, @NotNull TooltipContext context,
 				@NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-
-			tooltipComponents.add(Component.translatable("tooltip.paraglider.give_extra_stamina",
+			tooltipComponents.add(Component.translatable("tooltip.paraglider.restore_stamina",
 					Component.literal(D0.format(this.staminaRecovered / Stamina.STAMINA_PER_WHEEL))
 							.withStyle(ChatFormatting.YELLOW)
 			).withStyle(ChatFormatting.GREEN));
@@ -111,10 +116,17 @@ public class BaseElixirItem extends Item {
 			this.extraStamina = extraStamina;
 		}
 
+		@Override protected void applyEffect(Player player) {
+			Stamina stamina = Stamina.get(player);
+			double extraStamina = stamina.extraStamina();
+			if (extraStamina < this.extraStamina)
+				stamina.setExtraStamina(this.extraStamina);
+		}
+
 		@Override public void appendHoverText(
 				@NotNull ItemStack stack, @NotNull TooltipContext context,
 				@NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-			tooltipComponents.add(Component.translatable("tooltip.paraglider.restore_stamina",
+			tooltipComponents.add(Component.translatable("tooltip.paraglider.give_extra_stamina",
 					Component.literal(D0.format(this.extraStamina / Stamina.STAMINA_PER_WHEEL))
 							.withStyle(ChatFormatting.YELLOW)
 			).withStyle(ChatFormatting.GREEN));
