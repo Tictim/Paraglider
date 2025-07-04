@@ -231,7 +231,7 @@ public abstract class StaminaWheelRenderer {
 			case LEFT, RIGHT -> 0;
 			case TOP, BOTTOM -> {
 				double offset = -WHEEL_RADIUS - EXTRA_WHEEL_RADIUS - wheels - 0.5;
-				if(hasTwoExtraWheels) offset += 2;
+				if (hasTwoExtraWheels) offset += 2;
 				if (extraWheelAttachment == ExtraWheelAttachment.BOTTOM) offset = -offset;
 				yield offset;
 			}

@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
