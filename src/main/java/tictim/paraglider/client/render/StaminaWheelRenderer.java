@@ -1,13 +1,15 @@
 package tictim.paraglider.client.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -19,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
-import tictim.paraglider.client.ParagliderRenderTypes;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.contents.ParagliderTags;
 
@@ -153,6 +154,10 @@ public abstract class StaminaWheelRenderer {
 	private static final float[] edgePoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
 
 	protected void drawWheels(GuiGraphics guiGraphics) {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
+
 		drawWheel(guiGraphics, this.mainWheel, WheelLevel.FIRST, WHEEL_RADIUS);
 		drawWheel(guiGraphics, this.mainWheel, WheelLevel.SECOND, WHEEL_RADIUS);
 		drawWheel(guiGraphics, this.mainWheel, WheelLevel.THIRD, WHEEL_RADIUS);
@@ -185,6 +190,8 @@ public abstract class StaminaWheelRenderer {
 						true, 1 - WHEEL_RADIUS, 1 - WHEEL_RADIUS, color);
 			}
 		}
+
+		RenderSystem.disableBlend();
 	}
 
 	protected void drawText(GuiGraphics guiGraphics, String text, boolean alignRight,
@@ -230,8 +237,11 @@ public abstract class StaminaWheelRenderer {
 
 	protected void drawSegment(GuiGraphics guiGraphics, WheelLevel wheelLevel,
 	                           float start, float end, int color, float radius) {
-		VertexConsumer vc = guiGraphics.bufferSource().getBuffer(ParagliderRenderTypes.STAMINA_WHEEL.apply(wheelLevel.texture));
-		vc.addVertex(guiGraphics.pose().last(), 0, 0, 0).setUv(0.5f, 0.5f).setColor(color);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShaderTexture(0, wheelLevel.texture);
+
+		BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_TEX_COLOR);
+		b.addVertex(guiGraphics.pose().last(), 0, 0, 0).setUv(0.5f, 0.5f).setColor(color);
 
 		int edgeIndex = 0;
 		int segmentIndex = 0;
@@ -242,16 +252,18 @@ public abstract class StaminaWheelRenderer {
 
 			if (currentSegment <= currentEdge) {
 				if (currentSegment > 0) {
-					vert(guiGraphics, vc, currentSegment, radius, color);
+					vert(guiGraphics, b, currentSegment, radius, color);
 				}
 				segmentIndex++;
 			} else {
 				if (segmentIndex > 0) {
-					vert(guiGraphics, vc, currentEdge, radius, color);
+					vert(guiGraphics, b, currentEdge, radius, color);
 				}
 				edgeIndex++;
 			}
 		}
+
+		BufferUploader.drawWithShader(b.buildOrThrow());
 	}
 
 	protected void vert(GuiGraphics guiGraphics, VertexConsumer vc, float point, float radius, int color) {
