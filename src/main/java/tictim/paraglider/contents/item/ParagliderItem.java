@@ -30,7 +30,7 @@ public class ParagliderItem extends Item {
 	}
 
 	@Override public int getMaxDamage(@NotNull ItemStack stack) {
-		return Cfg.get().paragliderDurability();
+		return Math.max(1, Cfg.get().paragliderDurability());
 	}
 
 	@Override public <T extends LivingEntity> int damageItem(@NotNull ItemStack stack, int amount, @Nullable T entity, @NotNull Consumer<Item> onBroken) {
