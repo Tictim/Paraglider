@@ -59,6 +59,12 @@
   "bargain.paraglider.stamina_vessel": "Stamina Vessel",
   "bargain.paraglider.stamina_vessel.s": "%s Stamina Vessels",
 
+  "block.paraglider.goddess_statue": "Goddess Statue",
+  "block.paraglider.goron_goddess_statue": "Goddess Statue",
+  "block.paraglider.horned_statue": "Horned Statue",
+  "block.paraglider.kakariko_goddess_statue": "Goddess Statue",
+  "block.paraglider.rito_goddess_statue": "Goddess Statue",
+
   "commands.paraglider.bargain.end.already_finished": "The bargain with %s is already finished.",
   "commands.paraglider.bargain.end.no_bargain": "No bargain is currently in place with %s.",
   "commands.paraglider.bargain.end.success": "Successfully finished bargain with %s.",
@@ -111,13 +117,8 @@
   "item.paraglider.energizing_elixir_3": "Energizing Elixir",
   "item.paraglider.energizing_mixture": "Energizing Mixture",
   "item.paraglider.essence": "Essence",
-  "item.paraglider.goddess_statue": "Goddess Statue",
-  "item.paraglider.goron_goddess_statue": "Goddess Statue",
   "item.paraglider.heart_container": "Heart Container",
-  "item.paraglider.horned_statue": "Horned Statue",
-  "item.paraglider.kakariko_goddess_statue": "Goddess Statue",
   "item.paraglider.paraglider": "Paraglider",
-  "item.paraglider.rito_goddess_statue": "Goddess Statue",
   "item.paraglider.spirit_orb": "Spirit Orb",
   "item.paraglider.stamina_vessel": "Stamina Vessel",
 

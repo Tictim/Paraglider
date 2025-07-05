@@ -59,6 +59,12 @@
   "bargain.paraglider.stamina_vessel": "스태미나의 그릇",
   "bargain.paraglider.stamina_vessel.s": "스태미나의 그릇 %s개",
 
+  "block.paraglider.goddess_statue": "여신상",
+  "block.paraglider.goron_goddess_statue": "여신상",
+  "block.paraglider.horned_statue": "악마상",
+  "block.paraglider.kakariko_goddess_statue": "여신상",
+  "block.paraglider.rito_goddess_statue": "여신상",
+
   "commands.paraglider.bargain.end.already_finished": "%s의 거래는 이미 종료되었습니다.",
   "commands.paraglider.bargain.end.no_bargain": "%s가 수행하고 있는 거래가 없습니다.",
   "commands.paraglider.bargain.end.success": "%s의 거래를 종료했습니다.",
@@ -109,13 +115,8 @@
   "item.paraglider.energizing_elixir_3": "원기 물약",
   "item.paraglider.energizing_mixture": "원기 혼합물",
   "item.paraglider.essence": "그릇의 정수",
-  "item.paraglider.goddess_statue": "여신상",
-  "item.paraglider.goron_goddess_statue": "여신상",
   "item.paraglider.heart_container": "생명의 그릇",
-  "item.paraglider.horned_statue": "악마상",
-  "item.paraglider.kakariko_goddess_statue": "여신상",
   "item.paraglider.paraglider": "패러세일",
-  "item.paraglider.rito_goddess_statue": "여신상",
   "item.paraglider.spirit_orb": "극복의 증표",
   "item.paraglider.stamina_vessel": "스태미나의 그릇",
 
