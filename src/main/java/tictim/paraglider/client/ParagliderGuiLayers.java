@@ -35,8 +35,8 @@ public final class ParagliderGuiLayers {
 
 		ParagliderClientSettings settings = ParagliderClientSettings.get();
 		StaminaWheelPosition pos = settings.staminaWheelPosition();
-		int x = (int)Math.round(pos.x(guiGraphics.guiWidth()));
-		int y = (int)Math.round(pos.y(guiGraphics.guiHeight()));
+		int x = (int)Math.floor(pos.x(guiGraphics.guiWidth()));
+		int y = (int)Math.floor(pos.y(guiGraphics.guiHeight()));
 
 		InGameStaminaWheelRenderer.get().render(guiGraphics, x, y, 25,
 				deltaTracker.getGameTimeDeltaPartialTick(false),

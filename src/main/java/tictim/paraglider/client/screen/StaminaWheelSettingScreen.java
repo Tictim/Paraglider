@@ -139,27 +139,31 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	@Override
 	public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		boolean wheelAtRight = this.staminaWheelWidget.wheelX >= this.width / 2.0;
+		boolean wheelAtDown = this.staminaWheelWidget.wheelY >= this.height / 2.0;
 
 		int topWidgetWidth = 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2 + 64 + 2;
 		int topWidgetHeight = 2 + this.font.lineHeight + 2 + this.presetButtons.size() * 20 + 2;
 		int topWidgetX = wheelAtRight ? 0 : this.width - topWidgetWidth;
+		int topWidgetY = wheelAtDown ? this.height - topWidgetHeight : 0;
 
 		int textWidth = Arrays.stream(this.helpText).mapToInt(e -> this.font.width(e)).max().orElse(0) + 6 + 48;
 		int textHeight = Math.max(this.helpText.length * this.font.lineHeight, 40 + 2) + 4;
 		int textX = wheelAtRight ? 0 : this.width - textWidth;
-		int textY = this.height - textHeight;
+		int textY = wheelAtDown ? 0 : this.height - textHeight;
 
 		for (int i = 0; i < this.anchorButtons.size(); i++) {
 			Button button = this.anchorButtons.get(i);
 			button.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * (i % 3),
-					2 + this.font.lineHeight + 2 + ANCHOR_BUTTON_SIZE * (i / 3));
+					topWidgetY + 2 + this.font.lineHeight + 2 + ANCHOR_BUTTON_SIZE * (i / 3));
 		}
 
-		this.extraWheelAttachmentCycleButton.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2, 2 + this.font.lineHeight + 2);
+		this.extraWheelAttachmentCycleButton.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2,
+				topWidgetY + 2 + this.font.lineHeight + 2);
 
 		for (int i = 0; i < this.presetButtons.size(); i++) {
 			Button button = this.presetButtons.get(i);
-			button.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2, 2 + this.font.lineHeight + 2 + i * 20);
+			button.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2,
+					topWidgetY + 2 + this.font.lineHeight + 2 + i * 20);
 		}
 
 		this.saveButton.setX(textX + textWidth - this.saveButton.getWidth() - 2);
@@ -167,14 +171,14 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.cancelButton.setX(textX + textWidth - this.cancelButton.getWidth() - 2);
 		this.cancelButton.setY(textY + textHeight - this.saveButton.getHeight() - this.cancelButton.getHeight() - 4);
 
-		guiGraphics.fillGradient(topWidgetX, 0, topWidgetX + topWidgetWidth, topWidgetHeight, 0x80000000, 0x80000000);
+		guiGraphics.fillGradient(topWidgetX, topWidgetY, topWidgetX + topWidgetWidth, topWidgetY + topWidgetHeight, 0x80000000, 0x80000000);
 		guiGraphics.fillGradient(textX, textY, textX + textWidth, textY + textHeight, 0x80000000, 0x80000000);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
 		guiGraphics.drawString(this.font, this.anchorText,
-				topWidgetX + 2, 2, -1);
+				topWidgetX + 2, topWidgetY + 2, -1);
 		guiGraphics.drawString(this.font, this.presetText,
-				topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2, 2, -1);
+				topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2, topWidgetY + 2, -1);
 
 		int y = textY + 2;
 		for (Component t : this.helpText) {
@@ -275,26 +279,30 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			guiGraphics.fill(getX() - 1, getY() - 1, getX(), getY() + height + 1, color);
 			guiGraphics.fill(getX() + width, getY() - 1, getX() + width + 1, getY() + height + 1, color);
 
-			this.screen.wheelRenderer.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, 0, partialTicks,
-					this.screen.extraWheelAttachment);
-
-			String s = Math.round(this.wheelX) + ", " + Math.round(this.wheelY);
+			String s = Math.floor(this.wheelX) + ", " + Math.floor(this.wheelY);
 			Dir8 anchor = this.screen.anchor;
+			String s2;
 			if (anchor == null) {
-				s += " (" + PERCENTAGE.format(this.wheelX / (double)this.screen.width) + ", " +
-						PERCENTAGE.format(this.wheelY / (double)this.screen.height) + ")";
+				s2 = PERCENTAGE.format(this.wheelX / (double)this.screen.width) + ", " +
+						PERCENTAGE.format(this.wheelY / (double)this.screen.height);
 			} else {
-				s += " (" + anchor + ": " +
-						Math.round(this.wheelX - anchor.anchorX(this.screen.width)) + ", " +
-						Math.round(this.wheelY - anchor.anchorY(this.screen.height)) + ")";
+				s2 = anchor + ": " +
+						Math.floor(this.wheelX - anchor.anchorX(this.screen.width)) + ", " +
+						Math.floor(this.wheelY - anchor.anchorY(this.screen.height));
 			}
 
 			Font font = this.screen.font;
 			int sw = font.width(s);
 
 			int textX = Math.min(getX(), this.screen.width - sw - 3);
-			int textY = this.wheelY >= this.screen.height / 2.0 ? getY() - 1 - font.lineHeight : getY() + this.height + 1;
-			guiGraphics.drawString(font, s, textX, textY, 0xFF00DF53);
+			int textY = this.wheelY >= this.screen.height / 2.0 ?
+					getY() - 1 - font.lineHeight * 2 :
+					getY() + this.height + 2;
+			guiGraphics.drawString(font, s, textX, textY, color);
+			guiGraphics.drawString(font, s2, textX, textY + font.lineHeight, color);
+
+			this.screen.wheelRenderer.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, 0, partialTicks,
+					this.screen.extraWheelAttachment);
 		}
 
 		@Override public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -345,8 +353,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		private void setWheelPosUncapped(double x, double y) {
 			this.wheelX = x;
 			this.wheelY = y;
-			setX((int)Math.round(x) - WHEEL_RADIUS);
-			setY((int)Math.round(y) - WHEEL_RADIUS);
+			setX((int)Math.floor(x) - WHEEL_RADIUS);
+			setY((int)Math.floor(y) - WHEEL_RADIUS);
 		}
 	}
 }
