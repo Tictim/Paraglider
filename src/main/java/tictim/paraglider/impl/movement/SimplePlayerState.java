@@ -1,12 +1,13 @@
 package tictim.paraglider.impl.movement;
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import tictim.paraglider.api.movement.PlayerState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public record SimplePlayerState(
@@ -17,13 +18,13 @@ public record SimplePlayerState(
 ) implements PlayerState {
 	public static @NotNull SimplePlayerState read(@NotNull FriendlyByteBuf buffer) {
 		ResourceLocation id = buffer.readResourceLocation();
-		Set<ResourceLocation> flags = new ObjectOpenHashSet<>();
+		List<ResourceLocation> flags = new ArrayList<>();
 		for (int i = 0, count = buffer.readVarInt(); i < count; i++) {
 			flags.add(buffer.readResourceLocation());
 		}
 		double staminaDelta = buffer.readDouble();
 		int recoveryDelay = buffer.readVarInt();
-		return new SimplePlayerState(id, flags, staminaDelta, recoveryDelay);
+		return new SimplePlayerState(id, Set.of(flags.toArray(new ResourceLocation[0])), staminaDelta, recoveryDelay);
 	}
 
 	public SimplePlayerState(@NotNull PlayerState originalState, double staminaDelta, int recoveryDelay) {
@@ -39,13 +40,5 @@ public record SimplePlayerState(
 		}
 		buffer.writeDouble(state.staminaDelta());
 		buffer.writeVarInt(state.recoveryDelay());
-	}
-
-	@Override public boolean equals(Object obj) {
-		return this == obj || obj instanceof PlayerState another && this.id.equals(another.id());
-	}
-
-	@Override public int hashCode() {
-		return this.id.hashCode();
 	}
 }

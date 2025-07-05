@@ -90,4 +90,17 @@ public final class PlayerStateMap {
 				"states=" + states +
 				'}';
 	}
+
+	public static boolean isSame(PlayerStateMap stateMap1, PlayerStateMap stateMap2) {
+		if (stateMap1.states.size() != stateMap2.states.size()) return false;
+
+		for (ResourceLocation key : stateMap1.states.keySet()) {
+			PlayerState s1 = stateMap1.states.get(key);
+			PlayerState s2 = stateMap2.states.get(key);
+
+			if (!s1.equals(s2)) return false;
+		}
+
+		return true;
+	}
 }

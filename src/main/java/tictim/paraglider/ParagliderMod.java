@@ -10,7 +10,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -22,7 +21,6 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -102,12 +100,6 @@ public class ParagliderMod {
 		modContainer.registerConfig(ModConfig.Type.SERVER, this.config.spec);
 		modContainer.registerConfig(ModConfig.Type.COMMON, this.stateMapConfig.spec, PlayerStateMapConfig.FILENAME);
 
-		eventBus.addListener((ModConfigEvent.Reloading event) -> {
-			if (event.getConfig().getSpec() == this.stateMapConfig.spec) {
-				this.stateMapConfig.scheduleReload(ServerLifecycleHooks.getCurrentServer(), null);
-			}
-		});
-
 		eventBus.addListener((NewRegistryEvent event) -> {
 			event.create(new RegistryBuilder<>(BargainPreview.TYPE_REGISTRY_KEY).sync(true));
 		});
@@ -128,11 +120,10 @@ public class ParagliderMod {
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> {
 			MinecraftServer server = event.getServer();
-			PlayerStateMapConfig stateMapConfig1 = this.stateMapConfig;
-			stateMapConfig1.removeCallbacks();
-			stateMapConfig1.reload();
-			ParagliderUtils.printPlayerStates(stateMapConfig1.stateMap(), getPlayerConnectionMap());
-			stateMapConfig1.addCallback(stateMap -> {
+			this.stateMapConfig.removeCallbacks();
+			this.stateMapConfig.reload(null);
+			ParagliderUtils.printPlayerStates(this.stateMapConfig.stateMap(), getPlayerConnectionMap());
+			this.stateMapConfig.addCallback(stateMap -> {
 				ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
 				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
 			});
