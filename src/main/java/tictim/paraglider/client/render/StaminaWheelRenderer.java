@@ -22,6 +22,7 @@ import org.joml.Vector2f;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.client.ParagliderRenderTypes;
+import tictim.paraglider.client.settings.ExtraWheelAttachment;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.contents.ParagliderTags;
 
@@ -49,13 +50,14 @@ public abstract class StaminaWheelRenderer {
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void render(@NotNull GuiGraphics guiGraphics, float x, float y, float z, float partialTicks) {
+	public void render(@NotNull GuiGraphics guiGraphics, float x, float y, float z, float partialTicks,
+	                   @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		this.debug = isDebugEnabled(player);
 
 		makeWheel(player, partialTicks);
-		render(guiGraphics, x, y, z, isDebugEnabled(player));
+		render(guiGraphics, x, y, z, isDebugEnabled(player), extraWheelAttachment);
 
 		this.mainWheel.reset();
 		this.extraWheel.reset();
@@ -84,7 +86,8 @@ public abstract class StaminaWheelRenderer {
 	protected abstract void makeWheel(@NotNull Player player, float partialTicks);
 
 	protected void render(@NotNull GuiGraphics guiGraphics,
-	                      float x, float y, float z, boolean debug) {
+	                      float x, float y, float z, boolean debug,
+	                      @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		if (debug) {
 			Font font = Minecraft.getInstance().font;
 			int lines = 0;
@@ -130,7 +133,7 @@ public abstract class StaminaWheelRenderer {
 		pose.pushPose();
 		pose.translate(x, y, z);
 
-		drawWheels(guiGraphics);
+		drawWheels(guiGraphics, extraWheelAttachment);
 
 		if (this.debugVertices != null) {
 			Font font = Minecraft.getInstance().font;
@@ -153,39 +156,80 @@ public abstract class StaminaWheelRenderer {
 
 	private static final float[] edgePoints = {0, 1 / 8.0f, 3 / 8.0f, 5 / 8.0f, 7 / 8.0f, 1};
 
-	protected void drawWheels(GuiGraphics guiGraphics) {
+	protected void drawWheels(@NotNull GuiGraphics guiGraphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		guiGraphics.drawSpecial(s -> {
 			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.FIRST, WHEEL_RADIUS);
 			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.SECOND, WHEEL_RADIUS);
 			drawWheel(guiGraphics, s, this.mainWheel, WheelLevel.THIRD, WHEEL_RADIUS);
 
-			if (this.extraWheel.stamina() > 0) {
+			if (this.extraWheel.stamina() > 0 && extraWheelAttachment != null) {
 				PoseStack pose = guiGraphics.pose();
+
+				int wheels = Math.min(3, (int)Math.ceil(toWheelPos(this.mainWheel.maxStamina)) - 1);
+				boolean hasTwoExtraWheels = this.extraWheel.stamina > Stamina.STAMINA_PER_WHEEL;
+
 				pose.pushPose();
-				pose.translate(-WHEEL_RADIUS - EXTRA_WHEEL_RADIUS
-						- Math.min(3, Math.ceil(toWheelPos(this.mainWheel.maxStamina)) - 1) * 1 - 0.5, 0, 0);
+				pose.translate(
+						extraWheelOffsetX(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
+						extraWheelOffsetY(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
+						0);
 				drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_1, EXTRA_WHEEL_RADIUS);
-				if (this.extraWheel.stamina > Stamina.STAMINA_PER_WHEEL) {
-					pose.translate(-EXTRA_WHEEL_RADIUS * 2 - 2.5, 0, 0);
-					drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_2, EXTRA_WHEEL_RADIUS);
-				}
 				pose.popPose();
+
+				if (hasTwoExtraWheels) {
+					pose.pushPose();
+					pose.translate(
+							extraWheelOffsetX(extraWheelAttachment, wheels, true, 1),
+							extraWheelOffsetY(extraWheelAttachment, wheels, true, 1),
+							0);
+					drawWheel(guiGraphics, s, this.extraWheel, WheelLevel.EXTRA_2, EXTRA_WHEEL_RADIUS);
+					pose.popPose();
+				}
 			}
 		});
 
-		int color = this.mainWheel.extraWheelIndicatorColor();
+		int color = this.mainWheel.indicatorColor();
 		if (alpha(color) >= 4) {
 			drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
 					false, WHEEL_RADIUS - 1, 1 - WHEEL_RADIUS, color);
 		}
 
-		if (this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL * 2) {
-			color = this.extraWheel.extraWheelIndicatorColor();
+		if (this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL * 2 && extraWheelAttachment != null) {
+			color = this.extraWheel.indicatorColor();
 			if (alpha(color) >= 4) {
 				drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
 						true, 1 - WHEEL_RADIUS, 1 - WHEEL_RADIUS, color);
 			}
 		}
+	}
+
+	protected double extraWheelOffsetX(ExtraWheelAttachment extraWheelAttachment, int wheels, boolean hasTwoExtraWheels, int index) {
+		final double extraWheelMargin = EXTRA_WHEEL_RADIUS * 2 + 2.5;
+
+		return switch (extraWheelAttachment) {
+			case TOP, BOTTOM -> {
+				if (!hasTwoExtraWheels) yield 0.0;
+				else yield (index == 0 ? .5 : -.5) * extraWheelMargin;
+			}
+			case LEFT, RIGHT -> {
+				double offset = -WHEEL_RADIUS - EXTRA_WHEEL_RADIUS - wheels - 0.5;
+				if (index == 1) offset -= extraWheelMargin;
+				if (extraWheelAttachment == ExtraWheelAttachment.RIGHT) offset = -offset;
+				yield offset;
+			}
+		};
+	}
+
+	protected double extraWheelOffsetY(ExtraWheelAttachment extraWheelAttachment, int wheels, boolean hasTwoExtraWheels, int index) {
+		return switch (extraWheelAttachment) {
+			case LEFT, RIGHT -> 0;
+			case TOP, BOTTOM -> {
+				double offset = -WHEEL_RADIUS - EXTRA_WHEEL_RADIUS - wheels - 0.5;
+				if (hasTwoExtraWheels) offset += 2;
+				if (extraWheelAttachment == ExtraWheelAttachment.BOTTOM) offset = -offset;
+				yield offset;
+			}
+		};
 	}
 
 	protected void drawText(GuiGraphics guiGraphics, String text, boolean alignRight,
@@ -303,7 +347,7 @@ public abstract class StaminaWheelRenderer {
 		private double maxStamina;
 		private int count;
 
-		private int extraWheelIndicatorColor;
+		private int indicatorColor;
 
 		public double stamina() {
 			return stamina;
@@ -318,12 +362,12 @@ public abstract class StaminaWheelRenderer {
 			this.maxStamina = maxStamina;
 		}
 
-		public int extraWheelIndicatorColor() {
-			return this.extraWheelIndicatorColor;
+		public int indicatorColor() {
+			return this.indicatorColor;
 		}
 
-		public void setExtraWheelIndicatorColor(int extraWheelIndicatorColor) {
-			this.extraWheelIndicatorColor = extraWheelIndicatorColor;
+		public void setIndicatorColor(int indicatorColor) {
+			this.indicatorColor = indicatorColor;
 		}
 
 		public float staminaWheelPos() {
@@ -384,7 +428,7 @@ public abstract class StaminaWheelRenderer {
 		public void reset() {
 			this.count = 0;
 			this.maxStamina = 0;
-			this.extraWheelIndicatorColor = 0;
+			this.indicatorColor = 0;
 		}
 
 		private static final class Segment {

@@ -5,10 +5,11 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.stamina.Stamina;
 
-import static tictim.paraglider.client.render.StaminaWheelConstants.wheelColor;
+import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
 public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer {
 	private int wheels = 1;
+	private int extraWheels = 0;
 
 	public int getWheels() {
 		return wheels;
@@ -17,9 +18,20 @@ public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.wheels = Mth.clamp(wheels, 1, 3);
 	}
 
+	public int extraWheels() {
+		return extraWheels;
+	}
+	public void setExtraWheels(int extraWheels) {
+		this.extraWheels = extraWheels;
+	}
+
 	@Override protected void makeWheel(@NotNull Player player, float partialTicks) {
 		this.mainWheel.setProperties(this.wheels * Stamina.STAMINA_PER_WHEEL, this.wheels * Stamina.STAMINA_PER_WHEEL);
 		this.mainWheel.fillWheel(0f, this.wheels, wheelColor(0));
+
+		this.extraWheel.setProperties(this.extraWheels * Stamina.STAMINA_PER_WHEEL - 600, this.extraWheels * Stamina.STAMINA_PER_WHEEL);
+		this.extraWheel.fillWheel(0f, this.extraWheels, EMPTY);
+		this.extraWheel.fillWheel(0f, this.extraWheels - 0.6f, EXTRA);
 	}
 
 	@Override protected boolean isDebugEnabled(@NotNull Player player) {

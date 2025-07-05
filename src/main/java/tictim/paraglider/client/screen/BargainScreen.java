@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.client.render.BargainScreenStaminaWheelRenderer;
+import tictim.paraglider.client.settings.ExtraWheelAttachment;
 import tictim.paraglider.network.ParagliderNetwork;
 
 import java.util.Arrays;
@@ -192,7 +193,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 				getLeft() + SCROLL_BOX_THING_WIDTH + 5,
 				getTop() - 5 - WHEEL_RADIUS,
 				0,
-				partialTick);
+				partialTick,
+				ExtraWheelAttachment.LEFT);
 
 		if (this.dialog != null) {
 			if (this.dialogUpdated) {
