@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -99,8 +100,12 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		});
 
 		eventBus.addListener((FMLClientSetupEvent event) -> {
-			event.enqueueWork(() -> ItemProperties.register(Contents.get().paraglider(),
-					ParagliderAPI.id("paragliding"), new ParaglidingItemProperty()));
+			event.enqueueWork(() -> {
+				ResourceLocation paraglidingId = ParagliderAPI.id("paragliding");
+				ParaglidingItemProperty paragliding = new ParaglidingItemProperty();
+				ItemProperties.register(Contents.get().paraglider(), paraglidingId, paragliding);
+				ItemProperties.register(Contents.get().dekuLeaf(), paraglidingId, paragliding);
+			});
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> this.syncedStateMap = null);
