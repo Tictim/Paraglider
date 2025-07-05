@@ -58,6 +58,8 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 	private @Nullable KeyMapping paragliderSettingsKey;
 
 	public ParagliderClientMod(ModContainer modContainer, IEventBus eventBus) {
+		ParagliderMod.instance().client = this;
+
 		modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
 		eventBus.addListener((RegisterKeyMappingsEvent event) -> {
