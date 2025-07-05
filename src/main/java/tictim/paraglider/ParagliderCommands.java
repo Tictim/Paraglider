@@ -5,7 +5,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -164,16 +163,14 @@ public final class ParagliderCommands {
 	}
 
 	private static int reloadPlayerStates(@NotNull CommandSourceStack source) {
-		MinecraftServer server = source.getServer();
-		ParagliderMod.instance().getPlayerStateMapConfig().scheduleReload(server,
-				new PlayerStateMapConfig.Callback() {
-					@Override public void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated) {
-						source.sendSuccess(() -> Component.translatable("commands.paraglider.reload_player_states.success"), true);
-					}
-					@Override public void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update) {
-						source.sendFailure(Component.translatable("commands.paraglider.reload_player_states.fail"));
-					}
-				});
+		ParagliderMod.instance().getPlayerStateMapConfig().reload(new PlayerStateMapConfig.Callback() {
+			@Override public void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated) {
+				source.sendSuccess(() -> Component.translatable("commands.paraglider.reload_player_states.success"), true);
+			}
+			@Override public void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update) {
+				source.sendFailure(Component.translatable("commands.paraglider.reload_player_states.fail"));
+			}
+		});
 		return 1;
 	}
 

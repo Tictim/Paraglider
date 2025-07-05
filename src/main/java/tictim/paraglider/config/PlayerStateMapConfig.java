@@ -2,9 +2,7 @@ package tictim.paraglider.config;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
@@ -98,10 +95,6 @@ public class PlayerStateMapConfig {
 		this.onUpdateCallbacks.clear();
 	}
 
-	public void reload() {
-		reload(null);
-	}
-
 	public void reload(@Nullable Callback callback) {
 		reload(Runnable::run, callback);
 	}
@@ -110,6 +103,7 @@ public class PlayerStateMapConfig {
 	                   @Nullable Callback callback) {
 		PlayerStateMap prevStateMap = stateMap();
 		RuntimeException exception = null;
+
 		try {
 			reloadInternal();
 		} catch (RuntimeException ex) {
@@ -117,13 +111,16 @@ public class PlayerStateMapConfig {
 			ParagliderMod.LOGGER.error("Cannot load state map due to an error", ex);
 			exception = ex;
 		}
+
 		PlayerStateMap stateMap = stateMap();
-		boolean contentUpdated = !prevStateMap.equals(stateMap);
+		boolean contentUpdated = !PlayerStateMap.isSame(prevStateMap, stateMap);
+
 		if (contentUpdated) {
 			for (Consumer<PlayerStateMap> onUpdate : this.onUpdateCallbacks) {
 				onUpdatedCallbackDispatcher.accept(() -> onUpdate.accept(stateMap));
 			}
 		}
+
 		if (callback != null) {
 			if (exception == null) {
 				onUpdatedCallbackDispatcher.accept(() -> callback.onSuccess(stateMap, contentUpdated));
@@ -132,13 +129,6 @@ public class PlayerStateMapConfig {
 				onUpdatedCallbackDispatcher.accept(() -> callback.onFail(stateMap, finalException, contentUpdated));
 			}
 		}
-	}
-
-	public @NotNull Future<?> scheduleReload(@Nullable MinecraftServer server, @Nullable Callback callback) {
-		return Util.ioPool().service().submit(() -> reload(r -> {
-			if (server != null) server.execute(r);
-			else r.run();
-		}, callback));
 	}
 
 	protected void reloadInternal() {
