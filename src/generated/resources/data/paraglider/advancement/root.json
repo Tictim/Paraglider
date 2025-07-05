@@ -13,7 +13,7 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "paraglider:gui/advancement_background",
+    "background": "paraglider:textures/gui/advancement_background.png",
     "description": {
       "translate": "advancement.paraglider.desc"
     },
