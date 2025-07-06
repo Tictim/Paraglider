@@ -114,11 +114,10 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		if (this.heartContainerChanged) {
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
-			double delta = ParagliderUtils.refreshAttribute(player(), Attributes.MAX_HEALTH,
-					Cfg.get().additionalMaxHealth(vessels.heartContainer()),
-					HEART_CONTAINER_ATTRIBUTE_ID);
+			ParagliderUtils.refreshAttribute(player(), Attributes.MAX_HEALTH,
+					Cfg.get().additionalMaxHealth(vessels.heartContainer()), HEART_CONTAINER_ATTRIBUTE_ID);
 
-			player().setHealth(Math.min(player().getMaxHealth(), player().getHealth() + Math.max(0, (float)delta)));
+			player().setHealth(player().getMaxHealth());
 			this.heartContainerChanged = false;
 		}
 
@@ -126,11 +125,9 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
 			ParagliderUtils.refreshAttribute(player(), Contents.get().maxStamina(),
-					Cfg.get().maxStamina(vessels.staminaVessel()),
-					STAMINA_VESSEL_ATTRIBUTE_ID);
+					Cfg.get().maxStamina(vessels.staminaVessel()), STAMINA_VESSEL_ATTRIBUTE_ID);
 
-			Stamina stamina = stamina();
-			stamina.setStamina(Math.min(stamina.stamina(), stamina.maxStamina()));
+			stamina().setStamina(stamina().maxStamina());
 			this.staminaVesselChanged = false;
 		}
 
