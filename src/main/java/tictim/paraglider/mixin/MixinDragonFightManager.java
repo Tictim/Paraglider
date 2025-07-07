@@ -1,7 +1,9 @@
 package tictim.paraglider.mixin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -23,6 +25,8 @@ import tictim.paraglider.config.Cfg;
 @Mixin(EndDragonFight.class)
 public abstract class MixinDragonFightManager {
 	@Shadow @Final
+	private ServerBossEvent dragonEvent;
+	@Shadow @Final
 	private ServerLevel level;
 
 	@Inject(
@@ -33,15 +37,25 @@ public abstract class MixinDragonFightManager {
 	)
 	public void paraglider$awardVessel(EnderDragon entity, CallbackInfo info) {
 		if (!Cfg.get().enderDragonDropsVessel()) return;
+
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if (item == null) return;
+
 		BlockPos endPodium = this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(BlockPos.ZERO));
-		ItemEntity itemEntity = new ItemEntity(level, endPodium.getX() + .5, endPodium.getY() + 1, endPodium.getZ() + .5, new ItemStack(item));
-		itemEntity.setInvulnerable(true);
-		itemEntity.setExtendedLifetime();
-		itemEntity.setNoGravity(true);
-		itemEntity.setPickUpDelay(40);
-		itemEntity.setDeltaMovement(0, 0, 0);
-		this.level.addFreshEntity(itemEntity);
+
+		for (ServerPlayer player : this.dragonEvent.getPlayers()) {
+			ItemEntity itemEntity = new ItemEntity(this.level,
+					endPodium.getX() + .5, endPodium.getY() + 1, endPodium.getZ() + .5,
+					new ItemStack(item));
+
+			itemEntity.setTarget(player.getUUID());
+			itemEntity.setInvulnerable(true);
+			itemEntity.setExtendedLifetime();
+			itemEntity.setNoGravity(true);
+			itemEntity.setPickUpDelay(40);
+			itemEntity.setDeltaMovement(0, 0, 0);
+
+			this.level.addFreshEntity(itemEntity);
+		}
 	}
 }
