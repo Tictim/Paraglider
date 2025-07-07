@@ -114,20 +114,32 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		if (this.heartContainerChanged) {
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
-			ParagliderUtils.refreshAttribute(player(), Attributes.MAX_HEALTH,
+			double delta = ParagliderUtils.refreshAttribute(player(), Attributes.MAX_HEALTH,
 					Cfg.get().additionalMaxHealth(vessels.heartContainer()), HEART_CONTAINER_ATTRIBUTE_ID);
 
-			player().setHealth(player().getMaxHealth());
+			if (delta > 0) {
+				player().setHealth(player().getMaxHealth());
+			} else {
+				float health = player().getHealth();
+				float maxHealth = player().getMaxHealth();
+				if (health > maxHealth) player().setHealth(maxHealth);
+			}
 			this.heartContainerChanged = false;
 		}
 
 		if (this.staminaVesselChanged) {
 			SimpleVesselContainer vessels = player().getData(Contents.get().vesselContainer());
 
-			ParagliderUtils.refreshAttribute(player(), Contents.get().maxStamina(),
+			double delta = ParagliderUtils.refreshAttribute(player(), Contents.get().maxStamina(),
 					Cfg.get().maxStamina(vessels.staminaVessel()), STAMINA_VESSEL_ATTRIBUTE_ID);
 
-			stamina().setStamina(stamina().maxStamina());
+			if (delta > 0) {
+				stamina().setStamina(stamina().maxStamina());
+			} else {
+				double stamina = stamina().stamina();
+				double maxStamina = stamina().maxStamina();
+				if (stamina > maxStamina) stamina().setStamina(maxStamina);
+			}
 			this.staminaVesselChanged = false;
 		}
 
