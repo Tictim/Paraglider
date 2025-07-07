@@ -129,15 +129,15 @@ public class Contents {
 	public final DeferredHolder<Item, Item> dekuLeaf = items.register("deku_leaf",
 			id -> new ParagliderItem(p(id).stacksTo(1)));
 	public final DeferredHolder<Item, Item> heartContainer = items.register("heart_container",
-			id -> new HeartContainerItem(p(id).rarity(Rarity.RARE)));
+			id -> new HeartContainerItem(p(id).rarity(Rarity.RARE).fireResistant()));
 	public final DeferredHolder<Item, Item> staminaVessel = items.register("stamina_vessel",
-			id -> new StaminaVesselItem(p(id).rarity(Rarity.RARE)));
+			id -> new StaminaVesselItem(p(id).rarity(Rarity.RARE).fireResistant()));
 	public final DeferredHolder<Item, Item> spiritOrb = items.register("spirit_orb",
-			id -> new SpiritOrbItem(p(id).rarity(Rarity.UNCOMMON)));
+			id -> new SpiritOrbItem(p(id).rarity(Rarity.UNCOMMON).fireResistant()));
 	public final DeferredHolder<Item, Item> antiVessel = items.register("anti_vessel",
-			id -> new AntiVesselItem(p(id).rarity(Rarity.EPIC)));
+			id -> new AntiVesselItem(p(id).rarity(Rarity.EPIC).fireResistant()));
 	public final DeferredHolder<Item, Item> essence = items.register("essence",
-			id -> new EssenceItem(p(id).rarity(Rarity.RARE)));
+			id -> new EssenceItem(p(id).rarity(Rarity.RARE).fireResistant()));
 	public final DeferredHolder<Item, Item> energizingElixir1 = items.register("energizing_elixir_1",
 			id -> new Item(staminaPotion(id, new RestoreStaminaConsumeEffect(1000))));
 	public final DeferredHolder<Item, Item> energizingElixir2 = items.register("energizing_elixir_2",
