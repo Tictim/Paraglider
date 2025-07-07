@@ -187,6 +187,7 @@
   "paraglider.settings.saving.failure": "Save Failed.",
   "paraglider.settings.saving.success": "Saved!",
   "paraglider.settings.stamina_wheel_settings": "Stamina Wheel Settings",
+  "paraglider.settings.stamina_wheel_settings.disabled": "Disabled by another mod: %s",
   "paraglider.settings.stamina_wheel_settings.anchor": "Anchor",
   "paraglider.settings.stamina_wheel_settings.cancel": "Cancel",
   "paraglider.settings.stamina_wheel_settings.guide.0": "Drag Stamina Wheel to adjust its position.",

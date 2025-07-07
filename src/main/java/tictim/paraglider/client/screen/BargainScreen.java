@@ -21,6 +21,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.client.render.BargainScreenStaminaWheelRenderer;
@@ -30,6 +31,7 @@ import tictim.paraglider.network.ParagliderNetwork;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static tictim.paraglider.ParagliderUtils.ms;
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
@@ -189,12 +191,14 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 				SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT,
 				512, 256);
 
-		this.staminaWheelRenderer.render(guiGraphics,
-				getLeft() + SCROLL_BOX_THING_WIDTH + 5,
-				getTop() - 5 - WHEEL_RADIUS,
-				0,
-				partialTick,
-				ExtraWheelAttachment.LEFT);
+		if (ParagliderUtils.renderStaminaWheel(Objects.requireNonNull(this.minecraft).player)) {
+			this.staminaWheelRenderer.render(guiGraphics,
+					getLeft() + SCROLL_BOX_THING_WIDTH + 5,
+					getTop() - 5 - WHEEL_RADIUS,
+					0,
+					partialTick,
+					ExtraWheelAttachment.LEFT);
+		}
 
 		if (this.dialog != null) {
 			if (this.dialogUpdated) {

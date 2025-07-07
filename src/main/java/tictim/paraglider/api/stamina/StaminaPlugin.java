@@ -31,6 +31,15 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 	default void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {}
 
 	/**
+	 * @return Return {@code true} on client side to remove stamina wheel widget from the game. This is not a flag to
+	 * disable stamina system as a whole. Paraglider assumes an external indicator for stamina state will be present,
+	 * e.g. wiring Paraglider's stamina backend with external stamina implementation.
+	 */
+	default boolean removeStaminaWheel() {
+		return false;
+	}
+
+	/**
 	 * @return Implementation of {@link ConflictResolver} for this {@link StaminaPlugin} instance
 	 */
 	default @NotNull ConflictResolver<StaminaPlugin, StaminaPluginAction> getStaminaPluginConflictResolver() {

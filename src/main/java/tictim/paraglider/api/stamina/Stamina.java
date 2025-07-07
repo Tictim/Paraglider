@@ -1,8 +1,6 @@
 package tictim.paraglider.api.stamina;
 
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 
@@ -200,7 +198,6 @@ public interface Stamina {
 	 *
 	 * @return Whether the stamina wheel should be rendered using this instance
 	 */
-	@OnlyIn(Dist.CLIENT)
 	default boolean renderStaminaWheel() {
 		return true;
 	}
