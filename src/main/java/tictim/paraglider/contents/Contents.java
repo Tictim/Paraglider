@@ -181,12 +181,8 @@ public class Contents {
 	public final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<ParagliderLoot>> paragliderLoot = loots.register("paraglider", () -> ParagliderLoot.CODEC);
 	public final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<SpiritOrbLoot>> spiritOrbLoot = loots.register("spirit_orb", () -> SpiritOrbLoot.CODEC);
 	public final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<VesselLoot>> vesselLoot = loots.register("vessel", () -> VesselLoot.CODEC);
-	public final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<SpawnerSpiritOrbLoot>> spawnerSpiritOrbLoot = loots.register("spawner_spirit_orb", () -> SpawnerSpiritOrbLoot.CODEC);
-
-	public final DeferredHolder<LootItemConditionType, LootItemConditionType> witherDropsVesselConfigCondition = lootConditions.register("config_wither_drops_vessel",
-			() -> new LootItemConditionType(MapCodec.unit(LootConditions.WITHER_DROPS_VESSEL)));
-	public final DeferredHolder<LootItemConditionType, LootItemConditionType> spiritOrbLootsConfigCondition = lootConditions.register("config_spirit_orb_loots",
-			() -> new LootItemConditionType(MapCodec.unit(LootConditions.SPIRIT_ORB_LOOTS)));
+	public final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<ConfigurableSpiritOrbLoot>> configurableSpiritOrbLoot = loots.register("configurable_spirit_orb",
+			() -> ConfigurableSpiritOrbLoot.CODEC);
 
 	public final DeferredHolder<MobEffect, MobEffect> staminaEfficiencyEffect = mobEffects.register("stamina_efficiency", StaminaEfficiencyMobEffect::new);
 
@@ -284,6 +280,7 @@ public class Contents {
 		this.ingredientTypes.register(eventBus);
 		this.bargainPreviewTypes.register(eventBus);
 
+		ParagliderLootConditions.register(this.lootConditions);
 		ParagliderConfigCondition.register(this.conditionSerializers);
 		VesselSlotDisplay.register(this.slotDisplays);
 	}

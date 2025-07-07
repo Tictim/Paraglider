@@ -16,15 +16,15 @@ import tictim.paraglider.contents.Contents;
 
 import java.util.Locale;
 
-public class SpawnerSpiritOrbLoot extends LootModifier {
-	public static final MapCodec<SpawnerSpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
+public class ConfigurableSpiritOrbLoot extends LootModifier {
+	public static final MapCodec<ConfigurableSpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
 			b.group(StringRepresentable.fromEnum(Type::values).fieldOf("lootType").forGetter(m -> m.type))
 					.and(codecStart(b).t1())
-					.apply(b, SpawnerSpiritOrbLoot::new));
+					.apply(b, ConfigurableSpiritOrbLoot::new));
 
 	private final Type type;
 
-	public SpawnerSpiritOrbLoot(@NotNull Type type, @NotNull LootItemCondition @NotNull ... conditions) {
+	public ConfigurableSpiritOrbLoot(@NotNull Type type, @NotNull LootItemCondition @NotNull ... conditions) {
 		super(conditions);
 		this.type = type;
 	}

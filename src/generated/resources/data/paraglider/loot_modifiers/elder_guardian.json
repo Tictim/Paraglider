@@ -1,0 +1,19 @@
+{
+  "type": "paraglider:spirit_orb",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "minecraft:elder_guardian"
+      }
+    },
+    {
+      "condition": "minecraft:killed_by_player"
+    },
+    {
+      "condition": "paraglider:config_elder_guardian_drops_spirit_orb"
+    }
+  ],
+  "count": 1
+}

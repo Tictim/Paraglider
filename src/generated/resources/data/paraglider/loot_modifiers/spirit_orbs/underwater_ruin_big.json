@@ -9,7 +9,7 @@
       "loot_table_id": "minecraft:chests/underwater_ruin_big"
     },
     {
-      "chance": 0.5,
+      "chance": 0.25,
       "condition": "minecraft:random_chance"
     }
   ],

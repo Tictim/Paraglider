@@ -7,6 +7,10 @@
     {
       "condition": "neoforge:loot_table_id",
       "loot_table_id": "minecraft:chests/jungle_temple"
+    },
+    {
+      "chance": 0.66,
+      "condition": "minecraft:random_chance"
     }
   ],
   "count": 1

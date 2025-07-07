@@ -6,11 +6,7 @@
     },
     {
       "condition": "neoforge:loot_table_id",
-      "loot_table_id": "minecraft:chests/underwater_ruin_small"
-    },
-    {
-      "chance": 0.25,
-      "condition": "minecraft:random_chance"
+      "loot_table_id": "minecraft:chests/ancient_city"
     }
   ],
   "count": 1

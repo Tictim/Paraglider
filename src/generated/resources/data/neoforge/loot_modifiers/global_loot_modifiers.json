@@ -3,6 +3,7 @@
     "paraglider:totw_reworked/chest",
     "paraglider:totw_reworked/ocean_chest",
     "paraglider:wither",
+    "paraglider:elder_guardian",
     "paraglider:spirit_orbs/spawner",
     "paraglider:spirit_orbs/trial_reward",
     "paraglider:spirit_orbs/ominous_trial_reward",
@@ -18,7 +19,9 @@
     "paraglider:spirit_orbs/stronghold_crossing",
     "paraglider:spirit_orbs/stronghold_library",
     "paraglider:spirit_orbs/nether_bridge",
-    "paraglider:spirit_orbs/buried_treasure"
+    "paraglider:spirit_orbs/buried_treasure",
+    "paraglider:spirit_orbs/woodland_mansion",
+    "paraglider:spirit_orbs/ancient_city"
   ],
   "replace": false
 }

@@ -43,28 +43,36 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 				1,
 				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
 				LootItemKilledByPlayerCondition.killedByPlayer().build(),
-				LootConditions.WITHER_DROPS_VESSEL
+				ParagliderLootConditions.WITHER_DROPS_VESSEL
 		));
 
-		addSpiritOrbItemModifier("spawner", new SpawnerSpiritOrbLoot(
-				SpawnerSpiritOrbLoot.Type.SPAWNER,
+		add("elder_guardian", new SpiritOrbLoot(
+				1,
+				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+						EntityPredicate.Builder.entity().of(EntityType.ELDER_GUARDIAN)).build(),
+				LootItemKilledByPlayerCondition.killedByPlayer().build(),
+				ParagliderLootConditions.ELDER_GUARDIAN_DROPS_SPIRIT_ORB
+		));
+
+		addSpiritOrbItemModifier("spawner", new ConfigurableSpiritOrbLoot(
+				ConfigurableSpiritOrbLoot.Type.SPAWNER,
 				LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SPAWNER).build()
 		));
 
-		addSpiritOrbItemModifier("trial_reward", new SpawnerSpiritOrbLoot(
-				SpawnerSpiritOrbLoot.Type.TRIAL,
+		addSpiritOrbItemModifier("trial_reward", new ConfigurableSpiritOrbLoot(
+				ConfigurableSpiritOrbLoot.Type.TRIAL,
 				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD.location()).build()
 		));
 
-		addSpiritOrbItemModifier("ominous_trial_reward", new SpawnerSpiritOrbLoot(
-				SpawnerSpiritOrbLoot.Type.OMINOUS_TRIAL,
+		addSpiritOrbItemModifier("ominous_trial_reward", new ConfigurableSpiritOrbLoot(
+				ConfigurableSpiritOrbLoot.Type.OMINOUS_TRIAL,
 				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS.location()).build()
 		));
 
-		addChestSpiritOrbItemModifier("underwater_ruin_big", .5f);
-		addChestSpiritOrbItemModifier("underwater_ruin_small", .5f);
-		addChestSpiritOrbItemModifier("jungle_temple");
-		addChestSpiritOrbItemModifier("desert_pyramid", .5f);
+		addChestSpiritOrbItemModifier("underwater_ruin_big", .25f);
+		addChestSpiritOrbItemModifier("underwater_ruin_small", .25f);
+		addChestSpiritOrbItemModifier("jungle_temple", .66f);
+		addChestSpiritOrbItemModifier("desert_pyramid", .25f);
 		addChestSpiritOrbItemModifier("bastion_other");
 		addChestSpiritOrbItemModifier("bastion_bridge");
 		addChestSpiritOrbItemModifier("bastion_treasure");
@@ -74,12 +82,14 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		addChestSpiritOrbItemModifier("stronghold_library");
 		addChestSpiritOrbItemModifier("nether_bridge", .5f);
 		addChestSpiritOrbItemModifier("buried_treasure");
+		addChestSpiritOrbItemModifier("woodland_mansion");
+		addChestSpiritOrbItemModifier("ancient_city");
 	}
 
 	private void addChestSpiritOrbItemModifier(String chestLootTableName, float chance) {
 		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
 				1,
-				LootConditions.SPIRIT_ORB_LOOTS,
+				ParagliderLootConditions.SPIRIT_ORB_LOOTS,
 				LootTableIdCondition.builder(ResourceLocation.withDefaultNamespace("chests/" + chestLootTableName)).build(),
 				LootItemRandomChanceCondition.randomChance(chance).build()
 		));
@@ -87,7 +97,7 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 	private void addChestSpiritOrbItemModifier(String chestLootTableName) {
 		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
 				1,
-				LootConditions.SPIRIT_ORB_LOOTS,
+				ParagliderLootConditions.SPIRIT_ORB_LOOTS,
 				LootTableIdCondition.builder(ResourceLocation.withDefaultNamespace("chests/" + chestLootTableName)).build()
 		));
 	}
