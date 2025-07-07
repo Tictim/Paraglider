@@ -60,6 +60,13 @@ public interface Cfg {
 	boolean raidGivesVessel();
 
 	/**
+	 * If {@code true}, Elder Guardian will drop a Spirit Orb upon death.
+	 *
+	 * @return Config value
+	 */
+	boolean elderGuardianDropsSpiritOrb();
+
+	/**
 	 * Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop, in addition to
 	 * whole values which is guaranteed to drop.
 	 *

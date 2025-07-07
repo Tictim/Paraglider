@@ -1,5 +1,5 @@
 {
-  "type": "paraglider:spawner_spirit_orb",
+  "type": "paraglider:configurable_spirit_orb",
   "conditions": [
     {
       "condition": "neoforge:loot_table_id",

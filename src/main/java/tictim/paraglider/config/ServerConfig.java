@@ -14,6 +14,7 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.BooleanValue enderDragonDropsVessel;
 	private final ModConfigSpec.BooleanValue witherDropsVessel;
 	private final ModConfigSpec.BooleanValue raidGivesVessel;
+	private final ModConfigSpec.BooleanValue elderGuardianDropsSpiritOrb;
 	private final ModConfigSpec.DoubleValue spawnerSpiritOrbDrops;
 	private final ModConfigSpec.DoubleValue trialSpiritOrbDrops;
 	private final ModConfigSpec.DoubleValue ominousTrialSpiritOrbDrops;
@@ -52,6 +53,8 @@ public class ServerConfig implements Cfg {
 		witherDropsVessel = b.comment("If true, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.")
 				.define("enderDragonDropsVessel", true);
 		raidGivesVessel = b.comment("If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.")
+				.define("raidGivesVessel", true);
+		elderGuardianDropsSpiritOrb = b.comment("If true, Elder Guardian will drop a Spirit Orb upon death.")
 				.define("raidGivesVessel", true);
 		spawnerSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop," +
 						" in addition to whole values which is guaranteed to drop.")
@@ -119,6 +122,9 @@ public class ServerConfig implements Cfg {
 	}
 	@Override public boolean raidGivesVessel() {
 		return get(spec, raidGivesVessel);
+	}
+	@Override public boolean elderGuardianDropsSpiritOrb() {
+		return get(spec, elderGuardianDropsSpiritOrb);
 	}
 	@Override public double spawnerSpiritOrbDrops() {
 		return get(spec, spawnerSpiritOrbDrops);
