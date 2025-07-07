@@ -41,7 +41,8 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 
 		add("wither", new VesselLoot(
 				1,
-				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
+				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+						EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
 				LootItemKilledByPlayerCondition.killedByPlayer().build(),
 				ParagliderLootConditions.WITHER_DROPS_VESSEL
 		));
@@ -49,7 +50,7 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		add("elder_guardian", new SpiritOrbLoot(
 				1,
 				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-						EntityPredicate.Builder.entity().of(EntityType.ELDER_GUARDIAN)).build(),
+						EntityPredicate.Builder.entity().of(entities, EntityType.ELDER_GUARDIAN)).build(),
 				LootItemKilledByPlayerCondition.killedByPlayer().build(),
 				ParagliderLootConditions.ELDER_GUARDIAN_DROPS_SPIRIT_ORB
 		));
