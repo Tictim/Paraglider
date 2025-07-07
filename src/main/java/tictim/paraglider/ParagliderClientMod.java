@@ -36,6 +36,7 @@ import tictim.paraglider.client.settings.ParagliderClientSettingsIO;
 import tictim.paraglider.contents.CommonContents;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.impl.movement.PlayerStateMap;
+import tictim.paraglider.impl.stamina.StaminaLoader;
 
 import java.util.Objects;
 
@@ -44,7 +45,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 	private static ParagliderClientMod instance;
 
 	public static @NotNull ParagliderClientMod instance() {
-		if (instance == null) throw new IllegalStateException("Mod instance not ready yet");
+		if (instance == null) throw new IllegalStateException("No client");
 		return instance;
 	}
 
@@ -53,12 +54,18 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		instance = this;
 	}
 
+	private final boolean removeStaminaWheel;
+	private final @Nullable String staminaWheelRemoverId;
 	private @Nullable ParagliderClientSettings clientSettings;
 	private @Nullable PlayerStateMap syncedStateMap;
 	private @Nullable KeyMapping paragliderSettingsKey;
 
 	public ParagliderClientMod(ModContainer modContainer, IEventBus eventBus) {
 		ParagliderMod.instance().client = this;
+
+		var pair = StaminaLoader.loadStaminaWheelRemoverId();
+		this.removeStaminaWheel = pair.getFirst();
+		this.staminaWheelRemoverId = pair.getSecond();
 
 		modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
@@ -134,5 +141,13 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 	}
 	public void setSyncedStateMap(@Nullable PlayerStateMap stateMap) {
 		this.syncedStateMap = stateMap;
+	}
+
+	public boolean removeStaminaWheel() {
+		return this.removeStaminaWheel;
+	}
+
+	public @Nullable String staminaWheelRemoverId() {
+		return this.staminaWheelRemoverId;
 	}
 }

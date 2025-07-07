@@ -14,6 +14,8 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderClientMod;
+import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.client.settings.ParagliderClientSettings;
 import tictim.paraglider.client.settings.ParagliderClientSettingsIO;
 
@@ -70,11 +72,14 @@ public class ParagliderSettingsScreen extends Screen {
 	}
 
 	@Override protected void init() {
-		this.widgets.clear();
-		this.widgets.add(Button.builder(Component.translatable("paraglider.settings.stamina_wheel_settings"),
+		Button staminaWheelSettingsButton = Button
+				.builder(Component.translatable("paraglider.settings.stamina_wheel_settings"),
 						b -> Objects.requireNonNull(this.minecraft).setScreen(new StaminaWheelSettingScreen(this)))
 				.size(128, 20)
-				.build());
+				.build();
+
+		this.widgets.clear();
+		this.widgets.add(staminaWheelSettingsButton);
 		this.widgets.add(this.particleSliderWidget = new ParticleSliderWidget(128, 20, this.particleSliderWidget));
 
 		int totalHeight = (this.widgets.size() - 1) * 10;
@@ -103,6 +108,18 @@ public class ParagliderSettingsScreen extends Screen {
 				.build());
 
 		for (AbstractWidget widget : this.widgets) addRenderableWidget(widget);
+
+		if (!ParagliderUtils.renderStaminaWheel(Objects.requireNonNull(this.minecraft).player)) {
+			staminaWheelSettingsButton.active = false;
+
+			String s = ParagliderClientMod.instance().removeStaminaWheel() ?
+					ParagliderClientMod.instance().staminaWheelRemoverId() :
+					ParagliderMod.instance().staminaFactoryOrigin();
+			if (s == null) s = "(unknown)";
+
+			staminaWheelSettingsButton.setTooltip(Tooltip.create(
+					Component.translatable("paraglider.settings.stamina_wheel_settings.disabled", s)));
+		}
 	}
 
 	@Override public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

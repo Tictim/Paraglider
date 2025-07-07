@@ -5,7 +5,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
-import tictim.paraglider.ParagliderMod;
+import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
@@ -30,8 +30,7 @@ public final class ParagliderGuiLayers {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null ||
 				mc.screen instanceof DisableStaminaRender ||
-				!Stamina.get(mc.player).renderStaminaWheel() ||
-				!ParagliderMod.instance().getPlayerStateMap().hasStaminaConsumption()) return;
+				!ParagliderUtils.renderStaminaWheel(mc.player)) return;
 
 		ParagliderClientSettings settings = ParagliderClientSettings.get();
 		StaminaWheelPosition pos = settings.staminaWheelPosition();

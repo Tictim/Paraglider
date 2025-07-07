@@ -58,16 +58,6 @@ public final class PlayerStateMap {
 		return expectState(ParagliderPlayerStates.IDLE);
 	}
 
-	private @Nullable Boolean hasStaminaConsumptionCache = null;
-
-	/**
-	 * @return Whether this state map has any stamina-consuming state
-	 */
-	public boolean hasStaminaConsumption() {
-		if (this.hasStaminaConsumptionCache != null) return this.hasStaminaConsumptionCache;
-		else return this.hasStaminaConsumptionCache = this.states.values().stream().anyMatch(s -> s.staminaDelta() > 0);
-	}
-
 	public void write(@NotNull FriendlyByteBuf buffer) {
 		buffer.writeVarInt(this.states.size());
 		for (PlayerState state : this.states.values()) {

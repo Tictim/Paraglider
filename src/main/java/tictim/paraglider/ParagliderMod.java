@@ -42,7 +42,7 @@ import tictim.paraglider.impl.movement.PlayerStateMap;
 import tictim.paraglider.impl.movement.PlayerStateMapLoader;
 import tictim.paraglider.impl.stamina.StaminaEfficiencyLogicHandlerImpl;
 import tictim.paraglider.impl.stamina.StaminaEfficiencyLogicLoader;
-import tictim.paraglider.impl.stamina.StaminaFactoryLoader;
+import tictim.paraglider.impl.stamina.StaminaLoader;
 import tictim.paraglider.network.ParagliderNetwork;
 import tictim.paraglider.network.ParagliderNetworkImpl;
 import tictim.paraglider.plugin.ParagliderPluginLoader;
@@ -77,6 +77,8 @@ public class ParagliderMod {
 
 	private final WindSourceRegistry windSourceRegistry = new WindSourceRegistry();
 
+	private final @Nullable String staminaFactoryOrigin;
+
 	@ApiStatus.Internal
 	public @Nullable IClient client;
 
@@ -90,7 +92,9 @@ public class ParagliderMod {
 		var pair = PlayerStateMapLoader.loadStates();
 		this.stateMapConfig = new PlayerStateMapConfig(pair.getFirst());
 		this.connectionMap = pair.getSecond();
-		ParagliderAPI.setStaminaFactory(StaminaFactoryLoader.loadStaminaFactory());
+		var pair2 = StaminaLoader.loadStaminaFactory();
+		ParagliderAPI.setStaminaFactory(pair2.getFirst());
+		this.staminaFactoryOrigin = pair2.getSecond();
 		ParagliderAPI.setStaminaEfficiencyLogicHandler(new StaminaEfficiencyLogicHandlerImpl(
 				StaminaEfficiencyLogicLoader.loadStaminaEfficiencyLogics()));
 
@@ -210,6 +214,10 @@ public class ParagliderMod {
 
 	public @NotNull WindSourceRegistry windSourceRegistry() {
 		return this.windSourceRegistry;
+	}
+
+	public @Nullable String staminaFactoryOrigin() {
+		return this.staminaFactoryOrigin;
 	}
 
 	@ApiStatus.Internal
