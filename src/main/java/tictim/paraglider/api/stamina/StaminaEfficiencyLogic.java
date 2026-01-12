@@ -1,6 +1,6 @@
 package tictim.paraglider.api.stamina;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,7 +119,7 @@ public interface StaminaEfficiencyLogic {
 		 * @param id ID
 		 * @return Whether {@link #state()} is not null and has given ID
 		 */
-		default boolean stateIs(@NotNull ResourceLocation id) {
+		default boolean stateIs(@NotNull Identifier id) {
 			PlayerState state = state();
 			return state != null && state.is(id);
 		}
@@ -130,7 +130,7 @@ public interface StaminaEfficiencyLogic {
 		 * @param flag Flag
 		 * @return Whether {@link #state()} is not null and has given flag
 		 */
-		default boolean stateHasFlag(@NotNull ResourceLocation flag) {
+		default boolean stateHasFlag(@NotNull Identifier flag) {
 			PlayerState state = state();
 			return state != null && state.hasFlag(flag);
 		}

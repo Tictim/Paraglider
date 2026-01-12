@@ -1,17 +1,18 @@
 package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.bargain.BargainCatalog;
@@ -37,12 +39,12 @@ import static tictim.paraglider.ParagliderUtils.ms;
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
 
 public class BargainScreen extends Screen implements DisableStaminaRender {
-	private static final ResourceLocation MERCHANT_GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/villager.png");
+	private static final Identifier MERCHANT_GUI_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/villager.png");
 
-	private static final ResourceLocation SCROLLER_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/scroller");
-	private static final ResourceLocation SCROLLER_DISABLED_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/scroller_disabled");
-	private static final ResourceLocation TRADE_ARROW_OUT_OF_STOCK_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
-	private static final ResourceLocation TRADE_ARROW_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/trade_arrow");
+	private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/villager/scroller");
+	private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/villager/scroller_disabled");
+	private static final Identifier TRADE_ARROW_OUT_OF_STOCK_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
+	private static final Identifier TRADE_ARROW_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow");
 
 	private static final long ITEM_CYCLE_TIME = 1000;
 	private static final long DIALOG_FADEOUT_START = 1750;
@@ -55,7 +57,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		if (elapsedTime >= DIALOG_FADEOUT_END) return 0;
 		if (elapsedTime <= DIALOG_FADEOUT_START) return 0xFF;
 		int alpha = Mth.clamp(
-				(int)((DIALOG_FADEOUT_END - elapsedTime) * 0xFF / (DIALOG_FADEOUT_END - DIALOG_FADEOUT_START)),
+				(int) ((DIALOG_FADEOUT_END - elapsedTime) * 0xFF / (DIALOG_FADEOUT_END - DIALOG_FADEOUT_START)),
 				0, 0xFF);
 		// for some reason the string render method doesn't give a jack shit on alpha of 4 or below, I have no idea why
 		return alpha > 4 ? alpha : 0;
@@ -144,9 +146,9 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			int yOffset = Math.min(113, this.buttonIndexOffset * k);
 			if (this.buttonIndexOffset == offScreenBargains - 1) yOffset = 113;
 
-			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_SPRITE, left + 90, top + 1 + yOffset, 6, 27);
+			guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SCROLLER_SPRITE, left + 90, top + 1 + yOffset, 6, 27);
 		} else {
-			guiGraphics.blitSprite(RenderType::guiTextured, SCROLLER_DISABLED_SPRITE, left + 90, top + 1, 6, 27);
+			guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SCROLLER_DISABLED_SPRITE, left + 90, top + 1, 6, 27);
 		}
 	}
 
@@ -156,7 +158,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 
 	@Override public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		long newTimestamp = ms();
-		if (hasShiftDown())
+		if (minecraft.hasShiftDown())
 			this.createdTime += newTimestamp - this.currentTickTimestamp; // For stopping multi item ingredient preview cycling
 		this.currentTickTimestamp = newTimestamp;
 
@@ -165,11 +167,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		if (this.catalogs.length > 0) {
 			renderScroller(guiGraphics, getLeft(), getTop());
 
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0, 0, 100);
 			for (BargainButton button : this.buttons)
 				button.renderItems(guiGraphics);
-			guiGraphics.pose().popPose();
 
 			for (BargainButton button : this.buttons) {
 				if (button.isHovered()) renderPreview(guiGraphics, button.actualIndex());
@@ -186,7 +185,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 	@Override public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		// no background :)
 
-		guiGraphics.blit(RenderType::guiTextured, MERCHANT_GUI_TEXTURE, getLeft(), getTop(),
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, MERCHANT_GUI_TEXTURE, getLeft(), getTop(),
 				4, 17,
 				SCROLL_BOX_THING_WIDTH, SCROLL_BOX_THING_HEIGHT,
 				512, 256);
@@ -195,7 +194,6 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			this.staminaWheelRenderer.render(guiGraphics,
 					getLeft() + SCROLL_BOX_THING_WIDTH + 5,
 					getTop() - 5 - WHEEL_RADIUS,
-					0,
 					partialTick,
 					ExtraWheelAttachment.LEFT);
 		}
@@ -274,44 +272,41 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			int xOff = left + i % rows * (16 * mag);
 			int yOff = top + (i / rows) * (16 * mag);
 
-			PoseStack pose = guiGraphics.pose();
-			pose.pushPose();
-			pose.translate(xOff, yOff, 0);
+			Matrix3x2fStack pose = guiGraphics.pose();
+			pose.pushMatrix();
+			pose.translate(xOff, yOff, pose);
 
-			pose.pushPose();
-			pose.scale(mag, mag, 1);
+			pose.pushMatrix();
+			pose.scale(mag, mag, pose);
 
 			guiGraphics.renderFakeItem(cycle(demandPreviewItem.get(i)), 0, 0);
 
-			pose.popPose();
+			pose.popMatrix();
 
 			int count = catalog.getCount(i);
 			String s = (count >= demand.quantity() ? count :
 					ChatFormatting.RED + "" + count + ChatFormatting.RESET)
 					+ "/" + demand.quantity();
 
-			pose.translate(15 * mag + 2 * textMag, 16 * mag - 7 * textMag, 200);
-			pose.scale(textMag, textMag, 1);
+			pose.translate(15 * mag + 2 * textMag, 16 * mag - 7 * textMag, pose);
+			pose.scale(textMag, textMag, pose);
 
-			guiGraphics.drawSpecial(bs -> this.font.drawInBatch(s,
+			guiGraphics.drawString(this.font,
+					s,
 					-this.font.width(s),
 					0,
 					0xFFFFFFFF,
-					true,
-					pose.last().pose(),
-					bs,
-					Font.DisplayMode.NORMAL,
-					0,
-					0xf000f0));
+					true
+			);
 
-			pose.popPose();
+			pose.popMatrix();
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private void processLookAt(float partialTicks) {
 		if (lookAt == null) return;
 		Player player = minecraft.player;
+		if (player == null) return;
 		Vec3 eyePosition = player.getEyePosition(partialTicks);
 
 		// stolen from Entity#lookAt
@@ -319,8 +314,8 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 		double lookY = lookAt.y() - eyePosition.y;
 		double lookZ = lookAt.z() - eyePosition.z;
 		double xzLength = Math.sqrt(lookX * lookX + lookZ * lookZ);
-		double rotationPitch = Mth.wrapDegrees((float)(-Mth.atan2(lookY, xzLength) * (180 / Math.PI)));
-		double rotationYaw = Mth.wrapDegrees((float)(Mth.atan2(lookZ, lookX) * (180 / Math.PI)) - 90);
+		double rotationPitch = Mth.wrapDegrees((float) (-Mth.atan2(lookY, xzLength) * (180 / Math.PI)));
+		double rotationYaw = Mth.wrapDegrees((float) (Mth.atan2(lookZ, lookX) * (180 / Math.PI)) - 90);
 
 		double lerpPercentage = partialTicks * 0.3;
 		player.setXRot(lerpAngle(lerpPercentage, Mth.wrapDegrees(player.getXRot()), rotationPitch));
@@ -333,38 +328,38 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 	}
 
 	private static float lerpAngle(double percentage, double start, double end) {
-		return (float)Mth.lerp(percentage, start < end ? (end - start > 180 ? start + 360 : start) : (start - end > 180 ? start - 360 : start), end);
+		return (float) Mth.lerp(percentage, start < end ? (end - start > 180 ? start + 360 : start) : (start - end > 180 ? start - 360 : start), end);
 	}
 
 	@Override public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (!super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
 			int bargainSize = this.catalogs.length;
 			if (bargainSize > 7) {
-				this.buttonIndexOffset = Mth.clamp((int)((double)this.buttonIndexOffset - scrollY), 0, bargainSize - 7);
+				this.buttonIndexOffset = Mth.clamp((int) ((double) this.buttonIndexOffset - scrollY), 0, bargainSize - 7);
 			}
 		}
 		return true;
 	}
 
-	@Override public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-		if (!this.isDragging) return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+	@Override public boolean mouseDragged(@NotNull MouseButtonEvent event, double dragX, double dragY) {
+		if (!this.isDragging) return super.mouseDragged(event, dragX, dragY);
 		int offScreenBargains = this.catalogs.length - 7;
-		this.buttonIndexOffset = Mth.clamp((int)((mouseY - getTop() + 1 - 13.5) / (139 - 27) * offScreenBargains + .5), 0, offScreenBargains);
+		this.buttonIndexOffset = Mth.clamp((int) ((event.y() - getTop() + 1 - 13.5) / (139 - 27) * offScreenBargains + .5), 0, offScreenBargains);
 		return true;
 	}
 
-	@Override public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	@Override public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
 		this.isDragging = false;
 		int left = getLeft(), top = getTop();
-		if (this.catalogs.length > 7 && mouseX > left + 90 && mouseX < left + 90 + 6 && mouseY > top + 1 && mouseY <= top + 1 + 139 + 1)
+		if (this.catalogs.length > 7 && event.x() > left + 90 && event.x() < left + 90 + 6 && event.y() > top + 1 && event.y() <= top + 1 + 139 + 1)
 			this.isDragging = true;
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, isDoubleClick);
 	}
 
-	@Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers) || this.minecraft == null) return true;
-		InputConstants.Key key = InputConstants.getKey(keyCode, scanCode);
+	@Override public boolean keyPressed(@NotNull KeyEvent event) {
+		if (super.keyPressed(event)) return true;
+		InputConstants.Key key = InputConstants.getKey(event);
 		if (this.minecraft.options.keyInventory.isActiveAndMatches(key)) {
 			this.onClose();
 			return true;
@@ -397,7 +392,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			this.visible = false;
 		}
 
-		@Override public void onPress() {
+		@Override public void onPress(@NotNull InputWithModifiers input) {
 			BargainCatalog catalog = catalog();
 			if (catalog != null) ParagliderNetwork.get().bargain(this.screen.sessionId, catalog.bargain());
 		}
@@ -409,14 +404,14 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			return this.screen.getBargainCatalog(actualIndex());
 		}
 
-		@Override protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-			super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+		@Override protected void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+			renderDefaultSprite(guiGraphics);
 			renderTradeArrow(guiGraphics);
 		}
 
 		private void renderTradeArrow(GuiGraphics guiGraphics) {
 			BargainCatalog catalog = catalog();
-			guiGraphics.blitSprite(RenderType::guiTextured,
+			guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED,
 					catalog == null || catalog.canBargain() ? TRADE_ARROW_SPRITE : TRADE_ARROW_OUT_OF_STOCK_SPRITE,
 					getX() + 39, getY() + 5,
 					10, 9);
@@ -426,8 +421,6 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			BargainCatalog catalog = catalog();
 			return catalog != null && catalog.canBargain() ? 0xffffff : 0xa0a0a0;
 		}
-
-		@Override public void renderString(@NotNull GuiGraphics guiGraphics, @NotNull Font font, int color) {}
 
 		private @Nullable ItemStack fallbackIcon;
 
@@ -525,7 +518,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 			}
 
 			if (tooltip != null) {
-				guiGraphics.renderComponentTooltip(this.screen.font, tooltip, mouseX, mouseY);
+				guiGraphics.setComponentTooltipForNextFrame(this.screen.font, tooltip, mouseX, mouseY);
 			}
 
 			return true;
@@ -541,7 +534,7 @@ public class BargainScreen extends Screen implements DisableStaminaRender {
 
 	private int cycleIndex(int counts) {
 		if (counts <= 0) return -1;
-		return (int)(Math.abs(this.currentTickTimestamp - this.createdTime) / ITEM_CYCLE_TIME % counts);
+		return (int) (Math.abs(this.currentTickTimestamp - this.createdTime) / ITEM_CYCLE_TIME % counts);
 	}
 
 	private static int determineItemPosition(int n, int length, int start, int end) {

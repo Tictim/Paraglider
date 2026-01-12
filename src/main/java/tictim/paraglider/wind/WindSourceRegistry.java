@@ -7,8 +7,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.tags.TagKey;
@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WindSourceRegistry {
-	public static final ResourceKey<Registry<WindSource>> REGISTRY_KEY =
+	public static final ResourceKey<@NotNull Registry<@NotNull WindSource>> REGISTRY_KEY =
 			ResourceKey.createRegistryKey(ParagliderAPI.id("wind_sources"));
 
 	private static final Logger LOGGER = LogManager.getLogger("Paraglider - WindSourceRegistry");
@@ -54,7 +54,7 @@ public class WindSourceRegistry {
 			int maxWindHeight
 	) {}
 
-	public static final class ReloadListener extends SimplePreparableReloadListener<Void> {
+	public static final class ReloadListener extends SimplePreparableReloadListener<@NotNull Void> {
 		private final WindSourceRegistry windSourceRegistry;
 		private final RegistryAccess registryAccess;
 
@@ -78,21 +78,21 @@ public class WindSourceRegistry {
 		private void readWindSources() {
 			boolean verbose = DebugCfg.get().verboseWindSourceLoading();
 
-			Registry<Block> blocks = this.registryAccess.lookupOrThrow(Registries.BLOCK);
-			Registry<WindSource> windSourceReg = this.registryAccess.lookupOrThrow(REGISTRY_KEY);
+			Registry<@NotNull Block> blocks = this.registryAccess.lookupOrThrow(Registries.BLOCK);
+			Registry<@NotNull WindSource> windSourceReg = this.registryAccess.lookupOrThrow(REGISTRY_KEY);
 			List<Block> blockCache = new ArrayList<>();
 			List<BlockState> blockStateCache = new ArrayList<>();
 
 			if (verbose) LOGGER.info("Loading {} wind sources", windSourceReg.size());
 
-			for (Holder<WindSource> holder : windSourceReg.asHolderIdMap()) {
+			for (Holder<@NotNull WindSource> holder : windSourceReg.asHolderIdMap()) {
 				WindSource wind = holder.value();
 
 				for (int i = 0; i < wind.conditions().size(); i++) {
 					WindSource.Condition condition = wind.conditions().get(i);
 					switch (condition) {
 						case WindSource.BlockStateCondition blockStateCondition -> {
-							for (Either<Block, ResourceLocation> e : blockStateCondition.block()) {
+							for (Either<Block, Identifier> e : blockStateCondition.block()) {
 								e.ifLeft(blockCache::add);
 								int finalI = i;
 								e.ifRight(id -> LOGGER.warn("{}#{}:Cannot find block with ID {}", n(holder), finalI, id));
@@ -142,9 +142,9 @@ public class WindSourceRegistry {
 							blockCache.clear();
 						}
 						case WindSource.TagCondition tagCondition -> {
-							for (TagKey<Block> tag : tagCondition.tags()) {
+							for (TagKey<@NotNull Block> tag : tagCondition.tags()) {
 								boolean found = false;
-								for (Holder<Block> h : blocks.getTagOrEmpty(tag)) {
+								for (Holder<@NotNull Block> h : blocks.getTagOrEmpty(tag)) {
 									found = true;
 									add(wind.height(), h.value(), null);
 								}
@@ -161,7 +161,7 @@ public class WindSourceRegistry {
 				LOGGER.info("Loaded wind source list for {} blocks", this.windSources.size());
 				for (var e : this.windSources.entrySet()) {
 					Block block = e.getKey();
-					ResourceLocation blockId = blockId(block);
+					Identifier blockId = blockId(block);
 					Object2IntOpenHashMap<BlockState> map = e.getValue();
 					int defaultHeight = map.defaultReturnValue();
 
@@ -182,15 +182,15 @@ public class WindSourceRegistry {
 			}
 		}
 
-		private static <T> String n(Holder<T> holder) {
-			return holder.unwrapKey().map(ResourceKey::location).map(ResourceLocation::toString).orElse("[No ID]");
+		private static <T> String n(Holder<@NotNull T> holder) {
+			return holder.unwrapKey().map(ResourceKey::identifier).map(Identifier::toString).orElse("[No ID]");
 		}
 
-		private static ResourceLocation blockId(Block block) {
+		private static Identifier blockId(Block block) {
 			return BuiltInRegistries.BLOCK.getKey(block);
 		}
 
-		private static <T extends Comparable<T>> String propertyValueToString(BlockState state, Property<T> property) {
+		private static <T extends Comparable<T>> String propertyValueToString(BlockState state, Property<@NotNull T> property) {
 			return property.getName(state.getValue(property));
 		}
 

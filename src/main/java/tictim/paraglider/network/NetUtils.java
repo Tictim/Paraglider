@@ -1,6 +1,5 @@
 package tictim.paraglider.network;
 
-import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -8,7 +7,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.bargain.BargainPreview;
 
 public final class NetUtils {
@@ -30,7 +28,7 @@ public final class NetUtils {
 		int id = bargainPreviewTypes.getId(type);
 		if (id == -1) throw new IllegalArgumentException("Unknown bargain preview type: " + type);
 		buffer.writeVarInt(id);
-		type.streamCodec().encode(buffer, (T)preview);
+		type.streamCodec().encode(buffer, (T) preview);
 	}
 
 	private static BargainPreview<?> decodeBargainPreview(RegistryFriendlyByteBuf buffer) {
@@ -40,19 +38,5 @@ public final class NetUtils {
 		return bargainPreviewTypes.get(buffer.readVarInt())
 				.map(ref -> ref.value().streamCodec().decode(buffer))
 				.orElseThrow();
-	}
-
-	@SuppressWarnings("DataFlowIssue")
-	public static <B extends ByteBuf, V> StreamCodec<B, @Nullable V> nullable(StreamCodec<? super B, V> streamCodec) {
-		return StreamCodec.of((buf, val) -> {
-			if (val == null) buf.writeBoolean(false);
-			else {
-				buf.writeBoolean(true);
-				streamCodec.encode(buf, val);
-			}
-		}, buf -> {
-			if (buf.readBoolean()) return streamCodec.decode(buf);
-			else return null;
-		});
 	}
 }

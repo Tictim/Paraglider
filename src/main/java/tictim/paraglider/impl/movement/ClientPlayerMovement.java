@@ -14,11 +14,11 @@ public class ClientPlayerMovement extends RemotePlayerMovement {
 	}
 
 	@Override public @NotNull LocalPlayer player() {
-		return (LocalPlayer)super.player();
+		return (LocalPlayer) super.player();
 	}
 
 	@Override protected @NotNull Stamina createCustomStamina() {
-		return ParagliderAPI.staminaFactory().createLocalClientInstance(player());
+		return ParagliderAPI.staminaFactory().clientFactory().createLocalClientInstance(player());
 	}
 
 	@Override public void update() {

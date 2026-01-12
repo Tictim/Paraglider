@@ -25,7 +25,7 @@ public class AntiVesselItem extends Item {
 
 	@Override public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			VesselContainer vessels = VesselContainer.get(player);
 
 			int heartContainersTaken = vessels.takeHeartContainers(Integer.MAX_VALUE, false, true);

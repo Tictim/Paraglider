@@ -2,9 +2,10 @@ package tictim.paraglider;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -23,8 +24,8 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
 import static net.minecraft.commands.arguments.EntityArgument.player;
-import static net.minecraft.commands.arguments.ResourceLocationArgument.getId;
-import static net.minecraft.commands.arguments.ResourceLocationArgument.id;
+import static net.minecraft.commands.arguments.IdentifierArgument.getId;
+import static net.minecraft.commands.arguments.IdentifierArgument.id;
 import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos;
 import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getBlockPos;
 import static net.minecraft.commands.arguments.coordinates.Vec3Argument.getVec3;
@@ -45,7 +46,7 @@ public final class ParagliderCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> queryVessel() {
 		return literal("query")
-				.requires(s -> s.hasPermission(1))
+				.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 				.then(literal(ResourceType.HEART.name)
 						.then(argument("player", player())
 								.executes(ctx -> ResourceType.HEART.tell(ctx.getSource(), getPlayer(ctx, "player")))))
@@ -59,7 +60,7 @@ public final class ParagliderCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> setVessel(@NotNull SetType type) {
 		return literal(type.name())
-				.requires(s -> s.hasPermission(2))
+				.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 				.then(literal(ResourceType.HEART.name)
 						.then(argument("player", player())
 								.then(argument("amount", integer(0))
@@ -88,7 +89,7 @@ public final class ParagliderCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> bargain() {
 		return literal("bargain")
-				.requires(s -> s.hasPermission(2))
+				.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 				.then(literal("start")
 						.then(argument("player", player())
 								.then(argument("bargainType", id())
@@ -123,17 +124,17 @@ public final class ParagliderCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> reloadPlayerStates() {
 		return literal("reloadPlayerStates")
-				.requires(s -> s.hasPermission(3))
+				.requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
 				.executes(context -> reloadPlayerStates(context.getSource()));
 	}
 
 	private static int startBargain(@NotNull CommandSourceStack source,
 	                                @NotNull ServerPlayer player,
-	                                @NotNull ResourceLocation bargainType,
+	                                @NotNull Identifier bargainType,
 	                                @Nullable BlockPos pos,
-	                                @Nullable ResourceLocation advancement,
+	                                @Nullable Identifier advancement,
 	                                @Nullable Vec3 lookAt) {
-		if (BargainTypeRegistry.getFromID(player.serverLevel(), bargainType) == null) {
+		if (BargainTypeRegistry.getFromID(player.level(), bargainType) == null) {
 			source.sendFailure(Component.translatable("commands.paraglider.bargain.start.invalid_bargain_type", bargainType));
 			return -1;
 		}

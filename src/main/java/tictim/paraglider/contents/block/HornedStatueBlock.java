@@ -59,7 +59,7 @@ public class HornedStatueBlock extends BaseStatueBlock {
 	                                                              @NotNull BlockPos pos,
 	                                                              @NotNull Player player,
 	                                                              @NotNull BlockHitResult hit) {
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			BargainHandler.initiate(
 					player,
 					ParagliderBargainTypes.HORNED_STATUE,

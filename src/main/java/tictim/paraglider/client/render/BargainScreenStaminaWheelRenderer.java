@@ -78,7 +78,7 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
 	}
 
-	private void makeOuterWheel(Wheel wheel) {
+	private void makeOuterWheel(StaminaWheelState wheel) {
 		float staminaWheelPos = wheel.staminaWheelPos();
 		if (staminaWheelPos <= 2) return;
 
@@ -88,8 +88,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		if (this.outerWheelEmptyAnim.isActive()) {
 			float d = Math.min(1, (float)this.outerWheelEmptyAnim.activeDuration() / OUTER_WHEEL_EMPTY_DURATION);
-			color = ARGB.lerp(d, wheelBgColor(wheels - 3), color);
-			wheelIndicatorColor = ARGB.lerp(d, wheelColor(wheels - 2),
+			color = lerpColor(d, wheelBgColor(wheels - 3), color);
+			wheelIndicatorColor = lerpColor(d, wheelColor(wheels - 2),
 					wheels == 3 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 3));
 		}
 
@@ -114,8 +114,8 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 
 			if (this.outerWheelFillAnim.isActive()) {
 				float d = Math.min(1, (float)this.outerWheelFillAnim.activeDuration() / OUTER_WHEEL_FILL_DURATION);
-				bgColor = ARGB.lerp(d, wheelColor(wheels - 4), bgColor);
-				wheelIndicatorColor = ARGB.lerp(d,
+				bgColor = lerpColor(d, wheelColor(wheels - 4), bgColor);
+				wheelIndicatorColor = lerpColor(d,
 						wheels == 4 ? ARGB.color(0, wheelColor(1)) : wheelColor(wheels - 4),
 						wheelColor(wheels - 3));
 			}

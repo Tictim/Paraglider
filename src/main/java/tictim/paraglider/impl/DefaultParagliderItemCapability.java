@@ -1,13 +1,13 @@
 package tictim.paraglider.impl;
 
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderItemCapability;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.contents.ParaglidingFlag;
 
 public class DefaultParagliderItemCapability implements ParagliderItemCapability {
 	@Override public boolean canDoParagliding(@NotNull Player player, @NotNull ItemStack stack) {
@@ -19,11 +19,11 @@ public class DefaultParagliderItemCapability implements ParagliderItemCapability
 	}
 
 	@Override public void setParagliding(@NotNull ItemStack stack, boolean paragliding) {
-		DataComponentType<ParaglidingFlag> type = Contents.get().paraglidingFlagComponent();
+		DataComponentType<@NotNull Unit> type = Contents.get().paraglidingFlagComponent();
 		boolean flag = stack.get(type) != null;
 
 		if (flag == paragliding) return;
-		else if (paragliding) stack.set(type, ParaglidingFlag.INSTANCE);
+		else if (paragliding) stack.set(type, Unit.INSTANCE);
 		else stack.remove(type);
 	}
 

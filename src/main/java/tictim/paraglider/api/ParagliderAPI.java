@@ -1,6 +1,6 @@
 package tictim.paraglider.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -29,16 +29,16 @@ public class ParagliderAPI {
 	/**
 	 * Item tag used for checking whether the item is paraglider.
 	 */
-	public static final TagKey<Item> PARAGLIDERS = TagKey.create(ITEM, id("paragliders"));
+	public static final TagKey<@NotNull Item> PARAGLIDERS = TagKey.create(ITEM, id("paragliders"));
 
 	/**
 	 * Block tag used for marking a block to be skipped on wind placement check, allowing wind to pass through the
 	 * block.
 	 */
-	public static final TagKey<Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
+	public static final TagKey<@NotNull Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
 
-	public static @NotNull ResourceLocation id(@NotNull String path) {
-		return ResourceLocation.fromNamespaceAndPath(MODID, path);
+	public static @NotNull Identifier id(@NotNull String path) {
+		return Identifier.fromNamespaceAndPath(MODID, path);
 	}
 
 	private static @Nullable Function<@NotNull Player, @NotNull Movement> movementSupplier;

@@ -1,7 +1,7 @@
 package tictim.paraglider.network;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -25,18 +25,18 @@ public interface ParagliderNetwork {
 	// movement
 
 	void syncStateMap(@NotNull ServerPlayer player, @NotNull PlayerStateMap stateMap);
-	void syncStateMapToAll(@NotNull MinecraftServer server, @NotNull PlayerStateMap stateMap);
+	void syncStateMapToAll(@NotNull PlayerStateMap stateMap);
 
 	void syncMovement(@NotNull ServerPlayer player,
-	                  @NotNull ResourceLocation state,
+	                  @NotNull Identifier state,
 	                  double stamina,
 	                  double extraStamina,
 	                  boolean depleted,
 	                  int recoveryDelay,
 	                  double efficiency);
 
-	void syncRemoteMovement(@NotNull MinecraftServer server, @NotNull Entity entity, @NotNull ResourceLocation state);
-	void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull ResourceLocation state);
+	void syncRemoteMovement(@NotNull Entity entity, @NotNull Identifier state);
+	void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull Identifier state);
 
 	void syncVessels(@NotNull ServerPlayer player,
 	                 double stamina,
@@ -55,7 +55,7 @@ public interface ParagliderNetwork {
 
 	void displayBargainDialog(@NotNull BargainContext ctx, @NotNull Component dialog);
 
-	void bargain(int sessionId, @NotNull ResourceLocation bargain);
+	void bargain(int sessionId, @NotNull Identifier bargain);
 
 	void bargainEndToClient(@NotNull BargainContext ctx);
 	void bargainEndToServer(int sessionId);

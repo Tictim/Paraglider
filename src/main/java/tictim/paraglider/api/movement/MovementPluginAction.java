@@ -1,6 +1,6 @@
 package tictim.paraglider.api.movement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -10,21 +10,21 @@ import java.util.Set;
 
 public sealed interface MovementPluginAction {
 	sealed interface NewState extends MovementPluginAction {
-		@NotNull ResourceLocation id();
+		@NotNull Identifier id();
 
 		record Regular(
-				@NotNull ResourceLocation id,
+				@NotNull Identifier id,
 				double defaultStaminaDelta,
-				@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags
+				@NotNull @Unmodifiable Set<@NotNull Identifier> flags
 		) implements NewState {
 			public Regular {
 				Objects.requireNonNull(id, "id == null");
 				Objects.requireNonNull(flags, "flags == null");
-				for (ResourceLocation flag : flags) Objects.requireNonNull(flag);
+				for (Identifier flag : flags) Objects.requireNonNull(flag);
 			}
 		}
 
-		record Synthetic(@NotNull ResourceLocation id) implements NewState {
+		record Synthetic(@NotNull Identifier id) implements NewState {
 			public Synthetic {
 				Objects.requireNonNull(id, "id == null");
 			}
@@ -32,7 +32,7 @@ public sealed interface MovementPluginAction {
 	}
 
 	record ChangeDefaultStaminaDelta(
-			@NotNull ResourceLocation id,
+			@NotNull Identifier id,
 			double defaultStaminaDelta
 	) implements MovementPluginAction {
 		public ChangeDefaultStaminaDelta {
@@ -41,8 +41,8 @@ public sealed interface MovementPluginAction {
 	}
 
 	record SetFallbackConnection(
-			@NotNull ResourceLocation parent,
-			@Nullable ResourceLocation fallback,
+			@NotNull Identifier parent,
+			@Nullable Identifier fallback,
 			double priority
 	) implements MovementPluginAction {}
 }

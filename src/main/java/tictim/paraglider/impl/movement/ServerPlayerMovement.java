@@ -288,7 +288,7 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 	}
 
 	protected void spawnParticle(@NotNull ParticleOptions particle, int count) {
-		player().serverLevel().sendParticles(particle,
+		player().level().sendParticles(particle,
 				player().getX(), player().getY(.5), player().getZ(),
 				count, 1, 2, 1, 0);
 	}

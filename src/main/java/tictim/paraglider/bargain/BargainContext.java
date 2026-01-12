@@ -2,7 +2,7 @@ package tictim.paraglider.bargain;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -20,16 +20,16 @@ import java.util.*;
 /**
  * Pseudo-container for bargain recipes, since the system doesn't use containers. Handles syncing and such.
  *
- * @see BargainHandler#initiate(Player, ResourceLocation, BlockPos, ResourceLocation, Vec3)
+ * @see BargainHandler#initiate(Player, Identifier, BlockPos, Identifier, Vec3)
  */
 public final class BargainContext {
 	private final ServerPlayer player;
 	private final int sessionId;
 	private final BargainType type;
-	private final ResourceLocation typeId;
-	private final Map<ResourceLocation, Bargain> bargains;
+	private final Identifier typeId;
+	private final Map<Identifier, Bargain> bargains;
 
-	private @Nullable ResourceLocation advancement;
+	private @Nullable Identifier advancement;
 	private @Nullable Vec3 lookAt;
 
 	private int @Nullable [] inventoryHashes;
@@ -43,9 +43,9 @@ public final class BargainContext {
 	public BargainContext(@NotNull ServerPlayer player,
 	                      int sessionId,
 	                      @NotNull BargainType type,
-	                      @NotNull ResourceLocation typeId,
-	                      @NotNull Map<@NotNull ResourceLocation, @NotNull Bargain> bargains,
-	                      @Nullable ResourceLocation advancement,
+	                      @NotNull Identifier typeId,
+	                      @NotNull Map<@NotNull Identifier, @NotNull Bargain> bargains,
+	                      @Nullable Identifier advancement,
 	                      @Nullable Vec3 lookAt) {
 		this.player = Objects.requireNonNull(player);
 		this.sessionId = sessionId;
@@ -65,24 +65,24 @@ public final class BargainContext {
 	public @NotNull BargainType type() {
 		return type;
 	}
-	public @NotNull ResourceLocation typeId() {
+	public @NotNull Identifier typeId() {
 		return typeId;
 	}
-	public @NotNull @Unmodifiable Map<@NotNull ResourceLocation, @NotNull Bargain> bargains() {
+	public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull Bargain> bargains() {
 		return Collections.unmodifiableMap(bargains);
 	}
 	public boolean isFinished() {
 		return finished;
 	}
 
-	public @Nullable ResourceLocation advancement() {
+	public @Nullable Identifier advancement() {
 		return advancement;
 	}
 	public @Nullable Vec3 lookAt() {
 		return lookAt;
 	}
 
-	public void setAdvancement(@Nullable ResourceLocation advancement) {
+	public void setAdvancement(@Nullable Identifier advancement) {
 		this.advancement = advancement;
 	}
 	public void setLookAt(@Nullable Vec3 lookAt) {

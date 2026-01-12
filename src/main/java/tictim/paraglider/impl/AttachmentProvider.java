@@ -15,7 +15,7 @@ public final class AttachmentProvider {
 
 	public static @NotNull PlayerMovement createPlayerMovement(@NotNull Player player) {
 		if (player instanceof ServerPlayer sp) return new ServerPlayerMovement(sp);
-		if (FMLEnvironment.dist.isClient()) return ClientImpl.createPlayerMovement(player);
+		if (FMLEnvironment.getDist().isClient()) return ClientImpl.createPlayerMovement(player);
 		return new RemotePlayerMovement(player);
 	}
 

@@ -9,7 +9,7 @@ import tictim.paraglider.ParagliderMod;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
-@EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = MODID)
 public class Datagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {

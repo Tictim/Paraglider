@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -29,22 +29,22 @@ public final class ParagliderVillageStructures {
 		Registry<StructureTemplatePool> reg = registryAccess.lookupOrThrow(Registries.TEMPLATE_POOL);
 
 		ParagliderMod.LOGGER.debug("Start adding village structures");
-		appendPool(reg, ResourceLocation.withDefaultNamespace("village/desert/houses"),
+		appendPool(reg, Identifier.withDefaultNamespace("village/desert/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":gerudo_village_goddess_statue"), 1),
 				Pair.of(StructurePoolElement.legacy(MODID + ":desert_village_horned_statue"), 1)
 		);
-		appendPool(reg, ResourceLocation.withDefaultNamespace("village/plains/houses"),
+		appendPool(reg, Identifier.withDefaultNamespace("village/plains/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":hateno_village_goddess_statue"), 1),
 				Pair.of(StructurePoolElement.legacy(MODID + ":plains_village_horned_statue"), 1)
 		);
-		appendPool(reg, ResourceLocation.withDefaultNamespace("village/savanna/houses"),
+		appendPool(reg, Identifier.withDefaultNamespace("village/savanna/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":rito_village_goddess_statue"), 3),
 				Pair.of(StructurePoolElement.legacy(MODID + ":savanna_village_horned_statue"), 1)
 		);
-		appendPool(reg, ResourceLocation.withDefaultNamespace("village/snowy/houses"),
+		appendPool(reg, Identifier.withDefaultNamespace("village/snowy/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":snowy_village_horned_statue"), 1)
 		);
-		appendPool(reg, ResourceLocation.withDefaultNamespace("village/taiga/houses"),
+		appendPool(reg, Identifier.withDefaultNamespace("village/taiga/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":kakariko_village_goddess_statue"), 3),
 				Pair.of(StructurePoolElement.legacy(MODID + ":taiga_village_horned_statue"), 1)
 		);
@@ -55,7 +55,7 @@ public final class ParagliderVillageStructures {
 	@SafeVarargs
 	private static void appendPool(
 			Registry<StructureTemplatePool> templatePoolRegistry,
-			ResourceLocation id,
+			Identifier id,
 			Pair<Function<StructureTemplatePool.Projection, ? extends StructurePoolElement>, Integer>... elementToWeight
 	) {
 		var oPool = templatePoolRegistry.get(id);

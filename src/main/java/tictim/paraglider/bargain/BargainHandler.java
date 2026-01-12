@@ -2,7 +2,7 @@ package tictim.paraglider.bargain;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -52,23 +52,23 @@ public final class BargainHandler {
 	 * @throws NullPointerException If {@code player == null || bargainType == null}
 	 */
 	public static boolean initiate(@NotNull Player player,
-	                               @NotNull ResourceLocation bargainType,
+	                               @NotNull Identifier bargainType,
 	                               @Nullable BlockPos pos,
-	                               @Nullable ResourceLocation advancement,
+	                               @Nullable Identifier advancement,
 	                               @Nullable Vec3 lookAt) {
 		Objects.requireNonNull(player, "player == null");
 		if (!(player instanceof ServerPlayer serverPlayer)) return false;
 
-		BargainType type = BargainTypeRegistry.getFromID(serverPlayer.serverLevel(),
+		BargainType type = BargainTypeRegistry.getFromID(serverPlayer.level(),
 				Objects.requireNonNull(bargainType, "bargainType == null"));
 		if (type == null) return false;
 
-		var bargains = serverPlayer.serverLevel().recipeAccess().recipeMap()
+		var bargains = serverPlayer.level().recipeAccess().recipeMap()
 				.byType(Contents.get().bargainRecipeType())
 				.stream()
 				.filter(h -> bargainType.equals(h.value().getBargainType()) && h.value().isAvailableFor(player, pos))
 				.collect(Collectors.toMap(
-						h -> h.id().location(),
+						h -> h.id().identifier(),
 						RecipeHolder::value,
 						(b1, b2) -> b1,
 						Object2ObjectOpenHashMap::new));

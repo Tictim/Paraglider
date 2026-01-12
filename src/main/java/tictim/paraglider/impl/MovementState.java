@@ -1,13 +1,14 @@
 package tictim.paraglider.impl;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Range;
 
 import static tictim.paraglider.impl.movement.PlayerMovementValues.PANIC_INITIAL_DELAY;
 
 public class MovementState {
-	public static final Codec<MovementState> CODEC = RecordCodecBuilder.create(b -> b.group(
+	public static final MapCodec<MovementState> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
 			Codec.INT.fieldOf("recoveryDelay").forGetter(MovementState::recoveryDelay),
 			Codec.INT.fieldOf("panicParaglidingDelay").forGetter(MovementState::panicParaglidingDelay),
 			Codec.BOOL.fieldOf("panicParagliding").forGetter(MovementState::panicParagliding)

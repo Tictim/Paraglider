@@ -1,13 +1,12 @@
 package datagen;
 
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import tictim.paraglider.api.ParagliderAPI;
@@ -19,8 +18,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.advancements.critereon.InventoryChangeTrigger.TriggerInstance.hasItems;
-import static net.minecraft.advancements.critereon.ItemPredicate.Builder.item;
+import static net.minecraft.advancements.criterion.ImpossibleTrigger.TriggerInstance;
+import static net.minecraft.advancements.criterion.InventoryChangeTrigger.TriggerInstance.hasItems;
+import static net.minecraft.advancements.criterion.ItemPredicate.Builder.item;
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
 public class AdvancementGen extends AdvancementProvider {
@@ -81,7 +81,7 @@ public class AdvancementGen extends AdvancementProvider {
 	}
 
 	private static Criterion<?> impossibleCriterion() {
-		return CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance());
+		return CriteriaTriggers.IMPOSSIBLE.createCriterion(new TriggerInstance());
 	}
 
 	private static Advancement.Builder advancement(ItemStack stack,
@@ -95,7 +95,7 @@ public class AdvancementGen extends AdvancementProvider {
 
 	private static Advancement.Builder advancement(ItemStack stack,
 	                                               String display,
-	                                               @Nullable ResourceLocation background,
+	                                               @Nullable Identifier background,
 	                                               AdvancementType frameType,
 	                                               boolean showToast,
 	                                               boolean announceToChat,

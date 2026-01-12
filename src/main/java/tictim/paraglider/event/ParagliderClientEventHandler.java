@@ -62,7 +62,7 @@ public final class ParagliderClientEventHandler {
 	// disables drawing block highlights while paragliding
 	// (as blocks cannot be interacted with, just a convenience feature to avoid confusing players)
 	@SubscribeEvent
-	public static void onDrawBlockSelection(RenderHighlightEvent.Block event) {
+	public static void onDrawBlockSelection(ExtractBlockOutlineRenderStateEvent event) {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);

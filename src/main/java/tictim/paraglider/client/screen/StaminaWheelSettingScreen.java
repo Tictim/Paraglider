@@ -1,7 +1,6 @@
 package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -9,6 +8,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	private Button saveButton;
 	private Button cancelButton;
 	private List<Button> anchorButtons;
-	private CycleButton<ExtraWheelAttachment> extraWheelAttachmentCycleButton;
+	private CycleButton<@NotNull ExtraWheelAttachment> extraWheelAttachmentCycleButton;
 	private List<Button> presetButtons;
 
 	private Component[] helpText;
@@ -93,9 +94,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 				anchorButton(Dir8.DL), anchorButton(Dir8.D), anchorButton(Dir8.DR));
 
 		this.extraWheelAttachmentCycleButton = addRenderableWidget(CycleButton
-				.<ExtraWheelAttachment>builder(e -> Component.literal(e.toString()))
+				.builder(e -> Component.literal(e.toString()), this.extraWheelAttachment)
 				.withValues(ExtraWheelAttachment.values())
-				.withInitialValue(this.extraWheelAttachment)
 				.create(0, 0, 64, 20, Component.empty(), (cycleButton, value) -> {
 					this.extraWheelAttachment = value;
 				}));
@@ -107,7 +107,6 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 				presetButton("hud_right", new StaminaWheelPosition.Anchored(Dir8.D, 109, -35), ExtraWheelAttachment.RIGHT)
 		);
 
-		//noinspection ConstantConditions
 		this.helpText = new Component[]{
 				Component.translatable("paraglider.settings.stamina_wheel_settings.guide.0"),
 				Component.translatable("paraglider.settings.stamina_wheel_settings.guide.1"),
@@ -190,16 +189,15 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	// no background
 	@Override public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
 
-	@SuppressWarnings("ConstantConditions")
-	@Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
-		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
-		if (this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey) ||
-				ParagliderClientMod.instance().getParagliderSettingsKey().getKey().equals(mouseKey)) {
+	@Override public boolean keyPressed(@NotNull KeyEvent event) {
+		if (super.keyPressed(event)) return true;
+		var key = com.mojang.blaze3d.platform.InputConstants.getKey(event);
+		if (this.minecraft.options.keyInventory.isActiveAndMatches(key) ||
+				ParagliderClientMod.instance().getParagliderSettingsKey().getKey().equals(key)) {
 			onClose();
 			return true;
 		} else for (int i = 0; i < 4; i++) {
-			if (!this.minecraft.options.keyHotbarSlots[i].matches(keyCode, scanCode)) continue;
+			if (!this.minecraft.options.keyHotbarSlots[i].matches(event)) continue;
 			if (i == 3) this.wheelRenderer.setExtraWheels((this.wheelRenderer.extraWheels() + 1) % 3);
 			else this.wheelRenderer.setWheels(i + 1);
 			return true;
@@ -207,12 +205,11 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		return false;
 	}
 
-	@Override public void resize(@NotNull Minecraft minecraft, int width, int height) {
+	@Override public void resize(int width, int height) {
 		this.staminaWheelWidget.onScreenResize(width, height);
-		super.resize(minecraft, width, height);
+		super.resize(width, height);
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Override public void onClose() {
 		this.minecraft.setScreen(this.parent);
 	}
@@ -260,8 +257,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		public void onScreenResize(int newWidth, int newHeight) {
 			Dir8 anchor = this.screen.anchor;
 			if (anchor == null) {
-				setWheelPos(this.wheelX / (double)this.screen.width * newWidth,
-						this.wheelY / (double)this.screen.height * newHeight,
+				setWheelPos(this.wheelX / (double) this.screen.width * newWidth,
+						this.wheelY / (double) this.screen.height * newHeight,
 						newWidth, newHeight);
 			} else {
 				setWheelPos(this.wheelX - anchor.anchorX(this.screen.width) + anchor.anchorX(newWidth),
@@ -283,8 +280,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			Dir8 anchor = this.screen.anchor;
 			String s2;
 			if (anchor == null) {
-				s2 = PERCENTAGE.format(this.wheelX / (double)this.screen.width) + ", " +
-						PERCENTAGE.format(this.wheelY / (double)this.screen.height);
+				s2 = PERCENTAGE.format(this.wheelX / (double) this.screen.width) + ", " +
+						PERCENTAGE.format(this.wheelY / (double) this.screen.height);
 			} else {
 				s2 = anchor + ": " +
 						Math.floor(this.wheelX - anchor.anchorX(this.screen.width)) + ", " +
@@ -301,32 +298,34 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			guiGraphics.drawString(font, s, textX, textY, color);
 			guiGraphics.drawString(font, s2, textX, textY + font.lineHeight, color);
 
-			this.screen.wheelRenderer.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, 0, partialTicks,
+			this.screen.wheelRenderer.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, partialTicks,
 					this.screen.extraWheelAttachment);
 		}
 
-		@Override public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (this.active && this.visible && this.dragging && button == 1 && isMouseOver(mouseX, mouseY)) {
+		@Override public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
+			if (this.active && this.visible && this.dragging &&
+					event.button() == InputConstants.MOUSE_BUTTON_RIGHT &&
+					isMouseOver(event.x(), event.y())) {
 				this.dragging = false;
 				setWheelPos(this.dragStartX, this.dragStartY);
 				return true;
-			} else return super.mouseClicked(mouseX, mouseY, button);
+			} else return super.mouseClicked(event, isDoubleClick);
 		}
 
-		@Override public void onClick(double mouseX, double mouseY, int button) {
+		@Override public void onClick(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
 			this.dragStartX = this.wheelX;
 			this.dragStartY = this.wheelY;
 			this.dragDeltaX = this.dragDeltaY = 0;
 			this.dragging = true;
 		}
 
-		@Override protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+		@Override protected void onDrag(@NotNull MouseButtonEvent event, double dragX, double dragY) {
 			this.dragDeltaX += dragX;
 			this.dragDeltaY += dragY;
 			setWheelPos(this.dragStartX + this.dragDeltaX, this.dragStartY + this.dragDeltaY);
 		}
 
-		@Override public void onRelease(double mouseX, double mouseY) {
+		@Override public void onRelease(@NotNull MouseButtonEvent event) {
 			if (this.dragging) {
 				setWheelPos(this.dragStartX + this.dragDeltaX, this.dragStartY + this.dragDeltaY);
 				this.dragging = false;
@@ -353,8 +352,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		private void setWheelPosUncapped(double x, double y) {
 			this.wheelX = x;
 			this.wheelY = y;
-			setX((int)Math.floor(x) - WHEEL_RADIUS);
-			setY((int)Math.floor(y) - WHEEL_RADIUS);
+			setX((int) Math.floor(x) - WHEEL_RADIUS);
+			setY((int) Math.floor(y) - WHEEL_RADIUS);
 		}
 	}
 }

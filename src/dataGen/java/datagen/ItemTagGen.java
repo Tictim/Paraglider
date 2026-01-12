@@ -2,9 +2,10 @@ package datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
@@ -12,10 +13,10 @@ import tictim.paraglider.contents.ParagliderTags;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ItemTagGen extends ItemTagsProvider {
+public class ItemTagGen extends BlockTagCopyingItemTagProvider {
 	public ItemTagGen(@NotNull PackOutput output,
 	                  @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider,
-	                  @NotNull CompletableFuture<TagLookup<Block>> blockTags) {
+	                  @NotNull CompletableFuture<TagsProvider.TagLookup<Block>> blockTags) {
 		super(output, lookupProvider, blockTags, ParagliderAPI.MODID);
 	}
 

@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.network.NetUtils;
@@ -12,14 +12,14 @@ import tictim.paraglider.network.NetUtils;
 import java.util.List;
 
 public record BargainCatalog(
-		@NotNull ResourceLocation bargain,
+		@NotNull Identifier bargain,
 		@NotNull List<@NotNull BargainPreview<?>> demands,
 		@NotNull List<@NotNull BargainPreview<?>> offers,
 		@NotNull IntList demandCounts,
 		boolean canBargain
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, BargainCatalog> STREAM_CODEC = StreamCodec.composite(
-			ResourceLocation.STREAM_CODEC, BargainCatalog::bargain,
+			Identifier.STREAM_CODEC, BargainCatalog::bargain,
 			NetUtils.BARGAIN_PREVIEW.apply(ByteBufCodecs.list()), BargainCatalog::demands,
 			NetUtils.BARGAIN_PREVIEW.apply(ByteBufCodecs.list()), BargainCatalog::offers,
 			NetUtils.INT_LIST, BargainCatalog::demandCounts,

@@ -6,7 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Consumables;
@@ -16,12 +16,12 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public interface CommonContents {
-	static Item.Properties p(ResourceLocation id) {
+	static Item.Properties p(Identifier id) {
 		return new Item.Properties()
 				.setId(ResourceKey.create(Registries.ITEM, id));
 	}
 
-	static Item.Properties staminaPotion(ResourceLocation id, ConsumeEffect... consumeEffects) {
+	static Item.Properties staminaPotion(Identifier id, ConsumeEffect... consumeEffects) {
 		var consumable = Consumables.defaultDrink().consumeSeconds(0.6F);
 		for (ConsumeEffect e : consumeEffects) consumable.onConsume(e);
 
@@ -32,7 +32,7 @@ public interface CommonContents {
 				.usingConvertsTo(Items.GLASS_BOTTLE);
 	}
 
-	static BlockBehaviour.Properties statueBlock(ResourceLocation id) {
+	static BlockBehaviour.Properties statueBlock(Identifier id) {
 		return Block.Properties.of()
 				.setId(ResourceKey.create(Registries.BLOCK, id))
 				.sound(SoundType.STONE)

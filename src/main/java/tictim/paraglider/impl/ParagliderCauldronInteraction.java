@@ -25,7 +25,7 @@ public final class ParagliderCauldronInteraction implements CauldronInteraction 
 		} else if (!stack.has(DataComponents.DYED_COLOR)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		} else {
-			if (!level.isClientSide) {
+			if (!level.isClientSide()) {
 				stack.remove(DataComponents.DYED_COLOR);
 				LayeredCauldronBlock.lowerFillLevel(state, level, pos);
 			}

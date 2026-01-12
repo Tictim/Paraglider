@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +28,7 @@ import tictim.paraglider.contents.recipe.preview.VesselPreview;
 import java.util.*;
 
 public class SimpleBargain implements Bargain {
-	private final ResourceLocation bargainType;
+	private final Identifier bargainType;
 
 	private final List<QuantifiedIngredient> itemDemands;
 	private final int heartContainerDemands;
@@ -46,7 +46,7 @@ public class SimpleBargain implements Bargain {
 	private @Nullable List<BargainPreview<?>> demandPreviews;
 	private @Nullable List<BargainPreview<?>> offerPreviews;
 
-	public SimpleBargain(@NotNull ResourceLocation bargainType,
+	public SimpleBargain(@NotNull Identifier bargainType,
 	                     @NotNull List<@NotNull QuantifiedIngredient> itemDemands,
 	                     int heartContainerDemands,
 	                     int staminaVesselDemands,
@@ -80,7 +80,7 @@ public class SimpleBargain implements Bargain {
 		if (this.essenceOffers > 0) this.tags.add(ParagliderBargainTags.GIVES_ESSENCE);
 	}
 
-	@Override public @NotNull ResourceLocation getBargainType() {
+	@Override public @NotNull Identifier getBargainType() {
 		return bargainType;
 	}
 

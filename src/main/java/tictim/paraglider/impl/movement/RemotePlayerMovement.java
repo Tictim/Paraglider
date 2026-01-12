@@ -1,6 +1,6 @@
 package tictim.paraglider.impl.movement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -29,7 +29,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 
 	@Override public void update() {}
 
-	@Override public void syncMovement(@NotNull ResourceLocation stateId, int recoveryDelay, double efficiency) {
+	@Override public void syncMovement(@NotNull Identifier stateId, int recoveryDelay, double efficiency) {
 		PlayerStateMap stateMap = ParagliderMod.instance().getPlayerStateMap();
 		PlayerState state = stateMap.getState(stateId);
 		setState(state == null ? stateMap.getIdleState() : state);

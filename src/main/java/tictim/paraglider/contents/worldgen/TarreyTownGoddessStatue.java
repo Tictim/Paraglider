@@ -2,7 +2,7 @@ package tictim.paraglider.contents.worldgen;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 public class TarreyTownGoddessStatue extends Structure {
 	public static final MapCodec<TarreyTownGoddessStatue> CODEC = simpleCodec(TarreyTownGoddessStatue::new);
-	private static final ResourceLocation TEMPLATE = ParagliderAPI.id("tarrey_town_goddess_statue");
+	private static final Identifier TEMPLATE = ParagliderAPI.id("tarrey_town_goddess_statue");
 
 	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {
 		return BaseHornedStatuePiece.createType(() -> Contents.get().tarreyTownGoddessStatuePiece());

@@ -1,6 +1,6 @@
 package tictim.paraglider.api.movement;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.Unmodifiable;
@@ -56,13 +56,13 @@ public interface PlayerState {
 	/**
 	 * @return ID of the state
 	 */
-	@NotNull ResourceLocation id();
+	@NotNull Identifier id();
 
 	/**
 	 * @return Flag of the state
 	 * @see Flags
 	 */
-	@NotNull @Unmodifiable Set<@NotNull ResourceLocation> flags();
+	@NotNull @Unmodifiable Set<@NotNull Identifier> flags();
 
 	/**
 	 * @return Stamina delta of the state; positive values indicate this state replenishes stamina, negative values
@@ -91,7 +91,7 @@ public interface PlayerState {
 	 * @param id ID
 	 * @return Whether this state has given ID
 	 */
-	default boolean is(@NotNull ResourceLocation id) {
+	default boolean is(@NotNull Identifier id) {
 		Objects.requireNonNull(id, "id == null");
 		return id().equals(id);
 	}
@@ -102,7 +102,7 @@ public interface PlayerState {
 	 * @param flag Flag
 	 * @return Whether this state has given flag
 	 */
-	default boolean hasFlag(@NotNull ResourceLocation flag) {
+	default boolean hasFlag(@NotNull Identifier flag) {
 		Objects.requireNonNull(flag, "flag == null");
 		return flags().contains(flag);
 	}

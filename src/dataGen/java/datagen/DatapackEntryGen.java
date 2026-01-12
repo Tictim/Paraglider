@@ -7,7 +7,7 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
@@ -99,7 +99,7 @@ public class DatapackEntryGen extends DatapackBuiltinEntriesProvider {
 
 		private static void register(BootstrapContext<StructureTemplatePool> context) {
 			context.register(HORNED_STATUE, new StructureTemplatePool(
-					context.lookup(TEMPLATE_POOL).getOrThrow(ResourceKey.create(TEMPLATE_POOL, ResourceLocation.withDefaultNamespace("empty"))),
+					context.lookup(TEMPLATE_POOL).getOrThrow(ResourceKey.create(TEMPLATE_POOL, Identifier.withDefaultNamespace("empty"))),
 					List.of(
 							Pair.of(StructurePoolElement.single("paraglider:horned_statue/yes"), 1),
 							Pair.of(StructurePoolElement.single("paraglider:horned_statue/no"), 5)

@@ -114,23 +114,25 @@ public final class ParagliderEventHandler {
 		Consumable consumable = event.getStack().get(DataComponents.CONSUMABLE);
 		if (consumable == null) return;
 		for (ConsumeEffect effect : consumable.onConsumeEffects()) {
-			if (effect instanceof GiveExtraStaminaConsumeEffect(double amount)) {
-				event.addTooltipLines(Component.translatable("tooltip.paraglider.give_extra_stamina",
-						Component.literal(D0.format(amount / Stamina.STAMINA_PER_WHEEL))
-								.withStyle(ChatFormatting.YELLOW)
-				).withStyle(ChatFormatting.GREEN));
-			} else if (effect instanceof RestoreStaminaConsumeEffect(double amount)) {
-				event.addTooltipLines(Component.translatable("tooltip.paraglider.restore_stamina",
-						Component.literal(D0.format(amount / Stamina.STAMINA_PER_WHEEL))
-								.withStyle(ChatFormatting.YELLOW)
-				).withStyle(ChatFormatting.GREEN));
-			} else if (effect instanceof GiveStaminaEfficiencyConsumeEffect(int level, int duration)) {
-				event.addTooltipLines(Component.translatable("tooltip.paraglider.give_stamina_efficiency",
-						Component.literal(PCT.format(
-								StaminaEfficiencyMobEffect.EFFICIENCY_PER_LEVEL * (level + 1)
-						)).withStyle(ChatFormatting.YELLOW),
-						Component.literal(D0.format(duration / 20.0)).withStyle(ChatFormatting.YELLOW)
-				).withStyle(ChatFormatting.GREEN));
+			switch (effect) {
+				case GiveExtraStaminaConsumeEffect(double amount) ->
+						event.addTooltipLines(Component.translatable("tooltip.paraglider.give_extra_stamina",
+								Component.literal(D0.format(amount / Stamina.STAMINA_PER_WHEEL))
+										.withStyle(ChatFormatting.YELLOW)
+						).withStyle(ChatFormatting.GREEN));
+				case RestoreStaminaConsumeEffect(double amount) ->
+						event.addTooltipLines(Component.translatable("tooltip.paraglider.restore_stamina",
+								Component.literal(D0.format(amount / Stamina.STAMINA_PER_WHEEL))
+										.withStyle(ChatFormatting.YELLOW)
+						).withStyle(ChatFormatting.GREEN));
+				case GiveStaminaEfficiencyConsumeEffect(int level, int duration) ->
+						event.addTooltipLines(Component.translatable("tooltip.paraglider.give_stamina_efficiency",
+								Component.literal(PCT.format(
+										StaminaEfficiencyMobEffect.EFFICIENCY_PER_LEVEL * (level + 1)
+								)).withStyle(ChatFormatting.YELLOW),
+								Component.literal(D0.format(duration / 20.0)).withStyle(ChatFormatting.YELLOW)
+						).withStyle(ChatFormatting.GREEN));
+				default -> {}
 			}
 		}
 	}

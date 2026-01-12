@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.Blocks;
@@ -28,7 +28,7 @@ public class NetherHornedStatue extends Structure {
 			settingsCodec(b),
 			HeightProvider.CODEC.fieldOf("height").forGetter(s -> s.height)
 	).apply(b, NetherHornedStatue::new));
-	private static final ResourceLocation TEMPLATE = ParagliderAPI.id("nether_horned_statue");
+	private static final Identifier TEMPLATE = ParagliderAPI.id("nether_horned_statue");
 	private static final BlockPos PIVOT = new BlockPos(2, 1, 2);
 
 	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {

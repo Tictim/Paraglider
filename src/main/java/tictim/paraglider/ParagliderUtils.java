@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,7 +68,7 @@ public final class ParagliderUtils {
 	 * @see net.minecraft.world.entity.player.Inventory#placeItemBackInInventory(ItemStack, boolean)
 	 */
 	public static void giveItem(@NotNull Player player, @NotNull ItemStack stack) {
-		if (player.level().isClientSide) return;
+		if (player.level().isClientSide()) return;
 		while (!stack.isEmpty()) {
 			int slot = player.getInventory().getSlotWithRemainingSpace(stack);
 			if (slot == -1) slot = player.getInventory().getFreeSlot();
@@ -136,10 +136,10 @@ public final class ParagliderUtils {
 
 	@SuppressWarnings("UnusedReturnValue")
 	public static boolean giveAdvancement(@NotNull ServerPlayer player,
-	                                      @NotNull ResourceLocation advancementName,
+	                                      @NotNull Identifier advancementName,
 	                                      @NotNull String criterion) {
 		PlayerAdvancements advancements = player.getAdvancements();
-		ServerAdvancementManager advancementManager = player.server.getAdvancements();
+		ServerAdvancementManager advancementManager = player.level().getServer().getAdvancements();
 		AdvancementHolder advancement = advancementManager.get(advancementName);
 		return advancement != null && advancements.award(advancement, criterion);
 	}
@@ -242,7 +242,7 @@ public final class ParagliderUtils {
 		return count;
 	}
 
-	public static double refreshAttribute(Player player, Holder<Attribute> attribute, double value, ResourceLocation id) {
+	public static double refreshAttribute(Player player, Holder<Attribute> attribute, double value, Identifier id) {
 		AttributeInstance attrib = player.getAttribute(attribute);
 		if (attrib == null) return 0;
 

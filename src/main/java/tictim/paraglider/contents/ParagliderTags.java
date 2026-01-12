@@ -1,7 +1,7 @@
 package tictim.paraglider.contents;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
@@ -29,7 +29,7 @@ public interface ParagliderTags {
 		TagKey<Biome> HAS_STRUCTURE_NETHER_HORNED_STATUE = hasStructure(id("nether_horned_statue"));
 		TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(id("tarrey_town_goddess_statue"));
 
-		private static @NotNull TagKey<Biome> hasStructure(@NotNull ResourceLocation id) {
+		private static @NotNull TagKey<Biome> hasStructure(@NotNull Identifier id) {
 			return TagKey.create(Registries.BIOME, id.withPrefix("has_structure/"));
 		}
 	}

@@ -1,7 +1,6 @@
 package tictim.paraglider;
 
 import net.minecraft.core.cauldron.CauldronInteraction;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -123,13 +122,12 @@ public class ParagliderMod {
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> {
-			MinecraftServer server = event.getServer();
 			this.stateMapConfig.removeCallbacks();
 			this.stateMapConfig.reload(null);
 			ParagliderUtils.printPlayerStates(this.stateMapConfig.stateMap(), getPlayerConnectionMap());
 			this.stateMapConfig.addCallback(stateMap -> {
 				ParagliderUtils.printPlayerStates(stateMap, getPlayerConnectionMap());
-				ParagliderNetwork.get().syncStateMapToAll(server, stateMap);
+				ParagliderNetwork.get().syncStateMapToAll(stateMap);
 			});
 		});
 

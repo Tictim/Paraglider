@@ -2,7 +2,7 @@ package datagen.builder;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -35,7 +35,7 @@ public class WindSourceBuilder {
 
 	private WindSourceBuilder blockStates(Block[] blocks, @Nullable List<WindSource.StateProperty> properties) {
 		return condition(new WindSource.BlockStateCondition(
-				Arrays.stream(blocks).<Either<Block, ResourceLocation>>map(Either::left).toList(),
+				Arrays.stream(blocks).<Either<Block, Identifier>>map(Either::left).toList(),
 				properties != null ? properties : List.of()
 		));
 	}
@@ -53,7 +53,7 @@ public class WindSourceBuilder {
 		return new WindSource(this.conditions, this.height);
 	}
 
-	public void save(JsonCodecProvider<WindSource> provider, ResourceLocation id) {
+	public void save(JsonCodecProvider<WindSource> provider, Identifier id) {
 		boolean[] error = {false};
 		WindSource windSource = build();
 

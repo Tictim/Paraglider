@@ -6,7 +6,7 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.*;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.client.ParaglidingItemProperty;
@@ -23,16 +23,16 @@ public class ModelGen extends ModelProvider {
 	public static final int DEKU_LEAF_DEFAULT_COLOR = 0xFF3FB53F;
 
 	private final TexturedModel.Provider placeholderTextureModel = b -> new TexturedModel(TextureMapping.cube(b), ModelTemplates.CUBE_ALL) {
-		@Override public @NotNull ResourceLocation create(
+		@Override public @NotNull Identifier create(
 				@NotNull Block block,
-				@NotNull BiConsumer<ResourceLocation, ModelInstance> output
+				@NotNull BiConsumer<Identifier, ModelInstance> output
 		) {
 			return ModelLocationUtils.getModelLocation(block, "");
 		}
 
-		@Override public @NotNull ResourceLocation createWithSuffix(
+		@Override public @NotNull Identifier createWithSuffix(
 				@NotNull Block block, @NotNull String suffix,
-				@NotNull BiConsumer<ResourceLocation, ModelInstance> output
+				@NotNull BiConsumer<Identifier, ModelInstance> output
 		) {
 			return ModelLocationUtils.getModelLocation(block, suffix);
 		}

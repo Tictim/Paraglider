@@ -2,7 +2,7 @@ package tictim.paraglider.network;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,9 +10,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,7 @@ import tictim.paraglider.network.message.*;
 import tictim.paraglider.wind.WindChunk;
 
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("SameParameterValue")
 public class ParagliderNetworkImpl implements ParagliderNetwork {
@@ -59,9 +60,9 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 
 		reg.playToServer(BargainMsg.TYPE, BargainMsg.CODEC, ServerPacketHandler::handleBargain);
 
-		reg.playBidirectional(BargainEndMsg.TYPE, BargainEndMsg.CODEC, new DirectionalPayloadHandler<>(
-				(msg, ctx) -> ClientPacketHandler.handleBargainEnd(msg),
-				ServerPacketHandler::handleBargainEnd));
+		reg.playBidirectional(BargainEndMsg.TYPE, BargainEndMsg.CODEC,
+				ServerPacketHandler::handleBargainEnd,
+				(msg, ctx) -> ClientPacketHandler.handleBargainEnd(msg));
 	}
 
 	@Override public void syncStateMap(@NotNull ServerPlayer player, @NotNull PlayerStateMap stateMap) {
@@ -70,28 +71,28 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToPlayer(player, msg);
 	}
 
-	@Override public void syncStateMapToAll(@NotNull MinecraftServer server, @NotNull PlayerStateMap stateMap) {
+	@Override public void syncStateMapToAll(@NotNull PlayerStateMap stateMap) {
 		SyncPlayerStateMapMsg msg = new SyncPlayerStateMapMsg(stateMap);
 		traceSendToAll(Kind.MOVEMENT, msg);
 		PacketDistributor.sendToAllPlayers(msg);
 	}
 
-	@Override public void syncMovement(@NotNull ServerPlayer player, @NotNull ResourceLocation state,
+	@Override public void syncMovement(@NotNull ServerPlayer player, @NotNull Identifier state,
 	                                   double stamina, double extraStamina, boolean depleted,
 	                                   int recoveryDelay, double efficiency) {
 		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, extraStamina, depleted, recoveryDelay, efficiency);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
-		syncRemoteMovement(player.server, player, state);
+		syncRemoteMovement(player, state);
 	}
 
-	@Override public void syncRemoteMovement(@NotNull MinecraftServer server, @NotNull Entity entity, @NotNull ResourceLocation state) {
+	@Override public void syncRemoteMovement(@NotNull Entity entity, @NotNull Identifier state) {
 		SyncRemoteMovementMsg msg = new SyncRemoteMovementMsg(entity.getUUID(), state);
 		traceSendToTracking(Kind.MOVEMENT, entity, msg);
 		PacketDistributor.sendToPlayersTrackingEntity(entity, msg);
 	}
 
-	@Override public void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull ResourceLocation state) {
+	@Override public void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull Identifier state) {
 		SyncRemoteMovementMsg msg = new SyncRemoteMovementMsg(entity.getUUID(), state);
 		traceSendToPlayer(Kind.MOVEMENT, target, msg);
 		PacketDistributor.sendToPlayer(target, msg);
@@ -107,7 +108,7 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 
 	@Override public void initBargain(@NotNull BargainContext ctx,
 	                                  @Nullable Component dialog) {
-		BargainInitMsg msg = new BargainInitMsg(ctx.sessionId(), ctx.makeCatalog(), ctx.lookAt(), dialog);
+		BargainInitMsg msg = new BargainInitMsg(ctx.sessionId(), ctx.makeCatalog(), Optional.ofNullable(ctx.lookAt()), Optional.ofNullable(dialog));
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
@@ -130,10 +131,10 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
 
-	@Override public void bargain(int sessionId, @NotNull ResourceLocation bargain) {
+	@Override public void bargain(int sessionId, @NotNull Identifier bargain) {
 		BargainMsg msg = new BargainMsg(sessionId, bargain);
 		traceSendToServer(Kind.BARGAIN, msg);
-		PacketDistributor.sendToServer(msg);
+		ClientPacketDistributor.sendToServer(msg);
 	}
 
 	@Override public void bargainEndToClient(@NotNull BargainContext ctx) {
@@ -145,7 +146,7 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 	@Override public void bargainEndToServer(int sessionId) {
 		BargainEndMsg msg = new BargainEndMsg(sessionId);
 		traceSendToServer(Kind.BARGAIN, msg);
-		PacketDistributor.sendToServer(msg);
+		ClientPacketDistributor.sendToServer(msg);
 	}
 
 	@Override

@@ -1,9 +1,8 @@
 package tictim.paraglider.client.render;
 
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 import tictim.paraglider.api.stamina.Stamina;
-
-import static net.minecraft.util.ARGB.lerp;
 
 public final class StaminaWheelConstants {
 	private StaminaWheelConstants() {}
@@ -53,38 +52,47 @@ public final class StaminaWheelConstants {
 
 	public static int getGlowAndFadeColor(long time, int baseColor) {
 		if (time < GLOW_FADE_START) return GLOW;
-		if (time < GLOW_FADE_END) return lerp(
-				(float)(time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
+		if (time < GLOW_FADE_END) return lerpColor(
+				(float) (time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
 		if (time < FADE_START) return baseColor;
-		if (time < FADE_END) return lerp(
-				(float)(time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
+		if (time < FADE_END) return lerpColor(
+				(float) (time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
 		return 0;
 	}
 
 	public static int getGlowColor(long time, int baseColor) {
 		if (time < GLOW_FADE_START) return GLOW;
-		if (time < GLOW_FADE_END) return lerp(
-				(float)(time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
+		if (time < GLOW_FADE_END) return lerpColor(
+				(float) (time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
 		return baseColor;
 	}
 
 	public static int getFadeColor(long time, int baseColor) {
 		if (time < FADE_START) return baseColor;
-		if (time < FADE_END) return lerp(
-				(float)(time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
+		if (time < FADE_END) return lerpColor(
+				(float) (time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
 		return baseColor;
 	}
 
 	public static int getBlinkColor(long time, boolean depleted) {
-		return ARGB.lerp(cycle(time, depleted ? DEPLETED_BLINK : BLINK), DEPLETED_1, DEPLETED_2);
+		return lerpColor(cycle(time, depleted ? DEPLETED_BLINK : BLINK), DEPLETED_1, DEPLETED_2);
 	}
 
 	public static float cycle(long currentTime, long cycleTime) {
 		long halfCycle = cycleTime / 2;
-		return (float)Math.abs(currentTime % cycleTime - halfCycle) / halfCycle;
+		return (float) Math.abs(currentTime % cycleTime - halfCycle) / halfCycle;
 	}
 
 	public static float toWheelPos(double stamina) {
-		return (float)(stamina / Stamina.STAMINA_PER_WHEEL);
+		return (float) (stamina / Stamina.STAMINA_PER_WHEEL);
+	}
+
+	public static int lerpColor(float t, int a, int b) {
+		return ARGB.colorFromFloat(
+				Mth.lerp(t, ARGB.alphaFloat(a), ARGB.alphaFloat(b)),
+				Mth.lerp(t, ARGB.redFloat(a), ARGB.redFloat(b)),
+				Mth.lerp(t, ARGB.greenFloat(a), ARGB.greenFloat(b)),
+				Mth.lerp(t, ARGB.blueFloat(a), ARGB.blueFloat(b))
+		);
 	}
 }

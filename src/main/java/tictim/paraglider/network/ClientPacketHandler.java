@@ -60,7 +60,7 @@ public final class ClientPacketHandler {
 	public static void handleBargainInit(BargainInitMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		mc.setScreen(new BargainScreen(msg.sessionId(), msg.catalog(), msg.lookAt(), msg.dialog()));
+		mc.setScreen(new BargainScreen(msg.sessionId(), msg.catalog(), msg.lookAt().orElse(null), msg.dialog().orElse(null)));
 	}
 
 	public static void handleSyncCatalog(SyncCatalogMsg msg) {

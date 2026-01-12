@@ -17,7 +17,7 @@ public final class ParaglidingArmPose {
 
 	@SuppressWarnings("unused")
 	public static final EnumProxy<HumanoidModel.ArmPose> ENUM = new EnumProxy<>(
-			HumanoidModel.ArmPose.class, true, (IArmPoseTransformer)ParaglidingArmPose::applyTransform
+			HumanoidModel.ArmPose.class, true, true, (IArmPoseTransformer)ParaglidingArmPose::applyTransform
 	);
 
 	private static final float ARM_ROTATION = (float)(Math.PI * 2 - 2.9);

@@ -22,7 +22,7 @@ public abstract class VesselItem extends Item {
 		ItemStack stack = player.getItemInHand(hand);
 		VesselContainer vessels = VesselContainer.get(player);
 		if (give(vessels, true, false)) {
-			if (!level.isClientSide) {
+			if (!level.isClientSide()) {
 				give(vessels, false, true);
 				stack.shrink(1);
 			}

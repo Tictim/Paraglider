@@ -71,7 +71,7 @@ public class GoddessStatueBlock extends BaseStatueBlock {
 	                                                              @NotNull BlockPos pos,
 	                                                              @NotNull Player player,
 	                                                              @NotNull BlockHitResult hit) {
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			BargainHandler.initiate(
 					player,
 					ParagliderBargainTypes.GODDESS_STATUE,

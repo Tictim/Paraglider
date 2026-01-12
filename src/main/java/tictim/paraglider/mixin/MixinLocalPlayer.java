@@ -2,7 +2,6 @@ package tictim.paraglider.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +11,8 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinLocalPlayer extends Player {
 	@Shadow private boolean wasSprinting;
 
-	public MixinLocalPlayer(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
-		super(level, pos, yRot, gameProfile);
+	public MixinLocalPlayer(Level level, GameProfile gameProfile) {
+		super(level, gameProfile);
 	}
 
 	// gods be damned if someone's also overriding this

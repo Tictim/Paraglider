@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class SimpleBargainSerializer implements RecipeSerializer<SimpleBargain> {
+public class SimpleBargainSerializer implements RecipeSerializer<@NotNull SimpleBargain> {
 	private static final MapCodec<SimpleBargain> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
-			Codec.mapEither(ResourceLocation.CODEC.fieldOf("bargainType"), ResourceLocation.CODEC.fieldOf("owner"))
+			Codec.mapEither(Identifier.CODEC.fieldOf("bargainType"), Identifier.CODEC.fieldOf("owner"))
 					.xmap(
 							e -> e.map(Function.identity(), Function.identity()),
 							Either::left)
@@ -35,7 +35,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<SimpleBargain> 
 			offers.items, offers.heartContainers, offers.staminaVessels, offers.essences,
 			tags)));
 
-	private static final StreamCodec<RegistryFriendlyByteBuf, SimpleBargain> STREAM_CODEC = StreamCodec.of(
+	private static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> STREAM_CODEC = StreamCodec.of(
 			SimpleBargainSerializer::toNetwork, SimpleBargainSerializer::fromNetwork
 	);
 
@@ -43,12 +43,12 @@ public class SimpleBargainSerializer implements RecipeSerializer<SimpleBargain> 
 		return CODEC;
 	}
 
-	@Override public @NotNull StreamCodec<RegistryFriendlyByteBuf, SimpleBargain> streamCodec() {
+	@Override public @NotNull StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> streamCodec() {
 		return STREAM_CODEC;
 	}
 
 	private static @NotNull SimpleBargain fromNetwork(@NotNull RegistryFriendlyByteBuf buffer) {
-		ResourceLocation bargainType = buffer.readResourceLocation();
+		Identifier bargainType = buffer.readIdentifier();
 
 		List<QuantifiedIngredient> itemDemands = new ArrayList<>();
 		for (int i = 0, size = buffer.readVarInt(); i < size; i++)
@@ -82,7 +82,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<SimpleBargain> 
 	}
 
 	private static void toNetwork(@NotNull RegistryFriendlyByteBuf buffer, @NotNull SimpleBargain recipe) {
-		buffer.writeResourceLocation(recipe.getBargainType());
+		buffer.writeIdentifier(recipe.getBargainType());
 
 		List<QuantifiedIngredient> itemDemands = recipe.getItemDemands();
 		buffer.writeVarInt(itemDemands.size());

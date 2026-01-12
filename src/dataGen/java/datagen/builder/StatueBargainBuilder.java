@@ -4,7 +4,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class StatueBargainBuilder implements RecipeBuilder {
-	protected final ResourceLocation bargainType;
+	protected final Identifier bargainType;
 
 	protected final List<QuantifiedIngredient> itemDemands = new ArrayList<>();
 	protected int heartContainerDemands;
@@ -37,7 +37,7 @@ public class StatueBargainBuilder implements RecipeBuilder {
 
 	protected final List<ICondition> conditions = new ArrayList<>();
 
-	public StatueBargainBuilder(ResourceLocation bargainType) {
+	public StatueBargainBuilder(Identifier bargainType) {
 		this.bargainType = Objects.requireNonNull(bargainType);
 	}
 

@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
@@ -68,12 +68,12 @@ public record WindSource(@NotNull List<Condition> conditions, int height) {
 	}
 
 	public record BlockStateCondition(
-			List<Either<Block, ResourceLocation>> block,
+			List<Either<Block, Identifier>> block,
 			List<StateProperty> properties
 	) implements Condition {
 		public static final Codec<BlockStateCondition> CODEC = RecordCodecBuilder.create(b -> b.group(
 				elementOrList(
-						Codec.either(BuiltInRegistries.BLOCK.byNameCodec(), ResourceLocation.CODEC),
+						Codec.either(BuiltInRegistries.BLOCK.byNameCodec(), Identifier.CODEC),
 						true
 				).fieldOf("block").forGetter(BlockStateCondition::block),
 				Codec.unboundedMap(Codec.STRING, Codec.STRING).xmap(

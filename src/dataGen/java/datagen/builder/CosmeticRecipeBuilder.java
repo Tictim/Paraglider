@@ -4,7 +4,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -51,7 +51,7 @@ public class CosmeticRecipeBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	@Override public void save(@NotNull RecipeOutput output, @NotNull ResourceKey<Recipe<?>> resourceKey) {
+	@Override public void save(@NotNull RecipeOutput output, @NotNull ResourceKey<@NotNull Recipe<?>> resourceKey) {
 		validate(resourceKey);
 
 		Advancement.Builder a = output.advancement()
@@ -69,14 +69,14 @@ public class CosmeticRecipeBuilder implements RecipeBuilder {
 				new TransmuteResult(this.result)
 		);
 
-		output.accept(resourceKey, r, a.build(resourceKey.location()
+		output.accept(resourceKey, r, a.build(resourceKey.identifier()
 				.withPrefix("recipes/" + this.category.getFolderName() + "/")));
 	}
 
-	private void validate(ResourceKey<Recipe<?>> recipe) {
+	private void validate(ResourceKey<@NotNull Recipe<?>> recipe) {
 		if (this.criteria.isEmpty())
-			throw new IllegalStateException("No way of obtaining recipe " + recipe.location());
+			throw new IllegalStateException("No way of obtaining recipe " + recipe.identifier());
 		if (this.reagents.length == 0)
-			throw new IllegalStateException("No reagents specified for recipe " + recipe.location());
+			throw new IllegalStateException("No reagents specified for recipe " + recipe.identifier());
 	}
 }

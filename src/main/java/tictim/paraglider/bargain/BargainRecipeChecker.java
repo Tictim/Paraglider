@@ -2,7 +2,7 @@ package tictim.paraglider.bargain;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
+public class BargainRecipeChecker extends SimplePreparableReloadListener<@NotNull Void> {
 	private final RegistryAccess registryAccess;
 	private final RecipeManager recipeManager;
 
@@ -34,12 +34,12 @@ public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
 	}
 
 	@Override protected void apply(@NotNull Void object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-		Map<ResourceLocation, List<RecipeHolder<Bargain>>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
+		Map<Identifier, List<RecipeHolder<@NotNull Bargain>>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
 		int count = 0;
 
-		for (RecipeHolder<Bargain> b : this.recipeManager.recipeMap()
+		for (RecipeHolder<@NotNull Bargain> b : this.recipeManager.recipeMap()
 				.byType(Contents.get().bargainRecipeType())) {
-			ResourceLocation bargainType = b.value().getBargainType();
+			Identifier bargainType = b.value().getBargainType();
 			if (BargainTypeRegistry.getFromID(this.registryAccess, Objects.requireNonNull(bargainType)) == null) {
 				missingBargainTypes.computeIfAbsent(bargainType, s -> new ArrayList<>())
 						.add(b);
@@ -53,7 +53,7 @@ public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
 							.map(e ->
 									"Cannot resolve bargain type " + e.getKey() + " for bargain recipe(s) " +
 											e.getValue().stream()
-													.map(r -> r.id().location().toString())
+													.map(r -> r.id().identifier().toString())
 													.collect(Collectors.joining(", ")))
 							.collect(Collectors.joining("\n  ")));
 		}

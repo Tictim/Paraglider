@@ -2,7 +2,7 @@ package tictim.paraglider.api.bargain;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.PlacementInfo;
@@ -25,7 +25,7 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	 *
 	 * @return Type of the bargain
 	 */
-	@NotNull ResourceLocation getBargainType();
+	@NotNull Identifier getBargainType();
 
 	/**
 	 * Checks if this bargain is available for {@code player} on {@code pos} (optional).

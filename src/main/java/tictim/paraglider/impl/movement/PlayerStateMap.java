@@ -3,7 +3,7 @@ package tictim.paraglider.impl.movement;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -17,14 +17,14 @@ public final class PlayerStateMap {
 	public static final StreamCodec<FriendlyByteBuf, PlayerStateMap> STREAM_CODEC =
 			StreamCodec.of((buf, psm) -> psm.write(buf), PlayerStateMap::read);
 
-	private final Map<ResourceLocation, PlayerState> states;
+	private final Map<Identifier, PlayerState> states;
 
-	public PlayerStateMap(@NotNull Map<@NotNull ResourceLocation, @NotNull PlayerState> states) {
+	public PlayerStateMap(@NotNull Map<@NotNull Identifier, @NotNull PlayerState> states) {
 		this.states = Objects.requireNonNull(states);
 	}
 
 	public static @NotNull PlayerStateMap read(@NotNull FriendlyByteBuf buffer) {
-		Map<ResourceLocation, PlayerState> states = new Object2ObjectOpenHashMap<>();
+		Map<Identifier, PlayerState> states = new Object2ObjectOpenHashMap<>();
 		for (int i = 0, count = buffer.readVarInt(); i < count; i++) {
 			SimplePlayerState state = SimplePlayerState.read(buffer);
 			states.put(state.id(), state);
@@ -40,17 +40,17 @@ public final class PlayerStateMap {
 		return new PlayerStateMap(states);
 	}
 
-	public @NotNull @Unmodifiable Map<@NotNull ResourceLocation, @NotNull PlayerState> states() {
+	public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull PlayerState> states() {
 		return Collections.unmodifiableMap(states);
 	}
 
-	public @NotNull PlayerState expectState(@NotNull ResourceLocation id) {
+	public @NotNull PlayerState expectState(@NotNull Identifier id) {
 		PlayerState state = getState(id);
 		if (state == null) throw new NoSuchElementException("No state named " + id + " in state map");
 		return state;
 	}
 
-	public @Nullable PlayerState getState(@NotNull ResourceLocation id) {
+	public @Nullable PlayerState getState(@NotNull Identifier id) {
 		return this.states.get(id);
 	}
 
@@ -84,7 +84,7 @@ public final class PlayerStateMap {
 	public static boolean isSame(PlayerStateMap stateMap1, PlayerStateMap stateMap2) {
 		if (stateMap1.states.size() != stateMap2.states.size()) return false;
 
-		for (ResourceLocation key : stateMap1.states.keySet()) {
+		for (Identifier key : stateMap1.states.keySet()) {
 			PlayerState s1 = stateMap1.states.get(key);
 			PlayerState s2 = stateMap2.states.get(key);
 

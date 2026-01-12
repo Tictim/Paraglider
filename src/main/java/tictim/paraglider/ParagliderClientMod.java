@@ -1,15 +1,19 @@
 package tictim.paraglider;
 
+import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -22,7 +26,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.api.ParagliderAPI;
-import tictim.paraglider.client.*;
+import tictim.paraglider.client.ParagliderGuiLayers;
+import tictim.paraglider.client.ParaglidingArmPose;
+import tictim.paraglider.client.ParaglidingItemProperty;
+import tictim.paraglider.client.WindParticleProvider;
 import tictim.paraglider.client.settings.ParagliderClientSettings;
 import tictim.paraglider.client.settings.ParagliderClientSettingsIO;
 import tictim.paraglider.contents.ParagliderTags;
@@ -70,7 +77,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 					KeyConflictContext.IN_GAME,
 					KeyModifier.CONTROL,
 					InputConstants.Type.KEYSYM,
-					GLFW.GLFW_KEY_P, "key.categories.misc"));
+					GLFW.GLFW_KEY_P, KeyMapping.Category.MISC));
 		});
 
 		eventBus.addListener((RegisterGuiLayersEvent event) -> {
@@ -79,15 +86,15 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		});
 
 		eventBus.addListener((RegisterRenderStateModifiersEvent event) -> {
-			event.registerEntityModifier(PlayerRenderer.class, (p, s) -> {
-				ItemStack stack = p.getMainHandItem();
-				if (stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).isParagliding(stack)) {
-					s.leftArmPose = s.rightArmPose = ParaglidingArmPose.ENUM.getValue();
-				}
-			});
+			event.registerEntityModifier(
+					new TypeToken<@NotNull AvatarRenderer<?>>() {},
+					(p, s) -> {
+						ItemStack stack = p.getMainHandItem();
+						if (stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).isParagliding(stack)) {
+							s.leftArmPose = s.rightArmPose = ParaglidingArmPose.ENUM.getValue();
+						}
+					});
 		});
-
-		eventBus.addListener((RegisterRenderPipelinesEvent event) -> event.registerPipeline(ParagliderRenderTypes.STAMINA_WHEEL_PIPELINE));
 
 		eventBus.addListener((RegisterEvent event) -> {
 			event.register(Registries.PARTICLE_TYPE, h -> h.register(

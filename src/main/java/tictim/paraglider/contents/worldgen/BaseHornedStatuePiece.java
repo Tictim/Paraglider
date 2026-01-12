@@ -2,7 +2,7 @@ package tictim.paraglider.contents.worldgen;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Rotation;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public class BaseHornedStatuePiece extends TemplateStructurePiece {
 	public BaseHornedStatuePiece(@NotNull StructurePieceType type,
 	                             @NotNull StructureTemplateManager structureManager,
-	                             @NotNull ResourceLocation location,
+	                             @NotNull Identifier location,
 	                             @NotNull BlockPos templatePos) {
 		super(type,
 				0,
@@ -36,7 +36,7 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 	public BaseHornedStatuePiece(@NotNull StructurePieceType type,
 	                             @NotNull CompoundTag tag,
 	                             @NotNull StructureTemplateManager structureManager,
-	                             @NotNull Function<ResourceLocation, StructurePlaceSettings> placeSettingsFactory,
+	                             @NotNull Function<Identifier, StructurePlaceSettings> placeSettingsFactory,
 	                             boolean savePivot) {
 		super(type, tag, structureManager, placeSettingsFactory);
 		this.savePivot = savePivot;

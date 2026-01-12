@@ -1,6 +1,7 @@
 package tictim.paraglider.impl;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import java.util.List;
  * Standard implementation of {@link VesselContainer}.
  */
 public class SimpleVesselContainer implements VesselContainer {
-	public static final Codec<SimpleVesselContainer> CODEC = RecordCodecBuilder.create(b -> b.group(
+	public static final MapCodec<SimpleVesselContainer> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
 			Codec.INT.fieldOf("heartContainers").forGetter(SimpleVesselContainer::heartContainer),
 			Codec.INT.fieldOf("staminaVessels").forGetter(SimpleVesselContainer::staminaVessel),
 			Codec.INT.fieldOf("essences").forGetter(SimpleVesselContainer::essence)

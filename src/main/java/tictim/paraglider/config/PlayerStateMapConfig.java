@@ -2,7 +2,7 @@ package tictim.paraglider.config;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public class PlayerStateMapConfig {
 	public final ModConfigSpec spec;
 
 	private final PlayerStateMap originalStateMap;
-	private final Map<ResourceLocation, Config> configSpecs;
+	private final Map<Identifier, Config> configSpecs;
 	private final List<@NotNull Consumer<@NotNull PlayerStateMap>> onUpdateCallbacks = new ArrayList<>();
 
 	private @Nullable PlayerStateMap configuredStateMap;
@@ -135,9 +135,9 @@ public class PlayerStateMapConfig {
 		boolean paraglidingConsumesStamina = Cfg.get().paraglidingConsumesStamina();
 		boolean runningConsumesStamina = Cfg.get().runningConsumesStamina();
 
-		@Nullable Map<ResourceLocation, PlayerState> newStates = null;
+		@Nullable Map<Identifier, PlayerState> newStates = null;
 		for (var e : this.originalStateMap.states().entrySet()) {
-			ResourceLocation id = e.getKey();
+			Identifier id = e.getKey();
 			PlayerState state = e.getValue();
 
 			Config config = this.configSpecs.get(id);

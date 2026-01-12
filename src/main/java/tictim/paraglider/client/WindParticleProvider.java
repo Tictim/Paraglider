@@ -6,13 +6,15 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.wind.Wind;
 
 public class WindParticleProvider implements ParticleProvider<SimpleParticleType> {
-	public static final ResourceLocation PARTICLE_TYPE_ID = ParagliderAPI.id("wind");
+	public static final Identifier PARTICLE_TYPE_ID = ParagliderAPI.id("wind");
 	public static final SimpleParticleType PARTICLE_TYPE = new SimpleParticleType(false);
 
 	private final SpriteSet sprites;
@@ -21,10 +23,11 @@ public class WindParticleProvider implements ParticleProvider<SimpleParticleType
 		this.sprites = sprites;
 	}
 
-	@Override public Particle createParticle(
-			@NotNull SimpleParticleType type, @NotNull ClientLevel level,
+	@Override public @Nullable Particle createParticle(
+			@NotNull SimpleParticleType particleType, @NotNull ClientLevel level,
 			double x, double y, double z,
-			double xSpeed, double ySpeed, double zSpeed) {
+			double xSpeed, double ySpeed, double zSpeed,
+			@NotNull RandomSource random) {
 		return new WindParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, this.sprites);
 	}
 

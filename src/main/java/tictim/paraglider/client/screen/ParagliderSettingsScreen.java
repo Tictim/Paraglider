@@ -3,13 +3,14 @@ package tictim.paraglider.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -140,12 +141,11 @@ public class ParagliderSettingsScreen extends Screen {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
-	@Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
-		InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
-		if (this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey) ||
-				ParagliderClientMod.instance().getParagliderSettingsKey().getKey().equals(mouseKey)) {
+	@Override public boolean keyPressed(@NotNull KeyEvent event) {
+		if (super.keyPressed(event)) return true;
+		InputConstants.Key key = InputConstants.getKey(event);
+		if (this.minecraft.options.keyInventory.isActiveAndMatches(key) ||
+				ParagliderClientMod.instance().getParagliderSettingsKey().getKey().equals(key)) {
 			this.onClose();
 			return true;
 		} else return false;
@@ -156,13 +156,13 @@ public class ParagliderSettingsScreen extends Screen {
 
 		public ParticleSliderWidget(int width, int height, @Nullable ParticleSliderWidget prevInstance) {
 			super(0, 0, width, height, Component.empty(), 0);
+			setTooltip(Tooltip.create(Component.translatable("paraglider.settings.wind_particle_freq.tooltip")));
+
 			if (prevInstance != null) {
-				setTooltip(prevInstance.getTooltip());
 				setMessage(prevInstance.getMessage());
 				this.value = prevInstance.value;
 				this.dirty = prevInstance.dirty;
 			} else {
-				setTooltip(Tooltip.create(Component.translatable("paraglider.settings.wind_particle_freq.tooltip")));
 				setMessage(message(this.value = ParagliderClientSettings.get().windParticleFrequency()));
 				this.dirty = false;
 			}

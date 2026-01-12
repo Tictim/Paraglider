@@ -2,7 +2,7 @@ package tictim.paraglider.contents.worldgen;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.block.Rotation;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class UndergroundHornedStatue extends Structure {
 	public static final MapCodec<UndergroundHornedStatue> CODEC = simpleCodec(UndergroundHornedStatue::new);
-	private static final ResourceLocation TEMPLATE = ParagliderAPI.id("underground_horned_statue");
+	private static final Identifier TEMPLATE = ParagliderAPI.id("underground_horned_statue");
 
 	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {
 		return BaseHornedStatuePiece.createType(() -> Contents.get().undergroundHornedStatuePiece(), BlockPos.ZERO);
