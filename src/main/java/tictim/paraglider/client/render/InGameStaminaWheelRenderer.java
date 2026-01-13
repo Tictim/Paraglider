@@ -25,6 +25,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 	private boolean prevDepleted;
 	private int prevWheelIndex = -1;
+	private double prevMaxStamina = Double.NaN;
 	private double prevExtraStamina;
 
 	public InGameStaminaWheelRenderer() {
@@ -47,14 +48,21 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		int wheelIndex = (int)Math.ceil(this.mainWheel.staminaWheelPos());
 		boolean gainedExtraStamina = !this.gainExtraStaminaAnim.isActive() && this.prevExtraStamina < extraStamina;
 
-		this.fullAnim.update(full ? gainedExtraStamina ? SET_ACTIVE : RETAIN_ACTIVE : SET_INACTIVE);
+		this.fullAnim.update(full ? gainedExtraStamina || this.prevMaxStamina < maxStamina ? SET_ACTIVE : RETAIN_ACTIVE : SET_INACTIVE);
 		this.outerWheelFillAnim.update(full ? SET_INACTIVE : this.prevWheelIndex < wheelIndex ? SET_ACTIVE : RETAIN);
 		this.outerWheelEmptyAnim.update(full ? SET_INACTIVE : this.prevWheelIndex > wheelIndex ? SET_ACTIVE : RETAIN);
 		this.recoverAnim.update(full ? SET_INACTIVE : this.prevDepleted && !s.isDepleted() ? SET_ACTIVE : RETAIN);
 		this.gainExtraStaminaAnim.update(gainedExtraStamina ? SET_ACTIVE : RETAIN);
 
+		debugAnim("full", this.fullAnim);
+		debugAnim("outerWheelFill", this.outerWheelFillAnim);
+		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
+		debugAnim("recoverAnim", this.recoverAnim);
+		debugAnim("gainExtraStamina", this.gainExtraStaminaAnim);
+
 		this.prevWheelIndex = wheelIndex;
 		this.prevDepleted = s.isDepleted();
+		this.prevMaxStamina = maxStamina;
 		if (!this.gainExtraStaminaAnim.isActive()) this.prevExtraStamina = extraStamina;
 
 		double staminaDeltaHighlightRemaining = 0;
@@ -111,12 +119,6 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 						staminaEndWheePos, blinkColor);
 			}
 		}
-
-		debugAnim("full", this.fullAnim);
-		debugAnim("outerWheelFill", this.outerWheelFillAnim);
-		debugAnim("outerWheelEmpty", this.outerWheelEmptyAnim);
-		debugAnim("recoverAnim", this.recoverAnim);
-		debugAnim("gainExtraStamina", this.gainExtraStaminaAnim);
 	}
 
 	private void makeOuterWheel(StaminaWheelState wheel) {
@@ -176,6 +178,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 
 		this.prevDepleted = false;
 		this.prevWheelIndex = -1;
+		this.prevMaxStamina = Double.NaN;
 		this.prevExtraStamina = 0;
 	}
 }
