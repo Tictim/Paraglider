@@ -4,6 +4,7 @@ import datagen.builder.WindSourceBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.JsonCodecProvider;
@@ -36,6 +37,11 @@ public class TestWindSourceGen extends JsonCodecProvider<WindSource> {
 				.blocks(Blocks.GLOWSTONE)
 				.height(1)
 				.save(this, id("test/glowstone"));
+
+		new WindSourceBuilder()
+				.tags(BlockTags.BEDS)
+				.height(3)
+				.save(this, id("test/beds"));
 	}
 
 	@Override public @NotNull String getName() {

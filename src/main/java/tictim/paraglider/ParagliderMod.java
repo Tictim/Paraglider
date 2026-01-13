@@ -14,6 +14,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -135,6 +136,11 @@ public class ParagliderMod {
 
 		NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> event.getDispatcher().register(ParagliderCommands.register()));
 		NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> this.stateMapConfig.removeCallbacks());
+		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> {
+			if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+				WindSourceRegistry.get().computeWindSource(event.getRegistryAccess());
+			}
+		});
 
 		NeoForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> {
 			event.addListener(new WindSourceRegistry.ReloadListener(this.windSourceRegistry, event.getRegistryAccess()));
