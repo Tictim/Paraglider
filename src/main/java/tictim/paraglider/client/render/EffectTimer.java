@@ -43,16 +43,12 @@ public class EffectTimer {
 		this.activeDuration = activeDuration;
 	}
 
-	public int getGlowAndFadeColor(int baseColor) {
-		return this.active ? StaminaWheelConstants.getGlowAndFadeColor(this.activeDuration, baseColor) : baseColor;
-	}
-
 	public int getGlowColor(int baseColor) {
 		return this.active ? StaminaWheelConstants.getGlowColor(this.activeDuration, baseColor) : baseColor;
 	}
 
-	public int getFadeColor(int baseColor) {
-		return this.active ? StaminaWheelConstants.getFadeColor(this.activeDuration, baseColor) : baseColor;
+	public float getFadeAlpha() {
+		return this.active ? StaminaWheelConstants.getFadeAlpha(this.activeDuration) : 1;
 	}
 
 	public void update(boolean active) {

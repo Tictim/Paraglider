@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +24,6 @@ import tictim.paraglider.contents.ParagliderTags;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static net.minecraft.util.ARGB.alpha;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
@@ -135,14 +133,12 @@ public abstract class StaminaWheelRenderer {
 	}
 
 	protected void drawWheels(@NotNull GuiGraphics guiGraphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
-		StaminaWheelRenderState.submit(guiGraphics, this.mainWheel, WheelLevel.FIRST, debug);
-		StaminaWheelRenderState.submit(guiGraphics, this.mainWheel, WheelLevel.SECOND, debug);
-		StaminaWheelRenderState.submit(guiGraphics, this.mainWheel, WheelLevel.THIRD, debug);
+		StaminaWheelRenderState.drawMainWheel(guiGraphics, this.mainWheel, this.debug);
 
-		if (this.extraWheel.stamina() > 0 && extraWheelAttachment != null) {
+		if (this.extraWheel.alpha() > 0 && this.extraWheel.stamina() > 0 && extraWheelAttachment != null) {
 			Matrix3x2fStack pose = guiGraphics.pose();
 
-			int wheels = Math.min(3, (int) Math.ceil(toWheelPos(this.mainWheel.maxStamina())) - 1);
+			int wheels = Math.min(3, (int)Math.ceil(toWheelPos(this.mainWheel.maxStamina())));
 			boolean hasTwoExtraWheels = this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL;
 
 			pose.pushMatrix();
@@ -150,7 +146,7 @@ public abstract class StaminaWheelRenderer {
 					extraWheelOffsetX(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
 					extraWheelOffsetY(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
 					pose);
-			StaminaWheelRenderState.submit(guiGraphics, this.extraWheel, WheelLevel.EXTRA_1, debug);
+			StaminaWheelRenderState.drawExtraWheel(guiGraphics, this.extraWheel, 0, this.debug);
 			pose.popMatrix();
 
 			if (hasTwoExtraWheels) {
@@ -159,28 +155,28 @@ public abstract class StaminaWheelRenderer {
 						extraWheelOffsetX(extraWheelAttachment, wheels, true, 1),
 						extraWheelOffsetY(extraWheelAttachment, wheels, true, 1),
 						pose);
-				StaminaWheelRenderState.submit(guiGraphics, this.extraWheel, WheelLevel.EXTRA_2, debug);
+				StaminaWheelRenderState.drawExtraWheel(guiGraphics, this.extraWheel, 1, this.debug);
 				pose.popMatrix();
 			}
 		}
 
-		int color = this.mainWheel.indicatorColor();
+		int color = this.mainWheel.indicatorColorWithAlpha();
 		if (alpha(color) >= 4) {
-			drawText(guiGraphics, "+" + Math.max(1, (int) (Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
+			drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
 					false, WHEEL_RADIUS - 1, 1 - WHEEL_RADIUS, color);
 		}
 
 		if (this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL * 2 && extraWheelAttachment != null) {
-			color = this.extraWheel.indicatorColor();
+			color = this.extraWheel.indicatorColorWithAlpha();
 			if (alpha(color) >= 4) {
-				drawText(guiGraphics, "+" + Math.max(1, (int) (Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
+				drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
 						true, 1 - WHEEL_RADIUS, 1 - WHEEL_RADIUS, color);
 			}
 		}
 	}
 
 	protected float extraWheelOffsetX(ExtraWheelAttachment extraWheelAttachment, int wheels, boolean hasTwoExtraWheels, int index) {
-		final float extraWheelMargin = EXTRA_WHEEL_RADIUS * 2 + 2.5f;
+		final float extraWheelMargin = EXTRA_WHEEL_RADIUS * 2 + 2f;
 
 		return switch (extraWheelAttachment) {
 			case TOP, BOTTOM -> {
@@ -200,7 +196,7 @@ public abstract class StaminaWheelRenderer {
 		return switch (extraWheelAttachment) {
 			case LEFT, RIGHT -> 0;
 			case TOP, BOTTOM -> {
-				float offset = -WHEEL_RADIUS - EXTRA_WHEEL_RADIUS - wheels - 0.5f;
+				float offset = -WHEEL_RADIUS - EXTRA_WHEEL_RADIUS - 1 - wheels;
 				if (hasTwoExtraWheels) offset += 2;
 				if (extraWheelAttachment == ExtraWheelAttachment.BOTTOM) offset = -offset;
 				yield offset;
@@ -225,18 +221,10 @@ public abstract class StaminaWheelRenderer {
 	}
 
 	public enum WheelLevel {
-		FIRST(ParagliderAPI.id("textures/stamina/first.png"), false),
-		SECOND(ParagliderAPI.id("textures/stamina/second.png"), false),
-		THIRD(ParagliderAPI.id("textures/stamina/third.png"), false),
-		EXTRA_1(ParagliderAPI.id("textures/stamina/extra.png"), true),
-		EXTRA_2(EXTRA_1.texture, true);
-
-		public final Identifier texture;
-		public final int radius;
-
-		WheelLevel(Identifier texture, boolean extra) {
-			this.texture = Objects.requireNonNull(texture);
-			this.radius = extra ? EXTRA_WHEEL_RADIUS : WHEEL_RADIUS;
-		}
+		FIRST,
+		SECOND,
+		THIRD,
+		EXTRA_1,
+		EXTRA_2,
 	}
 }

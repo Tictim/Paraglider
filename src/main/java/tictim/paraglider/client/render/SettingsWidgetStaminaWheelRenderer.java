@@ -30,7 +30,6 @@ public class SettingsWidgetStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.mainWheel.fillWheel(0f, this.wheels, wheelColor(0));
 
 		this.extraWheel.setProperties(this.extraWheels * Stamina.STAMINA_PER_WHEEL - 600, this.extraWheels * Stamina.STAMINA_PER_WHEEL);
-		this.extraWheel.fillWheel(0f, this.extraWheels, EMPTY);
 		this.extraWheel.fillWheel(0f, this.extraWheels - 0.6f, EXTRA);
 	}
 

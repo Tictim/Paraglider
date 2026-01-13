@@ -3,6 +3,7 @@ package tictim.paraglider.client.render;
 import it.unimi.dsi.fastutil.floats.Float2IntRBTreeMap;
 import it.unimi.dsi.fastutil.floats.Float2IntSortedMap;
 import it.unimi.dsi.fastutil.floats.Float2IntSortedMaps;
+import net.minecraft.util.ARGB;
 
 import static tictim.paraglider.client.render.StaminaWheelConstants.toWheelPos;
 
@@ -11,16 +12,7 @@ public class StaminaWheelState {
 	private double stamina;
 	private double maxStamina;
 	private int indicatorColor;
-
-	public StaminaWheelState() {}
-
-	public StaminaWheelState(StaminaWheelState copyFrom) {
-		this.stamina = copyFrom.stamina;
-		this.maxStamina = copyFrom.maxStamina;
-		this.indicatorColor = copyFrom.indicatorColor;
-
-		this.segments.putAll(copyFrom.segments);
-	}
+	private float alpha = 1;
 
 	public double stamina() {
 		return stamina;
@@ -39,8 +31,20 @@ public class StaminaWheelState {
 		return this.indicatorColor;
 	}
 
+	public int indicatorColorWithAlpha() {
+		return ARGB.color(this.alpha * ARGB.alphaFloat(this.indicatorColor), this.indicatorColor);
+	}
+
 	public void setIndicatorColor(int indicatorColor) {
 		this.indicatorColor = indicatorColor;
+	}
+
+	public float alpha() {
+		return this.alpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
 	}
 
 	public float staminaWheelPos() {
@@ -73,5 +77,6 @@ public class StaminaWheelState {
 		this.stamina = 0;
 		this.maxStamina = 0;
 		this.indicatorColor = 0;
+		this.alpha = 1;
 	}
 }

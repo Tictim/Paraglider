@@ -1,7 +1,9 @@
 package tictim.paraglider.client.render;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
 
 public final class StaminaWheelConstants {
@@ -11,7 +13,6 @@ public final class StaminaWheelConstants {
 	public static final int EVIL_GLOW = ARGB.color(248, 223, 223);
 	public static final int DEPLETED_1 = ARGB.color(150, 2, 2);
 	public static final int DEPLETED_2 = ARGB.color(255, 150, 2);
-	public static final int EMPTY = ARGB.color(150, 2, 2, 2);
 	public static final int EXTRA = 0xFFFFFF00;
 
 	public static final long GLOW_FADE_START = 100;
@@ -29,6 +30,8 @@ public final class StaminaWheelConstants {
 
 	public static final int WHEEL_RADIUS = 10;
 	public static final int EXTRA_WHEEL_RADIUS = 5;
+
+	public static final Identifier STAMINA_WHEEL_TEXTURE = ParagliderAPI.id("textures/gui/stamina_wheel.png");
 
 	// pair of idle/background colors for stamina - first is the basic green color
 	// later ones are used for 4th wheel and beyond, cycling through each entry
@@ -50,28 +53,15 @@ public final class StaminaWheelConstants {
 		return WHEEL_COLORS[offset % (WHEEL_COLORS.length / 2) * 2 + 1];
 	}
 
-	public static int getGlowAndFadeColor(long time, int baseColor) {
-		if (time < GLOW_FADE_START) return GLOW;
-		if (time < GLOW_FADE_END) return lerpColor(
-				(float) (time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
-		if (time < FADE_START) return baseColor;
-		if (time < FADE_END) return lerpColor(
-				(float) (time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
-		return 0;
-	}
-
 	public static int getGlowColor(long time, int baseColor) {
 		if (time < GLOW_FADE_START) return GLOW;
 		if (time < GLOW_FADE_END) return lerpColor(
-				(float) (time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
+				(float)(time - GLOW_FADE_START) / GLOW_FADE_DURATION, GLOW, baseColor);
 		return baseColor;
 	}
 
-	public static int getFadeColor(long time, int baseColor) {
-		if (time < FADE_START) return baseColor;
-		if (time < FADE_END) return lerpColor(
-				(float) (time - FADE_START) / FADE_DURATION, baseColor, ARGB.color(0, baseColor));
-		return baseColor;
+	public static float getFadeAlpha(long time) {
+		return 1 - (float)(Math.clamp(time, FADE_START, FADE_END) - FADE_START) / FADE_DURATION;
 	}
 
 	public static int getBlinkColor(long time, boolean depleted) {
@@ -80,11 +70,11 @@ public final class StaminaWheelConstants {
 
 	public static float cycle(long currentTime, long cycleTime) {
 		long halfCycle = cycleTime / 2;
-		return (float) Math.abs(currentTime % cycleTime - halfCycle) / halfCycle;
+		return (float)Math.abs(currentTime % cycleTime - halfCycle) / halfCycle;
 	}
 
 	public static float toWheelPos(double stamina) {
-		return (float) (stamina / Stamina.STAMINA_PER_WHEEL);
+		return (float)(stamina / Stamina.STAMINA_PER_WHEEL);
 	}
 
 	public static int lerpColor(float t, int a, int b) {

@@ -69,12 +69,16 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		int blinkColor = 0;
 
 		if (full) {
-			int color = this.fullAnim.getGlowAndFadeColor(wheelColor(0));
+			int color = this.fullAnim.getGlowColor(wheelColor(0));
 			if (ARGB.alpha(color) <= 0) return;
 			this.mainWheel.fillStamina(0, maxStamina, color);
 			makeOuterWheel(this.mainWheel);
+
+			float alpha = this.fullAnim.getFadeAlpha();
+
+			this.mainWheel.setAlpha(alpha);
+			this.extraWheel.setAlpha(alpha);
 		} else {
-			this.mainWheel.fillStamina(0, maxStamina, EMPTY);
 			if (s.isDepleted()) {
 				this.mainWheel.fillStamina(0, stamina, this.recoverAnim.getGlowColor(getBlinkColor(ms(), true)));
 			} else {
@@ -101,19 +105,18 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		}
 
 		if (extraStamina > 0) {
-			int extraWheelColor = this.fullAnim.getFadeColor(EXTRA);
+			int extraWheelColor = EXTRA;
 			this.extraWheel.fillStamina(0, extraStamina, extraWheelColor);
 
 			if (this.gainExtraStaminaAnim.isActive()) {
-				extraWheelColor = this.fullAnim.getFadeColor(this.gainExtraStaminaAnim.getGlowColor(EXTRA));
+				extraWheelColor = this.gainExtraStaminaAnim.getGlowColor(EXTRA);
 				this.extraWheel.fillStamina(this.prevExtraStamina, extraStamina, extraWheelColor);
 			}
 
-			float staminaEndWheePos = toWheelPos(extraStamina);
-			this.extraWheel.fillWheel(staminaEndWheePos, (float)Math.ceil(staminaEndWheePos), EMPTY);
 			this.extraWheel.setIndicatorColor(extraWheelColor);
 
 			if (staminaDeltaHighlightRemaining > 0) {
+				float staminaEndWheePos = toWheelPos(extraStamina);
 				this.extraWheel.fillWheel(
 						staminaEndWheePos - toWheelPos(staminaDeltaHighlightRemaining),
 						staminaEndWheePos, blinkColor);
@@ -137,7 +140,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 		}
 
 		if (this.fullAnim.isActive()) {
-			color = this.fullAnim.getGlowAndFadeColor(color);
+			color = this.fullAnim.getGlowColor(color);
 			if (wheels >= 4) wheelIndicatorColor = color;
 		} else if (this.recoverAnim.isActive()) {
 			wheelIndicatorColor = color = this.recoverAnim.getGlowColor(color);
@@ -157,7 +160,7 @@ public class InGameStaminaWheelRenderer extends StaminaWheelRenderer {
 			}
 
 			if (this.fullAnim.isActive()) {
-				bgColor = this.fullAnim.getGlowAndFadeColor(bgColor);
+				bgColor = this.fullAnim.getGlowColor(bgColor);
 			} else if (this.recoverAnim.isActive()) {
 				bgColor = this.recoverAnim.getGlowColor(bgColor);
 			}
