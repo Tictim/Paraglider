@@ -9,6 +9,7 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
 import tictim.paraglider.client.ParagliderRenderTypes;
 import tictim.paraglider.client.render.StaminaWheelRenderer;
@@ -151,14 +152,8 @@ public record StaminaWheelRenderState(
 		return this.textureSetup;
 	}
 
-	// need to do this to make each stamina wheel renders distinct (so the renderer doesn't mangle triangle fans together)
-	@Override public @NotNull ScreenRectangle scissorArea() {
-		ScreenRectangle bounds = bounds();
-		return new ScreenRectangle(
-				bounds.position().x() - 1,
-				bounds.position().y() - 1,
-				bounds.width() + 2,
-				bounds.height() + 2);
+	@Override public @Nullable ScreenRectangle scissorArea() {
+		return null;
 	}
 
 	@Override public @NotNull ScreenRectangle bounds() {
