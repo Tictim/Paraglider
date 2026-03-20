@@ -164,4 +164,8 @@ public class WindSourceBlockState {
 		if (map != null) return map.getInt(state);
 		else return 0;
 	}
+
+	public int maxWindHeight() {
+		return maxWindHeight;
+	}
 }

@@ -25,14 +25,13 @@ public class WindSourceRegistry {
 	}
 
 	private WindSourceBlockState blockStates = new WindSourceBlockState();
-	private int maxWindHeight;
 
 	public boolean isInitialized() {
 		return this.blockStates != null;
 	}
 
 	public int maxWindHeight() {
-		return this.maxWindHeight;
+		return this.blockStates.maxWindHeight();
 	}
 
 	public int getWindSourceHeight(@NotNull BlockState state) {
