@@ -10,15 +10,27 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.Bargain;
 import tictim.paraglider.api.bargain.BargainResult;
+import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.bargain.BargainContext;
 import tictim.paraglider.bargain.BargainHandler;
+import tictim.paraglider.impl.movement.ServerPlayerMovement;
 import tictim.paraglider.network.message.BargainEndMsg;
 import tictim.paraglider.network.message.BargainMsg;
+import tictim.paraglider.network.message.SetParaglidingMsg;
 
 import static tictim.paraglider.ParagliderUtils.DIALOG_RNG;
 
 public final class ServerPacketHandler {
 	private ServerPacketHandler() {}
+
+	public static void handleSetParagliding(SetParaglidingMsg msg, IPayloadContext ctx) {
+		if (!(ctx.player() instanceof ServerPlayer player)) return;
+
+		trace(Kind.MOVEMENT, player, msg);
+		if (!(Movement.get(player) instanceof ServerPlayerMovement m)) return;
+
+		m.setParagliding(msg.paragliding());
+	}
 
 	public static void handleBargain(BargainMsg msg, IPayloadContext ctx) {
 		if (!(ctx.player() instanceof ServerPlayer player)) return;

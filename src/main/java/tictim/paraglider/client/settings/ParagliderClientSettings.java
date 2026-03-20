@@ -12,9 +12,15 @@ import java.util.function.Function;
 public record ParagliderClientSettings(
 		StaminaWheelPosition staminaWheelPosition,
 		double windParticleFrequency,
-		ExtraWheelAttachment extraWheelAttachment
+		ExtraWheelAttachment extraWheelAttachment,
+		boolean autoParagliding
 ) {
-	public static final ParagliderClientSettings DEFAULT = new ParagliderClientSettings(StaminaWheelPosition.DEFAULT, 1, ExtraWheelAttachment.LEFT);
+	public static final ParagliderClientSettings DEFAULT = new ParagliderClientSettings(
+			StaminaWheelPosition.DEFAULT,
+			1,
+			ExtraWheelAttachment.LEFT,
+			true
+	);
 
 	public static final Codec<ParagliderClientSettings> CODEC = RecordCodecBuilder.create(b -> b.group(
 			Codec.xor(
@@ -33,11 +39,12 @@ public record ParagliderClientSettings(
 					.forGetter(ParagliderClientSettings::windParticleFrequency),
 			StringRepresentable.fromValues(ExtraWheelAttachment::values)
 					.optionalFieldOf("extra_wheel_attachment", ExtraWheelAttachment.LEFT)
-					.forGetter(ParagliderClientSettings::extraWheelAttachment)
+					.forGetter(ParagliderClientSettings::extraWheelAttachment),
+			Codec.BOOL.optionalFieldOf("auto_paragliding", true)
+					.forGetter(ParagliderClientSettings::autoParagliding)
 	).apply(b, ParagliderClientSettings::new));
 
 	public static @NotNull ParagliderClientSettings get() {
 		return ParagliderClientMod.instance().getSettings();
 	}
-
 }

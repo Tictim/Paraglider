@@ -9,11 +9,10 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
+import tictim.paraglider.config.Cfg;
 import tictim.paraglider.wind.Wind;
 
 import java.util.Objects;
-
-import static tictim.paraglider.api.movement.ParagliderPlayerStates.Flags.ASCENDING;
 
 public abstract class PlayerMovement implements Movement {
 	private final Player player;
@@ -56,22 +55,23 @@ public abstract class PlayerMovement implements Movement {
 
 	public abstract void update();
 
-	protected void applyMovement() {
+	protected void applyMovement(boolean paragliding, boolean canRideUpdraft) {
+		if (!paragliding) return;
+
 		Player player = player();
-		PlayerState state = state();
+		Vec3 m = player.getDeltaMovement();
+		double wind = canRideUpdraft && Cfg.get().updraft() ? Wind.getWindAbove(player.level(), player.getBoundingBox()) : 0.0;
+		double dy;
 
-		if (state.paragliding()) {
-			player.fallDistance = 0;
-
-			Vec3 m = player.getDeltaMovement();
-			double dy = Math.max(m.y, -0.05);
-			if (state.hasFlag(ASCENDING)) {
-				double windAbove = Math.clamp(Wind.getWindAbove(player.level(), player.getBoundingBox()), 0, 2);
-				// larger windAbove = stronger updraft force
-				dy = Math.max(m.y, 0 + Math.max(0, Mth.lerp(windAbove / 2, -0.05, 0.25)));
-			}
-			player.setDeltaMovement(m.x, dy, m.z);
+		if (wind > 0.0) {
+			// larger wind above = stronger updraft force
+			dy = Math.max(0, Mth.lerp(Math.min(wind, 2.0) / 2.0, -0.05, 0.25));
+		} else {
+			dy = -0.05;
 		}
+
+		player.fallDistance = 0;
+		player.setDeltaMovement(m.x, Math.max(m.y, dy), m.z);
 	}
 
 	protected void updateStamina() {

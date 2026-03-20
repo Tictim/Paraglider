@@ -11,6 +11,7 @@ import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.Movement;
+import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.api.stamina.Stamina;
@@ -34,20 +35,14 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 	private boolean staminaVesselChanged = true;
 	private boolean movementChanged;
 
-	/**
-	 * Previous Y position for tracking {@link #accumulatedFallDistance}.
-	 */
-	private double prevY;
-	/**
-	 * Self-explanatory. Needs to track it ourselves since fall distance in entity instance often gets overwritten by
-	 * other mods and breaks fall distance check.
-	 */
-	private double accumulatedFallDistance;
-
 	private double staminaEfficiency;
 	private double prevStaminaEfficiency;
 
 	private final ArrayDeque<Effect> particleEffectQueue = new ArrayDeque<>(10);
+
+	private boolean canUseParaglider;
+	private boolean canRideUpdraft;
+	private boolean paragliding;
 
 	public ServerPlayerMovement(@NotNull ServerPlayer player) {
 		super(player);
@@ -98,8 +93,12 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		return state(); // for PlayerStateCondition the "current" state would be the "previous" state
 	}
 
-	@Override public double accumulatedFallDistance() {
-		return this.accumulatedFallDistance;
+	@Override public boolean paragliding() {
+		return this.paragliding;
+	}
+
+	public void setParagliding(boolean paragliding) {
+		this.paragliding = paragliding;
 	}
 
 	@Override public boolean canDoPanicParagliding() {
@@ -143,12 +142,23 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 			this.staminaVesselChanged = false;
 		}
 
-		if (player().onGround() || player().getY() > this.prevY) this.accumulatedFallDistance = 0;
-		else accumulatedFallDistance += this.prevY - player().getY();
-
 		if (!player().getData(Contents.get().movementInitialized())) {
 			player().setData(Contents.get().movementInitialized(), true);
 			stamina().setStamina(stamina().maxStamina());
+		}
+
+		boolean prevCanUseParaglider = this.canUseParaglider;
+		boolean prevCanRideUpdraft = this.canRideUpdraft;
+		this.canRideUpdraft = player().isCreative() || !stamina().isDepleted();
+		this.canUseParaglider = this.canRideUpdraft || canDoPanicParagliding();
+
+		if (this.paragliding &&
+				!(this.canUseParaglider &&
+						!player().onGround() &&
+						(state().paragliding() || state().hasFlag(ParagliderPlayerStates.Flags.CAN_USE_PARAGLIDER)) &&
+						ParagliderUtils.holdingUsableParaglider(player()))) {
+			this.paragliding = false;
+			ParagliderNetwork.get().setParaglidingToClient(player(), this.paragliding);
 		}
 
 		PlayerState prevState = state();
@@ -177,7 +187,8 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 			ParagliderUtils.removeExhaustion(player());
 			ParagliderUtils.removeFlyingBan(player());
 		}
-		applyMovement();
+
+		applyMovement(state().paragliding(), this.canRideUpdraft);
 
 		if (resync || this.movementChanged || stamina().isDirty()) {
 			ParagliderNetwork.get().syncMovement(player(),
@@ -208,7 +219,10 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 			}
 		}
 
-		this.prevY = player().getY();
+		if (resync || prevCanUseParaglider != this.canUseParaglider || prevCanRideUpdraft != this.canRideUpdraft) {
+			ParagliderNetwork.get().syncCanUseParaglider(player(), this.canUseParaglider, this.canRideUpdraft);
+		}
+
 		this.prevStaminaEfficiency = this.staminaEfficiency;
 
 		for (int i = 0; i < player().getInventory().getContainerSize(); i++) {
@@ -228,10 +242,9 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		}
 	}
 
-	@Override protected void applyMovement() {
-		super.applyMovement();
+	@Override protected void applyMovement(boolean paragliding, boolean canRideUpdraft) {
+		super.applyMovement(paragliding, canRideUpdraft);
 
-		boolean paragliding = state().paragliding();
 		if (paragliding) {
 			player().connection.aboveGroundTickCount = 0;
 			ItemStack stack = player().getMainHandItem();

@@ -45,6 +45,8 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 				(msg, ctx) -> ClientPacketHandler.handleSyncRemoteMovement(msg));
 		reg.playToClient(SyncVesselMsg.TYPE, SyncVesselMsg.CODEC,
 				(msg, ctx) -> ClientPacketHandler.handleSyncVessel(msg));
+		reg.playToClient(SyncCanUseParagliderMsg.TYPE, SyncCanUseParagliderMsg.CODEC,
+				(msg, ctx) -> ClientPacketHandler.handleSyncCanUseParaglider(msg));
 
 		reg.playToClient(BargainInitMsg.TYPE, BargainInitMsg.CODEC,
 				(msg, ctx) -> ClientPacketHandler.handleBargainInit(msg));
@@ -59,6 +61,10 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 				(msg, ctx) -> ClientPacketHandler.handleSyncWind(msg));
 
 		reg.playToServer(BargainMsg.TYPE, BargainMsg.CODEC, ServerPacketHandler::handleBargain);
+
+		reg.playBidirectional(SetParaglidingMsg.TYPE, SetParaglidingMsg.CODEC,
+				ServerPacketHandler::handleSetParagliding,
+				(msg, ctx) -> ClientPacketHandler.handleSetParagliding(msg));
 
 		reg.playBidirectional(BargainEndMsg.TYPE, BargainEndMsg.CODEC,
 				ServerPacketHandler::handleBargainEnd,
@@ -104,6 +110,24 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		SyncVesselMsg msg = new SyncVesselMsg(stamina, extraStamina, depleted, heartContainers, staminaVessels);
 		traceSendToPlayer(Kind.VESSEL, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
+	}
+
+	@Override public void syncCanUseParaglider(@NotNull ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft) {
+		SyncCanUseParagliderMsg msg = new SyncCanUseParagliderMsg(canUseParaglider, canRideUpdraft);
+		traceSendToPlayer(Kind.MOVEMENT, player, msg);
+		PacketDistributor.sendToPlayer(player, msg);
+	}
+
+	@Override public void setParaglidingToClient(@NotNull ServerPlayer player, boolean paragliding) {
+		SetParaglidingMsg msg = new SetParaglidingMsg(paragliding);
+		traceSendToPlayer(Kind.MOVEMENT, player, msg);
+		PacketDistributor.sendToPlayer(player, msg);
+	}
+
+	@Override public void setParaglidingToServer(boolean paragliding) {
+		SetParaglidingMsg msg = new SetParaglidingMsg(paragliding);
+		traceSendToServer(Kind.MOVEMENT, msg);
+		ClientPacketDistributor.sendToServer(msg);
 	}
 
 	@Override public void initBargain(@NotNull BargainContext ctx,
@@ -162,24 +186,32 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 	}
 
 	protected static void traceSendToAll(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {
-		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Dispatching {} to clients", msg);
+		if (kind.isTraceEnabled()) {
+			ParagliderMod.LOGGER.debug("Dispatching {} to clients", msg);
+		}
 	}
 
 	protected static void traceSendToPlayer(@NotNull Kind kind, @NotNull ServerPlayer player, @NotNull CustomPacketPayload msg) {
-		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Dispatching {} to {}", msg, player);
+		if (kind.isTraceEnabled()) {
+			ParagliderMod.LOGGER.debug("Dispatching {} to {}", msg, player);
+		}
 	}
 
 	protected static void traceSendToTracking(@NotNull Kind kind, @NotNull Entity entity, @NotNull CustomPacketPayload msg) {
-		if (kind.isTraceEnabled())
+		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to clients tracking entity {}", msg, entity);
+		}
 	}
 
 	protected static void traceSendToTracking(@NotNull Kind kind, @NotNull LevelChunk chunk, @NotNull CustomPacketPayload msg) {
-		if (kind.isTraceEnabled())
+		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to clients tracking chunk {}", msg, chunk);
+		}
 	}
 
 	protected static void traceSendToServer(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {
-		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Dispatching {} to server", msg);
+		if (kind.isTraceEnabled()) {
+			ParagliderMod.LOGGER.debug("Dispatching {} to server", msg);
+		}
 	}
 }

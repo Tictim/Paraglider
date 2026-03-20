@@ -32,13 +32,7 @@ public interface PlayerStateCondition {
 		 */
 		@NotNull PlayerState prevState();
 
-		/**
-		 * @return Accumulated fall distance, duh. Consider using this value before
-		 * {@link net.minecraft.world.entity.Entity#fallDistance Entity#fallDistance}. Paraglider tracks the value by
-		 * itself, since fall distance in entity instance often gets overwritten by other mods and prevents accurate
-		 * fall distance checks as a result.
-		 */
-		double accumulatedFallDistance();
+		boolean paragliding();
 
 		/**
 		 * @return Whether you can perform "Panic Paragliding" this tick; "Panic Paragliding" refers to the game

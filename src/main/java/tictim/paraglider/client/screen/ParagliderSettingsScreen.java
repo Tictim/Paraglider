@@ -3,15 +3,12 @@ package tictim.paraglider.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.ParagliderClientMod;
@@ -33,6 +30,7 @@ public class ParagliderSettingsScreen extends Screen {
 
 	private final List<AbstractWidget> widgets = new ArrayList<>();
 	private @Nullable ParticleSliderWidget particleSliderWidget;
+	private @Nullable CycleButton<Boolean> autoParaglidingButton;
 	private @Nullable Button saveSettingsButton;
 
 	private @Nullable ParagliderSettingsScreen.SaveLoadAction saveLoadAction;
@@ -45,11 +43,14 @@ public class ParagliderSettingsScreen extends Screen {
 		var currentSettings = ParagliderClientSettings.get();
 		var newSettings = currentSettings;
 
-		if (this.particleSliderWidget != null && this.particleSliderWidget.dirty) {
+		if (this.particleSliderWidget != null && this.autoParaglidingButton != null &&
+				(this.particleSliderWidget.dirty ||
+						this.autoParaglidingButton.getValue() != currentSettings.autoParagliding())) {
 			newSettings = new ParagliderClientSettings(
 					currentSettings.staminaWheelPosition(),
 					this.particleSliderWidget.value(),
-					currentSettings.extraWheelAttachment()
+					currentSettings.extraWheelAttachment(),
+					this.autoParaglidingButton.getValue()
 			);
 			this.particleSliderWidget.dirty = false;
 		}
@@ -82,6 +83,11 @@ public class ParagliderSettingsScreen extends Screen {
 		this.widgets.clear();
 		this.widgets.add(staminaWheelSettingsButton);
 		this.widgets.add(this.particleSliderWidget = new ParticleSliderWidget(128, 20, this.particleSliderWidget));
+		this.widgets.add(this.autoParaglidingButton = CycleButton.booleanBuilder(
+						Component.translatable("paraglider.settings.auto_paragliding.on"),
+						Component.translatable("paraglider.settings.auto_paragliding.off"),
+						ParagliderClientSettings.get().autoParagliding())
+				.create(0, 0, 128, 20, Component.translatable("paraglider.settings.auto_paragliding")));
 
 		int totalHeight = (this.widgets.size() - 1) * 10;
 		for (AbstractWidget w : this.widgets) {

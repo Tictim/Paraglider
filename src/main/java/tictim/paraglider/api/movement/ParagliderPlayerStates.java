@@ -110,15 +110,14 @@ public interface ParagliderPlayerStates {
 	 */
 	interface Flags {
 		/**
-		 * If a player is on a state marked by this flag, applies paragliding movement logic to the player. Used by
+		 * If a player is in a state marked by this flag, applies paragliding movement logic to the player. Used by
 		 * {@link ParagliderPlayerStates#PARAGLIDING}, {@link ParagliderPlayerStates#PANIC_PARAGLIDING}, and
 		 * {@link ParagliderPlayerStates#ASCENDING}.
 		 */
 		Identifier PARAGLIDING = ParagliderPlayerStates.PARAGLIDING;
 
 		/**
-		 * If a player is on a state marked by this flag and {@link Flags#PARAGLIDING}, it will slowly move the
-		 * player upwards. Used by {@link ParagliderPlayerStates#ASCENDING}.
+		 * No inherent functionality. Used by {@link ParagliderPlayerStates#ASCENDING}.
 		 */
 		Identifier ASCENDING = ParagliderPlayerStates.ASCENDING;
 
@@ -156,5 +155,15 @@ public interface ParagliderPlayerStates {
 		 * {@link ParagliderPlayerStates#UNDERWATER}, and {@link ParagliderPlayerStates#BREATHING_UNDERWATER}.
 		 */
 		Identifier IS_UNDERWATER = ParagliderAPI.id("is_underwater");
+
+		/**
+		 * If a player is in states marked with this tag, they can initiate paragliding action per request.
+		 * (i.e. use Paraglider) Basic checks such as on-ground flag and stamina state still apply. Used by
+		 * {@link ParagliderPlayerStates#IDLE}, {@link ParagliderPlayerStates#RUNNING}, and
+		 * {@link ParagliderPlayerStates#MIDAIR} (Although in ideal situations the paraglider shouldn't be usable for
+		 * {@link ParagliderPlayerStates#IDLE} state, the state is included for multiplayer environment which can
+		 * introduce delays to player state sync.)
+		 */
+		Identifier CAN_USE_PARAGLIDER = ParagliderAPI.id("can_use_paraglider");
 	}
 }

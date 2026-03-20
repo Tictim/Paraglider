@@ -123,6 +123,9 @@
 
   "key.paraglider.paragliderSettings": "패러세일 설정",
 
+  "paraglider.settings.auto_paragliding": "자동 패러세일",
+  "paraglider.settings.auto_paragliding.off": "꺼짐",
+  "paraglider.settings.auto_paragliding.on": "켜짐",
   "paraglider.settings.loading": "읽어들이는 중...",
   "paraglider.settings.loading.failure": "설정 열기 실패.",
   "paraglider.settings.loading.success": "설정 열기 완료!",

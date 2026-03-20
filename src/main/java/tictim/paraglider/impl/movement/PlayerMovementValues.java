@@ -9,5 +9,5 @@ public interface PlayerMovementValues {
 	int PANIC_DURATION = 15;
 	Identifier HEART_CONTAINER_ATTRIBUTE_ID = ParagliderAPI.id("heart_container");
 	Identifier STAMINA_VESSEL_ATTRIBUTE_ID = ParagliderAPI.id("stamina_vessel");
-	float PARAGLIDING_FALL_DISTANCE = 1.45f;
+	float AUTO_PARAGLIDING_FALL_DISTANCE = 1.45f;
 }

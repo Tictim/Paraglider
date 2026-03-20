@@ -45,6 +45,11 @@ public interface ParagliderNetwork {
 	                 int heartContainers,
 	                 int staminaVessels);
 
+	void syncCanUseParaglider(@NotNull ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft);
+
+	void setParaglidingToClient(@NotNull ServerPlayer player, boolean paragliding);
+	void setParaglidingToServer(boolean paragliding);
+
 	// bargain
 
 	void initBargain(@NotNull BargainContext ctx, @Nullable Component initialDialog);

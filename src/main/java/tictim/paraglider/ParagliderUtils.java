@@ -40,7 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.ParagliderItemCapability;
-import tictim.paraglider.api.movement.PlayerStateCondition;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
@@ -294,8 +293,9 @@ public final class ParagliderUtils {
 		return canPassThrough;
 	}
 
-	public static boolean canUseParaglider(PlayerStateCondition.Context context) {
-		return context.player().isCreative() || !context.stamina().isDepleted() || context.canDoPanicParagliding();
+	public static boolean holdingUsableParaglider(Player player) {
+		ItemStack stack = player.getMainHandItem();
+		return stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).canDoParagliding(player, stack);
 	}
 
 	public static boolean renderStaminaWheel(@Nullable Player player) {

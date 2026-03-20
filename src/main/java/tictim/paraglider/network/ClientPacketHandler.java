@@ -55,6 +55,24 @@ public final class ClientPacketHandler {
 		Stamina.get(mc.player).syncProperties(msg.stamina(), msg.extraStamina(), msg.depleted());
 	}
 
+	public static void handleSyncCanUseParaglider(SyncCanUseParagliderMsg msg) {
+		trace(Kind.MOVEMENT, msg);
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player == null) return;
+		if (Movement.get(mc.player) instanceof SyncCanUseParagliderHandle h) {
+			h.syncCanUseParaglider(msg.canUseParaglider(), msg.canRideUpdraft());
+		}
+	}
+
+	public static void handleSetParagliding(SetParaglidingMsg msg) {
+		trace(Kind.MOVEMENT, msg);
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player == null) return;
+		if (Movement.get(mc.player) instanceof SyncClientParaglidingHandle h) {
+			h.syncClientParagliding(msg.paragliding());
+		}
+	}
+
 	// bargain
 
 	public static void handleBargainInit(BargainInitMsg msg) {

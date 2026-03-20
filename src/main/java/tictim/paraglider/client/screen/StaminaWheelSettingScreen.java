@@ -75,7 +75,9 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 					ParagliderClientSettings newSettings = new ParagliderClientSettings(
 							this.staminaWheelWidget.toStaminaWheelPosition(this.anchor),
 							settings.windParticleFrequency(),
-							this.extraWheelAttachment);
+							this.extraWheelAttachment,
+							settings.autoParagliding()
+					);
 
 					ParagliderClientMod.instance().setSettings(newSettings);
 					if (this.parent != null) this.parent.saveSettings();
@@ -257,8 +259,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		public void onScreenResize(int newWidth, int newHeight) {
 			Dir8 anchor = this.screen.anchor;
 			if (anchor == null) {
-				setWheelPos(this.wheelX / (double) this.screen.width * newWidth,
-						this.wheelY / (double) this.screen.height * newHeight,
+				setWheelPos(this.wheelX / (double)this.screen.width * newWidth,
+						this.wheelY / (double)this.screen.height * newHeight,
 						newWidth, newHeight);
 			} else {
 				setWheelPos(this.wheelX - anchor.anchorX(this.screen.width) + anchor.anchorX(newWidth),
@@ -280,8 +282,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			Dir8 anchor = this.screen.anchor;
 			String s2;
 			if (anchor == null) {
-				s2 = PERCENTAGE.format(this.wheelX / (double) this.screen.width) + ", " +
-						PERCENTAGE.format(this.wheelY / (double) this.screen.height);
+				s2 = PERCENTAGE.format(this.wheelX / (double)this.screen.width) + ", " +
+						PERCENTAGE.format(this.wheelY / (double)this.screen.height);
 			} else {
 				s2 = anchor + ": " +
 						Math.floor(this.wheelX - anchor.anchorX(this.screen.width)) + ", " +
@@ -352,8 +354,8 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		private void setWheelPosUncapped(double x, double y) {
 			this.wheelX = x;
 			this.wheelY = y;
-			setX((int) Math.floor(x) - WHEEL_RADIUS);
-			setY((int) Math.floor(y) - WHEEL_RADIUS);
+			setX((int)Math.floor(x) - WHEEL_RADIUS);
+			setY((int)Math.floor(y) - WHEEL_RADIUS);
 		}
 	}
 }
