@@ -83,10 +83,7 @@ public class ParagliderSettingsScreen extends Screen {
 		this.widgets.clear();
 		this.widgets.add(staminaWheelSettingsButton);
 		this.widgets.add(this.particleSliderWidget = new ParticleSliderWidget(128, 20, this.particleSliderWidget));
-		this.widgets.add(this.autoParaglidingButton = CycleButton.booleanBuilder(
-						Component.translatable("paraglider.settings.auto_paragliding.on"),
-						Component.translatable("paraglider.settings.auto_paragliding.off"),
-						ParagliderClientSettings.get().autoParagliding())
+		this.widgets.add(this.autoParaglidingButton = CycleButton.onOffBuilder(ParagliderClientSettings.get().autoParagliding())
 				.create(0, 0, 128, 20, Component.translatable("paraglider.settings.auto_paragliding")));
 
 		int totalHeight = (this.widgets.size() - 1) * 10;

@@ -3,17 +3,20 @@ package tictim.paraglider.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.client.render.SettingsWidgetStaminaWheelRenderer;
 import tictim.paraglider.client.settings.ExtraWheelAttachment;
@@ -24,6 +27,8 @@ import tictim.paraglider.client.settings.StaminaWheelPosition.Dir8;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
 import static tictim.paraglider.client.render.StaminaWheelConstants.wheelColor;
@@ -31,18 +36,22 @@ import static tictim.paraglider.client.render.StaminaWheelConstants.wheelColor;
 public class StaminaWheelSettingScreen extends Screen implements DisableStaminaRender {
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final int ANCHOR_BUTTON_SIZE = 12;
+	private static final int EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE = 20;
+	private static final int PRESET_BUTTON_WIDTH = 64;
+	private static final int PRESET_BUTTON_HEIGHT = 20;
 
 	private final SettingsWidgetStaminaWheelRenderer wheelRenderer = new SettingsWidgetStaminaWheelRenderer();
 	private final @Nullable ParagliderSettingsScreen parent;
 
 	private final Component anchorText = Component.translatable("paraglider.settings.stamina_wheel_settings.anchor");
+	private final Component extraWheelText = Component.translatable("paraglider.settings.stamina_wheel_settings.extra_wheel_attachment");
 	private final Component presetText = Component.translatable("paraglider.settings.stamina_wheel_settings.preset");
 
 	private StaminaWheelWidget staminaWheelWidget;
 	private Button saveButton;
 	private Button cancelButton;
 	private List<Button> anchorButtons;
-	private CycleButton<@NotNull ExtraWheelAttachment> extraWheelAttachmentCycleButton;
+	private ExtraWheelAttachmentButton extraWheelAttachmentCycleButton;
 	private List<Button> presetButtons;
 
 	private Component[] helpText;
@@ -95,12 +104,11 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 				anchorButton(Dir8.L), anchorButton(null), anchorButton(Dir8.R),
 				anchorButton(Dir8.DL), anchorButton(Dir8.D), anchorButton(Dir8.DR));
 
-		this.extraWheelAttachmentCycleButton = addRenderableWidget(CycleButton
-				.builder(e -> Component.literal(e.toString()), this.extraWheelAttachment)
-				.withValues(ExtraWheelAttachment.values())
-				.create(0, 0, 64, 20, Component.empty(), (cycleButton, value) -> {
-					this.extraWheelAttachment = value;
-				}));
+		this.extraWheelAttachmentCycleButton = addRenderableWidget(
+				new ExtraWheelAttachmentButton(0, 0, Component.empty(),
+						() -> this.extraWheelAttachment,
+						a -> this.extraWheelAttachment = a)
+		);
 
 		this.presetButtons = List.of(
 				presetButton("default", StaminaWheelPosition.DEFAULT, ExtraWheelAttachment.LEFT),
@@ -120,10 +128,12 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	private Button anchorButton(@Nullable Dir8 value) {
-		return addRenderableWidget(Button
-				.builder(Component.empty(), button -> this.anchor = value)
+		Button button = Button
+				.builder(Component.empty(), btn -> this.anchor = value)
 				.bounds(0, 0, ANCHOR_BUTTON_SIZE, ANCHOR_BUTTON_SIZE)
-				.build());
+				.build();
+		button.setOverrideRenderHighlightedSprite(() -> button.isHoveredOrFocused() || this.anchor == value);
+		return addRenderableWidget(button);
 	}
 
 	private Button presetButton(
@@ -133,7 +143,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		return addRenderableWidget(Button
 				.builder(Component.translatable("paraglider.settings.stamina_wheel_settings.preset." + langKey),
 						button -> applyPreset(staminaWheelPosition, extraWheelAttachment))
-				.bounds(0, 0, 64, 20)
+				.bounds(0, 0, PRESET_BUTTON_WIDTH, PRESET_BUTTON_HEIGHT)
 				.build());
 	}
 
@@ -142,15 +152,21 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		boolean wheelAtRight = this.staminaWheelWidget.wheelX >= this.width / 2.0;
 		boolean wheelAtDown = this.staminaWheelWidget.wheelY >= this.height / 2.0;
 
-		int topWidgetWidth = 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2 + 64 + 2;
-		int topWidgetHeight = 2 + this.font.lineHeight + 2 + this.presetButtons.size() * 20 + 2;
+		// main button widget
+
+		int anchorWidgetWidth = Math.max(ANCHOR_BUTTON_SIZE * 3, this.font.width(this.anchorText));
+		int anchorWidgetHeight = this.font.lineHeight + 2 + ANCHOR_BUTTON_SIZE * 3;
+
+		int extraWheelWidth = Math.max(EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE, this.font.width(this.extraWheelText));
+		int extraWheelHeight = this.font.lineHeight + 2 + EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE;
+
+		int presetButtonWidth = Math.max(PRESET_BUTTON_WIDTH, this.font.width(this.presetText));
+		int presetButtonHeight = this.font.lineHeight + 2 + this.presetButtons.size() * PRESET_BUTTON_HEIGHT;
+
+		int topWidgetWidth = 2 + Math.max(anchorWidgetWidth, extraWheelWidth) + 4 + presetButtonWidth + 2;
+		int topWidgetHeight = 2 + Math.max(anchorWidgetHeight + 4 + extraWheelHeight, presetButtonHeight) + 2;
 		int topWidgetX = wheelAtRight ? 0 : this.width - topWidgetWidth;
 		int topWidgetY = wheelAtDown ? this.height - topWidgetHeight : 0;
-
-		int textWidth = Arrays.stream(this.helpText).mapToInt(e -> this.font.width(e)).max().orElse(0) + 6 + 48;
-		int textHeight = Math.max(this.helpText.length * this.font.lineHeight, 40 + 2) + 4;
-		int textX = wheelAtRight ? 0 : this.width - textWidth;
-		int textY = wheelAtDown ? 0 : this.height - textHeight;
 
 		for (int i = 0; i < this.anchorButtons.size(); i++) {
 			Button button = this.anchorButtons.get(i);
@@ -158,14 +174,21 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 					topWidgetY + 2 + this.font.lineHeight + 2 + ANCHOR_BUTTON_SIZE * (i / 3));
 		}
 
-		this.extraWheelAttachmentCycleButton.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2,
-				topWidgetY + 2 + this.font.lineHeight + 2);
+		this.extraWheelAttachmentCycleButton.setPosition(topWidgetX + 2,
+				topWidgetY + 2 + anchorWidgetHeight + 4 + this.font.lineHeight + 2);
 
 		for (int i = 0; i < this.presetButtons.size(); i++) {
 			Button button = this.presetButtons.get(i);
-			button.setPosition(topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2,
+			button.setPosition(topWidgetX + 2 + Math.max(anchorWidgetWidth, extraWheelWidth) + 4,
 					topWidgetY + 2 + this.font.lineHeight + 2 + i * 20);
 		}
+
+		// help / save button widget
+
+		int textWidth = Arrays.stream(this.helpText).mapToInt(e -> this.font.width(e)).max().orElse(0) + 6 + 48;
+		int textHeight = Math.max(this.helpText.length * this.font.lineHeight, 40 + 2) + 4;
+		int textX = wheelAtRight ? 0 : this.width - textWidth;
+		int textY = wheelAtDown ? 0 : this.height - textHeight;
 
 		this.saveButton.setX(textX + textWidth - this.saveButton.getWidth() - 2);
 		this.saveButton.setY(textY + textHeight - this.saveButton.getHeight() - 2);
@@ -178,8 +201,10 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 
 		guiGraphics.drawString(this.font, this.anchorText,
 				topWidgetX + 2, topWidgetY + 2, -1);
+		guiGraphics.drawString(this.font, this.extraWheelText,
+				topWidgetX + 2, topWidgetY + 2 + anchorWidgetHeight + 4, -1);
 		guiGraphics.drawString(this.font, this.presetText,
-				topWidgetX + 2 + ANCHOR_BUTTON_SIZE * 3 + 2 + 64 + 2, topWidgetY + 2, -1);
+				topWidgetX + 2 + Math.max(anchorWidgetWidth, extraWheelWidth) + 4, topWidgetY + 2, -1);
 
 		int y = textY + 2;
 		for (Component t : this.helpText) {
@@ -220,7 +245,6 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.staminaWheelWidget.setWheelPos(staminaWheelPosition);
 		this.anchor = getAnchor(staminaWheelPosition);
 		this.extraWheelAttachment = extraWheelAttachment;
-		this.extraWheelAttachmentCycleButton.setValue(extraWheelAttachment);
 	}
 
 	private static @Nullable Dir8 getAnchor(StaminaWheelPosition staminaWheelPosition) {
@@ -228,6 +252,42 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			case StaminaWheelPosition.Anchored anchored -> anchored.anchor();
 			case StaminaWheelPosition.ScreenProportion ignored -> null;
 		};
+	}
+
+	public static class ExtraWheelAttachmentButton extends AbstractButton {
+		private final ExtraWheelAttachment[] values = ExtraWheelAttachment.values();
+		private final Supplier<@NotNull ExtraWheelAttachment> value;
+		private final Consumer<@NonNull ExtraWheelAttachment> setValue;
+
+		public ExtraWheelAttachmentButton(
+				int x, int y, Component message,
+				Supplier<@NotNull ExtraWheelAttachment> value,
+				Consumer<@NonNull ExtraWheelAttachment> setValue) {
+			super(x, y, EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE, EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE, message);
+
+			this.value = value;
+			this.setValue = setValue;
+		}
+
+		@Override public void onPress(@NonNull InputWithModifiers input) {
+			ExtraWheelAttachment newValue = this.values[(this.value.get().ordinal() + 1) % this.values.length];
+			this.setValue.accept(newValue);
+		}
+
+		@Override protected void renderContents(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+			renderDefaultSprite(guiGraphics);
+			guiGraphics.blitSprite(
+					RenderPipelines.GUI_TEXTURED,
+					this.value.get().buttonIconPath(),
+					getX() + 1,
+					getY() + 1,
+					getWidth() - 2,
+					getHeight() - 2,
+					this.alpha
+			);
+		}
+
+		@Override protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {}
 	}
 
 	public static class StaminaWheelWidget extends AbstractWidget {
