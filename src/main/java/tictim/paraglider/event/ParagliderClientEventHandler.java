@@ -49,7 +49,7 @@ public final class ParagliderClientEventHandler {
 	// to also prevent the arm swing animation from playing
 	@SubscribeEvent
 	public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
-		if (event.isPickBlock()) return; // do not prevent block picking
+		if (event.isPickBlock() || event.getHand() == InteractionHand.MAIN_HAND && event.isUseItem()) return;
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return;
 		Movement movement = Movement.get(player);

@@ -4,7 +4,7 @@ import net.minecraft.resources.Identifier;
 import tictim.paraglider.api.ParagliderAPI;
 
 public interface PlayerMovementValues {
-	int PANIC_INITIAL_DELAY = 10;
+	int PANIC_INITIAL_DELAY = 20;
 	int PANIC_DELAY = 30;
 	int PANIC_DURATION = 15;
 	Identifier HEART_CONTAINER_ATTRIBUTE_ID = ParagliderAPI.id("heart_container");

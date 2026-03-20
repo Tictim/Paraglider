@@ -255,16 +255,23 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 
 		if (!player().isCreative() && stamina().isDepleted()) {
 			MovementState movementState = movementState();
-			if (movementState.panicParaglidingDelay() > 0) {
-				if (!player().onGround()) {
-					movementState.setPanicParaglidingDelay(movementState.panicParaglidingDelay() - 1);
-				} else movementState.resetPanicParaglidingState();
-			} else if (movementState.panicParagliding()) {
-				movementState.setPanicParaglidingDelay(PANIC_DELAY);
-				movementState.setPanicParagliding(false);
-			} else if (paragliding) { // only active panic paragliding when the user is paragliding
-				movementState.setPanicParaglidingDelay(PANIC_DURATION);
-				movementState.setPanicParagliding(true);
+
+			if (player().onGround()) {
+				// reset panic paragliding state on ground
+				movementState.resetPanicParaglidingState();
+			} else if (movementState.panicParaglidingDelay() > 0) {
+				// tick down panic paragliding timer
+				movementState.setPanicParaglidingDelay(movementState.panicParaglidingDelay() - 1);
+			} else {
+				if (movementState.panicParagliding()) {
+					// apply cooldown after panic paragliding
+					movementState.setPanicParaglidingDelay(PANIC_DELAY);
+					movementState.setPanicParagliding(false);
+				} else if (paragliding) {
+					// activate panic paragliding
+					movementState.setPanicParaglidingDelay(PANIC_DURATION);
+					movementState.setPanicParagliding(true);
+				}
 			}
 		}
 	}
