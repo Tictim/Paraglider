@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @SuppressWarnings("SameParameterValue")
 public class ParagliderNetworkImpl implements ParagliderNetwork {
-	public static final String NETVERSION = "3";
+	public static final String NETVERSION = "4";
 
 	public ParagliderNetworkImpl(IEventBus eventBus) {
 		eventBus.addListener(this::register);
