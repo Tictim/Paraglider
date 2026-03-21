@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
@@ -13,7 +14,7 @@ import tictim.paraglider.api.ParagliderAPI;
 
 import static net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET;
 
-@EventBusSubscriber(modid = ParagliderAPI.MODID)
+@EventBusSubscriber(modid = ParagliderAPI.MODID, value = Dist.CLIENT)
 public final class ParagliderRenderTypes {
 	private ParagliderRenderTypes() {}
 
