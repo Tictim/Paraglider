@@ -37,6 +37,11 @@ public class ParagliderAPI {
 	 */
 	public static final TagKey<@NotNull Block> WIND_CAN_PASS_THROUGH = TagKey.create(BLOCK, id("wind_can_pass_through"));
 
+	/**
+	 * Group identifier used in paraglider item's UseCooldown component.
+	 */
+	public static final Identifier PARAGLIDER_COOLDOWN_GROUP = id("paraglider");
+
 	public static @NotNull Identifier id(@NotNull String path) {
 		return Identifier.fromNamespaceAndPath(MODID, path);
 	}

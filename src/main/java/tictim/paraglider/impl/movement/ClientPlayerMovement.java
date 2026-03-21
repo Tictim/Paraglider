@@ -71,9 +71,14 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 
 		if (this.autoParagliding &&
 				ParagliderClientSettings.get().autoParagliding() &&
+				!this.clientParagliding &&
 				(this.accumulatedFallDistance >= AUTO_PARAGLIDING_FALL_DISTANCE ||
 						Wind.getWindAbove(player().level(), player().getBoundingBox()) > 0.0)) {
 			useParaglider();
+			if (this.clientParagliding) {
+				ParagliderUtils.applyParagliderItemCooldown(player());
+				ParagliderNetwork.get().applyParagliderItemCooldown();
+			}
 		}
 		if (this.clientParagliding && !ParagliderUtils.holdingUsableParaglider(player())) {
 			stopUsingParaglider();
@@ -100,10 +105,6 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 	}
 
 	public void useParaglider() {
-		useParagliderInternal();
-	}
-
-	private void useParagliderInternal() {
 		if (!this.clientParagliding &&
 				!state().paragliding() &&
 				state().hasFlag(ParagliderPlayerStates.Flags.CAN_USE_PARAGLIDER) &&
@@ -124,7 +125,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 
 	@Override public void syncMovement(@NotNull Identifier stateId, int recoveryDelay, double efficiency) {
 		super.syncMovement(stateId, recoveryDelay, efficiency);
-		this.clientParagliding = state().paragliding();
+		syncClientParagliding(state().paragliding());
 	}
 
 	@Override public void syncClientParagliding(boolean clientParagliding) {

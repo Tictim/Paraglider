@@ -46,6 +46,7 @@ import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
 import tictim.paraglider.contents.recipe.QuantifiedIngredient;
+import tictim.paraglider.impl.movement.PlayerMovementValues;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 
@@ -303,5 +304,11 @@ public final class ParagliderUtils {
 		if (player != null && !Stamina.get(player).renderStaminaWheel()) return false;
 
 		return true;
+	}
+
+	public static void applyParagliderItemCooldown(Player player) {
+		player.getCooldowns().addCooldown(
+				ParagliderAPI.PARAGLIDER_COOLDOWN_GROUP,
+				PlayerMovementValues.PARAGLIDER_ITEM_COOLDOWN);
 	}
 }

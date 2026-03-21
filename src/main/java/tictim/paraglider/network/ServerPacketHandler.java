@@ -4,6 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderMod;
@@ -14,6 +15,7 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.bargain.BargainContext;
 import tictim.paraglider.bargain.BargainHandler;
 import tictim.paraglider.impl.movement.ServerPlayerMovement;
+import tictim.paraglider.network.message.ApplyParagliderItemCooldownMsg;
 import tictim.paraglider.network.message.BargainEndMsg;
 import tictim.paraglider.network.message.BargainMsg;
 import tictim.paraglider.network.message.SetParaglidingMsg;
@@ -24,12 +26,17 @@ public final class ServerPacketHandler {
 	private ServerPacketHandler() {}
 
 	public static void handleSetParagliding(SetParaglidingMsg msg, IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer player)) return;
-
+		Player player = ctx.player();
 		trace(Kind.MOVEMENT, player, msg);
 		if (!(Movement.get(player) instanceof ServerPlayerMovement m)) return;
 
 		m.setParagliding(msg.paragliding());
+	}
+
+	public static void handleApplyParagliderItemCooldown(ApplyParagliderItemCooldownMsg msg, IPayloadContext ctx) {
+		Player player = ctx.player();
+		trace(Kind.MOVEMENT, player, msg);
+		ParagliderUtils.applyParagliderItemCooldown(player);
 	}
 
 	public static void handleBargain(BargainMsg msg, IPayloadContext ctx) {
@@ -62,7 +69,7 @@ public final class ServerPacketHandler {
 		if (bargainContext != null && bargainContext.sessionId() == msg.sessionId()) bargainContext.markFinished();
 	}
 
-	private static void trace(@NotNull Kind kind, @NotNull ServerPlayer player, @NotNull CustomPacketPayload msg) {
+	private static void trace(@NotNull Kind kind, @NotNull Player player, @NotNull CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Received {} from client {}", msg, player);
 	}
 }

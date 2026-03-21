@@ -10,4 +10,5 @@ public interface PlayerMovementValues {
 	Identifier HEART_CONTAINER_ATTRIBUTE_ID = ParagliderAPI.id("heart_container");
 	Identifier STAMINA_VESSEL_ATTRIBUTE_ID = ParagliderAPI.id("stamina_vessel");
 	float AUTO_PARAGLIDING_FALL_DISTANCE = 1.45f;
+	int PARAGLIDER_ITEM_COOLDOWN = 5;
 }

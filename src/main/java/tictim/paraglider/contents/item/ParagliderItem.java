@@ -1,6 +1,7 @@
 package tictim.paraglider.contents.item;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.InteractionHand;
@@ -11,20 +12,31 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.UseCooldown;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
+import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.impl.movement.ClientPlayerMovement;
+import tictim.paraglider.impl.movement.PlayerMovementValues;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ParagliderItem extends Item {
 	public ParagliderItem(Properties p) {
-		super(p.durability(100).repairable(Tags.Items.LEATHERS));
+		super(p
+				.durability(100)
+				.repairable(Tags.Items.LEATHERS)
+				.component(DataComponents.USE_COOLDOWN,
+						new UseCooldown(PlayerMovementValues.PARAGLIDER_ITEM_COOLDOWN / 20.f,
+								Optional.of(ParagliderAPI.PARAGLIDER_COOLDOWN_GROUP))
+				)
+		);
 	}
 
 	@Override public @NonNull InteractionResult use(

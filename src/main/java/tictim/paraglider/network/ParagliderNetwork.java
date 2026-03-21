@@ -50,6 +50,8 @@ public interface ParagliderNetwork {
 	void setParaglidingToClient(@NotNull ServerPlayer player, boolean paragliding);
 	void setParaglidingToServer(boolean paragliding);
 
+	void applyParagliderItemCooldown();
+
 	// bargain
 
 	void initBargain(@NotNull BargainContext ctx, @Nullable Component initialDialog);

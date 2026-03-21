@@ -60,6 +60,8 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		reg.playToClient(SyncWindMsg.TYPE, SyncWindMsg.CODEC,
 				(msg, ctx) -> ClientPacketHandler.handleSyncWind(msg));
 
+		reg.playToServer(ApplyParagliderItemCooldownMsg.TYPE, ApplyParagliderItemCooldownMsg.CODEC,
+				ServerPacketHandler::handleApplyParagliderItemCooldown);
 		reg.playToServer(BargainMsg.TYPE, BargainMsg.CODEC, ServerPacketHandler::handleBargain);
 
 		reg.playBidirectional(SetParaglidingMsg.TYPE, SetParaglidingMsg.CODEC,
@@ -128,6 +130,11 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		SetParaglidingMsg msg = new SetParaglidingMsg(paragliding);
 		traceSendToServer(Kind.MOVEMENT, msg);
 		ClientPacketDistributor.sendToServer(msg);
+	}
+
+	@Override public void applyParagliderItemCooldown() {
+		traceSendToServer(Kind.MOVEMENT, ApplyParagliderItemCooldownMsg.INSTANCE);
+		ClientPacketDistributor.sendToServer(ApplyParagliderItemCooldownMsg.INSTANCE);
 	}
 
 	@Override public void initBargain(@NotNull BargainContext ctx,
