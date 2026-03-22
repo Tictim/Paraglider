@@ -38,7 +38,8 @@ public interface Cfg {
 
 	/**
 	 * If {@code true}, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon
-	 * death.
+	 * death.<br>
+	 * The vessel reward is per-player, meaning every player participated in the fight will get one vessel each.
 	 *
 	 * @return Config value
 	 */
