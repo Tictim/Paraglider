@@ -41,19 +41,25 @@ public abstract class MixinDragonFightManager {
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if (item == null) return;
 
-		BlockPos endPodium = this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(BlockPos.ZERO));
+		boolean onPodium = Cfg.get().enderDragonVesselSpawnsOnPodium();
+		BlockPos endPodium = onPodium ?
+				this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(BlockPos.ZERO)) :
+				BlockPos.ZERO;
 
 		for (ServerPlayer player : this.dragonEvent.getPlayers()) {
 			ItemEntity itemEntity = new ItemEntity(this.level,
-					endPodium.getX() + .5, endPodium.getY() + 1, endPodium.getZ() + .5,
+					onPodium ? endPodium.getX() + .5 : player.getX(),
+					onPodium ? endPodium.getY() + 1 : player.getY() + 1,
+					onPodium ? endPodium.getZ() + .5 : player.getZ(),
 					new ItemStack(item));
 
 			itemEntity.setTarget(player.getUUID());
 			itemEntity.setInvulnerable(true);
 			itemEntity.setExtendedLifetime();
 			itemEntity.setNoGravity(true);
-			itemEntity.setPickUpDelay(40);
 			itemEntity.setDeltaMovement(0, 0, 0);
+
+			if (onPodium) itemEntity.setPickUpDelay(40);
 
 			this.level.addFreshEntity(itemEntity);
 		}

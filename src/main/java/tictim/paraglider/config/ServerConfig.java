@@ -12,6 +12,7 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.IntValue paragliderDurability;
 
 	private final ModConfigSpec.BooleanValue enderDragonDropsVessel;
+	private final ModConfigSpec.BooleanValue enderDragonVesselSpawnsOnPodium;
 	private final ModConfigSpec.BooleanValue witherDropsVessel;
 	private final ModConfigSpec.BooleanValue raidGivesVessel;
 	private final ModConfigSpec.BooleanValue elderGuardianDropsSpiritOrb;
@@ -28,7 +29,7 @@ public class ServerConfig implements Cfg {
 	private final ModConfigSpec.IntValue staminaIncreasePerVessel;
 
 	private final ModConfigSpec.BooleanValue paraglidingConsumesStamina;
-	private final ModConfigSpec.BooleanValue runningConsumesStamina;
+	private final ModConfigSpec.BooleanValue runningAndSwimmingConsumesStamina;
 
 	private final ModConfigSpec.EnumValue<TotwCompatConfigOption> paragliderInTowersOfTheWild;
 
@@ -48,14 +49,21 @@ public class ServerConfig implements Cfg {
 				.defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
 
 		b.push("spiritOrbs");
-		enderDragonDropsVessel = b.comment("If true, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon death.").
-				define("enderDragonDropsVessel", true);
-		witherDropsVessel = b.comment("If true, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.")
+		enderDragonDropsVessel = b.comment("If true, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon death.")
 				.define("enderDragonDropsVessel", true);
+		enderDragonVesselSpawnsOnPodium = b.comment("""
+						If true, heart container/stamina vessel dropped by Ender Dragon will spawn on top of the end \
+						podium (the ending portal).
+						If false, it will be instead given directly to players.
+						This option does not change the amount of vessels given to each player. \
+						Intended for a compatibility feature for mods that change end podium location.""")
+				.define("enderDragonVesselSpawnsOnPodium", true);
+		witherDropsVessel = b.comment("If true, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.")
+				.define("witherDropsVessel", true);
 		raidGivesVessel = b.comment("If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.")
 				.define("raidGivesVessel", true);
 		elderGuardianDropsSpiritOrb = b.comment("If true, Elder Guardian will drop a Spirit Orb upon death.")
-				.define("raidGivesVessel", true);
+				.define("elderGuardianDropsSpiritOrb", true);
 		spawnerSpiritOrbDrops = b.comment("Amount of Spirit Orbs dropped from spawners. Fractional values are treated as a chanced drop," +
 						" in addition to whole values which is guaranteed to drop.")
 				.defineInRange("spawnerSpiritOrbDrops", 1.0, 0, 64);
@@ -72,7 +80,8 @@ public class ServerConfig implements Cfg {
 		b.pop();
 
 		b.push("vessels");
-		startingHearts = b.comment("Starting health points measured in number of hearts.").defineInRange("startingHearts", 10, 1, 512);
+		startingHearts = b.comment("Starting health points measured in number of hearts.")
+				.defineInRange("startingHearts", 10, 1, 512);
 		maxHeartContainers = b.comment("""
 						Maximum amount of Heart Containers one player can consume.
 						Do note that the maximum health point is capped at value of 1024 (or 512 hearts) by Minecraft's default
@@ -90,7 +99,7 @@ public class ServerConfig implements Cfg {
 		b.push("stamina");
 		paraglidingConsumesStamina = b.comment("Paragliding will consume stamina. Run /paraglider reloadPlayerStates after change.")
 				.define("paraglidingConsumesStamina", true);
-		runningConsumesStamina = b.comment("Certain non-paragliding actions, such as running and swimming, will consume stamina. Run /paraglider reloadPlayerStates after change.")
+		runningAndSwimmingConsumesStamina = b.comment("Certain non-paragliding actions, such as running and swimming, will consume stamina. Run /paraglider reloadPlayerStates after change.")
 				.define("runningAndSwimmingConsumesStamina", false);
 		b.pop();
 
@@ -116,6 +125,9 @@ public class ServerConfig implements Cfg {
 	}
 	@Override public boolean enderDragonDropsVessel() {
 		return get(spec, enderDragonDropsVessel);
+	}
+	@Override public boolean enderDragonVesselSpawnsOnPodium() {
+		return get(spec, enderDragonVesselSpawnsOnPodium);
 	}
 	@Override public boolean witherDropsVessel() {
 		return get(spec, witherDropsVessel);
@@ -157,7 +169,7 @@ public class ServerConfig implements Cfg {
 		return get(spec, paraglidingConsumesStamina);
 	}
 	@Override public boolean runningConsumesStamina() {
-		return get(spec, runningConsumesStamina);
+		return get(spec, runningAndSwimmingConsumesStamina);
 	}
 	@Override public @NotNull TotwCompatConfigOption paragliderInTowersOfTheWild() {
 		return get(spec, paragliderInTowersOfTheWild);

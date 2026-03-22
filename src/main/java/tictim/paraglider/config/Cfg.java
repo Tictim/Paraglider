@@ -45,6 +45,16 @@ public interface Cfg {
 	boolean enderDragonDropsVessel();
 
 	/**
+	 * If {@code true}, heart container/stamina vessel dropped by Ender Dragon will spawn on top of the end podium
+	 * (the ending portal). If {@code false}, it will be instead given directly to players. This option does not change
+	 * the amount of vessels given to each player. Intended for a compatibility feature for mods that change end podium
+	 * location.
+	 *
+	 * @return Config value
+	 */
+	boolean enderDragonVesselSpawnsOnPodium();
+
+	/**
 	 * If {@code true}, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.
 	 *
 	 * @return Config value
