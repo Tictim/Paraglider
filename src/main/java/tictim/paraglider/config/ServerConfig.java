@@ -49,7 +49,9 @@ public class ServerConfig implements Cfg {
 				.defineInRange("paragliderDurability", 0, 0, Integer.MAX_VALUE);
 
 		b.push("spiritOrbs");
-		enderDragonDropsVessel = b.comment("If true, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon death.")
+		enderDragonDropsVessel = b.comment("""
+						If true, Ender Dragon will drop heart container(stamina vessel if heart container is disabled) upon death.
+						The vessel reward is per-player, meaning every player participated in the fight will get one vessel each.""")
 				.define("enderDragonDropsVessel", true);
 		enderDragonVesselSpawnsOnPodium = b.comment("""
 						If true, heart container/stamina vessel dropped by Ender Dragon will spawn on top of the end \
@@ -60,7 +62,9 @@ public class ServerConfig implements Cfg {
 				.define("enderDragonVesselSpawnsOnPodium", true);
 		witherDropsVessel = b.comment("If true, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.")
 				.define("witherDropsVessel", true);
-		raidGivesVessel = b.comment("If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.")
+		raidGivesVessel = b.comment("""
+						If true, Raids will give heart container(stamina vessel if heart container is disabled) upon victory.
+						The vessel reward is per-player, meaning every player participated in the Raid will get one vessel each.""")
 				.define("raidGivesVessel", true);
 		elderGuardianDropsSpiritOrb = b.comment("If true, Elder Guardian will drop a Spirit Orb upon death.")
 				.define("elderGuardianDropsSpiritOrb", true);
