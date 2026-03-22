@@ -81,12 +81,12 @@ public class ServerConfig implements Cfg {
 
 		b.push("vessels");
 		startingHearts = b.comment("Starting health points measured in number of hearts.")
-				.defineInRange("startingHearts", 10, 1, 512);
+				.defineInRange("startingHearts", 10, 1, Integer.MAX_VALUE);
 		maxHeartContainers = b.comment("""
 						Maximum amount of Heart Containers one player can consume.
 						Do note that the maximum health point is capped at value of 1024 (or 512 hearts) by Minecraft's default
 						attribute system; without modifying these limits, Heart Containers won't give you extra hearts beyond that.""")
-				.defineInRange("maxHeartContainers", 20, 0, 512);
+				.defineInRange("maxHeartContainers", 20, 0, Integer.MAX_VALUE);
 
 		startingStamina = b.comment("Amount of stamina players start with. One full stamina wheel is equivalent to 1000 stamina.")
 				.defineInRange("startingStamina", 1000, 0, Integer.MAX_VALUE);
