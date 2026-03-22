@@ -56,7 +56,7 @@ public class ServerConfig implements Cfg {
 						podium (the ending portal).
 						If false, it will be instead given directly to players.
 						This option does not change the amount of vessels given to each player. \
-						Intended for a compatibility feature for mods that change end podium location.""")
+						Intended as a compatibility feature for mods that change end podium location.""")
 				.define("enderDragonVesselSpawnsOnPodium", true);
 		witherDropsVessel = b.comment("If true, Wither will drop heart container(stamina vessel if heart container is disabled) upon death.")
 				.define("witherDropsVessel", true);
