@@ -1,5 +1,7 @@
 package tictim.paraglider.plugin;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.UseEffects;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.MovementPlugin;
@@ -49,7 +51,11 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.connect(PARAGLIDING, PANIC_PARAGLIDING, c -> !c.player().isCreative() && c.stamina().isDepleted());
 		register.connect(PARAGLIDING, ASCENDING, c -> Cfg.get().updraft() && Wind.getWindAbove(c.player().level(), c.player().getBoundingBox()) > 0);
 
-		register.connect(IDLE, RUNNING, c -> c.player().isSprinting() && !c.player().isUsingItem(), RUNNING_PRIORITY);
+		register.connect(IDLE, RUNNING, c -> c.player().isSprinting() &&
+				(!c.player().isUsingItem() || c.player()
+						.getActiveItem()
+						.getOrDefault(DataComponents.USE_EFFECTS, UseEffects.DEFAULT)
+						.canSprint()), RUNNING_PRIORITY);
 		register.connect(IDLE, MIDAIR, c -> !c.player().onGround(), MIDAIR_PRIORITY);
 	}
 
