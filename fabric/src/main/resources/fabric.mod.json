@@ -34,8 +34,9 @@
     "paraglider.fabric.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": ">=1.20.1",
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "1.20.1",
     "forgeconfigapiport": ">=8.0.0"
   }
 }
