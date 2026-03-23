@@ -210,9 +210,7 @@ public record StaminaWheelRenderState(
 	}
 
 	@Override public @Nullable ScreenRectangle scissorArea() {
-		int r = this.radius + this.sprite.ordinal();
-		return new ScreenRectangle(-r, -r, r * 2, r * 2)
-				.transformMaxBounds(pose);
+		return null;
 	}
 
 	@Override public ScreenRectangle bounds() {
