@@ -246,7 +246,7 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		super.applyMovement(paragliding, canRideUpdraft);
 
 		if (paragliding) {
-			player().connection.aboveGroundTickCount = 0;
+			player().connection.resetFlyingTicks();
 			ItemStack stack = player().getMainHandItem();
 			if (stack.is(ParagliderTags.PARAGLIDERS)) {
 				ParagliderUtils.getCaps(stack).damageParaglider(player(), stack);
