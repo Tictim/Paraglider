@@ -6,14 +6,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.Cfg.TotwCompatConfigOption;
 import tictim.paraglider.contents.Contents;
@@ -22,6 +21,7 @@ import java.util.List;
 
 import static tictim.paraglider.config.Cfg.TotwCompatConfigOption.*;
 
+@NullMarked
 public class ParagliderLoot extends LootModifier {
 	public static final MapCodec<ParagliderLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
 			b.group(Codec.BOOL.fieldOf("dekuLeaf").forGetter(m -> m.dekuLeaf))
@@ -30,13 +30,13 @@ public class ParagliderLoot extends LootModifier {
 
 	public final boolean dekuLeaf;
 
-	public ParagliderLoot(boolean dekuLeaf, @NotNull LootItemCondition @NotNull ... conditions) {
+	public ParagliderLoot(boolean dekuLeaf, LootItemCondition... conditions) {
 		super(conditions);
 		this.dekuLeaf = dekuLeaf;
 	}
 
-	@Override protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot,
-	                                                                @NotNull LootContext context) {
+	@Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot,
+	                                                       LootContext context) {
 		TotwCompatConfigOption configOption = Cfg.get().paragliderInTowersOfTheWild();
 		if (configOption != DISABLE) {
 			ItemStack stack = new ItemStack(
@@ -45,8 +45,8 @@ public class ParagliderLoot extends LootModifier {
 			RandomSource random = context.getRandom();
 			if (random.nextBoolean()) {
 				stack = DyedItemColor.applyDyes(stack, List.of(
-						DyeItem.byColor(DyeColor.byId(random.nextInt(16))),
-						DyeItem.byColor(DyeColor.byId(random.nextInt(16)))
+						DyeColor.byId(random.nextInt(16)),
+						DyeColor.byId(random.nextInt(16))
 				));
 			}
 			generatedLoot.add(stack);
@@ -54,7 +54,7 @@ public class ParagliderLoot extends LootModifier {
 		return generatedLoot;
 	}
 
-	@Override public @NotNull MapCodec<? extends IGlobalLootModifier> codec() {
+	@Override public MapCodec<? extends IGlobalLootModifier> codec() {
 		return CODEC;
 	}
 }

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_paraglider": {
+      "conditions": {
+        "items": [
+          {
+            "items": "paraglider:paraglider"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:paraglider_dyed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_paraglider"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:paraglider_dyed"
+    ]
+  }
+}

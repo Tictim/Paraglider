@@ -1,12 +1,14 @@
 package tictim.paraglider;
 
 import com.mojang.math.OctahedralGroup;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.Identifier;
@@ -16,7 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -27,17 +28,21 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.ParagliderItemCapability;
 import tictim.paraglider.api.stamina.Stamina;
@@ -45,14 +50,15 @@ import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
-import tictim.paraglider.contents.recipe.QuantifiedIngredient;
 import tictim.paraglider.impl.movement.PlayerMovementValues;
 import tictim.paraglider.impl.movement.PlayerStateConnectionMap;
 import tictim.paraglider.impl.movement.PlayerStateMap;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+@NullMarked
 public final class ParagliderUtils {
 	private ParagliderUtils() {}
 
@@ -63,13 +69,27 @@ public final class ParagliderUtils {
 	 * Give {@code stack} to {@code player}. If there's no more room left, the item will be dropped in the world as
 	 * entity. Accounts for ItemStacks with count more than its maximum stack size.
 	 *
-	 * @param player Who will receive the item
-	 * @param stack  The item to be given
+	 * @param player   Who will receive the item
+	 * @param template Template for the item to be given
 	 * @see net.minecraft.world.entity.player.Inventory#placeItemBackInInventory(ItemStack, boolean)
 	 */
-	public static void giveItem(@NotNull Player player, @NotNull ItemStack stack) {
+	public static void giveItem(Player player, ItemStackTemplate template) {
+		giveItem(player, template.item().value(), template.count(), template.components());
+	}
+
+	public static void giveItem(Player player, Item item, int count) {
+		giveItem(player, item, count, DataComponentPatch.EMPTY);
+	}
+
+	public static void giveItem(Player player, Item item, int count, DataComponentPatch components) {
 		if (player.level().isClientSide()) return;
-		while (!stack.isEmpty()) {
+		ItemStack stack = ItemStack.EMPTY;
+
+		while (count > 0) {
+			if (stack.isEmpty()) {
+				stack = createItem(item, Math.min(item.getDefaultMaxStackSize(), count), components);
+			}
+
 			int slot = player.getInventory().getSlotWithRemainingSpace(stack);
 			if (slot == -1) slot = player.getInventory().getFreeSlot();
 
@@ -87,11 +107,33 @@ public final class ParagliderUtils {
 				break;
 			}
 
-			int count = stack.getMaxStackSize() - player.getInventory().getItem(slot).getCount();
-			if (player.getInventory().add(slot, stack.split(count)) && player instanceof ServerPlayer serverPlayer)
-				serverPlayer.connection.send(
-						new ClientboundContainerSetSlotPacket(-2, 0, slot, player.getInventory().getItem(slot)));
+			int splitCount = stack.getMaxStackSize() - player.getInventory().getItem(slot).getCount();
+			count -= splitCount;
+
+			ItemStack splitStack = stack.split(splitCount);
+			if (player.getInventory().add(slot, splitStack)) {
+				if (player instanceof ServerPlayer serverPlayer) {
+					serverPlayer.connection.send(
+							new ClientboundContainerSetSlotPacket(-2, 0, slot, player.getInventory().getItem(slot)));
+				}
+			} else {
+				ParagliderMod.LOGGER.warn("Failed to give item {} to player {}, at inv. slot {}", splitStack, player.getPlainTextName(), slot);
+			}
 		}
+	}
+
+	private static ItemStack createItem(Item item, int count, DataComponentPatch components) {
+		@SuppressWarnings("deprecation") // there's no (ItemLike, int, DataComponentPatch) ctor :/
+		ItemStack result = new ItemStack(item.asItem().builtInRegistryHolder(), count, components);
+		Optional<DataResult.Error<ItemStack>> error = ItemStack.validateStrict(result).error();
+
+		if (error.isPresent()) {
+			ParagliderMod.LOGGER.warn("Can't create item stack with properties {} * {} [{}], error: {}",
+					item, count, components, error.get().message());
+			return ItemStack.EMPTY;
+		}
+
+		return result;
 	}
 
 	/**
@@ -107,13 +149,13 @@ public final class ParagliderUtils {
 	private static final AttributeModifier EXHAUSTION = new AttributeModifier(
 			ParagliderAPI.id("exhaustion"), -0.3, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-	public static void addExhaustion(@NotNull LivingEntity entity) {
+	public static void addExhaustion(LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (attr == null || attr.getModifier(EXHAUSTION.id()) != null) return;
 		attr.addTransientModifier(EXHAUSTION);
 	}
 
-	public static void removeExhaustion(@NotNull LivingEntity entity) {
+	public static void removeExhaustion(LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (attr == null) return;
 		attr.removeModifier(EXHAUSTION.id());
@@ -122,22 +164,22 @@ public final class ParagliderUtils {
 	private static final AttributeModifier NO_FLIGHT = new AttributeModifier(
 			ParagliderAPI.id("no_flight"), -1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
-	public static void addFlyingBan(@NotNull LivingEntity entity) {
+	public static void addFlyingBan(LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
 		if (attr == null || attr.getModifier(NO_FLIGHT.id()) != null) return;
 		attr.addTransientModifier(NO_FLIGHT);
 	}
 
-	public static void removeFlyingBan(@NotNull LivingEntity entity) {
+	public static void removeFlyingBan(LivingEntity entity) {
 		AttributeInstance attr = entity.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
 		if (attr == null) return;
 		attr.removeModifier(NO_FLIGHT.id());
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
-	public static boolean giveAdvancement(@NotNull ServerPlayer player,
-	                                      @NotNull Identifier advancementName,
-	                                      @NotNull String criterion) {
+	public static boolean giveAdvancement(ServerPlayer player,
+	                                      Identifier advancementName,
+	                                      String criterion) {
 		PlayerAdvancements advancements = player.getAdvancements();
 		ServerAdvancementManager advancementManager = player.level().getServer().getAdvancements();
 		AdvancementHolder advancement = advancementManager.get(advancementName);
@@ -152,10 +194,10 @@ public final class ParagliderUtils {
 	 * @param consumptions Inventory index to consumption count, will be modified by this method
 	 * @return Whether it is possible to consume given amount of ingredient from the inventory
 	 */
-	public static boolean calculateConsumption(@NotNull QuantifiedIngredient ingredient,
-	                                           @NotNull Container inventory,
-	                                           @NotNull Int2IntOpenHashMap consumptions) {
-		int amountLeft = ingredient.quantity();
+	public static boolean calculateConsumption(SizedIngredient ingredient,
+	                                           Container inventory,
+	                                           Int2IntOpenHashMap consumptions) {
+		int amountLeft = ingredient.count();
 		for (int i = 0; amountLeft > 0 && i < inventory.getContainerSize(); i++) {
 			ItemStack stack = inventory.getItem(i);
 			int consumption = consumptions.get(i);
@@ -177,7 +219,7 @@ public final class ParagliderUtils {
 		return System.nanoTime() / 1_000_000;
 	}
 
-	public static void printPlayerStates(@NotNull PlayerStateMap stateMap, @NotNull PlayerStateConnectionMap connectionMap) {
+	public static void printPlayerStates(PlayerStateMap stateMap, PlayerStateConnectionMap connectionMap) {
 		if (!DebugCfg.get().debugPlayerMovement()) return;
 
 		ParagliderMod.LOGGER.debug("All Player States: {} entries{}",
@@ -207,13 +249,14 @@ public final class ParagliderUtils {
 		ParagliderMod.LOGGER.debug(stb.toString());
 	}
 
-	public static boolean canBreatheUnderwater(@NotNull Player player) {
-		if (player.hasEffect(MobEffects.WATER_BREATHING)) return true;
-		if (player.onGround()) {
-			if (!player.canDrownInFluidType(player.getEyeInFluidType()) || player.level()
-					.getBlockState(new BlockPos((int)player.getX(), (int)player.getEyeY(), (int)player.getZ()))
-					.is(Blocks.BUBBLE_COLUMN)) return true;
-		}
+	public static boolean canBreatheUnderwater(Player player) {
+		// TODO check before release
+		FluidState fluidState = player.level().getFluidState(BlockPos.containing(player.getEyePosition()));
+
+		if (!player.canDrownInFluidType(fluidState.getFluidType())) return true;
+		if (player.onGround() && player.level()
+				.getBlockState(new BlockPos((int)player.getX(), (int)player.getEyeY(), (int)player.getZ()))
+				.is(Blocks.BUBBLE_COLUMN)) return true;
 
 		var enchantments = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 
@@ -227,7 +270,7 @@ public final class ParagliderUtils {
 		return !feet.isEmpty() && feet.getEnchantmentLevel(enchantments.getOrThrow(Enchantments.DEPTH_STRIDER)) > 0;
 	}
 
-	public static @NotNull ParagliderItemCapability getCaps(@NotNull ItemStack stack) {
+	public static ParagliderItemCapability getCaps(ItemStack stack) {
 		var p = stack.getCapability(ParagliderItemCapability.CAPABILITY);
 		return p != null ? p : ParagliderItemCapability.defaultImpl();
 	}
@@ -310,5 +353,9 @@ public final class ParagliderUtils {
 		player.getCooldowns().addCooldown(
 				ParagliderAPI.PARAGLIDER_COOLDOWN_GROUP,
 				PlayerMovementValues.PARAGLIDER_ITEM_COOLDOWN);
+	}
+
+	public static SlotDisplay stackDisplay(ItemStack stack) {
+		return new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(stack));
 	}
 }

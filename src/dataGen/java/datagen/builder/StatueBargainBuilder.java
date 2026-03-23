@@ -3,18 +3,17 @@ package datagen.builder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
-import tictim.paraglider.contents.recipe.QuantifiedIngredient;
-import tictim.paraglider.contents.recipe.QuantifiedItem;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.contents.recipe.SimpleBargain;
 
 import java.util.ArrayList;
@@ -22,15 +21,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@NullMarked
 public class StatueBargainBuilder implements RecipeBuilder {
 	protected final Identifier bargainType;
 
-	protected final List<QuantifiedIngredient> itemDemands = new ArrayList<>();
+	protected final List<SizedIngredient> itemDemands = new ArrayList<>();
 	protected int heartContainerDemands;
 	protected int staminaVesselDemands;
 	protected int essenceDemands;
 
-	protected final List<QuantifiedItem> itemOffers = new ArrayList<>();
+	protected final List<ItemStackTemplate> itemOffers = new ArrayList<>();
 	protected int heartContainerOffers;
 	protected int staminaVesselOffers;
 	protected int essenceOffers;
@@ -46,7 +46,7 @@ public class StatueBargainBuilder implements RecipeBuilder {
 	}
 
 	public StatueBargainBuilder demand(Ingredient ingredient, int quantity) {
-		this.itemDemands.add(new QuantifiedIngredient(ingredient, quantity));
+		this.itemDemands.add(new SizedIngredient(ingredient, quantity));
 		return this;
 	}
 
@@ -66,7 +66,7 @@ public class StatueBargainBuilder implements RecipeBuilder {
 	}
 
 	public StatueBargainBuilder offer(Item item, int count) {
-		this.itemOffers.add(new QuantifiedItem(item, count));
+		this.itemOffers.add(new ItemStackTemplate(item, count));
 		return this;
 	}
 
@@ -90,17 +90,18 @@ public class StatueBargainBuilder implements RecipeBuilder {
 		return this;
 	}
 
-	@Override public @NotNull RecipeBuilder unlockedBy(@NotNull String name, @NotNull Criterion<?> criterion) {
+	@Override public RecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
 		return this;
 	}
-	@Override public @NotNull RecipeBuilder group(@Nullable String groupName) {
+	@Override public RecipeBuilder group(@Nullable String groupName) {
 		return this;
-	}
-	@Override public @NotNull Item getResult() {
-		return Items.AIR;
 	}
 
-	@Override public void save(RecipeOutput output, @NotNull ResourceKey<Recipe<?>> resourceKey) {
+	@Override public ResourceKey<Recipe<?>> defaultId() {
+		throw new UnsupportedOperationException("Specify recipe ID");
+	}
+
+	@Override public void save(RecipeOutput output, ResourceKey<Recipe<?>> resourceKey) {
 		output.accept(resourceKey, new SimpleBargain(
 						this.bargainType,
 						this.itemDemands,
@@ -116,7 +117,7 @@ public class StatueBargainBuilder implements RecipeBuilder {
 				this.conditions.toArray(new ICondition[0]));
 	}
 
-	@Override public void save(@NotNull RecipeOutput recipeOutput) {
+	@Override public void save(RecipeOutput recipeOutput) {
 		throw new UnsupportedOperationException("Specify recipe ID");
 	}
 }

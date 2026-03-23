@@ -3,7 +3,7 @@ package tictim.paraglider.client;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.player.Player;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.Movement;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public final class ParagliderGuiLayers {
 	private ParagliderGuiLayers() {}
 
-	public static void renderStaminaWheel(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+	public static void staminaWheel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null ||
 				mc.screen instanceof DisableStaminaRender ||
@@ -34,17 +34,17 @@ public final class ParagliderGuiLayers {
 
 		ParagliderClientSettings settings = ParagliderClientSettings.get();
 		StaminaWheelPosition pos = settings.staminaWheelPosition();
-		int x = (int)Math.floor(pos.x(guiGraphics.guiWidth()));
-		int y = (int)Math.floor(pos.y(guiGraphics.guiHeight()));
+		int x = (int)Math.floor(pos.x(graphics.guiWidth()));
+		int y = (int)Math.floor(pos.y(graphics.guiHeight()));
 
-		InGameStaminaWheelRenderer.get().render(guiGraphics, x, y,
+		InGameStaminaWheelRenderer.get().staminaWheel(graphics, x, y,
 				deltaTracker.getGameTimeDeltaPartialTick(false),
 				settings.extraWheelAttachment());
 	}
 
 	private static int yOffset;
 
-	public static void renderMovementDebug(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+	public static void movementDebug(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		if (!DebugCfg.get().debugPlayerMovement()) return;
 		Minecraft mc = Minecraft.getInstance();
 		Player p = mc.player;
@@ -53,8 +53,8 @@ public final class ParagliderGuiLayers {
 		yOffset = 0;
 
 		addDebugText(p, s -> {
-			guiGraphics.drawString(mc.font, s,
-					guiGraphics.guiWidth() - 4 - mc.font.width(s), 4 + yOffset,
+			graphics.text(mc.font, s,
+					graphics.guiWidth() - 4 - mc.font.width(s), 4 + yOffset,
 					-1, true);
 			yOffset += mc.font.lineHeight + 1;
 		});

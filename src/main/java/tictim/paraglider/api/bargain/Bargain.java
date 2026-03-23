@@ -1,17 +1,14 @@
 package tictim.paraglider.api.bargain;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.PlacementInfo;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.Set;
@@ -19,13 +16,14 @@ import java.util.Set;
 /**
  * Base type for all bargain recipes.
  */
+@NullMarked
 public interface Bargain extends Recipe<Bargain.NoInput> {
 	/**
 	 * Type of the bargain. Corresponds to bargain type registered with datapacks.
 	 *
 	 * @return Type of the bargain
 	 */
-	@NotNull Identifier getBargainType();
+	Identifier getBargainType();
 
 	/**
 	 * Checks if this bargain is available for {@code player} on {@code pos} (optional).
@@ -35,7 +33,7 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	 * @param pos    Optional block position
 	 * @return Whether this bargain is available
 	 */
-	boolean isAvailableFor(@NotNull Player player, @Nullable BlockPos pos);
+	boolean isAvailableFor(Player player, @Nullable BlockPos pos);
 
 	/**
 	 * Tries to perform bargain with {@code player}. This method handles all necessary transactions for the bargain -
@@ -52,20 +50,20 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	 * @return Result instance
 	 * @see ParagliderFailReasons
 	 */
-	@NotNull BargainResult bargain(@NotNull Player player, boolean simulate);
+	BargainResult bargain(Player player, boolean simulate);
 
 	/**
 	 * @return List of preview for demands. The previews are recreated on server side and synced on initialization of
 	 * bargain, as well as when the player's inventory or vessel amount changes.
 	 * @see #countDemands(Player)
 	 */
-	@NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewDemands();
+	@Unmodifiable List<BargainPreview<?>> previewDemands();
 
 	/**
 	 * @return List of preview for offers. The previews are recreated on server side and synced on initialization of
 	 * bargain, as well as when the player's inventory or vessel amount changes.
 	 */
-	@NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewOffers();
+	@Unmodifiable List<BargainPreview<?>> previewOffers();
 
 	/**
 	 * <p>
@@ -81,7 +79,7 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	 * @param player Player
 	 * @return Array with values denoting how many instances of each input is supplied
 	 */
-	int @NotNull [] countDemands(@NotNull Player player);
+	int[] countDemands(Player player);
 
 	/**
 	 * @return Set of string tags associated with this bargain recipe. Tags describe basic description of what this
@@ -93,15 +91,15 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 	 * recipes are encouraged to support these tags, in addition to user-added tags via JSON.
 	 * @see ParagliderBargainTags
 	 */
-	@NotNull @Unmodifiable Set<@NotNull String> getBargainTags();
+	@Unmodifiable Set<String> getBargainTags();
 
 	// Methods from Recipe interface are completely useless for bargain recipes
 
-	@Deprecated @Override default boolean matches(@NotNull NoInput input, @NotNull Level level) {
+	@Deprecated @Override default boolean matches(NoInput input, Level level) {
 		return false;
 	}
 
-	@Deprecated @Override default @NotNull ItemStack assemble(@NotNull NoInput input, @NotNull HolderLookup.Provider lookup) {
+	@Deprecated @Override default ItemStack assemble(NoInput input) {
 		return ItemStack.EMPTY;
 	}
 
@@ -109,12 +107,24 @@ public interface Bargain extends Recipe<Bargain.NoInput> {
 		return true;
 	}
 
-	@Deprecated @Override default @NotNull PlacementInfo placementInfo() {
+	@Override default boolean showNotification() {
+		return false;
+	}
+
+	@Override default String group() {
+		return "";
+	}
+
+	@Override default RecipeBookCategory recipeBookCategory() {
+		return RecipeBookCategories.CRAFTING_MISC;
+	}
+
+	@Deprecated @Override default PlacementInfo placementInfo() {
 		return PlacementInfo.NOT_PLACEABLE;
 	}
 
 	final class NoInput implements RecipeInput {
-		@Override public @NotNull ItemStack getItem(int i) {
+		@Override public ItemStack getItem(int i) {
 			return ItemStack.EMPTY;
 		}
 

@@ -9,8 +9,8 @@
   "demands": {
     "items": [
       {
-        "ingredient": "paraglider:spirit_orb",
-        "quantity": 4
+        "count": 4,
+        "ingredient": "paraglider:spirit_orb"
       }
     ]
   },

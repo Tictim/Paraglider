@@ -60,30 +60,30 @@ public final class Wind {
 	}
 
 	public @Nullable WindChunk getChunk(@NotNull ChunkPos chunkPos) {
-		return getChunk(chunkPos.x, chunkPos.z);
+		return getChunk(chunkPos.x(), chunkPos.z());
 	}
 	public @Nullable WindChunk getChunk(int chunkX, int chunkZ) {
-		return getChunk(ChunkPos.asLong(chunkX, chunkZ));
+		return getChunk(ChunkPos.pack(chunkX, chunkZ));
 	}
 	public @Nullable WindChunk getChunk(long chunkPos) {
 		return this.windChunks.get(chunkPos);
 	}
 
 	public @NotNull WindChunk getOrCreate(@NotNull ChunkPos chunkPos) {
-		return getOrCreate(chunkPos.toLong());
+		return getOrCreate(chunkPos.pack());
 	}
 	public @NotNull WindChunk getOrCreate(int chunkX, int chunkZ) {
-		return getOrCreate(ChunkPos.asLong(chunkX, chunkZ));
+		return getOrCreate(ChunkPos.pack(chunkX, chunkZ));
 	}
 	public @NotNull WindChunk getOrCreate(long chunkPos) {
-		return this.windChunks.computeIfAbsent(chunkPos, cp -> new WindChunk(new ChunkPos(cp)));
+		return this.windChunks.computeIfAbsent(chunkPos, cp -> new WindChunk(ChunkPos.unpack(cp)));
 	}
 
 	public @Nullable WindChunk remove(int chunkX, int chunkZ) {
-		return remove(ChunkPos.asLong(chunkX, chunkZ));
+		return remove(ChunkPos.pack(chunkX, chunkZ));
 	}
 	public @Nullable WindChunk remove(@NotNull ChunkPos chunkPos) {
-		return remove(chunkPos.toLong());
+		return remove(chunkPos.pack());
 	}
 	public @Nullable WindChunk remove(long chunkPos) {
 		WindChunk removed = this.windChunks.remove(chunkPos);
@@ -93,12 +93,12 @@ public final class Wind {
 
 	public void put(@NotNull WindChunk windChunk) {
 		if (windChunk.isRemoved()) throw new IllegalArgumentException("Cannot add back a removed wind chunk!");
-		this.windChunks.put(windChunk.chunkPos.toLong(), windChunk);
+		this.windChunks.put(windChunk.chunkPos.pack(), windChunk);
 	}
 
 	public void writeWind(int x, int y, int z, int height, long gameTime) {
-		long chunkPos = ChunkPos.asLong(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
-		if (this.windChunkCache == null || this.windChunkCache.isRemoved() || this.windChunkCache.chunkPos.toLong() != chunkPos) {
+		long chunkPos = ChunkPos.pack(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
+		if (this.windChunkCache == null || this.windChunkCache.isRemoved() || this.windChunkCache.chunkPos.pack() != chunkPos) {
 			this.windChunkCache = getOrCreate(chunkPos);
 		}
 		if (this.windChunkCache.add(x, y, z, height, gameTime)) {
@@ -194,7 +194,7 @@ public final class Wind {
 			if (node.isExpired(gameTime) ||
 					WindSourceRegistry.get().getWindSourceHeight(level.getBlockState(
 							mpos.set(windChunk.x(xz), node.y, windChunk.z(xz)))) <= 0) {
-				dirtyWindChunks().add(windChunk.chunkPos.toLong());
+				dirtyWindChunks().add(windChunk.chunkPos.pack());
 				return node.next != null ? validate(windChunk, xz, node.next, level) : null;
 			}
 			node.updatedTime = gameTime;

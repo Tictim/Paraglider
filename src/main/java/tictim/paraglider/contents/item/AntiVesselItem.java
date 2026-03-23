@@ -32,10 +32,10 @@ public class AntiVesselItem extends Item {
 			int staminaVesselsTaken = vessels.takeStaminaVessels(Integer.MAX_VALUE, false, true);
 			if (heartContainersTaken > 0 || staminaVesselsTaken > 0) {
 				if (heartContainersTaken > 0) {
-					ParagliderUtils.giveItem(player, new ItemStack(Contents.get().heartContainer(), heartContainersTaken));
+					ParagliderUtils.giveItem(player, Contents.get().heartContainer(), heartContainersTaken);
 				}
 				if (staminaVesselsTaken > 0) {
-					ParagliderUtils.giveItem(player, new ItemStack(Contents.get().staminaVessel(), staminaVesselsTaken));
+					ParagliderUtils.giveItem(player, Contents.get().staminaVessel(), staminaVesselsTaken);
 				}
 				stack.shrink(1);
 				return InteractionResult.CONSUME;

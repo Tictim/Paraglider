@@ -23,7 +23,7 @@ public final class WindChunk {
 		this.chunkPos = Objects.requireNonNull(chunkPos);
 	}
 	public WindChunk(@NotNull FriendlyByteBuf buf) {
-		this.chunkPos = new ChunkPos(buf.readLong());
+		this.chunkPos = buf.readChunkPos();
 		for (int i = buf.readVarInt(); i > 0; i--) {
 			byte xz = buf.readByte();
 			putNode(xz, new WindNode(buf));
@@ -75,7 +75,7 @@ public final class WindChunk {
 	}
 
 	public void write(@NotNull FriendlyByteBuf buf) {
-		buf.writeLong(this.chunkPos.toLong());
+		buf.writeChunkPos(this.chunkPos);
 		buf.writeVarInt(this.nodes.size());
 		for (var e : this.nodes.byte2ObjectEntrySet()) {
 			buf.writeByte(e.getByteKey());

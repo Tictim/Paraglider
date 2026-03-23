@@ -4,7 +4,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,7 +39,7 @@ public abstract class MixinRaid {
 		if (item == null) return;
 		for (UUID uuid : this.heroesOfTheVillage) {
 			if (level.getEntity(uuid) instanceof Player player && !player.isSpectator()) {
-				ParagliderUtils.giveItem(player, new ItemStack(item));
+				ParagliderUtils.giveItem(player, item, 1);
 			}
 		}
 	}

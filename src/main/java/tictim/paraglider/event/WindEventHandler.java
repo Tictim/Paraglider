@@ -51,6 +51,6 @@ public final class WindEventHandler {
 		ChunkPos pos = event.getPos();
 		WindChunk windChunk = wind.getChunk(pos);
 		if (windChunk == null || windChunk.isEmpty()) return;
-		ParagliderNetwork.get().syncWind(level.getServer(), level.getChunk(pos.x, pos.z), windChunk);
+		ParagliderNetwork.get().syncWind(level.getServer(), level.getChunk(pos.x(), pos.z()), windChunk);
 	}
 }

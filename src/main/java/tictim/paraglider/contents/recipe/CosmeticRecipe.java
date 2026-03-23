@@ -1,15 +1,14 @@
 package tictim.paraglider.contents.recipe;
 
 import com.google.common.collect.Streams;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
@@ -17,25 +16,41 @@ import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import tictim.paraglider.contents.Contents;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CosmeticRecipe implements CraftingRecipe {
-	private final String group;
-	private final CraftingBookCategory category;
+@NullMarked
+public class CosmeticRecipe extends NormalCraftingRecipe {
+	public static final MapCodec<CosmeticRecipe> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
+			Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
+			CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
+			Ingredient.CODEC.fieldOf("input").forGetter(r -> r.input),
+			Ingredient.CODEC.listOf(1, 8).fieldOf("reagents").forGetter(r -> r.reagents),
+			ItemStackTemplate.CODEC.fieldOf("result").forGetter(r -> r.result)
+	).apply(b, CosmeticRecipe::new));
+
+	public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticRecipe> STREAM_CODEC = StreamCodec.composite(
+			Recipe.CommonInfo.STREAM_CODEC, o -> o.commonInfo,
+			CraftingRecipe.CraftingBookInfo.STREAM_CODEC, o -> o.bookInfo,
+			Ingredient.CONTENTS_STREAM_CODEC, r -> r.input,
+			Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.reagents,
+			ItemStackTemplate.STREAM_CODEC, r -> r.result,
+			CosmeticRecipe::new
+	);
+
+	public static final RecipeSerializer<CosmeticRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
 	private final Ingredient input;
 	private final List<Ingredient> reagents;
-	private final TransmuteResult result;
-	private @Nullable PlacementInfo placementInfoCache;
+	private final ItemStackTemplate result;
 
-	public CosmeticRecipe(String group, CraftingBookCategory category,
+	public CosmeticRecipe(Recipe.CommonInfo commonInfo,
+	                      CraftingRecipe.CraftingBookInfo bookInfo,
 	                      Ingredient input, List<Ingredient> reagents,
-	                      TransmuteResult result) {
-		this.group = group;
-		this.category = category;
+	                      ItemStackTemplate result) {
+		super(commonInfo, bookInfo);
 		this.input = input;
 		this.reagents = reagents;
 		this.result = result;
@@ -50,7 +65,7 @@ public class CosmeticRecipe implements CraftingRecipe {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
+			if (this.input.test(stack) && !this.result.is(stack.getItem())) {
 				if (inputSeen) return false;
 				inputSeen = true;
 				continue;
@@ -73,13 +88,13 @@ public class CosmeticRecipe implements CraftingRecipe {
 		return inputSeen;
 	}
 
-	@Override public @NotNull ItemStack assemble(CraftingInput input, HolderLookup.@NotNull Provider provider) {
+	@Override public ItemStack assemble(CraftingInput input) {
 		for (int i = 0; i < input.size(); i++) {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
-				return this.result.apply(stack);
+			if (this.input.test(stack) && !this.result.is(stack.getItem())) {
+				return this.result.apply(stack.count(), stack.getComponentsPatch());
 			}
 		}
 
@@ -92,7 +107,7 @@ public class CosmeticRecipe implements CraftingRecipe {
 						Stream.of(this.input.display()),
 						this.reagents.stream().map(Ingredient::display)
 				).toList(),
-				this.result.display(),
+				new SlotDisplay.ItemStackSlotDisplay(this.result),
 				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
 		));
 	}
@@ -106,9 +121,10 @@ public class CosmeticRecipe implements CraftingRecipe {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty()) continue;
 
-			if (!inputSeen && this.input.test(stack) && !this.result.isResultUnchanged(stack)) {
+			if (!inputSeen && this.input.test(stack) && !this.result.is(stack.getItem())) {
 				inputSeen = true;
-				list.set(i, stack.getCraftingRemainder());
+				ItemStackTemplate rem = stack.getCraftingRemainder();
+				list.set(i, rem != null ? rem.create() : ItemStack.EMPTY);
 				continue;
 			}
 
@@ -118,53 +134,16 @@ public class CosmeticRecipe implements CraftingRecipe {
 		return list;
 	}
 
-	@Override public @NotNull String group() {
-		return group;
+	@Override public RecipeSerializer<? extends CosmeticRecipe> getSerializer() {
+		return SERIALIZER;
 	}
 
-	@Override public @NotNull RecipeSerializer<? extends CraftingRecipe> getSerializer() {
-		return Contents.get().cosmeticRecipeSerializer();
-	}
-
-	@Override public @NotNull PlacementInfo placementInfo() {
-		if (this.placementInfoCache == null) {
-			this.placementInfoCache = PlacementInfo.create(
-					Streams.concat(
-							Stream.of(this.input),
-							this.reagents.stream()
-					).toList()
-			);
-		}
-		return this.placementInfoCache;
-	}
-
-	@Override public @NotNull CraftingBookCategory category() {
-		return CraftingBookCategory.MISC;
-	}
-
-	public static class Serializer implements RecipeSerializer<CosmeticRecipe> {
-		private static final MapCodec<CosmeticRecipe> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
-				Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
-				CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(r -> r.category),
-				Ingredient.CODEC.fieldOf("input").forGetter(r -> r.input),
-				Ingredient.CODEC.listOf(1, 8).fieldOf("reagents").forGetter(r -> r.reagents),
-				TransmuteResult.CODEC.fieldOf("result").forGetter(r -> r.result)
-		).apply(b, CosmeticRecipe::new));
-
-		public static final StreamCodec<RegistryFriendlyByteBuf, CosmeticRecipe> STREAM_CODEC = StreamCodec.composite(
-				ByteBufCodecs.STRING_UTF8, r -> r.group,
-				CraftingBookCategory.STREAM_CODEC, r -> r.category,
-				Ingredient.CONTENTS_STREAM_CODEC, r -> r.input,
-				Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.reagents,
-				TransmuteResult.STREAM_CODEC, r -> r.result,
-				CosmeticRecipe::new
+	@Override protected PlacementInfo createPlacementInfo() {
+		return PlacementInfo.create(
+				Streams.concat(
+						Stream.of(this.input),
+						this.reagents.stream()
+				).toList()
 		);
-
-		@Override public @NotNull MapCodec<CosmeticRecipe> codec() {
-			return CODEC;
-		}
-		@Override public @NotNull StreamCodec<RegistryFriendlyByteBuf, CosmeticRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
 	}
 }

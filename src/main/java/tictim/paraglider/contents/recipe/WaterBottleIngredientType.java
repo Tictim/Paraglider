@@ -13,10 +13,12 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import tictim.paraglider.ParagliderUtils;
 
 import java.util.stream.Stream;
 
+@NullMarked
 public enum WaterBottleIngredientType implements ICustomIngredient {
 	INSTANCE;
 
@@ -25,12 +27,12 @@ public enum WaterBottleIngredientType implements ICustomIngredient {
 			StreamCodec.unit(this)
 	);
 
-	@Override public boolean test(@NotNull ItemStack stack) {
+	@Override public boolean test(ItemStack stack) {
 		return stack.is(Items.POTION) &&
 				stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).is(Potions.WATER);
 	}
 
-	@Override public @NotNull Stream<Holder<Item>> items() {
+	@Override public Stream<Holder<Item>> items() {
 		return Stream.of(BuiltInRegistries.ITEM.wrapAsHolder(Items.POTION));
 	}
 
@@ -38,12 +40,12 @@ public enum WaterBottleIngredientType implements ICustomIngredient {
 		return false;
 	}
 
-	@Override public @NotNull IngredientType<?> getType() {
+	@Override public IngredientType<?> getType() {
 		return this.type;
 	}
 
-	@Override public @NotNull SlotDisplay display() {
-		return new SlotDisplay.ItemStackSlotDisplay(PotionContents.createItemStack(Items.POTION, Potions.WATER));
+	@Override public SlotDisplay display() {
+		return ParagliderUtils.stackDisplay(PotionContents.createItemStack(Items.POTION, Potions.WATER));
 	}
 
 	@Override public String toString() {

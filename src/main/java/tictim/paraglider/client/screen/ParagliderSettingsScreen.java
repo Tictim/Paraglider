@@ -3,14 +3,14 @@ package tictim.paraglider.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import static tictim.paraglider.ParagliderUtils.ms;
 
+@NullMarked
 public class ParagliderSettingsScreen extends Screen {
 	private final Component saveButtonText = Component.translatable("paraglider.settings.save");
 	private final Component saveButtonTextUnsaved = Component.translatable("paraglider.settings.save.unsaved");
@@ -126,25 +127,25 @@ public class ParagliderSettingsScreen extends Screen {
 		}
 	}
 
-	@Override public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+	@Override public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		if (this.saveSettingsButton != null) {
 			this.saveSettingsButton.setMessage(this.particleSliderWidget != null && this.particleSliderWidget.dirty ?
 					saveButtonTextUnsaved : saveButtonText);
 		}
 
-		super.render(graphics, mouseX, mouseY, partialTicks);
+		super.extractRenderState(graphics, mouseX, mouseY, a);
 
 		if (this.saveLoadAction != null) {
 			this.saveLoadAction.update();
 			int alpha = !saveLoadAction.isComplete() ? 0xFF : BargainScreen.getDialogAlpha(ms() - saveLoadAction.saveCompleteTimestamp);
 			if (alpha == 0) this.saveLoadAction = null;
 			else {
-				graphics.drawString(font, saveLoadAction.text(), 5, height - font.lineHeight - 5, alpha << 24 | 0xFFFFFF, true);
+				graphics.text(font, saveLoadAction.text(), 5, height - font.lineHeight - 5, alpha << 24 | 0xFFFFFF, true);
 			}
 		}
 	}
 
-	@Override public boolean keyPressed(@NotNull KeyEvent event) {
+	@Override public boolean keyPressed(KeyEvent event) {
 		if (super.keyPressed(event)) return true;
 		InputConstants.Key key = InputConstants.getKey(event);
 		if (this.minecraft.options.keyInventory.isActiveAndMatches(key) ||
@@ -218,7 +219,7 @@ public class ParagliderSettingsScreen extends Screen {
 			return state != State.WAITING;
 		}
 
-		@NotNull Component text() {
+		Component text() {
 			return isLoading ? state.loadText : state.saveText;
 		}
 

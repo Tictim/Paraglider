@@ -3,7 +3,7 @@ package tictim.paraglider.client.render;
 import it.unimi.dsi.fastutil.floats.Float2IntMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -45,14 +45,14 @@ public abstract class StaminaWheelRenderer {
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void render(@NotNull GuiGraphics guiGraphics, float x, float y, float partialTicks,
-	                   @Nullable ExtraWheelAttachment extraWheelAttachment) {
+	public void staminaWheel(@NotNull GuiGraphicsExtractor graphics, float x, float y, float partialTicks,
+	                         @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		this.debug = isDebugEnabled(player);
 
 		makeWheel(player, partialTicks);
-		render(guiGraphics, x, y, isDebugEnabled(player), extraWheelAttachment);
+		extract(graphics, x, y, isDebugEnabled(player), extraWheelAttachment);
 
 		this.mainWheel.reset();
 		this.extraWheel.reset();
@@ -79,9 +79,9 @@ public abstract class StaminaWheelRenderer {
 
 	protected abstract void makeWheel(@NotNull Player player, float partialTicks);
 
-	protected void render(@NotNull GuiGraphics guiGraphics,
-	                      float x, float y, boolean debug,
-	                      @Nullable ExtraWheelAttachment extraWheelAttachment) {
+	protected void extract(@NotNull GuiGraphicsExtractor graphics,
+	                       float x, float y, boolean debug,
+	                       @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		if (debug) {
 			Font font = Minecraft.getInstance().font;
 			int lines = 0;
@@ -91,7 +91,7 @@ public abstract class StaminaWheelRenderer {
 					String name = this.debugAnimNames.get(i);
 					EffectTimer anim = this.debugAnims.get(i);
 
-					guiGraphics.drawString(font,
+					graphics.text(font,
 							name + ": " + (anim.isActive() ? "active " + anim.activeDuration() : "inactive"),
 							20, 10 + font.lineHeight * lines++,
 							0xFFFFFFFF);
@@ -107,7 +107,7 @@ public abstract class StaminaWheelRenderer {
 				float point = e.getFloatKey();
 				String segmentString = DEBUG.format(point) + ": ";
 
-				guiGraphics.drawString(font, segmentString,
+				graphics.text(font, segmentString,
 						20, 10 + font.lineHeight * lines++,
 						0xFFFFFFFF);
 				maxWidth = Math.max(maxWidth, font.width(segmentString));
@@ -117,26 +117,26 @@ public abstract class StaminaWheelRenderer {
 
 			for (Float2IntMap.Entry e : this.mainWheel.segments().float2IntEntrySet()) {
 				int color = e.getIntValue();
-				guiGraphics.drawString(font, String.format("#%X", color),
+				graphics.text(font, String.format("#%X", color),
 						20 + maxWidth, 10 + font.lineHeight * lines++,
 						ARGB.color(Math.max(255, alpha(color) * 2), color));
 			}
 		}
 
-		Matrix3x2fStack pose = guiGraphics.pose();
+		Matrix3x2fStack pose = graphics.pose();
 		pose.pushMatrix();
 		pose.translate(x, y, pose);
 
-		drawWheels(guiGraphics, extraWheelAttachment);
+		wheels(graphics, extraWheelAttachment);
 
 		pose.popMatrix();
 	}
 
-	protected void drawWheels(@NotNull GuiGraphics guiGraphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
-		StaminaWheelRenderState.drawMainWheel(guiGraphics, this.mainWheel, this.debug);
+	protected void wheels(@NotNull GuiGraphicsExtractor graphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
+		StaminaWheelRenderState.drawMainWheel(graphics, this.mainWheel, this.debug);
 
 		if (this.extraWheel.alpha() > 0 && this.extraWheel.stamina() > 0 && extraWheelAttachment != null) {
-			Matrix3x2fStack pose = guiGraphics.pose();
+			Matrix3x2fStack pose = graphics.pose();
 
 			int wheels = Math.min(3, (int)Math.ceil(toWheelPos(this.mainWheel.maxStamina())));
 			boolean hasTwoExtraWheels = this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL;
@@ -146,7 +146,7 @@ public abstract class StaminaWheelRenderer {
 					extraWheelOffsetX(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
 					extraWheelOffsetY(extraWheelAttachment, wheels, hasTwoExtraWheels, 0),
 					pose);
-			StaminaWheelRenderState.drawExtraWheel(guiGraphics, this.extraWheel, 0, this.debug);
+			StaminaWheelRenderState.drawExtraWheel(graphics, this.extraWheel, 0, this.debug);
 			pose.popMatrix();
 
 			if (hasTwoExtraWheels) {
@@ -155,21 +155,21 @@ public abstract class StaminaWheelRenderer {
 						extraWheelOffsetX(extraWheelAttachment, wheels, true, 1),
 						extraWheelOffsetY(extraWheelAttachment, wheels, true, 1),
 						pose);
-				StaminaWheelRenderState.drawExtraWheel(guiGraphics, this.extraWheel, 1, this.debug);
+				StaminaWheelRenderState.drawExtraWheel(graphics, this.extraWheel, 1, this.debug);
 				pose.popMatrix();
 			}
 		}
 
 		int color = this.mainWheel.indicatorColorWithAlpha();
 		if (alpha(color) >= 4) {
-			drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
+			text(graphics, "+" + Math.max(1, (int)(Math.ceil(this.mainWheel.staminaWheelPos()) - 3)),
 					false, WHEEL_RADIUS - 1, 1 - WHEEL_RADIUS, color);
 		}
 
 		if (this.extraWheel.stamina() > Stamina.STAMINA_PER_WHEEL * 2 && extraWheelAttachment != null) {
 			color = this.extraWheel.indicatorColorWithAlpha();
 			if (alpha(color) >= 4) {
-				drawText(guiGraphics, "+" + Math.max(1, (int)(Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
+				text(graphics, "+" + Math.max(1, (int)(Math.ceil(toWheelPos(this.extraWheel.stamina())) - 2)),
 						true, 1 - WHEEL_RADIUS, 1 - WHEEL_RADIUS, color);
 			}
 		}
@@ -204,17 +204,17 @@ public abstract class StaminaWheelRenderer {
 		};
 	}
 
-	protected void drawText(GuiGraphics guiGraphics, String text, boolean alignRight,
-	                        int x, int y, int color) {
+	protected void text(GuiGraphicsExtractor graphics, String text, boolean alignRight,
+	                    int x, int y, int color) {
 		Font font = Minecraft.getInstance().font;
-		var pose = guiGraphics.pose();
+		var pose = graphics.pose();
 
 		pose.pushMatrix();
 		pose.translate(x, y, pose);
 		pose.scale(.5f, .5f, pose);
 
 		MutableComponent component = Component.literal(text).setStyle(SMALL_NUMBER_STYLE);
-		guiGraphics.drawString(font, component,
+		graphics.text(font, component,
 				alignRight ? -font.width(component) : 0, -FONT_HEIGHT / 2, color);
 
 		pose.popMatrix();

@@ -81,8 +81,8 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		});
 
 		eventBus.addListener((RegisterGuiLayersEvent event) -> {
-			event.registerAboveAll(ParagliderAPI.id("stamina_wheel"), ParagliderGuiLayers::renderStaminaWheel);
-			event.registerAboveAll(ParagliderAPI.id("movement_debug"), ParagliderGuiLayers::renderMovementDebug);
+			event.registerAboveAll(ParagliderAPI.id("stamina_wheel"), ParagliderGuiLayers::staminaWheel);
+			event.registerAboveAll(ParagliderAPI.id("movement_debug"), ParagliderGuiLayers::movementDebug);
 		});
 
 		eventBus.addListener((RegisterRenderStateModifiersEvent event) -> {

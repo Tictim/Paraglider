@@ -2,10 +2,10 @@ package tictim.paraglider.client.render.state;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,7 @@ public record StaminaWheelRenderState(
 		boolean debug
 ) implements GuiElementRenderState {
 	public static void drawMainWheel(
-			GuiGraphics guiGraphics,
+			GuiGraphicsExtractor grpahics,
 			StaminaWheelState wheel,
 			boolean debug) {
 		if (wheel.alpha() <= 0) return;
@@ -41,13 +41,13 @@ public record StaminaWheelRenderState(
 
 		float maxWheelEnd = wheels > 3 ? 1 : wheelPos - wheels + 1;
 
-		submit(guiGraphics, backgroundVertexData(false, maxWheelEnd, wheel.alpha()), switch (wheels) {
+		submit(grpahics, backgroundVertexData(false, maxWheelEnd, wheel.alpha()), switch (wheels) {
 			case 1 -> Sprite.BG_1;
 			case 2 -> Sprite.BG_2;
 			default -> Sprite.BG_3;
 		}, WHEEL_RADIUS, debug);
 
-		submit(guiGraphics, backgroundVertexData(true, maxWheelEnd, wheel.alpha()), switch (wheels) {
+		submit(grpahics, backgroundVertexData(true, maxWheelEnd, wheel.alpha()), switch (wheels) {
 			case 1 -> Sprite.BG_END_1;
 			case 2 -> Sprite.BG_END_2;
 			default -> Sprite.BG_END_3;
@@ -55,7 +55,7 @@ public record StaminaWheelRenderState(
 
 		int l = Math.min(3, wheels);
 		for (int i = 0; i < l; i++) {
-			submit(guiGraphics, toVertexData(wheel, switch (i) {
+			submit(grpahics, toVertexData(wheel, switch (i) {
 				case 0, 1 -> i;
 				default -> Math.max(2, (int)Math.ceil(wheel.staminaWheelPos()) - 1);
 			}), switch (i) {
@@ -67,35 +67,35 @@ public record StaminaWheelRenderState(
 	}
 
 	public static void drawExtraWheel(
-			GuiGraphics guiGraphics,
+			GuiGraphicsExtractor graphics,
 			StaminaWheelState wheel,
 			int index,
 			boolean debug) {
 		if (wheel.alpha() <= 0) return;
 
-		submit(guiGraphics, backgroundVertexData(false, 1, wheel.alpha()), Sprite.BG_EX, EXTRA_WHEEL_RADIUS, debug);
-		submit(guiGraphics, toVertexData(wheel, -1 - index), Sprite.FG_EX, EXTRA_WHEEL_RADIUS, debug);
+		submit(graphics, backgroundVertexData(false, 1, wheel.alpha()), Sprite.BG_EX, EXTRA_WHEEL_RADIUS, debug);
+		submit(graphics, toVertexData(wheel, -1 - index), Sprite.FG_EX, EXTRA_WHEEL_RADIUS, debug);
 	}
 
 	public static void submit(
-			GuiGraphics guiGraphics,
+			GuiGraphicsExtractor graphics,
 			List<VertexData> vertexData,
 			Sprite sprite,
 			int radius,
 			boolean debug) {
 		if (vertexData.size() < 2) return;
 
-		Matrix3x2f pose = new Matrix3x2f(guiGraphics.pose());
-		AbstractTexture t = guiGraphics.minecraft.getTextureManager()
+		Matrix3x2f pose = new Matrix3x2f(graphics.pose());
+		AbstractTexture t = graphics.minecraft.getTextureManager()
 				.getTexture(StaminaWheelConstants.STAMINA_WHEEL_TEXTURE);
 		TextureSetup textureSetup = TextureSetup.singleTexture(t.getTextureView(), t.getSampler());
 
-		guiGraphics.submitGuiElementRenderState(new StaminaWheelRenderState(
+		graphics.submitGuiElementRenderState(new StaminaWheelRenderState(
 				pose, textureSetup, vertexData, sprite, radius, false
 		));
 
 		if (debug) {
-			guiGraphics.submitGuiElementRenderState(new StaminaWheelRenderState(
+			graphics.submitGuiElementRenderState(new StaminaWheelRenderState(
 					pose, textureSetup, vertexData, sprite, radius, true
 			));
 		}
@@ -209,7 +209,9 @@ public record StaminaWheelRenderState(
 	}
 
 	@Override public @Nullable ScreenRectangle scissorArea() {
-		return null;
+		int r = this.radius + this.sprite.ordinal();
+		return new ScreenRectangle(-r, -r, r * 2, r * 2)
+				.transformMaxBounds(pose);
 	}
 
 	@Override public @NotNull ScreenRectangle bounds() {

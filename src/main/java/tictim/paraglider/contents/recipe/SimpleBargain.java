@@ -10,10 +10,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeBookCategories;
-import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -28,14 +28,18 @@ import tictim.paraglider.contents.recipe.preview.VesselPreview;
 import java.util.*;
 
 public class SimpleBargain implements Bargain {
+	public static final RecipeSerializer<@NotNull SimpleBargain> SERIALIZER = new RecipeSerializer<>(
+			SimpleBargainCodec.CODEC, SimpleBargainCodec.STREAM_CODEC
+	);
+
 	private final Identifier bargainType;
 
-	private final List<QuantifiedIngredient> itemDemands;
+	private final List<SizedIngredient> itemDemands;
 	private final int heartContainerDemands;
 	private final int staminaVesselDemands;
 	private final int essenceDemands;
 
-	private final List<QuantifiedItem> itemOffers;
+	private final List<ItemStackTemplate> itemOffers;
 	private final int heartContainerOffers;
 	private final int staminaVesselOffers;
 	private final int essenceOffers;
@@ -47,11 +51,11 @@ public class SimpleBargain implements Bargain {
 	private @Nullable List<BargainPreview<?>> offerPreviews;
 
 	public SimpleBargain(@NotNull Identifier bargainType,
-	                     @NotNull List<@NotNull QuantifiedIngredient> itemDemands,
+	                     @NotNull List<@NotNull SizedIngredient> itemDemands,
 	                     int heartContainerDemands,
 	                     int staminaVesselDemands,
 	                     int essenceDemands,
-	                     @NotNull List<@NotNull QuantifiedItem> itemOffers,
+	                     @NotNull List<@NotNull ItemStackTemplate> itemOffers,
 	                     int heartContainerOffers,
 	                     int staminaVesselOffers,
 	                     int essenceOffers,
@@ -84,7 +88,7 @@ public class SimpleBargain implements Bargain {
 		return bargainType;
 	}
 
-	public @NotNull List<QuantifiedIngredient> getItemDemands() {
+	public @NotNull List<SizedIngredient> getItemDemands() {
 		return itemDemands;
 	}
 	public int getHeartContainerDemands() {
@@ -97,7 +101,7 @@ public class SimpleBargain implements Bargain {
 		return essenceDemands;
 	}
 
-	public @NotNull List<QuantifiedItem> getItemOffers() {
+	public @NotNull List<ItemStackTemplate> getItemOffers() {
 		return itemOffers;
 	}
 	public int getHeartContainerOffers() {
@@ -122,7 +126,7 @@ public class SimpleBargain implements Bargain {
 		if (this.demandPreviews != null) return this.demandPreviews;
 		this.demandPreviews = new ArrayList<>();
 
-		for (QuantifiedIngredient i : this.itemDemands) this.demandPreviews.add(new SimplePreview(i));
+		for (SizedIngredient i : this.itemDemands) this.demandPreviews.add(new SimplePreview(i));
 
 		if (this.heartContainerDemands > 0) {
 			this.demandPreviews.add(new VesselPreview(VesselPreview.VesselType.HEART_CONTAINER, this.heartContainerDemands));
@@ -143,7 +147,7 @@ public class SimpleBargain implements Bargain {
 		if (this.offerPreviews != null) return this.offerPreviews;
 		this.offerPreviews = new ArrayList<>();
 
-		for (QuantifiedItem i : this.itemOffers) this.offerPreviews.add(new SimplePreview(i));
+		for (ItemStackTemplate i : this.itemOffers) this.offerPreviews.add(new SimplePreview(i));
 
 		if (this.heartContainerOffers > 0) {
 			this.offerPreviews.add(new VesselPreview(VesselPreview.VesselType.HEART_CONTAINER, this.heartContainerOffers));
@@ -163,7 +167,7 @@ public class SimpleBargain implements Bargain {
 	@Override public int @NotNull [] countDemands(@NotNull Player player) {
 		IntList list = new IntArrayList();
 
-		for (QuantifiedIngredient i : this.itemDemands) {
+		for (SizedIngredient i : this.itemDemands) {
 			list.add(ParagliderUtils.countIngredient(player, i.ingredient()));
 		}
 
@@ -189,7 +193,7 @@ public class SimpleBargain implements Bargain {
 
 		Inventory inventory = player.getInventory();
 		var consumptions = new Int2IntOpenHashMap();
-		for (QuantifiedIngredient i : this.itemDemands) {
+		for (SizedIngredient i : this.itemDemands) {
 			if (!ParagliderUtils.calculateConsumption(i, inventory, consumptions)) {
 				reasons.add(ParagliderFailReasons.NOT_ENOUGH_ITEMS);
 				break;
@@ -233,8 +237,8 @@ public class SimpleBargain implements Bargain {
 				}
 			}
 
-			for (QuantifiedItem item : this.itemOffers) {
-				ParagliderUtils.giveItem(player, item.getItemWithQuantity());
+			for (ItemStackTemplate item : this.itemOffers) {
+				ParagliderUtils.giveItem(player, item);
 			}
 
 			if (heartDiff != 0) {
@@ -264,12 +268,9 @@ public class SimpleBargain implements Bargain {
 	}
 
 	@Override public @NotNull RecipeSerializer<SimpleBargain> getSerializer() {
-		return Contents.get().bargainRecipeSerializer();
+		return SERIALIZER;
 	}
 	@Override public @NotNull RecipeType<Bargain> getType() {
 		return Contents.get().bargainRecipeType();
-	}
-	@Override public @NotNull RecipeBookCategory recipeBookCategory() {
-		return RecipeBookCategories.CRAFTING_BUILDING_BLOCKS;
 	}
 }

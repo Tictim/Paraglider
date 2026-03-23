@@ -18,7 +18,6 @@
       "translate": "advancement.paraglider.desc"
     },
     "icon": {
-      "count": 1,
       "id": "paraglider:paraglider"
     },
     "show_toast": false,

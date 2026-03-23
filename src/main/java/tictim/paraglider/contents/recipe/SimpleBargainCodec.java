@@ -8,16 +8,20 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
+import tictim.paraglider.network.NetUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class SimpleBargainSerializer implements RecipeSerializer<@NotNull SimpleBargain> {
-	private static final MapCodec<SimpleBargain> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
+public class SimpleBargainCodec {
+	private SimpleBargainCodec() {}
+
+	public static final MapCodec<SimpleBargain> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
 			Codec.mapEither(Identifier.CODEC.fieldOf("bargainType"), Identifier.CODEC.fieldOf("owner"))
 					.xmap(
 							e -> e.map(Function.identity(), Function.identity()),
@@ -35,31 +39,23 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 			offers.items, offers.heartContainers, offers.staminaVessels, offers.essences,
 			tags)));
 
-	private static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> STREAM_CODEC = StreamCodec.of(
-			SimpleBargainSerializer::toNetwork, SimpleBargainSerializer::fromNetwork
+	public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> STREAM_CODEC = StreamCodec.of(
+			SimpleBargainCodec::toNetwork, SimpleBargainCodec::fromNetwork
 	);
-
-	@Override public @NotNull MapCodec<SimpleBargain> codec() {
-		return CODEC;
-	}
-
-	@Override public @NotNull StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> streamCodec() {
-		return STREAM_CODEC;
-	}
 
 	private static @NotNull SimpleBargain fromNetwork(@NotNull RegistryFriendlyByteBuf buffer) {
 		Identifier bargainType = buffer.readIdentifier();
 
-		List<QuantifiedIngredient> itemDemands = new ArrayList<>();
+		List<SizedIngredient> itemDemands = new ArrayList<>();
 		for (int i = 0, size = buffer.readVarInt(); i < size; i++)
-			itemDemands.add(QuantifiedIngredient.STREAM_CODEC.decode(buffer));
+			itemDemands.add(SizedIngredient.STREAM_CODEC.decode(buffer));
 		int heartContainerDemands = buffer.readVarInt();
 		int staminaVesselDemands = buffer.readVarInt();
 		int essenceDemands = buffer.readVarInt();
 
-		List<QuantifiedItem> itemOffers = new ArrayList<>();
+		List<ItemStackTemplate> itemOffers = new ArrayList<>();
 		for (int i = 0, size = buffer.readVarInt(); i < size; i++)
-			itemOffers.add(QuantifiedItem.STREAM_CODEC.decode(buffer));
+			itemOffers.add(ItemStackTemplate.STREAM_CODEC.decode(buffer));
 
 		int heartContainerOffers = buffer.readVarInt();
 		int staminaVesselOffers = buffer.readVarInt();
@@ -84,18 +80,18 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 	private static void toNetwork(@NotNull RegistryFriendlyByteBuf buffer, @NotNull SimpleBargain recipe) {
 		buffer.writeIdentifier(recipe.getBargainType());
 
-		List<QuantifiedIngredient> itemDemands = recipe.getItemDemands();
+		List<SizedIngredient> itemDemands = recipe.getItemDemands();
 		buffer.writeVarInt(itemDemands.size());
-		for (QuantifiedIngredient demand : itemDemands)
-			QuantifiedIngredient.STREAM_CODEC.encode(buffer, demand);
+		for (SizedIngredient demand : itemDemands)
+			SizedIngredient.STREAM_CODEC.encode(buffer, demand);
 		buffer.writeVarInt(recipe.getHeartContainerDemands());
 		buffer.writeVarInt(recipe.getStaminaVesselDemands());
 		buffer.writeVarInt(recipe.getEssenceDemands());
 
-		List<QuantifiedItem> itemOffers = recipe.getItemOffers();
+		List<ItemStackTemplate> itemOffers = recipe.getItemOffers();
 		buffer.writeVarInt(itemOffers.size());
-		for (QuantifiedItem offer : itemOffers)
-			QuantifiedItem.STREAM_CODEC.encode(buffer, offer);
+		for (ItemStackTemplate offer : itemOffers)
+			ItemStackTemplate.STREAM_CODEC.encode(buffer, offer);
 		buffer.writeVarInt(recipe.getHeartContainerOffers());
 		buffer.writeVarInt(recipe.getStaminaVesselOffers());
 		buffer.writeVarInt(recipe.getEssenceOffers());
@@ -108,7 +104,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 	}
 
 	private record DemandComponent(
-			List<QuantifiedIngredient> items,
+			List<SizedIngredient> items,
 			int heartContainers,
 			int staminaVessels,
 			int essences
@@ -116,7 +112,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 		private static final DemandComponent DEFAULT = new DemandComponent(List.of(), 0, 0, 0);
 
 		private static final MapCodec<DemandComponent> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
-				QuantifiedIngredient.CODEC.codec().listOf().optionalFieldOf("items", List.of()).forGetter(DemandComponent::items),
+				SizedIngredient.NESTED_CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(DemandComponent::items),
 				Codec.INT.optionalFieldOf("heartContainers", 0).forGetter(DemandComponent::heartContainers),
 				Codec.INT.optionalFieldOf("staminaVessels", 0).forGetter(DemandComponent::staminaVessels),
 				Codec.INT.optionalFieldOf("essences", 0).forGetter(DemandComponent::essences)
@@ -124,7 +120,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 	}
 
 	private record OfferComponent(
-			@NotNull List<QuantifiedItem> items,
+			@NotNull List<ItemStackTemplate> items,
 			int heartContainers,
 			int staminaVessels,
 			int essences
@@ -132,7 +128,7 @@ public class SimpleBargainSerializer implements RecipeSerializer<@NotNull Simple
 		private static final OfferComponent DEFAULT = new OfferComponent(List.of(), 0, 0, 0);
 
 		private static final MapCodec<OfferComponent> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
-				QuantifiedItem.CODEC.codec().listOf().optionalFieldOf("items", List.of()).forGetter(OfferComponent::items),
+				NetUtils.ITEM_STACK_TEMPLATE_UNLIMITED_CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(OfferComponent::items),
 				Codec.INT.optionalFieldOf("heartContainers", 0).forGetter(OfferComponent::heartContainers),
 				Codec.INT.optionalFieldOf("staminaVessels", 0).forGetter(OfferComponent::staminaVessels),
 				Codec.INT.optionalFieldOf("essences", 0).forGetter(OfferComponent::essences)

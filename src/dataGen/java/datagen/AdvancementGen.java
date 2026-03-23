@@ -1,23 +1,24 @@
 package datagen;
 
-import net.minecraft.advancements.*;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderAdvancements;
 import tictim.paraglider.contents.ParagliderTags;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static net.minecraft.advancements.Advancement.Builder.advancement;
 import static net.minecraft.advancements.criterion.ImpossibleTrigger.TriggerInstance;
 import static net.minecraft.advancements.criterion.InventoryChangeTrigger.TriggerInstance.hasItems;
 import static net.minecraft.advancements.criterion.ItemPredicate.Builder.item;
@@ -27,53 +28,62 @@ public class AdvancementGen extends AdvancementProvider {
 	public AdvancementGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, registries, List.of((r, s) -> {
 			Contents contents = Contents.get();
-			AdvancementHolder root = advancement(
-					new ItemStack(contents.paraglider()),
-					"advancement.paraglider",
-					ParagliderAPI.id("gui/advancement_background"),
-					AdvancementType.TASK,
-					false,
-					false,
-					false)
+
+			AdvancementHolder root = advancement().display(contents.paraglider(),
+							Component.translatable("advancement.paraglider"),
+							Component.translatable("advancement.paraglider" + ".desc"),
+							ParagliderAPI.id("gui/advancement_background"),
+							AdvancementType.TASK,
+							false,
+							false,
+							false)
 					.addCriterion("crafting_table", hasItems(Blocks.CRAFTING_TABLE))
 					.save(s, MODID + ":root");
-			AdvancementHolder paraglider = advancement(
-					new ItemStack(contents.paraglider()),
-					"advancement.paraglider.paraglider",
-					AdvancementType.GOAL,
-					true,
-					true,
-					false)
+
+			AdvancementHolder paraglider = advancement().display(contents.paraglider(),
+							Component.translatable("advancement.paraglider.paraglider"),
+							Component.translatable("advancement.paraglider.paraglider" + ".desc"),
+							null,
+							AdvancementType.GOAL,
+							true,
+							true,
+							false)
 					.parent(root)
 					.addCriterion("paraglider", hasItems(item().of(r.lookupOrThrow(Registries.ITEM), ParagliderTags.PARAGLIDERS).build()))
 					.save(s, MODID + ":paraglider");
-			AdvancementHolder prayToTheGoddess = advancement(
-					new ItemStack(contents.goddessStatue()),
-					"advancement.paraglider.pray_to_the_goddess",
-					AdvancementType.GOAL,
-					true,
-					true,
-					false)
+
+			AdvancementHolder prayToTheGoddess = advancement().display(contents.goddessStatue(),
+							Component.translatable("advancement.paraglider.pray_to_the_goddess"),
+							Component.translatable("advancement.paraglider.pray_to_the_goddess" + ".desc"),
+							null,
+							AdvancementType.GOAL,
+							true,
+							true,
+							false)
 					.parent(root)
 					.addCriterion("bargain", impossibleCriterion())
 					.save(s, ParagliderAdvancements.PRAY_TO_THE_GODDESS.toString());
-			AdvancementHolder statuesBargain = advancement(
-					new ItemStack(contents.hornedStatue()),
-					"advancement.paraglider.statues_bargain",
-					AdvancementType.GOAL,
-					true,
-					true,
-					false)
+
+			AdvancementHolder statuesBargain = advancement().display(contents.hornedStatue(),
+							Component.translatable("advancement.paraglider.statues_bargain"),
+							Component.translatable("advancement.paraglider.statues_bargain" + ".desc"),
+							null,
+							AdvancementType.GOAL,
+							true,
+							true,
+							false)
 					.parent(root)
 					.addCriterion("bargain", impossibleCriterion())
 					.save(s, ParagliderAdvancements.STATUES_BARGAIN.toString());
-			AdvancementHolder allVessels = advancement(
-					new ItemStack(contents.heartContainer()),
-					"advancement.paraglider.all_vessels",
-					AdvancementType.CHALLENGE,
-					true,
-					true,
-					false)
+
+			AdvancementHolder allVessels = advancement().display(contents.heartContainer(),
+							Component.translatable("advancement.paraglider.all_vessels"),
+							Component.translatable("advancement.paraglider.all_vessels" + ".desc"),
+							null,
+							AdvancementType.CHALLENGE,
+							true,
+							true,
+							false)
 					.parent(root)
 					.addCriterion("code_triggered", impossibleCriterion())
 					.save(s, ParagliderAdvancements.ALL_VESSELS.toString());
@@ -84,29 +94,4 @@ public class AdvancementGen extends AdvancementProvider {
 		return CriteriaTriggers.IMPOSSIBLE.createCriterion(new TriggerInstance());
 	}
 
-	private static Advancement.Builder advancement(ItemStack stack,
-	                                               String display,
-	                                               AdvancementType frameType,
-	                                               boolean showToast,
-	                                               boolean announceToChat,
-	                                               boolean hidden) {
-		return advancement(stack, display, null, frameType, showToast, announceToChat, hidden);
-	}
-
-	private static Advancement.Builder advancement(ItemStack stack,
-	                                               String display,
-	                                               @Nullable Identifier background,
-	                                               AdvancementType frameType,
-	                                               boolean showToast,
-	                                               boolean announceToChat,
-	                                               boolean hidden) {
-		return Advancement.Builder.advancement().display(stack,
-				Component.translatable(display),
-				Component.translatable(display + ".desc"),
-				background,
-				frameType,
-				showToast,
-				announceToChat,
-				hidden);
-	}
 }

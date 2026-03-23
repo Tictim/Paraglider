@@ -13,11 +13,8 @@
     "essences": 1,
     "items": [
       {
-        "item": {
-          "count": 1,
-          "id": "minecraft:emerald"
-        },
-        "quantity": 5
+        "count": 5,
+        "id": "minecraft:emerald"
       }
     ]
   }

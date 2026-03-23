@@ -10,8 +10,8 @@
     "essences": 1,
     "items": [
       {
-        "ingredient": "#c:gems/emerald",
-        "quantity": 6
+        "count": 6,
+        "ingredient": "#c:gems/emerald"
       }
     ]
   },

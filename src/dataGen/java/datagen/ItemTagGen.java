@@ -26,7 +26,7 @@ public class ItemTagGen extends BlockTagCopyingItemTagProvider {
 
 		Contents contents = Contents.get();
 
-		tag(ItemTags.DYEABLE).add(contents.paraglider(), contents.dekuLeaf());
+		tag(ItemTags.CAULDRON_CAN_REMOVE_DYE).add(contents.paraglider(), contents.dekuLeaf());
 		tag(ParagliderTags.PARAGLIDERS).add(contents.paraglider(), contents.dekuLeaf());
 	}
 }

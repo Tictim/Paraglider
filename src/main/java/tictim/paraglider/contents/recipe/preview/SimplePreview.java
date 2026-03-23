@@ -1,11 +1,11 @@
 package tictim.paraglider.contents.recipe.preview;
 
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.NotNull;
 import tictim.paraglider.api.bargain.BargainPreview;
-import tictim.paraglider.contents.recipe.QuantifiedIngredient;
-import tictim.paraglider.contents.recipe.QuantifiedItem;
 
 public record SimplePreview(
 		@NotNull SlotDisplay display,
@@ -21,12 +21,12 @@ public record SimplePreview(
 					buffer.readVarInt())
 	));
 
-	public SimplePreview(QuantifiedIngredient ingredient) {
-		this(ingredient.ingredient().display(), ingredient.quantity());
+	public SimplePreview(SizedIngredient ingredient) {
+		this(ingredient.ingredient().display(), ingredient.count());
 	}
 
-	public SimplePreview(QuantifiedItem item) {
-		this(new SlotDisplay.ItemStackSlotDisplay(item.item()), item.quantity());
+	public SimplePreview(ItemStackTemplate item) {
+		this(new SlotDisplay.ItemStackSlotDisplay(item), item.count());
 	}
 
 	@Override public @NotNull Type<SimplePreview> type() {

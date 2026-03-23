@@ -2,7 +2,7 @@ package tictim.paraglider.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -147,8 +147,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 				.build());
 	}
 
-	@Override
-	public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	@Override public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		boolean wheelAtRight = this.staminaWheelWidget.wheelX >= this.width / 2.0;
 		boolean wheelAtDown = this.staminaWheelWidget.wheelY >= this.height / 2.0;
 
@@ -195,26 +194,27 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.cancelButton.setX(textX + textWidth - this.cancelButton.getWidth() - 2);
 		this.cancelButton.setY(textY + textHeight - this.saveButton.getHeight() - this.cancelButton.getHeight() - 4);
 
-		guiGraphics.fillGradient(topWidgetX, topWidgetY, topWidgetX + topWidgetWidth, topWidgetY + topWidgetHeight, 0x80000000, 0x80000000);
-		guiGraphics.fillGradient(textX, textY, textX + textWidth, textY + textHeight, 0x80000000, 0x80000000);
-		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+		graphics.fillGradient(topWidgetX, topWidgetY, topWidgetX + topWidgetWidth, topWidgetY + topWidgetHeight, 0x80000000, 0x80000000);
+		graphics.fillGradient(textX, textY, textX + textWidth, textY + textHeight, 0x80000000, 0x80000000);
 
-		guiGraphics.drawString(this.font, this.anchorText,
+		super.extractRenderState(graphics, mouseX, mouseY, a);
+
+		graphics.text(this.font, this.anchorText,
 				topWidgetX + 2, topWidgetY + 2, -1);
-		guiGraphics.drawString(this.font, this.extraWheelText,
+		graphics.text(this.font, this.extraWheelText,
 				topWidgetX + 2, topWidgetY + 2 + anchorWidgetHeight + 4, -1);
-		guiGraphics.drawString(this.font, this.presetText,
+		graphics.text(this.font, this.presetText,
 				topWidgetX + 2 + Math.max(anchorWidgetWidth, extraWheelWidth) + 4, topWidgetY + 2, -1);
 
 		int y = textY + 2;
 		for (Component t : this.helpText) {
-			guiGraphics.drawString(this.font, t, textX + 2, y, 0xFF00DF53);
+			graphics.text(this.font, t, textX + 2, y, 0xFF00DF53);
 			y += this.font.lineHeight;
 		}
 	}
 
 	// no background
-	@Override public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
+	@Override public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {}
 
 	@Override public boolean keyPressed(@NotNull KeyEvent event) {
 		if (super.keyPressed(event)) return true;
@@ -274,9 +274,9 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			this.setValue.accept(newValue);
 		}
 
-		@Override protected void renderContents(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			renderDefaultSprite(guiGraphics);
-			guiGraphics.blitSprite(
+		@Override protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+			extractDefaultSprite(graphics);
+			graphics.blitSprite(
 					RenderPipelines.GUI_TEXTURED,
 					this.value.get().buttonIconPath(),
 					getX() + 1,
@@ -328,15 +328,15 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			}
 		}
 
-		@Override public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		@Override protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 			if (!this.visible) return;
 
 			// draw rectangle lines as an indicator for the stamina wheel
 			int color = wheelColor(0);
-			guiGraphics.fill(getX() - 1, getY() - 1, getX() + width + 1, getY(), color);
-			guiGraphics.fill(getX() - 1, getY() + height, getX() + width + 1, getY() + height + 1, color);
-			guiGraphics.fill(getX() - 1, getY() - 1, getX(), getY() + height + 1, color);
-			guiGraphics.fill(getX() + width, getY() - 1, getX() + width + 1, getY() + height + 1, color);
+			graphics.fill(getX() - 1, getY() - 1, getX() + width + 1, getY(), color);
+			graphics.fill(getX() - 1, getY() + height, getX() + width + 1, getY() + height + 1, color);
+			graphics.fill(getX() - 1, getY() - 1, getX(), getY() + height + 1, color);
+			graphics.fill(getX() + width, getY() - 1, getX() + width + 1, getY() + height + 1, color);
 
 			String s = Math.floor(this.wheelX) + ", " + Math.floor(this.wheelY);
 			Dir8 anchor = this.screen.anchor;
@@ -357,10 +357,10 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			int textY = this.wheelY >= this.screen.height / 2.0 ?
 					getY() - 1 - font.lineHeight * 2 :
 					getY() + this.height + 2;
-			guiGraphics.drawString(font, s, textX, textY, color);
-			guiGraphics.drawString(font, s2, textX, textY + font.lineHeight, color);
+			graphics.text(font, s, textX, textY, color);
+			graphics.text(font, s2, textX, textY + font.lineHeight, color);
 
-			this.screen.wheelRenderer.render(guiGraphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, partialTicks,
+			this.screen.wheelRenderer.staminaWheel(graphics, getX() + WHEEL_RADIUS, getY() + WHEEL_RADIUS, a,
 					this.screen.extraWheelAttachment);
 		}
 

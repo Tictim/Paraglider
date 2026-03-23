@@ -1,6 +1,5 @@
 package datagen;
 
-import datagen.builder.CosmeticRecipeBuilder;
 import datagen.builder.StatueBargainBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -11,6 +10,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
@@ -25,6 +25,7 @@ import tictim.paraglider.contents.recipe.WaterBottleIngredientType;
 
 import java.util.concurrent.CompletableFuture;
 
+import static datagen.builder.CosmeticRecipeBuilder.cosmetic;
 import static net.minecraft.data.recipes.SimpleCookingRecipeBuilder.*;
 
 public class RecipeGen extends RecipeProvider {
@@ -56,10 +57,13 @@ public class RecipeGen extends RecipeProvider {
 				.unlockedBy("has_golden_carrot", has(Items.GOLDEN_CARROT))
 				.save(this.output);
 
-		smelting(Ingredient.of(contents.energizingMixture()), RecipeCategory.MISC, contents.energizingElixir1(), 0.35F, 200)
+		dyedItem(contents.paraglider(), "dyed_armor");
+		dyedItem(contents.dekuLeaf(), "dyed_armor");
+
+		smelting(Ingredient.of(contents.energizingMixture()), RecipeCategory.MISC, CookingBookCategory.MISC, contents.energizingElixir1(), 0.35F, 200)
 				.unlockedBy("has_energizing_mixture", has(contents.energizingMixture()))
 				.save(this.output, id("smelting/energizing_elixir_1"));
-		smelting(Ingredient.of(contents.enduringMixture()), RecipeCategory.MISC, contents.enduringElixir1(), 0.35F, 200)
+		smelting(Ingredient.of(contents.enduringMixture()), RecipeCategory.MISC, CookingBookCategory.MISC, contents.enduringElixir1(), 0.35F, 200)
 				.unlockedBy("has_enduring_mixture", has(contents.enduringMixture()))
 				.save(this.output, id("smelting/enduring_elixir_1"));
 
@@ -77,28 +81,28 @@ public class RecipeGen extends RecipeProvider {
 				.unlockedBy("has_enduring_mixture", has(contents.enduringMixture()))
 				.save(this.output, id("campfire_cooking/enduring_elixir_1"));
 
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.dekuLeaf(),
+		cosmetic(RecipeCategory.MISC, contents.dekuLeaf(),
 				tag(ParagliderTags.PARAGLIDERS), Ingredient.of(Blocks.DIRT))
 				.unlockedBy("has_paragliders", has(ParagliderTags.PARAGLIDERS))
 				.save(this.output, id("cosmetic/deku_leaf"));
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.paraglider(),
+		cosmetic(RecipeCategory.MISC, contents.paraglider(),
 				tag(ParagliderTags.PARAGLIDERS), tag(Tags.Items.RODS_WOODEN))
 				.unlockedBy("has_paragliders", has(ParagliderTags.PARAGLIDERS))
 				.save(this.output, id("cosmetic/paraglider"));
 
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.goddessStatueItem(),
+		cosmetic(RecipeCategory.MISC, contents.goddessStatueItem(),
 				tag(ParagliderTags.STATUES_GODDESS), tag(Tags.Items.COBBLESTONES))
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/goddess_statue"));
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.kakarikoGoddessStatueItem(),
+		cosmetic(RecipeCategory.MISC, contents.kakarikoGoddessStatueItem(),
 				tag(ParagliderTags.STATUES_GODDESS), tag(ItemTags.PLANKS))
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/kakariko_goddess_statue"));
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.goronGoddessStatueItem(),
+		cosmetic(RecipeCategory.MISC, contents.goronGoddessStatueItem(),
 				tag(ParagliderTags.STATUES_GODDESS), tag(Tags.Items.INGOTS_GOLD))
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/goron_goddess_statue"));
-		new CosmeticRecipeBuilder(RecipeCategory.MISC, contents.ritoGoddessStatueItem(),
+		cosmetic(RecipeCategory.MISC, contents.ritoGoddessStatueItem(),
 				tag(ParagliderTags.STATUES_GODDESS), tag(ItemTags.FLOWERS))
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/rito_goddess_statue"));

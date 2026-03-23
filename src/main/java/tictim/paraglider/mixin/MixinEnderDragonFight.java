@@ -8,7 +8,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.dimension.end.EnderDragonFight;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import org.objectweb.asm.Opcodes;
@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.config.Cfg;
 
-@Mixin(EndDragonFight.class)
-public abstract class MixinDragonFightManager {
+@Mixin(EnderDragonFight.class)
+public abstract class MixinEnderDragonFight {
 	@Shadow @Final
 	private ServerBossEvent dragonEvent;
 	@Shadow @Final
@@ -32,7 +32,7 @@ public abstract class MixinDragonFightManager {
 	@Inject(
 			method = "setDragonKilled(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;)V",
 			at = {
-					@At(shift = Shift.AFTER, value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;dragonKilled:Z", opcode = Opcodes.PUTFIELD)
+					@At(shift = Shift.AFTER, value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EnderDragonFight;dragonKilled:Z", opcode = Opcodes.PUTFIELD)
 			}
 	)
 	public void paraglider$awardVessel(EnderDragon entity, CallbackInfo info) {

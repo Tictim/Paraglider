@@ -1,8 +1,8 @@
 package tictim.paraglider.client;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -11,6 +11,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import tictim.paraglider.api.ParagliderAPI;
+
+import java.util.Optional;
 
 import static net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET;
 
@@ -21,9 +23,8 @@ public final class ParagliderRenderTypes {
 	public static final RenderPipeline.Snippet STAMINA_WHEEL_PIPELINE_SNIPPET = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
 			.withSampler("Sampler0")
 			.withCull(false)
-			.withBlend(BlendFunction.TRANSLUCENT)
-			.withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-			.withDepthWrite(false)
+			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+			.withDepthStencilState(Optional.empty())
 			.buildSnippet();
 
 	public static final RenderPipeline STAMINA_WHEEL_PIPELINE = RenderPipeline.builder(STAMINA_WHEEL_PIPELINE_SNIPPET)
