@@ -6,19 +6,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 
 import java.util.List;
 
+@NullMarked
 public interface BargainPreview<T extends BargainPreview<T>> {
 	ResourceKey<Registry<Type<?>>> TYPE_REGISTRY_KEY = ResourceKey.createRegistryKey(ParagliderAPI.id("bargain_preview_type"));
 
 	/**
 	 * @return Slot display of this preview
 	 */
-	@NotNull SlotDisplay display();
+	SlotDisplay display();
 	/**
 	 * @return Quantity of this preview
 	 */
@@ -27,11 +28,11 @@ public interface BargainPreview<T extends BargainPreview<T>> {
 	/**
 	 * @return Custom tooltip, will fall back to item stack tooltip if not provided. Called on client-side.
 	 */
-	default @Nullable List<@NotNull Component> getTooltip() {
+	default @Nullable List<Component> getTooltip() {
 		return null;
 	}
 
-	@NotNull Type<T> type();
+	Type<T> type();
 
-	record Type<T extends BargainPreview<T>>(@NotNull StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {}
+	record Type<T extends BargainPreview<T>>(StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {}
 }

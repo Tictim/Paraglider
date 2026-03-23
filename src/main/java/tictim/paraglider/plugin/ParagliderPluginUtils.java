@@ -1,7 +1,7 @@
 package tictim.paraglider.plugin;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPluginBase;
 import tictim.paraglider.api.plugin.PluginAction;
@@ -14,10 +14,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@NullMarked
 public final class ParagliderPluginUtils {
 	private ParagliderPluginUtils() {}
 
-	public static <T> @NotNull List<T> removeAll(@NotNull Collection<T> collection, @NotNull Predicate<T> condition) {
+	public static <T> List<T> removeAll(Collection<T> collection, Predicate<T> condition) {
 		List<T> newList = new ArrayList<>();
 		for (var it = collection.iterator(); it.hasNext(); ) {
 			T t = it.next();
@@ -36,9 +37,9 @@ public final class ParagliderPluginUtils {
 	 * @param <A>                Type of the action
 	 * @return List of proceeded actions, or {@code null} if it should error the fuck out
 	 */
-	public static <P extends ParagliderPluginBase, A> @Nullable List<@NotNull PluginAction<P, A>> resolve(
-			@NotNull Function<P, ConflictResolver<P, ? super A>> resolverGetter,
-			@NotNull List<@NotNull PluginAction<P, A>> conflictingActions
+	public static <P extends ParagliderPluginBase, A> @Nullable List<PluginAction<P, A>> resolve(
+			Function<P, ConflictResolver<P, ? super A>> resolverGetter,
+			List<PluginAction<P, A>> conflictingActions
 	) {
 		if (conflictingActions.isEmpty()) return null;
 		if (conflictingActions.size() == 1) return List.of(conflictingActions.get(0));
@@ -69,8 +70,8 @@ public final class ParagliderPluginUtils {
 		return proceededActions;
 	}
 
-	public static <P extends ParagliderPluginBase, A> @NotNull RuntimeException composePluginLoadingError(
-			@NotNull List<@NotNull PluginAction<P, A>> conflictingActions
+	public static <P extends ParagliderPluginBase, A> RuntimeException composePluginLoadingError(
+			List<PluginAction<P, A>> conflictingActions
 	) {
 		return new RuntimeException("Cannot continue loading paraglider plugins due to conflicting actions between plugins\n  "
 				+ conflictingActions.stream()

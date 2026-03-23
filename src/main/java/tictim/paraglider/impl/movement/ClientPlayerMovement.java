@@ -2,7 +2,7 @@ package tictim.paraglider.impl.movement;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
@@ -15,6 +15,7 @@ import tictim.paraglider.wind.WindLogic;
 
 import static tictim.paraglider.impl.movement.PlayerMovementValues.AUTO_PARAGLIDING_FALL_DISTANCE;
 
+@NullMarked
 public class ClientPlayerMovement extends RemotePlayerMovement implements SyncClientParaglidingHandle, SyncCanUseParagliderHandle {
 	private boolean wasParagliding;
 	private boolean canUseParaglider;
@@ -34,11 +35,11 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 	private boolean clientParagliding;
 	private boolean autoParagliding;
 
-	public ClientPlayerMovement(@NotNull LocalPlayer player) {
+	public ClientPlayerMovement(LocalPlayer player) {
 		super(player);
 	}
 
-	@Override public @NotNull LocalPlayer player() {
+	@Override public LocalPlayer player() {
 		return (LocalPlayer)super.player();
 	}
 
@@ -58,7 +59,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 		this.autoParagliding = autoParagliding;
 	}
 
-	@Override protected @NotNull Stamina createCustomStamina() {
+	@Override protected Stamina createCustomStamina() {
 		return ParagliderAPI.staminaFactory().clientFactory().createLocalClientInstance(player());
 	}
 
@@ -123,7 +124,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 		}
 	}
 
-	@Override public void syncMovement(@NotNull Identifier stateId, int recoveryDelay, double efficiency) {
+	@Override public void syncMovement(Identifier stateId, int recoveryDelay, double efficiency) {
 		super.syncMovement(stateId, recoveryDelay, efficiency);
 		syncClientParagliding(state().paragliding());
 	}

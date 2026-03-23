@@ -11,25 +11,26 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Optional;
 
+@NullMarked
 public class TarreyTownGoddessStatue extends Structure {
 	public static final MapCodec<TarreyTownGoddessStatue> CODEC = simpleCodec(TarreyTownGoddessStatue::new);
 	private static final Identifier TEMPLATE = ParagliderAPI.id("tarrey_town_goddess_statue");
 
-	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {
+	public static StructurePieceType.StructureTemplateType pieceType() {
 		return BaseHornedStatuePiece.createType(() -> Contents.get().tarreyTownGoddessStatuePiece());
 	}
 
-	public TarreyTownGoddessStatue(@NotNull StructureSettings structureSettings) {
+	public TarreyTownGoddessStatue(StructureSettings structureSettings) {
 		super(structureSettings);
 	}
 
-	@Override public @NotNull Optional<GenerationStub> findGenerationPoint(@NotNull GenerationContext ctx) {
+	@Override public Optional<GenerationStub> findGenerationPoint(GenerationContext ctx) {
 		StructureTemplate t = ctx.structureTemplateManager().getOrCreate(TEMPLATE);
 
 		Rotation rotation = Rotation.getRandom(ctx.random());
@@ -44,10 +45,10 @@ public class TarreyTownGoddessStatue extends Structure {
 						.rot(pivot, rotation))));
 	}
 
-	@Override public @NotNull StructureType<?> type() {
+	@Override public StructureType<?> type() {
 		return Contents.get().tarreyTownGoddessStatue();
 	}
-	@Override public @NotNull GenerationStep.Decoration step() {
+	@Override public GenerationStep.Decoration step() {
 		return GenerationStep.Decoration.LAKES;
 	}
 }

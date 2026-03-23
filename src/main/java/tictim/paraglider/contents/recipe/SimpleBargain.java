@@ -14,9 +14,9 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.*;
@@ -27,8 +27,9 @@ import tictim.paraglider.contents.recipe.preview.VesselPreview;
 
 import java.util.*;
 
+@NullMarked
 public class SimpleBargain implements Bargain {
-	public static final RecipeSerializer<@NotNull SimpleBargain> SERIALIZER = new RecipeSerializer<>(
+	public static final RecipeSerializer<SimpleBargain> SERIALIZER = new RecipeSerializer<>(
 			SimpleBargainCodec.CODEC, SimpleBargainCodec.STREAM_CODEC
 	);
 
@@ -50,16 +51,16 @@ public class SimpleBargain implements Bargain {
 	private @Nullable List<BargainPreview<?>> demandPreviews;
 	private @Nullable List<BargainPreview<?>> offerPreviews;
 
-	public SimpleBargain(@NotNull Identifier bargainType,
-	                     @NotNull List<@NotNull SizedIngredient> itemDemands,
+	public SimpleBargain(Identifier bargainType,
+	                     List<SizedIngredient> itemDemands,
 	                     int heartContainerDemands,
 	                     int staminaVesselDemands,
 	                     int essenceDemands,
-	                     @NotNull List<@NotNull ItemStackTemplate> itemOffers,
+	                     List<ItemStackTemplate> itemOffers,
 	                     int heartContainerOffers,
 	                     int staminaVesselOffers,
 	                     int essenceOffers,
-	                     @NotNull Set<@NotNull String> userTags) {
+	                     Set<String> userTags) {
 		this.bargainType = bargainType;
 		this.itemDemands = ImmutableList.copyOf(itemDemands);
 		for (var itemDemand : this.itemDemands) Objects.requireNonNull(itemDemand);
@@ -84,11 +85,11 @@ public class SimpleBargain implements Bargain {
 		if (this.essenceOffers > 0) this.tags.add(ParagliderBargainTags.GIVES_ESSENCE);
 	}
 
-	@Override public @NotNull Identifier getBargainType() {
+	@Override public Identifier getBargainType() {
 		return bargainType;
 	}
 
-	public @NotNull List<SizedIngredient> getItemDemands() {
+	public List<SizedIngredient> getItemDemands() {
 		return itemDemands;
 	}
 	public int getHeartContainerDemands() {
@@ -101,7 +102,7 @@ public class SimpleBargain implements Bargain {
 		return essenceDemands;
 	}
 
-	public @NotNull List<ItemStackTemplate> getItemOffers() {
+	public List<ItemStackTemplate> getItemOffers() {
 		return itemOffers;
 	}
 	public int getHeartContainerOffers() {
@@ -114,15 +115,15 @@ public class SimpleBargain implements Bargain {
 		return essenceOffers;
 	}
 
-	public @NotNull Set<String> getUserTags() {
+	public Set<String> getUserTags() {
 		return userTags;
 	}
 
-	@Override public boolean isAvailableFor(@NotNull Player player, @Nullable BlockPos pos) {
+	@Override public boolean isAvailableFor(Player player, @Nullable BlockPos pos) {
 		return true;
 	}
 
-	@Override public @NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewDemands() {
+	@Override public @Unmodifiable List<BargainPreview<?>> previewDemands() {
 		if (this.demandPreviews != null) return this.demandPreviews;
 		this.demandPreviews = new ArrayList<>();
 
@@ -143,7 +144,7 @@ public class SimpleBargain implements Bargain {
 		return this.demandPreviews;
 	}
 
-	@Override public @NotNull @Unmodifiable List<@NotNull BargainPreview<?>> previewOffers() {
+	@Override public @Unmodifiable List<BargainPreview<?>> previewOffers() {
 		if (this.offerPreviews != null) return this.offerPreviews;
 		this.offerPreviews = new ArrayList<>();
 
@@ -164,7 +165,7 @@ public class SimpleBargain implements Bargain {
 		return this.offerPreviews;
 	}
 
-	@Override public int @NotNull [] countDemands(@NotNull Player player) {
+	@Override public int[] countDemands(Player player) {
 		IntList list = new IntArrayList();
 
 		for (SizedIngredient i : this.itemDemands) {
@@ -186,7 +187,7 @@ public class SimpleBargain implements Bargain {
 		return list.toIntArray();
 	}
 
-	@Override public @NotNull BargainResult bargain(@NotNull Player player, boolean simulate) {
+	@Override public BargainResult bargain(Player player, boolean simulate) {
 		VesselContainer container = VesselContainer.get(player);
 
 		Set<String> reasons = new HashSet<>();
@@ -263,14 +264,14 @@ public class SimpleBargain implements Bargain {
 		return BargainResult.success();
 	}
 
-	@Override public @NotNull @Unmodifiable Set<@NotNull String> getBargainTags() {
+	@Override public @Unmodifiable Set<String> getBargainTags() {
 		return Collections.unmodifiableSet(this.tags);
 	}
 
-	@Override public @NotNull RecipeSerializer<SimpleBargain> getSerializer() {
+	@Override public RecipeSerializer<SimpleBargain> getSerializer() {
 		return SERIALIZER;
 	}
-	@Override public @NotNull RecipeType<Bargain> getType() {
+	@Override public RecipeType<Bargain> getType() {
 		return Contents.get().bargainRecipeType();
 	}
 }

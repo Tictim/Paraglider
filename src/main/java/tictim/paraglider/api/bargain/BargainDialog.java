@@ -6,18 +6,19 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
 
+@NullMarked
 public record BargainDialog(
-		@NotNull @Unmodifiable List<@NotNull Dialog> initialDialog,
+		@Unmodifiable List<Dialog> initialDialog,
 		@Nullable Dialog initialDialogFallback,
-		@NotNull @Unmodifiable List<@NotNull Dialog> successDialog,
+		@Unmodifiable List<Dialog> successDialog,
 		@Nullable Dialog successDialogFallback,
-		@NotNull @Unmodifiable List<@NotNull Dialog> failDialog,
+		@Unmodifiable List<Dialog> failDialog,
 		@Nullable Dialog failDialogFallback
 ) {
 	public static final BargainDialog EMPTY = new BargainDialog(List.of(), null, List.of(), null, List.of(), null);
@@ -36,9 +37,9 @@ public record BargainDialog(
 			successDialog, successDialogFallback.orElse(null),
 			failDialog, failDialogFallback.orElse(null))));
 
-	public BargainDialog(@NotNull List<@NotNull Dialog> initialDialog, @Nullable Dialog initialDialogFallback,
-	                     @NotNull List<@NotNull Dialog> successDialog, @Nullable Dialog successDialogFallback,
-	                     @NotNull List<@NotNull Dialog> failDialog, @Nullable Dialog failDialogFallback) {
+	public BargainDialog(List<Dialog> initialDialog, @Nullable Dialog initialDialogFallback,
+	                     List<Dialog> successDialog, @Nullable Dialog successDialogFallback,
+	                     List<Dialog> failDialog, @Nullable Dialog failDialogFallback) {
 		this.initialDialog = initialDialog.stream().filter(dialog -> dialog.weight > 0).toList();
 		this.initialDialogFallback = initialDialogFallback;
 		this.successDialog = successDialog.stream().filter(dialog -> dialog.weight > 0).toList();
@@ -47,21 +48,21 @@ public record BargainDialog(
 		this.failDialogFallback = failDialogFallback;
 	}
 
-	public @Nullable Component randomInitialDialog(@NotNull Random random) {
+	public @Nullable Component randomInitialDialog(Random random) {
 		return randomDialog(this.initialDialog, this.initialDialogFallback, random, null, null);
 	}
 
-	public @Nullable Component randomSuccessDialog(@NotNull Random random, @NotNull Set<String> tags) {
+	public @Nullable Component randomSuccessDialog(Random random, Set<String> tags) {
 		return randomDialog(this.successDialog, this.successDialogFallback, random, Objects.requireNonNull(tags), null);
 	}
 
-	public @Nullable Component randomFailDialog(@NotNull Random random, @NotNull Set<String> tags, @NotNull Set<String> failReasons) {
+	public @Nullable Component randomFailDialog(Random random, Set<String> tags, Set<String> failReasons) {
 		return randomDialog(this.failDialog, this.failDialogFallback, random, Objects.requireNonNull(tags), Objects.requireNonNull(failReasons));
 	}
 
-	private @Nullable Component randomDialog(@NotNull List<Dialog> dialogs,
+	private @Nullable Component randomDialog(List<Dialog> dialogs,
 	                                         @Nullable Dialog fallback,
-	                                         @NotNull Random random,
+	                                         Random random,
 	                                         @Nullable Set<String> tags,
 	                                         @Nullable Set<String> failReasons) {
 		long weightSum = 0;
@@ -89,10 +90,10 @@ public record BargainDialog(
 	}
 
 	public record Dialog(
-			@NotNull Component text,
+			Component text,
 			int weight,
-			@Nullable @Unmodifiable Set<@NotNull String> tagFilter,
-			@Nullable @Unmodifiable Set<@NotNull String> failReasonFilter
+			@Nullable @Unmodifiable Set<String> tagFilter,
+			@Nullable @Unmodifiable Set<String> failReasonFilter
 	) {
 		public static final Codec<Dialog> CODEC = RecordCodecBuilder.create(b -> b.group(
 				ComponentSerialization.CODEC.fieldOf("dialog").forGetter(d -> d.text),
@@ -105,28 +106,28 @@ public record BargainDialog(
 
 		// utility methods below
 
-		public static @NotNull Dialog create(@NotNull String translateKey) {
+		public static Dialog create(String translateKey) {
 			return create(translateKey, 1);
 		}
 
-		public static @NotNull Dialog create(@NotNull String translateKey, int weight) {
+		public static Dialog create(String translateKey, int weight) {
 			return new Dialog(Component.translatable(Objects.requireNonNull(translateKey)), weight, null, null);
 		}
 
-		public static @NotNull Dialog createForTag(@NotNull String translateKey, @NotNull String @NotNull ... tags) {
+		public static Dialog createForTag(String translateKey, String... tags) {
 			return createForTag(translateKey, 1, tags);
 		}
 
-		public static @NotNull Dialog createForTag(@NotNull String translateKey, int weight, @NotNull String @NotNull ... tags) {
+		public static Dialog createForTag(String translateKey, int weight, String... tags) {
 			return new Dialog(Component.translatable(Objects.requireNonNull(translateKey)), weight,
 					tags.length == 0 ? null : Set.of(tags), null);
 		}
 
-		public static @NotNull Dialog createForFailReason(@NotNull String translateKey, @NotNull String @NotNull ... failReasons) {
+		public static Dialog createForFailReason(String translateKey, String... failReasons) {
 			return createForFailReason(translateKey, 1, failReasons);
 		}
 
-		public static @NotNull Dialog createForFailReason(@NotNull String translateKey, int weight, @NotNull String @NotNull ... failReasons) {
+		public static Dialog createForFailReason(String translateKey, int weight, String... failReasons) {
 			return new Dialog(Component.translatable(Objects.requireNonNull(translateKey)), weight,
 					null, failReasons.length == 0 ? null : Set.of(failReasons));
 		}

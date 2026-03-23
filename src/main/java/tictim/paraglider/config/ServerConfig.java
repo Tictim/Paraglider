@@ -1,8 +1,9 @@
 package tictim.paraglider.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ServerConfig implements Cfg {
 	public final ModConfigSpec spec;
 
@@ -175,11 +176,11 @@ public class ServerConfig implements Cfg {
 	@Override public boolean runningConsumesStamina() {
 		return get(spec, runningAndSwimmingConsumesStamina);
 	}
-	@Override public @NotNull TotwCompatConfigOption paragliderInTowersOfTheWild() {
+	@Override public TotwCompatConfigOption paragliderInTowersOfTheWild() {
 		return get(spec, paragliderInTowersOfTheWild);
 	}
 
-	private static <T> @NotNull T get(@NotNull ModConfigSpec spec, @NotNull ModConfigSpec.ConfigValue<T> val) {
+	private static <T> T get(ModConfigSpec spec, ModConfigSpec.ConfigValue<T> val) {
 		return spec.isLoaded() ? val.get() : val.getDefault();
 	}
 }

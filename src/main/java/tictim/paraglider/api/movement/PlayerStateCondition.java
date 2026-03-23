@@ -1,36 +1,37 @@
 package tictim.paraglider.api.movement;
 
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.stamina.Stamina;
 
 /**
  * Predicate for player state connections. Conditions are checked once per connection,
  */
+@NullMarked
 @FunctionalInterface
 public interface PlayerStateCondition {
-	boolean test(@NotNull Context context);
+	boolean test(Context context);
 
 	interface Context {
 		/**
 		 * @return The subject which player state is being evaluated
 		 */
-		@NotNull ServerPlayer player();
+		ServerPlayer player();
 
 		/**
 		 * @return Movement instance associated with the player
 		 */
-		@NotNull Movement movement();
+		Movement movement();
 
 		/**
 		 * @return Stamina instance associated with the player
 		 */
-		@NotNull Stamina stamina();
+		Stamina stamina();
 
 		/**
 		 * @return Previous player state for the player
 		 */
-		@NotNull PlayerState prevState();
+		PlayerState prevState();
 
 		boolean paragliding();
 

@@ -13,8 +13,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.config.DebugCfg;
 
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static tictim.paraglider.ParagliderMod.LOGGER;
 
+@NullMarked
 public class WindSourceBlockState {
 	private final Map<Block, Object2IntOpenHashMap<BlockState>> blockStates = new Object2ObjectOpenHashMap<>();
 	private int maxWindHeight;
@@ -98,9 +99,9 @@ public class WindSourceBlockState {
 						blockCache.clear();
 					}
 					case WindSource.TagCondition tagCondition -> {
-						for (TagKey<@NotNull Block> tag : tagCondition.tags()) {
+						for (TagKey<Block> tag : tagCondition.tags()) {
 							blocks.get(tag).ifPresent(holders -> {
-								for (Holder<@NotNull Block> h : holders) {
+								for (Holder<Block> h : holders) {
 									add(windSource.height(), h.value(), null);
 								}
 							});
@@ -135,7 +136,7 @@ public class WindSourceBlockState {
 		}
 	}
 
-	private static <T> String n(Holder<@NotNull T> holder) {
+	private static <T> String n(Holder<T> holder) {
 		return holder.unwrapKey().map(ResourceKey::identifier).map(Identifier::toString).orElse("[No ID]");
 	}
 
@@ -143,11 +144,11 @@ public class WindSourceBlockState {
 		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
-	private static <T extends Comparable<T>> String propertyValueToString(BlockState state, Property<@NotNull T> property) {
+	private static <T extends Comparable<T>> String propertyValueToString(BlockState state, Property<T> property) {
 		return property.getName(state.getValue(property));
 	}
 
-	private void add(int height, @NotNull Block block, @Nullable BlockState state) {
+	private void add(int height, Block block, @Nullable BlockState state) {
 		var m = this.blockStates.computeIfAbsent(block, b -> new Object2IntOpenHashMap<>());
 		if (state == null) {
 			int d = m.defaultReturnValue();
@@ -159,7 +160,7 @@ public class WindSourceBlockState {
 		this.maxWindHeight = Math.max(this.maxWindHeight, height);
 	}
 
-	public int getWindSourceHeight(@NotNull BlockState state) {
+	public int getWindSourceHeight(BlockState state) {
 		var map = this.blockStates.get(state.getBlock());
 		if (map != null) return map.getInt(state);
 		else return 0;

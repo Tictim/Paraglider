@@ -1,10 +1,11 @@
 package tictim.paraglider.config;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 
+@NullMarked
 public interface DebugCfg {
-	static @NotNull DebugCfg get() {
+	static DebugCfg get() {
 		return ParagliderMod.instance().getDebugConfig();
 	}
 

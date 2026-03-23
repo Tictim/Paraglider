@@ -6,13 +6,14 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 
 import static net.minecraft.core.registries.Registries.BLOCK;
 import static net.minecraft.core.registries.Registries.ITEM;
 import static tictim.paraglider.api.ParagliderAPI.id;
 
+@NullMarked
 public interface ParagliderTags {
 	TagKey<Item> PARAGLIDERS = ParagliderAPI.PARAGLIDERS;
 	TagKey<Item> STATUES = TagKey.create(ITEM, id("statues"));
@@ -29,7 +30,7 @@ public interface ParagliderTags {
 		TagKey<Biome> HAS_STRUCTURE_NETHER_HORNED_STATUE = hasStructure(id("nether_horned_statue"));
 		TagKey<Biome> HAS_STRUCTURE_TARREY_TOWN_GODDESS_STATUE = hasStructure(id("tarrey_town_goddess_statue"));
 
-		private static @NotNull TagKey<Biome> hasStructure(@NotNull Identifier id) {
+		private static TagKey<Biome> hasStructure(Identifier id) {
 			return TagKey.create(Registries.BIOME, id.withPrefix("has_structure/"));
 		}
 	}

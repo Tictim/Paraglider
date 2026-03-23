@@ -4,11 +4,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.BargainPreview;
 
+@NullMarked
 public record SimplePreview(
-		@NotNull SlotDisplay display,
+		SlotDisplay display,
 		int quantity
 ) implements BargainPreview<SimplePreview> {
 	public static final Type<SimplePreview> TYPE = new Type<SimplePreview>(StreamCodec.of(
@@ -29,7 +30,7 @@ public record SimplePreview(
 		this(new SlotDisplay.ItemStackSlotDisplay(item), item.count());
 	}
 
-	@Override public @NotNull Type<SimplePreview> type() {
+	@Override public Type<SimplePreview> type() {
 		return TYPE;
 	}
 }

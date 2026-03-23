@@ -2,8 +2,8 @@ package tictim.paraglider.api.stamina;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.PlayerState;
 
@@ -54,8 +54,9 @@ import tictim.paraglider.api.movement.PlayerState;
  *
  * @see PlayerState
  */
+@NullMarked
 public interface StaminaEfficiencyLogic {
-	static @NotNull StaminaEfficiencyLogicHandler handler() {
+	static StaminaEfficiencyLogicHandler handler() {
 		return ParagliderAPI.staminaEfficiencyLogicHandler();
 	}
 
@@ -90,7 +91,7 @@ public interface StaminaEfficiencyLogic {
 	 * @param context          Context
 	 * @return Whether the logic is applicable
 	 */
-	boolean isApplicable(double baseStaminaDelta, @NotNull Context context);
+	boolean isApplicable(double baseStaminaDelta, Context context);
 
 	/**
 	 * <p>
@@ -104,7 +105,7 @@ public interface StaminaEfficiencyLogic {
 	 * @param context          Context
 	 * @return Efficiency
 	 */
-	double getEfficiency(double baseStaminaDelta, @NotNull Context context);
+	double getEfficiency(double baseStaminaDelta, Context context);
 
 	/**
 	 * Context for stamina efficiency calculations.
@@ -119,7 +120,7 @@ public interface StaminaEfficiencyLogic {
 		 * @param id ID
 		 * @return Whether {@link #state()} is not null and has given ID
 		 */
-		default boolean stateIs(@NotNull Identifier id) {
+		default boolean stateIs(Identifier id) {
 			PlayerState state = state();
 			return state != null && state.is(id);
 		}
@@ -130,7 +131,7 @@ public interface StaminaEfficiencyLogic {
 		 * @param flag Flag
 		 * @return Whether {@link #state()} is not null and has given flag
 		 */
-		default boolean stateHasFlag(@NotNull Identifier flag) {
+		default boolean stateHasFlag(Identifier flag) {
 			PlayerState state = state();
 			return state != null && state.hasFlag(flag);
 		}

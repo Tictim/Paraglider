@@ -4,9 +4,9 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import org.objectweb.asm.Type;
 import tictim.paraglider.api.movement.MovementPlugin;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NullMarked
 public final class NeoForgeParagliderPluginLoader implements ParagliderPluginLoader {
 	private static final Type annotationType = Type.getType(ParagliderPlugin.class);
 	private static final Class<?>[] allPluginTypes = {
@@ -34,11 +35,11 @@ public final class NeoForgeParagliderPluginLoader implements ParagliderPluginLoa
 	private final List<PluginInstance<StaminaPlugin>> staminaPlugins = new ArrayList<>();
 	private final List<PluginInstance<MovementPlugin>> movementPlugins = new ArrayList<>();
 
-	@Override public @NotNull @Unmodifiable List<@NotNull PluginInstance<StaminaPlugin>> getStaminaPlugins() {
+	@Override public @Unmodifiable List<PluginInstance<StaminaPlugin>> getStaminaPlugins() {
 		checkAndInitialize();
 		return Collections.unmodifiableList(staminaPlugins);
 	}
-	@Override public @NotNull @Unmodifiable List<@NotNull PluginInstance<MovementPlugin>> getMovementPlugins() {
+	@Override public @Unmodifiable List<PluginInstance<MovementPlugin>> getMovementPlugins() {
 		checkAndInitialize();
 		return Collections.unmodifiableList(movementPlugins);
 	}
@@ -96,7 +97,7 @@ public final class NeoForgeParagliderPluginLoader implements ParagliderPluginLoa
 		}
 	}
 
-	private static boolean checkPluginType(@NotNull Class<?> clazz) {
+	private static boolean checkPluginType(Class<?> clazz) {
 		for (Class<?> c : allPluginTypes) {
 			if (c.isAssignableFrom(clazz)) return true;
 		}

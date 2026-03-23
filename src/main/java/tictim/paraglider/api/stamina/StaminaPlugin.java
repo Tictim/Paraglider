@@ -3,8 +3,8 @@ package tictim.paraglider.api.stamina;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.StaminaEfficiencyAttribute;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
@@ -17,6 +17,7 @@ import java.util.function.Supplier;
  *
  * @see ParagliderPlugin
  */
+@NullMarked
 public interface StaminaPlugin extends ParagliderPluginBase {
 	/**
 	 * @return A factory of {@link Stamina} interface. Any nonnull object returned by this method will replace default
@@ -28,7 +29,7 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 		return null;
 	}
 
-	default void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {}
+	default void registerStaminaEfficiencyLogic(StaminaEfficiencyLogicRegister register) {}
 
 	/**
 	 * @return Return {@code true} on client side to remove stamina wheel widget from the game. This is not a flag to
@@ -42,7 +43,7 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 	/**
 	 * @return Implementation of {@link ConflictResolver} for this {@link StaminaPlugin} instance
 	 */
-	default @NotNull ConflictResolver<StaminaPlugin, StaminaPluginAction> getStaminaPluginConflictResolver() {
+	default ConflictResolver<StaminaPlugin, StaminaPluginAction> getStaminaPluginConflictResolver() {
 		return ConflictResolver.proceed();
 	}
 
@@ -56,7 +57,7 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 		 * @param logic Logic
 		 * @throws NullPointerException If {@code logic == null}
 		 */
-		void register(@NotNull StaminaEfficiencyLogic logic);
+		void register(StaminaEfficiencyLogic logic);
 
 		/**
 		 * Register stamina efficiency logic using attributes. Note that in addition to the condition supplied, whether
@@ -67,13 +68,13 @@ public interface StaminaPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException If {@code attribute == null || condition == null}
 		 * @see StaminaEfficiencyAttribute
 		 */
-		void registerAttribute(@NotNull Supplier<Holder<Attribute>> attribute, @NotNull AttributeEfficiencyCondition condition);
+		void registerAttribute(Supplier<Holder<Attribute>> attribute, AttributeEfficiencyCondition condition);
 	}
 
 	@FunctionalInterface
 	interface AttributeEfficiencyCondition {
 		boolean isApplicable(double baseStaminaDelta,
-		                     @NotNull StaminaEfficiencyLogic.Context context,
-		                     @NotNull Player player);
+		                     StaminaEfficiencyLogic.Context context,
+		                     Player player);
 	}
 }

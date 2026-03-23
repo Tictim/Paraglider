@@ -1,14 +1,15 @@
 package tictim.paraglider.config;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 
 /**
  * Easy to access switches to toggle side features on and off.<br>
  * Most of them requires server restart or datapack reload. All of them, actually.
  */
+@NullMarked
 public interface FeatureCfg {
-	static @NotNull FeatureCfg get() {
+	static FeatureCfg get() {
 		return ParagliderMod.instance().getFeatureConfig();
 	}
 

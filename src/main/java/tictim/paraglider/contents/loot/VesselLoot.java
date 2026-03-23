@@ -10,9 +10,10 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
 
+@NullMarked
 public class VesselLoot extends LootModifier {
 	public static final MapCodec<VesselLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
 			b.group(Codec.INT.fieldOf("count").forGetter(m -> m.count))
@@ -21,18 +22,18 @@ public class VesselLoot extends LootModifier {
 
 	private final int count;
 
-	public VesselLoot(int count, @NotNull LootItemCondition @NotNull ... conditions) {
+	public VesselLoot(int count, LootItemCondition... conditions) {
 		super(conditions);
 		this.count = count;
 	}
 
-	@Override protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
+	@Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
 		Item item = ParagliderUtils.getAppropriateVessel();
 		if (item != null) generatedLoot.add(new ItemStack(item, count));
 		return generatedLoot;
 	}
 
-	@Override public @NotNull MapCodec<? extends IGlobalLootModifier> codec() {
+	@Override public MapCodec<? extends IGlobalLootModifier> codec() {
 		return CODEC;
 	}
 }

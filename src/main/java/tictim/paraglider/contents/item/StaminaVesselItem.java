@@ -6,14 +6,15 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.config.Cfg;
 
 import java.util.function.Consumer;
 
+@NullMarked
 public class StaminaVesselItem extends VesselItem {
-	public StaminaVesselItem(@NotNull Properties properties) {
+	public StaminaVesselItem(Properties properties) {
 		super(properties);
 	}
 
@@ -23,9 +24,9 @@ public class StaminaVesselItem extends VesselItem {
 
 	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
-			@NotNull ItemStack stack, @NotNull TooltipContext context,
-			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
-			@NotNull TooltipFlag flag) {
+			ItemStack stack, TooltipContext context,
+			TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder,
+			TooltipFlag flag) {
 		tooltipAdder.accept(Component.translatable("tooltip.paraglider.stamina_vessel.1",
 				Component.literal(Integer.toString(Cfg.get().maxStaminaVessels()))
 						.setStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))

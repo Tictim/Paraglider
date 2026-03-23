@@ -1,7 +1,7 @@
 package tictim.paraglider.api.plugin;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Objects;
 
@@ -12,7 +12,8 @@ import java.util.Objects;
  * @param modid    Optional mod ID
  * @param <T>      Type of the plugin
  */
-public record PluginInstance<T extends ParagliderPluginBase>(@NotNull T instance, @Nullable String modid) {
+@NullMarked
+public record PluginInstance<T extends ParagliderPluginBase>(T instance, @Nullable String modid) {
 	public PluginInstance {
 		Objects.requireNonNull(instance, "instance == null");
 	}
@@ -27,7 +28,7 @@ public record PluginInstance<T extends ParagliderPluginBase>(@NotNull T instance
 	 * @throws NullPointerException If {@code clazz == null}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T2 extends ParagliderPluginBase> @NotNull PluginInstance<T2> cast(@NotNull Class<T2> clazz) {
+	public <T2 extends ParagliderPluginBase> PluginInstance<T2> cast(Class<T2> clazz) {
 		if (!clazz.isInstance(instance)) {
 			throw new ClassCastException("Cannot cast plugin " + instance + " to " + clazz);
 		}

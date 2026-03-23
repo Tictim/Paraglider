@@ -4,11 +4,12 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderClientMod;
 
 import java.util.function.Function;
 
+@NullMarked
 public record ParagliderClientSettings(
 		StaminaWheelPosition staminaWheelPosition,
 		double windParticleFrequency,
@@ -44,7 +45,7 @@ public record ParagliderClientSettings(
 					.forGetter(ParagliderClientSettings::autoParagliding)
 	).apply(b, ParagliderClientSettings::new));
 
-	public static @NotNull ParagliderClientSettings get() {
+	public static ParagliderClientSettings get() {
 		return ParagliderClientMod.instance().getSettings();
 	}
 }

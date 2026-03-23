@@ -2,7 +2,7 @@ package tictim.paraglider.plugin;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.UseEffects;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.movement.MovementPlugin;
 import tictim.paraglider.api.movement.MovementPluginAction;
@@ -17,9 +17,10 @@ import tictim.paraglider.wind.WindLogic;
 
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.*;
 
+@NullMarked
 @ParagliderPlugin
 public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
-	@Override public void registerNewStates(@NotNull PlayerStateRegister register) {
+	@Override public void registerNewStates(PlayerStateRegister register) {
 		register.register(IDLE, IDLE_STAMINA_DELTA, Flags.CAN_USE_PARAGLIDER);
 		register.register(FLYING, FLYING_STAMINA_DELTA);
 		register.register(CREATIVE_FLYING, CREATIVE_FLYING_STAMINA_DELTA);
@@ -35,7 +36,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.register(MIDAIR, MIDAIR_STAMINA_DELTA, Flags.CAN_USE_PARAGLIDER);
 	}
 
-	@Override public void registerStateConnections(@NotNull PlayerStateConnectionRegister register) {
+	@Override public void registerStateConnections(PlayerStateConnectionRegister register) {
 		register.connect(IDLE, FLYING, c -> c.player().getAbilities().flying, FLYING_PRIORITY);
 
 		register.connect(FLYING, CREATIVE_FLYING, c -> c.player().isCreative());
@@ -59,7 +60,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.connect(IDLE, MIDAIR, c -> !c.player().onGround(), MIDAIR_PRIORITY);
 	}
 
-	@Override public void registerStaminaEfficiencyLogic(@NotNull StaminaEfficiencyLogicRegister register) {
+	@Override public void registerStaminaEfficiencyLogic(StaminaEfficiencyLogicRegister register) {
 		Contents contents = Contents.get();
 		register.registerAttribute(contents::staminaEfficiency, (d, c, p) -> d < 0 && c.state() != null);
 		register.registerAttribute(contents::staminaRecovery, (d, c, p) -> d > 0 && c.state() != null);
@@ -68,7 +69,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.registerAttribute(contents::swimmingStaminaEfficiency, (d, c, p) -> d < 0 && c.stateIs(SWIMMING));
 	}
 
-	@Override public @NotNull ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
+	@Override public ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
 		return (a, p) -> {
 			if (a instanceof NewState) return Resolution.PROCEED; // proceed with initial state registration
 			else return Resolution.ABORT; // otherwise abort the change to enable other mods to Do Things

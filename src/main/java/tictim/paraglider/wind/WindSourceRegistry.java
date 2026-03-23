@@ -10,31 +10,28 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.ParagliderAPI;
 
+@NullMarked
 public class WindSourceRegistry {
-	public static final ResourceKey<@NotNull Registry<@NotNull WindSource>> REGISTRY_KEY =
+	public static final ResourceKey<Registry<WindSource>> REGISTRY_KEY =
 			ResourceKey.createRegistryKey(ParagliderAPI.id("wind_sources"));
 
 	private static final Logger LOGGER = LogManager.getLogger("Paraglider - WindSourceRegistry");
 
-	public static @NotNull WindSourceRegistry get() {
+	public static WindSourceRegistry get() {
 		return ParagliderMod.instance().windSourceRegistry();
 	}
 
 	private WindSourceBlockState blockStates = new WindSourceBlockState();
 
-	public boolean isInitialized() {
-		return this.blockStates != null;
-	}
-
 	public int maxWindHeight() {
 		return this.blockStates.maxWindHeight();
 	}
 
-	public int getWindSourceHeight(@NotNull BlockState state) {
+	public int getWindSourceHeight(BlockState state) {
 		return this.blockStates.getWindSourceHeight(state);
 	}
 
@@ -42,7 +39,7 @@ public class WindSourceRegistry {
 		this.blockStates = new WindSourceBlockState(registryAccess);
 	}
 
-	public static final class ReloadListener extends SimplePreparableReloadListener<@NotNull Void> {
+	public static final class ReloadListener extends SimplePreparableReloadListener<Void> {
 		private final WindSourceRegistry windSourceRegistry;
 		private final RegistryAccess registryAccess;
 
@@ -51,11 +48,11 @@ public class WindSourceRegistry {
 			this.registryAccess = registryAccess;
 		}
 
-		@Override protected @NotNull Void prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+		@Override protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
 			return null;
 		}
 
-		@Override protected void apply(@NotNull Void object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+		@Override protected void apply(Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
 			this.windSourceRegistry.computeWindSource(this.registryAccess);
 		}
 	}

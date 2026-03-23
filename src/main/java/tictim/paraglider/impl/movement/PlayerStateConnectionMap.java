@@ -3,9 +3,9 @@ package tictim.paraglider.impl.movement;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.movement.PlayerStateCondition;
@@ -15,20 +15,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@NullMarked
 public final class PlayerStateConnectionMap {
 	private final Map<Identifier, ConnectionList> connections;
 	private final Object2IntMap<Identifier> stateEvalIndices = new Object2IntOpenHashMap<>();
 
-	public PlayerStateConnectionMap(@NotNull Map<@NotNull Identifier, @NotNull ConnectionList> connections) {
+	public PlayerStateConnectionMap(Map<Identifier, ConnectionList> connections) {
 		this.connections = connections;
 	}
 
-	public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull ConnectionList> connections() {
+	public @Unmodifiable Map<Identifier, ConnectionList> connections() {
 		return Collections.unmodifiableMap(this.connections);
 	}
 
-	public @NotNull PlayerState evaluate(@NotNull PlayerStateMap stateMap,
-	                                     @NotNull PlayerStateCondition.Context context) {
+	public PlayerState evaluate(PlayerStateMap stateMap,
+	                            PlayerStateCondition.Context context) {
 		Identifier currentState = ParagliderPlayerStates.IDLE;
 		@Nullable ConnectionList currentConnections = this.connections.get(currentState);
 		int currentIndex = 0;
@@ -66,10 +67,10 @@ public final class PlayerStateConnectionMap {
 	}
 
 	public record ConnectionList(
-			@NotNull @Unmodifiable List<@NotNull Connection> connections,
+			@Unmodifiable List<Connection> connections,
 			@Nullable Identifier fallback
 	) {
-		public ConnectionList(@NotNull @Unmodifiable List<@NotNull Connection> connections, @Nullable Identifier fallback) {
+		public ConnectionList(@Unmodifiable List<Connection> connections, @Nullable Identifier fallback) {
 			this.connections = List.copyOf(Objects.requireNonNull(connections, "connections == null"));
 			for (Connection connection : this.connections) Objects.requireNonNull(connection);
 			this.fallback = fallback;
@@ -77,7 +78,7 @@ public final class PlayerStateConnectionMap {
 	}
 
 	public record Connection(
-			@NotNull PlayerStateCondition condition,
-			@NotNull Identifier state
+			PlayerStateCondition condition,
+			Identifier state
 	) {}
 }

@@ -17,12 +17,13 @@ import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Optional;
 
+@NullMarked
 public class NetherHornedStatue extends Structure {
 	public static final MapCodec<NetherHornedStatue> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
 			settingsCodec(b),
@@ -31,13 +32,13 @@ public class NetherHornedStatue extends Structure {
 	private static final Identifier TEMPLATE = ParagliderAPI.id("nether_horned_statue");
 	private static final BlockPos PIVOT = new BlockPos(2, 1, 2);
 
-	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {
+	public static StructurePieceType.StructureTemplateType pieceType() {
 		return BaseHornedStatuePiece.createType(() -> Contents.get().netherHornedStatuePiece(), PIVOT);
 	}
 
 	public final HeightProvider height;
 
-	public NetherHornedStatue(@NotNull StructureSettings structureSettings, @NotNull HeightProvider height) {
+	public NetherHornedStatue(StructureSettings structureSettings, HeightProvider height) {
 		super(structureSettings);
 		this.height = height;
 	}
@@ -45,7 +46,7 @@ public class NetherHornedStatue extends Structure {
 	/**
 	 * @see net.minecraft.world.level.levelgen.structure.structures.NetherFossilStructure
 	 */
-	@Override public @NotNull Optional<GenerationStub> findGenerationPoint(@NotNull GenerationContext ctx) {
+	@Override public Optional<GenerationStub> findGenerationPoint(GenerationContext ctx) {
 		WorldgenRandom r = ctx.random();
 		int x = ctx.chunkPos().getMinBlockX() + r.nextInt(16);
 		int z = ctx.chunkPos().getMinBlockZ() + r.nextInt(16);
@@ -71,10 +72,10 @@ public class NetherHornedStatue extends Structure {
 						.rot(PIVOT, Rotation.getRandom(r), false))));
 	}
 
-	@Override public @NotNull StructureType<?> type() {
+	@Override public StructureType<?> type() {
 		return Contents.get().netherHornedStatue();
 	}
-	@Override public @NotNull GenerationStep.Decoration step() {
+	@Override public GenerationStep.Decoration step() {
 		return GenerationStep.Decoration.SURFACE_STRUCTURES;
 	}
 }

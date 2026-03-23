@@ -11,9 +11,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import tictim.paraglider.contents.recipe.CosmeticRecipe;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @NullMarked

@@ -9,8 +9,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.bargain.BargainContext;
 import tictim.paraglider.bargain.BargainHandler;
@@ -31,6 +31,7 @@ import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getB
 import static net.minecraft.commands.arguments.coordinates.Vec3Argument.getVec3;
 import static net.minecraft.commands.arguments.coordinates.Vec3Argument.vec3;
 
+@NullMarked
 public final class ParagliderCommands {
 	private ParagliderCommands() {}
 
@@ -58,7 +59,7 @@ public final class ParagliderCommands {
 								.executes(ctx -> ResourceType.ESSENCE.tell(ctx.getSource(), getPlayer(ctx, "player")))));
 	}
 
-	private static LiteralArgumentBuilder<CommandSourceStack> setVessel(@NotNull SetType type) {
+	private static LiteralArgumentBuilder<CommandSourceStack> setVessel(SetType type) {
 		return literal(type.name())
 				.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
 				.then(literal(ResourceType.HEART.name)
@@ -128,9 +129,9 @@ public final class ParagliderCommands {
 				.executes(context -> reloadPlayerStates(context.getSource()));
 	}
 
-	private static int startBargain(@NotNull CommandSourceStack source,
-	                                @NotNull ServerPlayer player,
-	                                @NotNull Identifier bargainType,
+	private static int startBargain(CommandSourceStack source,
+	                                ServerPlayer player,
+	                                Identifier bargainType,
 	                                @Nullable BlockPos pos,
 	                                @Nullable Identifier advancement,
 	                                @Nullable Vec3 lookAt) {
@@ -147,7 +148,7 @@ public final class ParagliderCommands {
 		}
 	}
 
-	private static int endBargain(@NotNull CommandSourceStack source, @NotNull ServerPlayer player) {
+	private static int endBargain(CommandSourceStack source, ServerPlayer player) {
 		BargainContext bargain = BargainHandler.getBargain(player);
 		if (bargain != null) {
 			if (bargain.isFinished()) {
@@ -163,12 +164,12 @@ public final class ParagliderCommands {
 		}
 	}
 
-	private static int reloadPlayerStates(@NotNull CommandSourceStack source) {
+	private static int reloadPlayerStates(CommandSourceStack source) {
 		ParagliderMod.instance().getPlayerStateMapConfig().reload(new PlayerStateMapConfig.Callback() {
-			@Override public void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated) {
+			@Override public void onSuccess(PlayerStateMap stateMap, boolean updated) {
 				source.sendSuccess(() -> Component.translatable("commands.paraglider.reload_player_states.success"), true);
 			}
-			@Override public void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update) {
+			@Override public void onFail(PlayerStateMap stateMap, RuntimeException exception, boolean update) {
 				source.sendFailure(Component.translatable("commands.paraglider.reload_player_states.fail"));
 			}
 		});
@@ -213,7 +214,7 @@ public final class ParagliderCommands {
 			this.takeFail = "commands.paraglider.take." + name + ".fail";
 		}
 
-		private int tell(@NotNull CommandSourceStack source, @NotNull Player player) {
+		private int tell(CommandSourceStack source, Player player) {
 			VesselContainer vessels = VesselContainer.get(player);
 			int value = switch (this) {
 				case HEART -> vessels.heartContainer();
@@ -224,10 +225,10 @@ public final class ParagliderCommands {
 			return value;
 		}
 
-		private int run(@NotNull CommandSourceStack source,
-		                @NotNull Player player,
+		private int run(CommandSourceStack source,
+		                Player player,
 		                int amount,
-		                @NotNull SetType type) {
+		                SetType type) {
 			VesselContainer vessels = VesselContainer.get(player);
 			switch (type) {
 				case set -> {
@@ -274,7 +275,7 @@ public final class ParagliderCommands {
 			throw new IllegalStateException("Unreachable");
 		}
 
-		private @NotNull VesselContainer.SetResult set(@NotNull VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
+		private VesselContainer.SetResult set(VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
 			return switch (this) {
 				case HEART -> vessels.setHeartContainer(amount, simulate, playEffect);
 				case STAMINA -> vessels.setStaminaVessel(amount, simulate, playEffect);
@@ -282,7 +283,7 @@ public final class ParagliderCommands {
 			};
 		}
 
-		private int give(@NotNull VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
+		private int give(VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
 			return switch (this) {
 				case HEART -> vessels.giveHeartContainers(amount, simulate, playEffect);
 				case STAMINA -> vessels.giveStaminaVessels(amount, simulate, playEffect);
@@ -290,7 +291,7 @@ public final class ParagliderCommands {
 			};
 		}
 
-		private int take(@NotNull VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
+		private int take(VesselContainer vessels, int amount, boolean simulate, boolean playEffect) {
 			return switch (this) {
 				case HEART -> vessels.takeHeartContainers(amount, simulate, playEffect);
 				case STAMINA -> vessels.takeStaminaVessels(amount, simulate, playEffect);

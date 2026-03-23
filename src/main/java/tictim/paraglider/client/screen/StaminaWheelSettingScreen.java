@@ -14,9 +14,8 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.client.render.SettingsWidgetStaminaWheelRenderer;
 import tictim.paraglider.client.settings.ExtraWheelAttachment;
@@ -33,6 +32,8 @@ import java.util.function.Supplier;
 import static tictim.paraglider.client.render.StaminaWheelConstants.WHEEL_RADIUS;
 import static tictim.paraglider.client.render.StaminaWheelConstants.wheelColor;
 
+@NullMarked
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class StaminaWheelSettingScreen extends Screen implements DisableStaminaRender {
 	private static final DecimalFormat PERCENTAGE = new DecimalFormat("#.#%");
 	private static final int ANCHOR_BUTTON_SIZE = 12;
@@ -54,7 +55,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	private ExtraWheelAttachmentButton extraWheelAttachmentCycleButton;
 	private List<Button> presetButtons;
 
-	private Component[] helpText;
+	private Component @Nullable [] helpText;
 
 	private final StaminaWheelPosition initialPos;
 	private ExtraWheelAttachment extraWheelAttachment;
@@ -137,9 +138,9 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	private Button presetButton(
-			@NotNull String langKey,
-			@NotNull StaminaWheelPosition staminaWheelPosition,
-			@NotNull ExtraWheelAttachment extraWheelAttachment) {
+			String langKey,
+			StaminaWheelPosition staminaWheelPosition,
+			ExtraWheelAttachment extraWheelAttachment) {
 		return addRenderableWidget(Button
 				.builder(Component.translatable("paraglider.settings.stamina_wheel_settings.preset." + langKey),
 						button -> applyPreset(staminaWheelPosition, extraWheelAttachment))
@@ -216,7 +217,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	// no background
 	@Override public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {}
 
-	@Override public boolean keyPressed(@NotNull KeyEvent event) {
+	@Override public boolean keyPressed(KeyEvent event) {
 		if (super.keyPressed(event)) return true;
 		var key = com.mojang.blaze3d.platform.InputConstants.getKey(event);
 		if (this.minecraft.options.keyInventory.isActiveAndMatches(key) ||
@@ -241,7 +242,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 		this.minecraft.setScreen(this.parent);
 	}
 
-	private void applyPreset(@NotNull StaminaWheelPosition staminaWheelPosition, @NotNull ExtraWheelAttachment extraWheelAttachment) {
+	private void applyPreset(StaminaWheelPosition staminaWheelPosition, ExtraWheelAttachment extraWheelAttachment) {
 		this.staminaWheelWidget.setWheelPos(staminaWheelPosition);
 		this.anchor = getAnchor(staminaWheelPosition);
 		this.extraWheelAttachment = extraWheelAttachment;
@@ -256,20 +257,20 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 
 	public static class ExtraWheelAttachmentButton extends AbstractButton {
 		private final ExtraWheelAttachment[] values = ExtraWheelAttachment.values();
-		private final Supplier<@NotNull ExtraWheelAttachment> value;
-		private final Consumer<@NonNull ExtraWheelAttachment> setValue;
+		private final Supplier<ExtraWheelAttachment> value;
+		private final Consumer<ExtraWheelAttachment> setValue;
 
 		public ExtraWheelAttachmentButton(
 				int x, int y, Component message,
-				Supplier<@NotNull ExtraWheelAttachment> value,
-				Consumer<@NonNull ExtraWheelAttachment> setValue) {
+				Supplier<ExtraWheelAttachment> value,
+				Consumer<ExtraWheelAttachment> setValue) {
 			super(x, y, EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE, EXTRA_WHEEL_ATTACHMENT_BUTTON_SIZE, message);
 
 			this.value = value;
 			this.setValue = setValue;
 		}
 
-		@Override public void onPress(@NonNull InputWithModifiers input) {
+		@Override public void onPress(InputWithModifiers input) {
 			ExtraWheelAttachment newValue = this.values[(this.value.get().ordinal() + 1) % this.values.length];
 			this.setValue.accept(newValue);
 		}
@@ -287,7 +288,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			);
 		}
 
-		@Override protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {}
+		@Override protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {}
 	}
 
 	public static class StaminaWheelWidget extends AbstractWidget {
@@ -364,7 +365,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 					this.screen.extraWheelAttachment);
 		}
 
-		@Override public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
+		@Override public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
 			if (this.active && this.visible && this.dragging &&
 					event.button() == InputConstants.MOUSE_BUTTON_RIGHT &&
 					isMouseOver(event.x(), event.y())) {
@@ -374,28 +375,28 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 			} else return super.mouseClicked(event, isDoubleClick);
 		}
 
-		@Override public void onClick(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
+		@Override public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
 			this.dragStartX = this.wheelX;
 			this.dragStartY = this.wheelY;
 			this.dragDeltaX = this.dragDeltaY = 0;
 			this.dragging = true;
 		}
 
-		@Override protected void onDrag(@NotNull MouseButtonEvent event, double dragX, double dragY) {
+		@Override protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
 			this.dragDeltaX += dragX;
 			this.dragDeltaY += dragY;
 			setWheelPos(this.dragStartX + this.dragDeltaX, this.dragStartY + this.dragDeltaY);
 		}
 
-		@Override public void onRelease(@NotNull MouseButtonEvent event) {
+		@Override public void onRelease(MouseButtonEvent event) {
 			if (this.dragging) {
 				setWheelPos(this.dragStartX + this.dragDeltaX, this.dragStartY + this.dragDeltaY);
 				this.dragging = false;
 			}
 		}
 
-		@Override public void playDownSound(@NotNull SoundManager handler) {}
-		@Override protected void updateWidgetNarration(@NotNull NarrationElementOutput o) {}
+		@Override public void playDownSound(SoundManager handler) {}
+		@Override protected void updateWidgetNarration(NarrationElementOutput o) {}
 
 		private void setWheelPos(StaminaWheelPosition pos) {
 			setWheelPosUncapped(pos.x(this.screen.width), pos.y(this.screen.height));

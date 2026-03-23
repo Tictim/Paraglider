@@ -8,7 +8,7 @@ import net.minecraft.client.data.models.model.*;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.client.ParaglidingItemProperty;
 import tictim.paraglider.contents.Contents;
 
@@ -18,22 +18,17 @@ import static net.minecraft.client.data.models.model.ItemModelUtils.conditional;
 import static net.minecraft.client.data.models.model.ItemModelUtils.tintedModel;
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
+@NullMarked
 public class ModelGen extends ModelProvider {
 	public static final int PARAGLIDER_DEFAULT_COLOR = 0xFFA65955;
 	public static final int DEKU_LEAF_DEFAULT_COLOR = 0xFF3FB53F;
 
 	private final TexturedModel.Provider placeholderTextureModel = b -> new TexturedModel(TextureMapping.cube(b), ModelTemplates.CUBE_ALL) {
-		@Override public @NotNull Identifier create(
-				@NotNull Block block,
-				@NotNull BiConsumer<Identifier, ModelInstance> output
-		) {
+		@Override public Identifier create(Block block, BiConsumer<Identifier, ModelInstance> output) {
 			return ModelLocationUtils.getModelLocation(block, "");
 		}
 
-		@Override public @NotNull Identifier createWithSuffix(
-				@NotNull Block block, @NotNull String suffix,
-				@NotNull BiConsumer<Identifier, ModelInstance> output
-		) {
+		@Override public Identifier createWithSuffix(Block block, String suffix, BiConsumer<Identifier, ModelInstance> output) {
 			return ModelLocationUtils.getModelLocation(block, suffix);
 		}
 	};
@@ -43,8 +38,8 @@ public class ModelGen extends ModelProvider {
 	}
 
 	@Override protected void registerModels(
-			@NotNull BlockModelGenerators blockModels,
-			@NotNull ItemModelGenerators itemModels
+			BlockModelGenerators blockModels,
+			ItemModelGenerators itemModels
 	) {
 		Contents c = Contents.get();
 

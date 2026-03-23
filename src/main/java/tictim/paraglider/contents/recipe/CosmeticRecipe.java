@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class CosmeticRecipe extends NormalCraftingRecipe {
 		this.result = result;
 	}
 
-	@Override public boolean matches(@NotNull CraftingInput input, @NotNull Level level) {
+	@Override public boolean matches(CraftingInput input, Level level) {
 		boolean inputSeen = false;
 		boolean[] reagentsSeen = new boolean[this.reagents.size()];
 
@@ -101,7 +100,7 @@ public class CosmeticRecipe extends NormalCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	@Override public @NotNull List<RecipeDisplay> display() {
+	@Override public List<RecipeDisplay> display() {
 		return List.of(new ShapelessCraftingRecipeDisplay(
 				Streams.concat(
 						Stream.of(this.input.display()),
@@ -112,7 +111,7 @@ public class CosmeticRecipe extends NormalCraftingRecipe {
 		));
 	}
 
-	@Override public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+	@Override public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
 		NonNullList<ItemStack> list = NonNullList.withSize(input.size(), ItemStack.EMPTY);
 
 		boolean inputSeen = false;

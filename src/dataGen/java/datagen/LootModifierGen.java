@@ -16,14 +16,15 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCon
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.loot.*;
 
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 public class LootModifierGen extends GlobalLootModifierProvider {
-	public LootModifierGen(@NotNull PackOutput output, @NotNull CompletableFuture<HolderLookup.Provider> registries) {
+	public LootModifierGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, registries, ParagliderAPI.MODID);
 	}
 

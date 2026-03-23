@@ -5,11 +5,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
-public record BargainMsg(int sessionId, @NotNull Identifier bargain) implements CustomPacketPayload {
+@NullMarked
+public record BargainMsg(int sessionId, Identifier bargain) implements CustomPacketPayload {
 	public static final Type<BargainMsg> TYPE = new Type<>(id("bargain"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, BargainMsg> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, BargainMsg::sessionId,
@@ -17,7 +18,7 @@ public record BargainMsg(int sessionId, @NotNull Identifier bargain) implements 
 			BargainMsg::new
 	);
 
-	@Override public @NotNull Type<? extends CustomPacketPayload> type() {
+	@Override public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

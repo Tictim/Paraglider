@@ -3,11 +3,12 @@ package tictim.paraglider.api.stamina;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Factory for {@link Stamina}.
  */
+@NullMarked
 public interface StaminaFactory {
 	/**
 	 * Create a new instance of {@link Stamina} for use in server environment.
@@ -15,7 +16,7 @@ public interface StaminaFactory {
 	 * @param player Server player
 	 * @return New {@link Stamina} instance
 	 */
-	@NotNull Stamina createServerInstance(@NotNull ServerPlayer player);
+	Stamina createServerInstance(ServerPlayer player);
 
 	/**
 	 * Create a new instance of {@link Stamina} for use in remote environment. Additionally, non-{@link ServerPlayer}
@@ -24,9 +25,9 @@ public interface StaminaFactory {
 	 * @param player Player
 	 * @return New {@link Stamina} instance
 	 */
-	@NotNull Stamina createRemoteInstance(@NotNull Player player);
+	Stamina createRemoteInstance(Player player);
 
-	@NotNull ClientFactory clientFactory();
+	ClientFactory clientFactory();
 
 	interface ClientFactory {
 		/**
@@ -36,6 +37,6 @@ public interface StaminaFactory {
 		 * @param player Local player
 		 * @return New {@link Stamina} instance
 		 */
-		@NotNull Stamina createLocalClientInstance(@NotNull LocalPlayer player);
+		Stamina createLocalClientInstance(LocalPlayer player);
 	}
 }

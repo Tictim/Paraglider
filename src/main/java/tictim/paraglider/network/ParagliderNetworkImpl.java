@@ -14,8 +14,8 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.bargain.BargainContext;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("SameParameterValue")
+@NullMarked
 public class ParagliderNetworkImpl implements ParagliderNetwork {
 	public static final String NETVERSION = "4";
 
@@ -73,19 +74,19 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 				(msg, ctx) -> ClientPacketHandler.handleBargainEnd(msg));
 	}
 
-	@Override public void syncStateMap(@NotNull ServerPlayer player, @NotNull PlayerStateMap stateMap) {
+	@Override public void syncStateMap(ServerPlayer player, PlayerStateMap stateMap) {
 		SyncPlayerStateMapMsg msg = new SyncPlayerStateMapMsg(stateMap);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
 	}
 
-	@Override public void syncStateMapToAll(@NotNull PlayerStateMap stateMap) {
+	@Override public void syncStateMapToAll(PlayerStateMap stateMap) {
 		SyncPlayerStateMapMsg msg = new SyncPlayerStateMapMsg(stateMap);
 		traceSendToAll(Kind.MOVEMENT, msg);
 		PacketDistributor.sendToAllPlayers(msg);
 	}
 
-	@Override public void syncMovement(@NotNull ServerPlayer player, @NotNull Identifier state,
+	@Override public void syncMovement(ServerPlayer player, Identifier state,
 	                                   double stamina, double extraStamina, boolean depleted,
 	                                   int recoveryDelay, double efficiency) {
 		SyncMovementMsg msg = new SyncMovementMsg(state, stamina, extraStamina, depleted, recoveryDelay, efficiency);
@@ -94,19 +95,19 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		syncRemoteMovement(player, state);
 	}
 
-	@Override public void syncRemoteMovement(@NotNull Entity entity, @NotNull Identifier state) {
+	@Override public void syncRemoteMovement(Entity entity, Identifier state) {
 		SyncRemoteMovementMsg msg = new SyncRemoteMovementMsg(entity.getUUID(), state);
 		traceSendToTracking(Kind.MOVEMENT, entity, msg);
 		PacketDistributor.sendToPlayersTrackingEntity(entity, msg);
 	}
 
-	@Override public void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull Identifier state) {
+	@Override public void syncRemoteMovement(Entity entity, ServerPlayer target, Identifier state) {
 		SyncRemoteMovementMsg msg = new SyncRemoteMovementMsg(entity.getUUID(), state);
 		traceSendToPlayer(Kind.MOVEMENT, target, msg);
 		PacketDistributor.sendToPlayer(target, msg);
 	}
 
-	@Override public void syncVessels(@NotNull ServerPlayer player,
+	@Override public void syncVessels(ServerPlayer player,
 	                                  double stamina, double extraStamina, boolean depleted,
 	                                  int heartContainers, int staminaVessels) {
 		SyncVesselMsg msg = new SyncVesselMsg(stamina, extraStamina, depleted, heartContainers, staminaVessels);
@@ -114,13 +115,13 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		PacketDistributor.sendToPlayer(player, msg);
 	}
 
-	@Override public void syncCanUseParaglider(@NotNull ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft) {
+	@Override public void syncCanUseParaglider(ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft) {
 		SyncCanUseParagliderMsg msg = new SyncCanUseParagliderMsg(canUseParaglider, canRideUpdraft);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
 	}
 
-	@Override public void setParaglidingToClient(@NotNull ServerPlayer player, boolean paragliding) {
+	@Override public void setParaglidingToClient(ServerPlayer player, boolean paragliding) {
 		SetParaglidingMsg msg = new SetParaglidingMsg(paragliding);
 		traceSendToPlayer(Kind.MOVEMENT, player, msg);
 		PacketDistributor.sendToPlayer(player, msg);
@@ -137,38 +138,38 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		ClientPacketDistributor.sendToServer(ApplyParagliderItemCooldownMsg.INSTANCE);
 	}
 
-	@Override public void initBargain(@NotNull BargainContext ctx,
+	@Override public void initBargain(BargainContext ctx,
 	                                  @Nullable Component dialog) {
 		BargainInitMsg msg = new BargainInitMsg(ctx.sessionId(), ctx.makeCatalog(), Optional.ofNullable(ctx.lookAt()), Optional.ofNullable(dialog));
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
 
-	@Override public void syncBargainCatalog(@NotNull BargainContext ctx, @NotNull List<BargainCatalog> catalog) {
+	@Override public void syncBargainCatalog(BargainContext ctx, List<BargainCatalog> catalog) {
 		SyncCatalogMsg msg = new SyncCatalogMsg(ctx.sessionId(), catalog);
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
 
-	@Override public void syncBargainLookAt(@NotNull BargainContext ctx, @Nullable Vec3 lookAt) {
-		SyncLookAtMsg msg = new SyncLookAtMsg(ctx.sessionId(), lookAt);
+	@Override public void syncBargainLookAt(BargainContext ctx, @Nullable Vec3 lookAt) {
+		SyncLookAtMsg msg = new SyncLookAtMsg(ctx.sessionId(), Optional.ofNullable(lookAt));
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
 
-	@Override public void displayBargainDialog(@NotNull BargainContext ctx, @NotNull Component dialog) {
+	@Override public void displayBargainDialog(BargainContext ctx, Component dialog) {
 		BargainDialogMsg msg = new BargainDialogMsg(ctx.sessionId(), dialog);
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
 	}
 
-	@Override public void bargain(int sessionId, @NotNull Identifier bargain) {
+	@Override public void bargain(int sessionId, Identifier bargain) {
 		BargainMsg msg = new BargainMsg(sessionId, bargain);
 		traceSendToServer(Kind.BARGAIN, msg);
 		ClientPacketDistributor.sendToServer(msg);
 	}
 
-	@Override public void bargainEndToClient(@NotNull BargainContext ctx) {
+	@Override public void bargainEndToClient(BargainContext ctx) {
 		BargainEndMsg msg = new BargainEndMsg(ctx.sessionId());
 		traceSendToPlayer(Kind.BARGAIN, ctx.player(), msg);
 		PacketDistributor.sendToPlayer(ctx.player(), msg);
@@ -181,7 +182,7 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 	}
 
 	@Override
-	public void syncWind(@NotNull MinecraftServer server, @NotNull LevelChunk chunk, @NotNull WindChunk windChunk) {
+	public void syncWind(MinecraftServer server, LevelChunk chunk, WindChunk windChunk) {
 		SyncWindMsg msg = new SyncWindMsg(windChunk);
 		traceSendToTracking(Kind.WIND, chunk, msg);
 
@@ -192,31 +193,31 @@ public class ParagliderNetworkImpl implements ParagliderNetwork {
 		}
 	}
 
-	protected static void traceSendToAll(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {
+	protected static void traceSendToAll(Kind kind, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to clients", msg);
 		}
 	}
 
-	protected static void traceSendToPlayer(@NotNull Kind kind, @NotNull ServerPlayer player, @NotNull CustomPacketPayload msg) {
+	protected static void traceSendToPlayer(Kind kind, ServerPlayer player, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to {}", msg, player);
 		}
 	}
 
-	protected static void traceSendToTracking(@NotNull Kind kind, @NotNull Entity entity, @NotNull CustomPacketPayload msg) {
+	protected static void traceSendToTracking(Kind kind, Entity entity, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to clients tracking entity {}", msg, entity);
 		}
 	}
 
-	protected static void traceSendToTracking(@NotNull Kind kind, @NotNull LevelChunk chunk, @NotNull CustomPacketPayload msg) {
+	protected static void traceSendToTracking(Kind kind, LevelChunk chunk, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to clients tracking chunk {}", msg, chunk);
 		}
 	}
 
-	protected static void traceSendToServer(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {
+	protected static void traceSendToServer(Kind kind, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) {
 			ParagliderMod.LOGGER.debug("Dispatching {} to server", msg);
 		}

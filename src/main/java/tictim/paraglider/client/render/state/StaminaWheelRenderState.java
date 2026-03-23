@@ -8,9 +8,9 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.client.ParagliderRenderTypes;
 import tictim.paraglider.client.render.StaminaWheelConstants;
 import tictim.paraglider.client.render.StaminaWheelState;
@@ -22,6 +22,7 @@ import static net.minecraft.util.Mth.PI;
 import static net.minecraft.util.Mth.lerp;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
+@NullMarked
 public record StaminaWheelRenderState(
 		Matrix3x2f pose,
 		TextureSetup textureSetup,
@@ -150,7 +151,7 @@ public record StaminaWheelRenderState(
 		return edgeIndex;
 	}
 
-	@Override public void buildVertices(@NotNull VertexConsumer vc) {
+	@Override public void buildVertices(VertexConsumer vc) {
 		vert(vc, 0, 0, 0.5f, 0.5f, -1);
 		for (VertexData d : vertexData) {
 			vert(vc, d.point, d.color);
@@ -198,13 +199,13 @@ public record StaminaWheelRenderState(
 		vc.setColor(color);
 	}
 
-	@Override public @NotNull RenderPipeline pipeline() {
+	@Override public RenderPipeline pipeline() {
 		return this.debug ?
 				ParagliderRenderTypes.STAMINA_WHEEL_PIPELINE_DEBUG :
 				ParagliderRenderTypes.STAMINA_WHEEL_PIPELINE;
 	}
 
-	@Override public @NotNull TextureSetup textureSetup() {
+	@Override public TextureSetup textureSetup() {
 		return this.textureSetup;
 	}
 
@@ -214,7 +215,7 @@ public record StaminaWheelRenderState(
 				.transformMaxBounds(pose);
 	}
 
-	@Override public @NotNull ScreenRectangle bounds() {
+	@Override public ScreenRectangle bounds() {
 		return new ScreenRectangle(-radius, -radius, radius * 2, radius * 2)
 				.transformMaxBounds(pose);
 	}

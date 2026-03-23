@@ -10,7 +10,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.config.FeatureCfg;
 
@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
+@NullMarked
 public final class ParagliderVillageStructures {
 	private ParagliderVillageStructures() {}
 
@@ -96,11 +97,11 @@ public final class ParagliderVillageStructures {
 			this.registryAccess = registryAccess;
 		}
 
-		@Override protected @NotNull Void prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+		@Override protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
 			return null;
 		}
 
-		@Override protected void apply(@NotNull Void object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+		@Override protected void apply(Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
 			addVillageStructures(this.registryAccess);
 		}
 	}

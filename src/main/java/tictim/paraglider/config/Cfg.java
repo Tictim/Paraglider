@@ -1,14 +1,15 @@
 package tictim.paraglider.config;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 
 /**
  * Instance providing access to config values. This instance is synchronized across server and client; the config
  * values on client side is expected to be identical to
  */
+@NullMarked
 public interface Cfg {
-	static @NotNull Cfg get() {
+	static Cfg get() {
 		return ParagliderMod.instance().getConfig();
 	}
 
@@ -176,7 +177,7 @@ public interface Cfg {
 	 *
 	 * @return Config value
 	 */
-	@NotNull TotwCompatConfigOption paragliderInTowersOfTheWild();
+	TotwCompatConfigOption paragliderInTowersOfTheWild();
 
 	default int additionalMaxHealth(int heartContainers) {
 		return (startingHearts() - 10 + Math.min(maxHeartContainers(), heartContainers)) * 2;

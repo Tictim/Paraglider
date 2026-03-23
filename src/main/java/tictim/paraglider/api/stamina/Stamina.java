@@ -1,7 +1,7 @@
 package tictim.paraglider.api.stamina;
 
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 
 /**
@@ -25,6 +25,7 @@ import tictim.paraglider.api.ParagliderAPI;
  * packets created.
  * </p>
  */
+@NullMarked
 public interface Stamina {
 	/**
 	 * Amount of stamina represented by one stamina wheel
@@ -37,7 +38,7 @@ public interface Stamina {
 	 * @param player Player
 	 * @return A stamina instance bound to the player
 	 */
-	static @NotNull Stamina get(@NotNull Player player) {
+	static Stamina get(Player player) {
 		return ParagliderAPI.staminaSupplier().apply(player);
 	}
 

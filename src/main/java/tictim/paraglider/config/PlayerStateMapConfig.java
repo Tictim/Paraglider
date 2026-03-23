@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
+@NullMarked
 public class PlayerStateMapConfig {
 	public static final String FILENAME = "paraglider-player-states.toml";
 
@@ -27,11 +28,11 @@ public class PlayerStateMapConfig {
 
 	private final PlayerStateMap originalStateMap;
 	private final Map<Identifier, Config> configSpecs;
-	private final List<@NotNull Consumer<@NotNull PlayerStateMap>> onUpdateCallbacks = new ArrayList<>();
+	private final List<Consumer<PlayerStateMap>> onUpdateCallbacks = new ArrayList<>();
 
 	private @Nullable PlayerStateMap configuredStateMap;
 
-	public PlayerStateMapConfig(@NotNull PlayerStateMap originalStateMap) {
+	public PlayerStateMapConfig(PlayerStateMap originalStateMap) {
 		this.originalStateMap = originalStateMap;
 
 		// sort player states, always write paragliders state at the top
@@ -76,18 +77,18 @@ public class PlayerStateMapConfig {
 		this.spec = b.build();
 	}
 
-	public @NotNull PlayerStateMap stateMap() {
+	public PlayerStateMap stateMap() {
 		return configuredStateMap != null ? configuredStateMap : originalStateMap;
 	}
 
-	public @NotNull PlayerStateMap originalStateMap() {
+	public PlayerStateMap originalStateMap() {
 		return originalStateMap;
 	}
 	public @Nullable PlayerStateMap configuredStateMap() {
 		return configuredStateMap;
 	}
 
-	public void addCallback(@NotNull Consumer<@NotNull PlayerStateMap> callback) {
+	public void addCallback(Consumer<PlayerStateMap> callback) {
 		this.onUpdateCallbacks.add(Objects.requireNonNull(callback, "callback == null"));
 	}
 
@@ -99,7 +100,7 @@ public class PlayerStateMapConfig {
 		reload(Runnable::run, callback);
 	}
 
-	public void reload(@NotNull Consumer<@NotNull Runnable> onUpdatedCallbackDispatcher,
+	public void reload(Consumer<Runnable> onUpdatedCallbackDispatcher,
 	                   @Nullable Callback callback) {
 		PlayerStateMap prevStateMap = stateMap();
 		RuntimeException exception = null;
@@ -172,12 +173,12 @@ public class PlayerStateMapConfig {
 	}
 
 	public interface Callback {
-		void onSuccess(@NotNull PlayerStateMap stateMap, boolean updated);
-		void onFail(@NotNull PlayerStateMap stateMap, @NotNull RuntimeException exception, boolean update);
+		void onSuccess(PlayerStateMap stateMap, boolean updated);
+		void onFail(PlayerStateMap stateMap, RuntimeException exception, boolean update);
 	}
 
 	protected record Config(
-			@NotNull ModConfigSpec.DoubleValue staminaDelta,
-			@NotNull ModConfigSpec.IntValue recoveryDelay
+			ModConfigSpec.DoubleValue staminaDelta,
+			ModConfigSpec.IntValue recoveryDelay
 	) {}
 }

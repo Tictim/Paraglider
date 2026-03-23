@@ -7,23 +7,24 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.contents.ParagliderTags;
 
+@NullMarked
 public final class ParaglidingItemProperty implements ConditionalItemModelProperty {
 	public static final ParaglidingItemProperty INSTANCE = new ParaglidingItemProperty();
 	public static final MapCodec<ParaglidingItemProperty> CODEC = MapCodec.unit(INSTANCE);
 
-	@Override public @NotNull MapCodec<? extends ConditionalItemModelProperty> type() {
+	@Override public MapCodec<? extends ConditionalItemModelProperty> type() {
 		return CODEC;
 	}
 
 	@Override
-	public boolean get(@NotNull ItemStack stack, @Nullable ClientLevel level,
+	public boolean get(ItemStack stack, @Nullable ClientLevel level,
 	                   @Nullable LivingEntity entity, int seed,
-	                   @NotNull ItemDisplayContext displayContext) {
+	                   ItemDisplayContext displayContext) {
 		return entity instanceof Player &&
 				stack.is(ParagliderTags.PARAGLIDERS) &&
 				ParagliderUtils.getCaps(stack).isParagliding(stack);

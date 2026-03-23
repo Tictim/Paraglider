@@ -9,13 +9,14 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.config.FeatureCfg;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Locale;
 
+@NullMarked
 public class ConfigurableSpiritOrbLoot extends LootModifier {
 	public static final MapCodec<ConfigurableSpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
 			b.group(StringRepresentable.fromEnum(Type::values).fieldOf("lootType").forGetter(m -> m.type))
@@ -24,12 +25,12 @@ public class ConfigurableSpiritOrbLoot extends LootModifier {
 
 	private final Type type;
 
-	public ConfigurableSpiritOrbLoot(@NotNull Type type, @NotNull LootItemCondition @NotNull ... conditions) {
+	public ConfigurableSpiritOrbLoot(Type type, LootItemCondition... conditions) {
 		super(conditions);
 		this.type = type;
 	}
 
-	@Override protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
+	@Override protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
 		if (FeatureCfg.get().enableSpiritOrbGens()) {
 			double drops = switch (this.type) {
 				case SPAWNER -> Cfg.get().spawnerSpiritOrbDrops();
@@ -51,7 +52,7 @@ public class ConfigurableSpiritOrbLoot extends LootModifier {
 		return generatedLoot;
 	}
 
-	@Override public @NotNull MapCodec<? extends IGlobalLootModifier> codec() {
+	@Override public MapCodec<? extends IGlobalLootModifier> codec() {
 		return CODEC;
 	}
 
@@ -62,7 +63,7 @@ public class ConfigurableSpiritOrbLoot extends LootModifier {
 
 		private final String serializedName = name().toLowerCase(Locale.ROOT);
 
-		@Override public @NotNull String getSerializedName() {
+		@Override public String getSerializedName() {
 			return this.serializedName;
 		}
 	}

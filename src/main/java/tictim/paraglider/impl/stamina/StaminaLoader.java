@@ -1,8 +1,8 @@
 package tictim.paraglider.impl.stamina;
 
 import com.mojang.datafixers.util.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.plugin.PluginAction;
 import tictim.paraglider.api.plugin.PluginInstance;
@@ -17,17 +17,18 @@ import java.util.List;
 import static tictim.paraglider.plugin.ParagliderPluginUtils.composePluginLoadingError;
 import static tictim.paraglider.plugin.ParagliderPluginUtils.resolve;
 
+@NullMarked
 public final class StaminaLoader {
 	private StaminaLoader() {}
 
 	// stamina factory with modid that registered the factory
-	public static @NotNull Pair<StaminaFactory, @Nullable String> loadStaminaFactory() {
+	public static Pair<StaminaFactory, @Nullable String> loadStaminaFactory() {
 		return loadStaminaFactory(ParagliderPluginLoader.get().getStaminaPlugins());
 	}
 
 	// stamina factory with modid that registered the factory
-	private static @NotNull Pair<StaminaFactory, @Nullable String> loadStaminaFactory(
-			@NotNull List<@NotNull PluginInstance<StaminaPlugin>> plugins
+	private static Pair<StaminaFactory, @Nullable String> loadStaminaFactory(
+			List<PluginInstance<StaminaPlugin>> plugins
 	) {
 		List<PluginAction<StaminaPlugin, ProvideStaminaFactory>> factories = new ArrayList<>();
 
@@ -40,7 +41,7 @@ public final class StaminaLoader {
 		return resolveAndGet(factories, false);
 	}
 
-	private static @NotNull Pair<StaminaFactory, @Nullable String> resolveAndGet(
+	private static Pair<StaminaFactory, @Nullable String> resolveAndGet(
 			List<PluginAction<StaminaPlugin, ProvideStaminaFactory>> factories, boolean resolved) {
 		return switch (factories.size()) {
 			case 0 -> Pair.of(new BotWStaminaFactory(), ParagliderAPI.MODID);
@@ -57,7 +58,7 @@ public final class StaminaLoader {
 		};
 	}
 
-	public static @NotNull Pair<Boolean, @Nullable String> loadStaminaWheelRemoverId() {
+	public static Pair<Boolean, @Nullable String> loadStaminaWheelRemoverId() {
 		for (PluginInstance<StaminaPlugin> plugin : ParagliderPluginLoader.get().getStaminaPlugins()) {
 			if (plugin.instance().removeStaminaWheel()) {
 				return Pair.of(true, plugin.modid());

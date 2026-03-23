@@ -1,9 +1,10 @@
 package tictim.paraglider.client.render;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static tictim.paraglider.ParagliderUtils.ms;
 
+@NullMarked
 public class EffectTimer {
 	private final long finishAt;
 
@@ -55,7 +56,7 @@ public class EffectTimer {
 		update(active ? UpdateMode.RETAIN_ACTIVE : UpdateMode.SET_INACTIVE);
 	}
 
-	public void update(@NotNull UpdateMode active) {
+	public void update(UpdateMode active) {
 		switch (active) {
 			case RETAIN_ACTIVE:
 				if (this.active) {

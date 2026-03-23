@@ -8,9 +8,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.BargainType;
 import tictim.paraglider.contents.BargainTypeRegistry;
 import tictim.paraglider.contents.Contents;
@@ -26,6 +26,7 @@ import static tictim.paraglider.ParagliderUtils.DIALOG_RNG;
 /**
  * Static class for handling {@link BargainContext} objects.
  */
+@NullMarked
 public final class BargainHandler {
 	private BargainHandler() {}
 
@@ -51,8 +52,8 @@ public final class BargainHandler {
 	 * @return Whether the bargain was successfully created or not
 	 * @throws NullPointerException If {@code player == null || bargainType == null}
 	 */
-	public static boolean initiate(@NotNull Player player,
-	                               @NotNull Identifier bargainType,
+	public static boolean initiate(Player player,
+	                               Identifier bargainType,
 	                               @Nullable BlockPos pos,
 	                               @Nullable Identifier advancement,
 	                               @Nullable Vec3 lookAt) {
@@ -87,7 +88,7 @@ public final class BargainHandler {
 	/**
 	 * @return Unmodifiable view of ongoing bargains
 	 */
-	public static @NotNull @Unmodifiable Map<@NotNull ServerPlayer, @NotNull BargainContext> bargains() {
+	public static @Unmodifiable Map<ServerPlayer, BargainContext> bargains() {
 		return Collections.unmodifiableMap(bargains);
 	}
 
@@ -97,7 +98,7 @@ public final class BargainHandler {
 	 * @param player Player
 	 * @return {@link BargainContext} instance of the player's ongoing bargain, or {@code null} if no such bargain exists.
 	 */
-	public static @Nullable BargainContext getBargain(@NotNull ServerPlayer player) {
+	public static @Nullable BargainContext getBargain(ServerPlayer player) {
 		return bargains.get(player);
 	}
 

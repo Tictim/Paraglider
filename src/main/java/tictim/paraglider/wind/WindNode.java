@@ -1,9 +1,10 @@
 package tictim.paraglider.wind;
 
 import net.minecraft.network.FriendlyByteBuf;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class WindNode {
 	private static final long WIND_LIFESPAN = 200;
 
@@ -28,7 +29,7 @@ public final class WindNode {
 		this.updatedTime = updatedTime;
 	}
 
-	public WindNode(@NotNull FriendlyByteBuf buf) {
+	public WindNode(FriendlyByteBuf buf) {
 		short size = buf.readUnsignedByte();
 		read(buf);
 		WindNode currentNode = this;
@@ -39,7 +40,7 @@ public final class WindNode {
 		}
 	}
 
-	private void read(@NotNull FriendlyByteBuf buf) {
+	private void read(FriendlyByteBuf buf) {
 		this.y = buf.readVarInt();
 		this.height = buf.readVarInt();
 	}
@@ -79,7 +80,7 @@ public final class WindNode {
 		}
 	}
 
-	public void write(@NotNull FriendlyByteBuf buf) {
+	public void write(FriendlyByteBuf buf) {
 		int w = buf.writerIndex();
 		buf.writeByte(0);
 		int size = 0;
@@ -90,7 +91,7 @@ public final class WindNode {
 		buf.setByte(w, Math.min(size, 255));
 	}
 
-	private void writeThis(@NotNull FriendlyByteBuf buf) {
+	private void writeThis(FriendlyByteBuf buf) {
 		buf.writeVarInt(y);
 		buf.writeVarInt(height);
 	}

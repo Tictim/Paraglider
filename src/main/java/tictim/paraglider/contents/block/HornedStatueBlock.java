@@ -13,11 +13,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.ParagliderBargainTypes;
 import tictim.paraglider.bargain.BargainHandler;
 import tictim.paraglider.contents.ParagliderAdvancements;
 
+@NullMarked
 public class HornedStatueBlock extends BaseStatueBlock {
 	public static final MapCodec<HornedStatueBlock> CODEC = simpleCodec(HornedStatueBlock::new);
 
@@ -34,18 +35,18 @@ public class HornedStatueBlock extends BaseStatueBlock {
 			box(2, 0, 5, 3, 12, 11),
 			box(12, 0, 3, 13, 13, 13)).optimize();
 
-	public HornedStatueBlock(@NotNull Properties properties) {
+	public HornedStatueBlock(Properties properties) {
 		super(properties);
 	}
 
-	@Override protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
+	@Override protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
 		return CODEC;
 	}
 
-	@Override public @NotNull VoxelShape getShape(@NotNull BlockState state,
-	                                              @NotNull BlockGetter level,
-	                                              @NotNull BlockPos pos,
-	                                              @NotNull CollisionContext context) {
+	@Override public VoxelShape getShape(BlockState state,
+	                                     BlockGetter level,
+	                                     BlockPos pos,
+	                                     CollisionContext context) {
 		return switch (state.getValue(FACING)) {
 			case EAST -> SHAPE_EAST;
 			case SOUTH -> SHAPE_SOUTH;
@@ -54,11 +55,11 @@ public class HornedStatueBlock extends BaseStatueBlock {
 		};
 	}
 
-	@Override protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state,
-	                                                              @NotNull Level level,
-	                                                              @NotNull BlockPos pos,
-	                                                              @NotNull Player player,
-	                                                              @NotNull BlockHitResult hit) {
+	@Override protected InteractionResult useWithoutItem(BlockState state,
+	                                                     Level level,
+	                                                     BlockPos pos,
+	                                                     Player player,
+	                                                     BlockHitResult hit) {
 		if (!level.isClientSide()) {
 			BargainHandler.initiate(
 					player,

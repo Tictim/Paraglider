@@ -15,9 +15,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.UseCooldown;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.config.Cfg;
@@ -27,6 +26,7 @@ import tictim.paraglider.impl.movement.PlayerMovementValues;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+@NullMarked
 public class ParagliderItem extends Item {
 	public ParagliderItem(Properties p) {
 		super(p
@@ -39,10 +39,10 @@ public class ParagliderItem extends Item {
 		);
 	}
 
-	@Override public @NonNull InteractionResult use(
-			@NonNull Level level,
-			@NonNull Player player,
-			@NonNull InteractionHand hand) {
+	@Override public InteractionResult use(
+			Level level,
+			Player player,
+			InteractionHand hand) {
 		if (hand == InteractionHand.OFF_HAND) return InteractionResult.PASS;
 
 		if (level.isClientSide()) {
@@ -58,32 +58,32 @@ public class ParagliderItem extends Item {
 
 	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
-			@NotNull ItemStack stack, @NotNull TooltipContext context,
-			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
-			@NotNull TooltipFlag flag) {
+			ItemStack stack, TooltipContext context,
+			TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder,
+			TooltipFlag flag) {
 		if (stack.isDamaged() && stack.getMaxDamage() <= stack.getDamageValue()) {
 			tooltipAdder.accept(Component.translatable("tooltip.paraglider.paraglider_broken")
 					.setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
 		}
 	}
 
-	@Override public int getMaxDamage(@NotNull ItemStack stack) {
+	@Override public int getMaxDamage(ItemStack stack) {
 		return Cfg.get().paragliderDurability();
 	}
 
-	@Override public <T extends LivingEntity> int damageItem(@NotNull ItemStack stack, int amount, @Nullable T entity, @NotNull Consumer<Item> onBroken) {
+	@Override public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
 		return Cfg.get().paragliderDurability() > 0 ? amount : 0;
 	}
 
-	@Override public boolean canGrindstoneRepair(@NotNull ItemStack stack) {
+	@Override public boolean canGrindstoneRepair(ItemStack stack) {
 		return false;
 	}
 
-	@Override public boolean isCombineRepairable(@NotNull ItemStack stack) {
+	@Override public boolean isCombineRepairable(ItemStack stack) {
 		return false;
 	}
 
-	@Override public boolean shouldCauseReequipAnimation(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {
+	@Override public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
 		return slotChanged || super.shouldCauseBlockBreakReset(oldStack, newStack); // checks everything other than damage
 	}
 }

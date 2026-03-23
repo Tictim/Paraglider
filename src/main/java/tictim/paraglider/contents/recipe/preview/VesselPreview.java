@@ -4,15 +4,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.contents.VesselSlotDisplay;
 
 import java.util.List;
 import java.util.Locale;
 
+@NullMarked
 public record VesselPreview(
-		@NotNull VesselPreview.VesselType vesselType,
+		VesselPreview.VesselType vesselType,
 		int quantity
 ) implements BargainPreview<VesselPreview> {
 	public static final Type<VesselPreview> TYPE = new Type<VesselPreview>(StreamCodec.of(
@@ -25,17 +26,17 @@ public record VesselPreview(
 					buffer.readVarInt())
 	));
 
-	@Override public @NotNull SlotDisplay display() {
+	@Override public SlotDisplay display() {
 		return this.vesselType.slotDisplay;
 	}
 
-	@Override public @NotNull List<@NotNull Component> getTooltip() {
+	@Override public List<Component> getTooltip() {
 		return List.of(this.quantity == 1 ?
 				Component.translatable(this.vesselType.singleTooltipKey) :
 				Component.translatable(this.vesselType.multiTooltipKey, this.quantity));
 	}
 
-	@Override public @NotNull Type<VesselPreview> type() {
+	@Override public Type<VesselPreview> type() {
 		return TYPE;
 	}
 
@@ -55,7 +56,7 @@ public record VesselPreview(
 			this.multiTooltipKey = singleTooltipKey + ".s";
 		}
 
-		@Override public @NotNull String getSerializedName() {
+		@Override public String getSerializedName() {
 			return this.id;
 		}
 	}

@@ -6,11 +6,12 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
-public record BargainDialogMsg(int sessionId, @NotNull Component dialog) implements CustomPacketPayload {
+@NullMarked
+public record BargainDialogMsg(int sessionId, Component dialog) implements CustomPacketPayload {
 	public static final Type<BargainDialogMsg> TYPE = new Type<>(id("bargain_dialog"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, BargainDialogMsg> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, BargainDialogMsg::sessionId,
@@ -18,7 +19,7 @@ public record BargainDialogMsg(int sessionId, @NotNull Component dialog) impleme
 			BargainDialogMsg::new
 	);
 
-	@Override public @NotNull Type<? extends CustomPacketPayload> type() {
+	@Override public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

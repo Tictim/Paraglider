@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
@@ -14,6 +14,7 @@ import tictim.paraglider.client.screen.BargainScreen;
 import tictim.paraglider.network.message.*;
 import tictim.paraglider.wind.WindLevel;
 
+@NullMarked
 public final class ClientPacketHandler {
 	private ClientPacketHandler() {}
 
@@ -93,7 +94,7 @@ public final class ClientPacketHandler {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
-			bargainScreen.setLookAt(msg.lookAt());
+			bargainScreen.setLookAt(msg.lookAt().orElse(null));
 		}
 	}
 
@@ -123,7 +124,7 @@ public final class ClientPacketHandler {
 		if (wind != null) wind.putChunk(msg.windChunk());
 	}
 
-	private static void trace(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {
+	private static void trace(Kind kind, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Received {} from server", msg);
 	}
 }

@@ -5,17 +5,18 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.network.NetUtils;
 
 import java.util.List;
 
+@NullMarked
 public record BargainCatalog(
-		@NotNull Identifier bargain,
-		@NotNull List<@NotNull BargainPreview<?>> demands,
-		@NotNull List<@NotNull BargainPreview<?>> offers,
-		@NotNull IntList demandCounts,
+		Identifier bargain,
+		List<BargainPreview<?>> demands,
+		List<BargainPreview<?>> offers,
+		IntList demandCounts,
 		boolean canBargain
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, BargainCatalog> STREAM_CODEC = StreamCodec.composite(

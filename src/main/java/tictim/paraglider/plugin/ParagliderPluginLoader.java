@@ -1,7 +1,7 @@
 package tictim.paraglider.plugin;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.MovementPlugin;
 import tictim.paraglider.api.plugin.PluginInstance;
@@ -9,11 +9,12 @@ import tictim.paraglider.api.stamina.StaminaPlugin;
 
 import java.util.List;
 
+@NullMarked
 public interface ParagliderPluginLoader {
-	static @NotNull ParagliderPluginLoader get() {
+	static ParagliderPluginLoader get() {
 		return ParagliderMod.instance().getPluginLoader();
 	}
 
-	@NotNull @Unmodifiable List<@NotNull PluginInstance<StaminaPlugin>> getStaminaPlugins();
-	@NotNull @Unmodifiable List<@NotNull PluginInstance<MovementPlugin>> getMovementPlugins();
+	@Unmodifiable List<PluginInstance<StaminaPlugin>> getStaminaPlugins();
+	@Unmodifiable List<PluginInstance<MovementPlugin>> getMovementPlugins();
 }

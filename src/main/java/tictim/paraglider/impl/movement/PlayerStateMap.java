@@ -4,26 +4,27 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.ParagliderPlayerStates;
 import tictim.paraglider.api.movement.PlayerState;
 
 import java.util.*;
 
+@NullMarked
 public final class PlayerStateMap {
 	public static final StreamCodec<FriendlyByteBuf, PlayerStateMap> STREAM_CODEC =
 			StreamCodec.of((buf, psm) -> psm.write(buf), PlayerStateMap::read);
 
 	private final Map<Identifier, PlayerState> states;
 
-	public PlayerStateMap(@NotNull Map<@NotNull Identifier, @NotNull PlayerState> states) {
+	public PlayerStateMap(Map<Identifier, PlayerState> states) {
 		this.states = Objects.requireNonNull(states);
 	}
 
-	public static @NotNull PlayerStateMap read(@NotNull FriendlyByteBuf buffer) {
+	public static PlayerStateMap read(FriendlyByteBuf buffer) {
 		Map<Identifier, PlayerState> states = new Object2ObjectOpenHashMap<>();
 		for (int i = 0, count = buffer.readVarInt(); i < count; i++) {
 			SimplePlayerState state = SimplePlayerState.read(buffer);
@@ -40,25 +41,25 @@ public final class PlayerStateMap {
 		return new PlayerStateMap(states);
 	}
 
-	public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull PlayerState> states() {
+	public @Unmodifiable Map<Identifier, PlayerState> states() {
 		return Collections.unmodifiableMap(states);
 	}
 
-	public @NotNull PlayerState expectState(@NotNull Identifier id) {
+	public PlayerState expectState(Identifier id) {
 		PlayerState state = getState(id);
 		if (state == null) throw new NoSuchElementException("No state named " + id + " in state map");
 		return state;
 	}
 
-	public @Nullable PlayerState getState(@NotNull Identifier id) {
+	public @Nullable PlayerState getState(Identifier id) {
 		return this.states.get(id);
 	}
 
-	public @NotNull PlayerState getIdleState() {
+	public PlayerState getIdleState() {
 		return expectState(ParagliderPlayerStates.IDLE);
 	}
 
-	public void write(@NotNull FriendlyByteBuf buffer) {
+	public void write(FriendlyByteBuf buffer) {
 		buffer.writeVarInt(this.states.size());
 		for (PlayerState state : this.states.values()) {
 			SimplePlayerState.write(buffer, state);

@@ -5,18 +5,19 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biomes;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.ParagliderTags;
 
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 public class BiomeTagGen extends BiomeTagsProvider {
 	public BiomeTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, lookupProvider, ParagliderAPI.MODID);
 	}
 
-	@Override protected void addTags(@NotNull HolderLookup.Provider provider) {
+	@Override protected void addTags(HolderLookup.Provider provider) {
 		// Identical to mineshaft
 		tag(ParagliderTags.Biomes.HAS_STRUCTURE_UNDERGROUND_HORNED_STATUE)
 				.addTag(BiomeTags.IS_OCEAN)

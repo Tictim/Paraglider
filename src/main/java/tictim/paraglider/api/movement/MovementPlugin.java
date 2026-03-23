@@ -1,9 +1,9 @@
 package tictim.paraglider.api.movement;
 
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.plugin.ConflictResolver;
 import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.plugin.ParagliderPluginBase;
@@ -17,17 +17,18 @@ import java.util.Objects;
  *
  * @see ParagliderPlugin
  */
+@NullMarked
 public interface MovementPlugin extends ParagliderPluginBase {
-	default void registerNewStates(@NotNull PlayerStateRegister register) {}
+	default void registerNewStates(PlayerStateRegister register) {}
 
-	default void modifyRegisteredStates(@NotNull PlayerStateModifier modifier) {}
+	default void modifyRegisteredStates(PlayerStateModifier modifier) {}
 
-	default void registerStateConnections(@NotNull PlayerStateConnectionRegister register) {}
+	default void registerStateConnections(PlayerStateConnectionRegister register) {}
 
 	/**
 	 * @return Implementation of {@link ConflictResolver} for this {@link MovementPlugin} instance
 	 */
-	default @NotNull ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
+	default ConflictResolver<MovementPlugin, MovementPluginAction> getMovementPluginConflictResolver() {
 		return ConflictResolver.proceed();
 	}
 
@@ -49,7 +50,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *                                  {@code flags} is null
 		 * @throws IllegalArgumentException If {@code Double.isNaN(defaultStaminaDelta) == true}
 		 */
-		void register(@NotNull Identifier id, double defaultStaminaDelta, @NotNull Identifier @NotNull ... flags);
+		void register(Identifier id, double defaultStaminaDelta, Identifier... flags);
 
 		/**
 		 * Register a synthetic state. If another state has been registered with same ID, it will create a conflict;
@@ -62,7 +63,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @param id ID of the new state
 		 * @throws NullPointerException If {@code id == null}
 		 */
-		void registerSyntheticState(@NotNull Identifier id);
+		void registerSyntheticState(Identifier id);
 	}
 
 	/**
@@ -78,7 +79,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *
 		 * @return Map of registered player states
 		 */
-		@NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull PlayerState> playerStates();
+		@Unmodifiable Map<Identifier, PlayerState> playerStates();
 
 		/**
 		 * See if a state with ID {@code id} is registered.
@@ -87,7 +88,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @return Whether a state is registered with ID {@code id}
 		 * @throws NullPointerException If {@code id == null}
 		 */
-		default boolean exists(@NotNull Identifier id) {
+		default boolean exists(Identifier id) {
 			return playerStates().containsKey(Objects.requireNonNull(id, "id == null"));
 		}
 
@@ -106,7 +107,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws IllegalStateException    If the state is synthetic state
 		 * @throws IllegalArgumentException If {@code Double.isNaN(defaultStaminaDelta) == true}
 		 */
-		void changeDefaultStaminaDelta(@NotNull Identifier id, double defaultStaminaDelta);
+		void changeDefaultStaminaDelta(Identifier id, double defaultStaminaDelta);
 
 		/**
 		 * Add flags to the state. Trying to use this method against synthetic states will result in error. If the
@@ -120,7 +121,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NoSuchElementException If there's no state with ID {@code id}
 		 * @throws IllegalStateException  If the state is synthetic state
 		 */
-		void addFlags(@NotNull Identifier id, @NotNull Identifier @NotNull ... flags);
+		void addFlags(Identifier id, Identifier... flags);
 
 		/**
 		 * Remove flags from the state. Trying to use this method against synthetic states will result in error. If the
@@ -134,7 +135,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NoSuchElementException If there's no state with ID {@code id}
 		 * @throws IllegalStateException  If the state is synthetic state
 		 */
-		void removeFlags(@NotNull Identifier id, @NotNull Identifier @NotNull ... flags);
+		void removeFlags(Identifier id, Identifier... flags);
 	}
 
 	/**
@@ -147,7 +148,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 *
 		 * @return Map of registered player states
 		 */
-		@NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull PlayerState> playerStates();
+		@Unmodifiable Map<Identifier, PlayerState> playerStates();
 
 		/**
 		 * See if a state with ID {@code id} is registered.
@@ -156,7 +157,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @return Whether a state is registered with ID {@code id}
 		 * @throws NullPointerException If {@code id == null}
 		 */
-		default boolean exists(@NotNull Identifier id) {
+		default boolean exists(Identifier id) {
 			return playerStates().containsKey(Objects.requireNonNull(id, "id == null"));
 		}
 
@@ -171,7 +172,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
 		 * @see #connect(Identifier, Identifier, PlayerStateCondition, double)
 		 */
-		default void connect(@NotNull Identifier parent, @NotNull Identifier state, @NotNull PlayerStateCondition condition) {
+		default void connect(Identifier parent, Identifier state, PlayerStateCondition condition) {
 			connect(parent, state, condition, 0);
 		}
 
@@ -188,7 +189,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
 		 */
-		void connect(@NotNull Identifier parent, @NotNull Identifier state, @NotNull PlayerStateCondition condition, double priority);
+		void connect(Identifier parent, Identifier state, PlayerStateCondition condition, double priority);
 
 		/**
 		 * Remove all <i>conditioned</i> connections that match given property. This method takes precedence over
@@ -201,7 +202,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code state}
 		 */
-		void disconnect(@NotNull Identifier parent, @NotNull Identifier state, @Nullable Double priority);
+		void disconnect(Identifier parent, Identifier state, @Nullable Double priority);
 
 		/**
 		 * Set a fallback connection from {@code parent} to {@code fallback}, or remove preexisting fallback connection
@@ -223,7 +224,7 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws IllegalArgumentException If {@code parent == fallback}
 		 * @see #setFallback(Identifier, Identifier, double)
 		 */
-		default void setFallback(@NotNull Identifier parent, @Nullable Identifier fallback) {
+		default void setFallback(Identifier parent, @Nullable Identifier fallback) {
 			setFallback(parent, fallback, 0);
 		}
 
@@ -247,6 +248,6 @@ public interface MovementPlugin extends ParagliderPluginBase {
 		 * @throws NullPointerException   If any of the parameters is {@code null}
 		 * @throws NoSuchElementException If there's no state with ID {@code parent} or {@code fallback}
 		 */
-		void setFallback(@NotNull Identifier parent, @Nullable Identifier fallback, double priority);
+		void setFallback(Identifier parent, @Nullable Identifier fallback, double priority);
 	}
 }

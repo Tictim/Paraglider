@@ -8,25 +8,26 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+@NullMarked
 public final class WindLevel {
 	private static final Map<LevelAccessor, WindLevel> windInstances = new Object2ObjectOpenHashMap<>();
 
-	public static void registerLevel(@NotNull LevelAccessor level) {
+	public static void registerLevel(LevelAccessor level) {
 		windInstances.computeIfAbsent(level, l -> new WindLevel());
 	}
-	public static void unregisterLevel(@NotNull LevelAccessor level) {
+	public static void unregisterLevel(LevelAccessor level) {
 		windInstances.remove(level);
 	}
 
-	public static @Nullable WindLevel of(@NotNull LevelAccessor level) {
+	public static @Nullable WindLevel of(LevelAccessor level) {
 		return windInstances.get(level);
 	}
 
@@ -37,14 +38,14 @@ public final class WindLevel {
 
 	private WindLevel() {}
 
-	public @NotNull @Unmodifiable Collection<@NotNull WindChunk> chunks() {
+	public @Unmodifiable Collection<WindChunk> chunks() {
 		return Collections.unmodifiableCollection(this.chunks.values());
 	}
-	public @NotNull LongSet dirtyWindChunks() {
+	public LongSet dirtyWindChunks() {
 		return this.dirtyWindChunks;
 	}
 
-	public @Nullable WindChunk getChunk(@NotNull ChunkPos chunkPos) {
+	public @Nullable WindChunk getChunk(ChunkPos chunkPos) {
 		return getChunk(chunkPos.x(), chunkPos.z());
 	}
 	public @Nullable WindChunk getChunk(int chunkX, int chunkZ) {
@@ -54,20 +55,20 @@ public final class WindLevel {
 		return this.chunks.get(chunkPos);
 	}
 
-	public @NotNull WindChunk getOrCreate(@NotNull ChunkPos chunkPos) {
+	public WindChunk getOrCreate(ChunkPos chunkPos) {
 		return getOrCreate(chunkPos.pack());
 	}
-	public @NotNull WindChunk getOrCreate(int chunkX, int chunkZ) {
+	public WindChunk getOrCreate(int chunkX, int chunkZ) {
 		return getOrCreate(ChunkPos.pack(chunkX, chunkZ));
 	}
-	public @NotNull WindChunk getOrCreate(long chunkPos) {
+	public WindChunk getOrCreate(long chunkPos) {
 		return this.chunks.computeIfAbsent(chunkPos, cp -> new WindChunk(ChunkPos.unpack(cp)));
 	}
 
 	public @Nullable WindChunk remove(int chunkX, int chunkZ) {
 		return remove(ChunkPos.pack(chunkX, chunkZ));
 	}
-	public @Nullable WindChunk remove(@NotNull ChunkPos chunkPos) {
+	public @Nullable WindChunk remove(ChunkPos chunkPos) {
 		return remove(chunkPos.pack());
 	}
 	public @Nullable WindChunk remove(long chunkPos) {
@@ -76,7 +77,7 @@ public final class WindLevel {
 		return removed;
 	}
 
-	public void putChunk(@NotNull WindChunk windChunk) {
+	public void putChunk(WindChunk windChunk) {
 		if (windChunk.isRemoved()) throw new IllegalArgumentException("Cannot add back a removed wind chunk!");
 		this.chunks.put(windChunk.chunkPos.pack(), windChunk);
 	}

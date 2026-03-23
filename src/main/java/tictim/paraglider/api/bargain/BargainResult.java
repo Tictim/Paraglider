@@ -1,8 +1,8 @@
 package tictim.paraglider.api.bargain;
 
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Objects;
 import java.util.Set;
@@ -10,13 +10,14 @@ import java.util.Set;
 /**
  * Result of {@link Bargain#bargain(Player, boolean)}.
  */
+@NullMarked
 public sealed abstract class BargainResult {
 	/**
 	 * Make a successful bargain result.
 	 *
 	 * @return Bargain result instance
 	 */
-	public static @NotNull BargainResult success() {
+	public static BargainResult success() {
 		return Success.instance;
 	}
 	/**
@@ -25,7 +26,7 @@ public sealed abstract class BargainResult {
 	 * @param reasons Array of reasons for failure
 	 * @return Bargain result instance
 	 */
-	public static @NotNull BargainResult fail(@NotNull String @NotNull ... reasons) {
+	public static BargainResult fail(String... reasons) {
 		return new Fail(Set.of(reasons));
 	}
 	/**
@@ -34,7 +35,7 @@ public sealed abstract class BargainResult {
 	 * @param reasons Set of reasons for failure
 	 * @return Bargain result instance
 	 */
-	public static @NotNull BargainResult fail(@NotNull Set<@NotNull String> reasons) {
+	public static BargainResult fail(Set<String> reasons) {
 		return new Fail(Set.copyOf(reasons));
 	}
 
@@ -48,7 +49,7 @@ public sealed abstract class BargainResult {
 	 * {@link #isSuccess()} is true) then the set of reasons will be empty.
 	 * @see ParagliderFailReasons
 	 */
-	public abstract @NotNull @Unmodifiable Set<@NotNull String> failReasons();
+	public abstract @Unmodifiable Set<String> failReasons();
 
 	private static final class Success extends BargainResult {
 		private static final Success instance = new Success();
@@ -57,7 +58,7 @@ public sealed abstract class BargainResult {
 			return true;
 		}
 
-		@Override public @NotNull @Unmodifiable Set<@NotNull String> failReasons() {
+		@Override public @Unmodifiable Set<String> failReasons() {
 			return Set.of();
 		}
 
@@ -67,9 +68,9 @@ public sealed abstract class BargainResult {
 	}
 
 	private static final class Fail extends BargainResult {
-		private final @NotNull @Unmodifiable Set<@NotNull String> failReasons;
+		private final @Unmodifiable Set<String> failReasons;
 
-		private Fail(@NotNull @Unmodifiable Set<@NotNull String> failReasons) {
+		private Fail(@Unmodifiable Set<String> failReasons) {
 			this.failReasons = failReasons;
 		}
 
@@ -77,7 +78,7 @@ public sealed abstract class BargainResult {
 			return false;
 		}
 
-		@Override public @NotNull @Unmodifiable Set<@NotNull String> failReasons() {
+		@Override public @Unmodifiable Set<String> failReasons() {
 			return failReasons;
 		}
 

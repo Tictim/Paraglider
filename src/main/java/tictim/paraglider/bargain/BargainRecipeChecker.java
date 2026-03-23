@@ -8,7 +8,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.bargain.Bargain;
 import tictim.paraglider.contents.BargainTypeRegistry;
@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class BargainRecipeChecker extends SimplePreparableReloadListener<@NotNull Void> {
+@NullMarked
+public class BargainRecipeChecker extends SimplePreparableReloadListener<Void> {
 	private final RegistryAccess registryAccess;
 	private final RecipeManager recipeManager;
 
@@ -29,15 +30,15 @@ public class BargainRecipeChecker extends SimplePreparableReloadListener<@NotNul
 		this.recipeManager = recipeManager;
 	}
 
-	@Override protected @NotNull Void prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+	@Override protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
 		return null;
 	}
 
-	@Override protected void apply(@NotNull Void object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-		Map<Identifier, List<RecipeHolder<@NotNull Bargain>>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
+	@Override protected void apply(Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
+		Map<Identifier, List<RecipeHolder<Bargain>>> missingBargainTypes = new Object2ObjectAVLTreeMap<>();
 		int count = 0;
 
-		for (RecipeHolder<@NotNull Bargain> b : this.recipeManager.recipeMap()
+		for (RecipeHolder<Bargain> b : this.recipeManager.recipeMap()
 				.byType(Contents.get().bargainRecipeType())) {
 			Identifier bargainType = b.value().getBargainType();
 			if (BargainTypeRegistry.getFromID(this.registryAccess, Objects.requireNonNull(bargainType)) == null) {

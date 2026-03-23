@@ -11,19 +11,20 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.contents.Contents;
 
 import java.util.function.Consumer;
 
+@NullMarked
 public class AntiVesselItem extends Item {
-	public AntiVesselItem(@NotNull Properties properties) {
+	public AntiVesselItem(Properties properties) {
 		super(properties);
 	}
 
-	@Override public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+	@Override public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		if (!level.isClientSide()) {
 			VesselContainer vessels = VesselContainer.get(player);
@@ -46,14 +47,14 @@ public class AntiVesselItem extends Item {
 
 	@SuppressWarnings("deprecation")
 	@Override public void appendHoverText(
-			@NotNull ItemStack stack, @NotNull TooltipContext context,
-			@NotNull TooltipDisplay tooltipDisplay, @NotNull Consumer<Component> tooltipAdder,
-			@NotNull TooltipFlag flag) {
+			ItemStack stack, TooltipContext context,
+			TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder,
+			TooltipFlag flag) {
 		tooltipAdder.accept(Component.translatable("tooltip.paraglider.anti_vessel.0")
 				.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
 	}
 
-	@Override public boolean isFoil(@NotNull ItemStack stack) {
+	@Override public boolean isFoil(ItemStack stack) {
 		return true;
 	}
 }

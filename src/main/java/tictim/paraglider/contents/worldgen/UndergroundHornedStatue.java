@@ -12,25 +12,26 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 
 import java.util.Optional;
 
+@NullMarked
 public class UndergroundHornedStatue extends Structure {
 	public static final MapCodec<UndergroundHornedStatue> CODEC = simpleCodec(UndergroundHornedStatue::new);
 	private static final Identifier TEMPLATE = ParagliderAPI.id("underground_horned_statue");
 
-	public static @NotNull StructurePieceType.StructureTemplateType pieceType() {
+	public static StructurePieceType.StructureTemplateType pieceType() {
 		return BaseHornedStatuePiece.createType(() -> Contents.get().undergroundHornedStatuePiece(), BlockPos.ZERO);
 	}
 
-	public UndergroundHornedStatue(@NotNull StructureSettings structureSettings) {
+	public UndergroundHornedStatue(StructureSettings structureSettings) {
 		super(structureSettings);
 	}
 
-	@Override public @NotNull Optional<GenerationStub> findGenerationPoint(@NotNull GenerationContext ctx) {
+	@Override public Optional<GenerationStub> findGenerationPoint(GenerationContext ctx) {
 		int x = ctx.chunkPos().getMinBlockX() + ctx.random().nextInt(16);
 		int z = ctx.chunkPos().getMinBlockZ() + ctx.random().nextInt(16);
 		int y = searchY(ctx, x, z);
@@ -43,7 +44,7 @@ public class UndergroundHornedStatue extends Structure {
 						.rot(BlockPos.ZERO, rotation))));
 	}
 
-	private static int searchY(@NotNull GenerationContext ctx, int x, int z) {
+	private static int searchY(GenerationContext ctx, int x, int z) {
 		int y = ctx.chunkGenerator().getFirstOccupiedHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, ctx.heightAccessor(), ctx.randomState())
 				- ctx.random().nextInt(30);
 		int depth = 15 + 2;
@@ -58,10 +59,10 @@ public class UndergroundHornedStatue extends Structure {
 		return Integer.MIN_VALUE; // cannot generate structure
 	}
 
-	@Override public @NotNull StructureType<?> type() {
+	@Override public StructureType<?> type() {
 		return Contents.get().undergroundHornedStatue();
 	}
-	@Override public @NotNull GenerationStep.Decoration step() {
+	@Override public GenerationStep.Decoration step() {
 		return GenerationStep.Decoration.UNDERGROUND_STRUCTURES;
 	}
 }

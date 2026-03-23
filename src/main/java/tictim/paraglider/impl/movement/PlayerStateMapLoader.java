@@ -3,7 +3,11 @@ package tictim.paraglider.impl.movement;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
+import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.MovementPlugin;
 import tictim.paraglider.api.movement.MovementPlugin.PlayerStateConnectionRegister;
@@ -25,14 +29,15 @@ import java.util.stream.Collectors;
 
 import static tictim.paraglider.plugin.ParagliderPluginUtils.*;
 
+@NullMarked
 public final class PlayerStateMapLoader {
 	private PlayerStateMapLoader() {}
 
-	public static @NotNull Pair<PlayerStateMap, PlayerStateConnectionMap> loadStates() {
+	public static Pair<PlayerStateMap, PlayerStateConnectionMap> loadStates() {
 		return loadStates(ParagliderPluginLoader.get().getMovementPlugins(), true);
 	}
-	public static @NotNull Pair<PlayerStateMap, PlayerStateConnectionMap> loadStates(
-			@NotNull List<@NotNull PluginInstance<MovementPlugin>> plugins,
+	public static Pair<PlayerStateMap, PlayerStateConnectionMap> loadStates(
+			List<PluginInstance<MovementPlugin>> plugins,
 			boolean insertIdleIfMissing
 	) {
 		Map<Identifier, State> states = gatherStates(plugins);
@@ -86,13 +91,13 @@ public final class PlayerStateMapLoader {
 						))));
 	}
 
-	private static @NotNull Map<Identifier, State> gatherStates(List<PluginInstance<MovementPlugin>> plugins) {
+	private static Map<Identifier, State> gatherStates(List<PluginInstance<MovementPlugin>> plugins) {
 		List<PluginAction<MovementPlugin, NewState>> newStates = new ArrayList<>();
 		Object2IntMap<Identifier> idToCountMap = new Object2IntArrayMap<>();
 
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().registerNewStates(new PlayerStateRegister() {
-				@Override public void register(@NotNull Identifier id, double defaultStaminaDelta, @NotNull Identifier @NotNull ... flags) {
+				@Override public void register(Identifier id, double defaultStaminaDelta, Identifier... flags) {
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
 					if (Double.isNaN(defaultStaminaDelta))
@@ -103,7 +108,7 @@ public final class PlayerStateMapLoader {
 					newStates.add(new PluginAction<>(plugin, new NewState.Regular(id, defaultStaminaDelta, Set.of(flags))));
 				}
 
-				@Override public void registerSyntheticState(@NotNull Identifier id) {
+				@Override public void registerSyntheticState(Identifier id) {
 					Objects.requireNonNull(id, "id == null");
 					idToCountMap.put(id, idToCountMap.getInt(id) + 1);
 					newStates.add(new PluginAction<>(plugin, new NewState.Synthetic(id)));
@@ -137,15 +142,15 @@ public final class PlayerStateMapLoader {
 
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().modifyRegisteredStates(new PlayerStateModifier() {
-				@Override public @NotNull @UnmodifiableView Map<@NotNull Identifier, @NotNull PlayerState> playerStates() {
+				@Override public @UnmodifiableView Map<Identifier, PlayerState> playerStates() {
 					return Collections.unmodifiableMap(states);
 				}
 
-				@Override public boolean exists(@NotNull Identifier id) {
+				@Override public boolean exists(Identifier id) {
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
 
-				@Override public void changeDefaultStaminaDelta(@NotNull Identifier id, double defaultStaminaDelta) {
+				@Override public void changeDefaultStaminaDelta(Identifier id, double defaultStaminaDelta) {
 					Objects.requireNonNull(id, "id == null");
 					if (Double.isNaN(defaultStaminaDelta))
 						throw new IllegalArgumentException("defaultStaminaDelta is NaN");
@@ -158,7 +163,7 @@ public final class PlayerStateMapLoader {
 					idToCountMap.put(id, idToCountMap.getInt(id) + 1);
 				}
 
-				@Override public void addFlags(@NotNull Identifier id, @NotNull Identifier @NotNull ... flags) {
+				@Override public void addFlags(Identifier id, Identifier... flags) {
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
 					State state = states.get(id);
@@ -169,7 +174,7 @@ public final class PlayerStateMapLoader {
 					for (Identifier flag : flags) set.add(Objects.requireNonNull(flag));
 				}
 
-				@Override public void removeFlags(@NotNull Identifier id, @NotNull Identifier @NotNull ... flags) {
+				@Override public void removeFlags(Identifier id, Identifier... flags) {
 					Objects.requireNonNull(id, "id == null");
 					Objects.requireNonNull(flags, "flags == null");
 					State state = states.get(id);
@@ -232,8 +237,8 @@ public final class PlayerStateMapLoader {
 	}
 
 	private static void gatherStateConnections(List<PluginInstance<MovementPlugin>> plugins, Map<Identifier, State> states) {
-		record Connect(@NotNull PlayerStateCondition condition, @NotNull Identifier state, double priority) {}
-		record Disconnect(@NotNull Identifier state, @Nullable Double priority) {}
+		record Connect(PlayerStateCondition condition, Identifier state, double priority) {}
+		record Disconnect(Identifier state, @Nullable Double priority) {}
 
 		Map<Identifier, List<PluginAction<MovementPlugin, SetFallbackConnection>>> fallbacks = new Object2ObjectLinkedOpenHashMap<>();
 		Map<Identifier, List<Connect>> connections = new Object2ObjectLinkedOpenHashMap<>();
@@ -241,17 +246,17 @@ public final class PlayerStateMapLoader {
 
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().registerStateConnections(new PlayerStateConnectionRegister() {
-				@Override public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull PlayerState> playerStates() {
+				@Override public @Unmodifiable Map<Identifier, PlayerState> playerStates() {
 					return Collections.unmodifiableMap(states);
 				}
 
-				@Override public boolean exists(@NotNull Identifier id) {
+				@Override public boolean exists(Identifier id) {
 					return states.containsKey(Objects.requireNonNull(id, "id == null"));
 				}
 
-				@Override public void connect(@NotNull Identifier parent,
-				                              @NotNull Identifier state,
-				                              @NotNull PlayerStateCondition condition,
+				@Override public void connect(Identifier parent,
+				                              Identifier state,
+				                              PlayerStateCondition condition,
 				                              double priority) {
 					Objects.requireNonNull(condition, "condition == null");
 					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
@@ -262,7 +267,7 @@ public final class PlayerStateMapLoader {
 					connections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Connect(condition, state, priority));
 				}
 
-				@Override public void disconnect(@NotNull Identifier parent, @NotNull Identifier state, @Nullable Double priority) {
+				@Override public void disconnect(Identifier parent, Identifier state, @Nullable Double priority) {
 					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
 					if (!states.containsKey(Objects.requireNonNull(state, "state == null")))
@@ -271,7 +276,7 @@ public final class PlayerStateMapLoader {
 					disconnections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Disconnect(state, priority));
 				}
 
-				@Override public void setFallback(@NotNull Identifier parent, @Nullable Identifier fallback, double priority) {
+				@Override public void setFallback(Identifier parent, @Nullable Identifier fallback, double priority) {
 					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
 					if (fallback != null && !states.containsKey(fallback))
@@ -358,15 +363,15 @@ public final class PlayerStateMapLoader {
 	}
 
 	private static final class State implements PlayerState {
-		final @NotNull Identifier id;
+		final Identifier id;
 		double defaultStaminaDelta;
-		final @NotNull Set<@NotNull Identifier> flags = new ObjectOpenHashSet<>();
+		final Set<Identifier> flags = new ObjectOpenHashSet<>();
 		final boolean synthetic;
 
-		final @NotNull List<@NotNull Connection> connections = new ArrayList<>();
+		final List<Connection> connections = new ArrayList<>();
 		@Nullable Identifier fallbackConnection;
 
-		State(@NotNull NewState newState) {
+		State(NewState newState) {
 			this.id = newState.id();
 			if (newState instanceof NewState.Regular regular) {
 				this.defaultStaminaDelta = regular.defaultStaminaDelta();
@@ -376,7 +381,7 @@ public final class PlayerStateMapLoader {
 				this.synthetic = true;
 			}
 		}
-		State(@NotNull Identifier id, boolean synthetic) {
+		State(Identifier id, boolean synthetic) {
 			this.id = id;
 			this.synthetic = synthetic;
 		}
@@ -386,7 +391,7 @@ public final class PlayerStateMapLoader {
 		 * 1: Checking rn
 		 * 2: Checked (and already cleared)
 		 */
-		@NotNull PlayerStateMapLoader.State.CheckStatus circularLoopCheckStatus = CheckStatus.UNCHECKED;
+		PlayerStateMapLoader.State.CheckStatus circularLoopCheckStatus = CheckStatus.UNCHECKED;
 
 		/**
 		 * Checks for circular loops duh
@@ -394,7 +399,7 @@ public final class PlayerStateMapLoader {
 		 * @param states Map of other states
 		 * @return List of states visited (if there's a circular loop) or {@code null} if it isn't there
 		 */
-		@Nullable List<State> checkCircularLoop(@NotNull Map<Identifier, State> states) {
+		@Nullable List<State> checkCircularLoop(Map<Identifier, State> states) {
 			return switch (this.circularLoopCheckStatus) {
 				case UNCHECKED -> {
 					if (this.fallbackConnection == null) {
@@ -422,10 +427,10 @@ public final class PlayerStateMapLoader {
 			};
 		}
 
-		@Override public @NotNull Identifier id() {
+		@Override public Identifier id() {
 			return this.id;
 		}
-		@Override public @NotNull @Unmodifiable Set<@NotNull Identifier> flags() {
+		@Override public @Unmodifiable Set<Identifier> flags() {
 			return this.flags;
 		}
 		@Override public double staminaDelta() {

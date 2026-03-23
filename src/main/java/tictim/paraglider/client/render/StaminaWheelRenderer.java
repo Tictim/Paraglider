@@ -11,9 +11,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.client.render.state.StaminaWheelRenderState;
@@ -28,6 +28,7 @@ import java.util.List;
 import static net.minecraft.util.ARGB.alpha;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
+@NullMarked
 public abstract class StaminaWheelRenderer {
 	static final DecimalFormat DEBUG = new DecimalFormat("#.00");
 
@@ -45,7 +46,7 @@ public abstract class StaminaWheelRenderer {
 	/**
 	 * Draw stamina wheel with center at (x, y).
 	 */
-	public void staminaWheel(@NotNull GuiGraphicsExtractor graphics, float x, float y, float partialTicks,
+	public void staminaWheel(GuiGraphicsExtractor graphics, float x, float y, float partialTicks,
 	                         @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
@@ -65,7 +66,7 @@ public abstract class StaminaWheelRenderer {
 	}
 
 	// by default, holding a paraglider offhand enables stamina wheel debug info
-	protected boolean isDebugEnabled(@NotNull Player player) {
+	protected boolean isDebugEnabled(Player player) {
 		return DebugCfg.get().debugPlayerMovement() && player.getOffhandItem().is(ParagliderTags.PARAGLIDERS);
 	}
 
@@ -77,9 +78,9 @@ public abstract class StaminaWheelRenderer {
 		this.debugAnimNames.add(name);
 	}
 
-	protected abstract void makeWheel(@NotNull Player player, float partialTicks);
+	protected abstract void makeWheel(Player player, float partialTicks);
 
-	protected void extract(@NotNull GuiGraphicsExtractor graphics,
+	protected void extract(GuiGraphicsExtractor graphics,
 	                       float x, float y, boolean debug,
 	                       @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		if (debug) {
@@ -132,7 +133,7 @@ public abstract class StaminaWheelRenderer {
 		pose.popMatrix();
 	}
 
-	protected void wheels(@NotNull GuiGraphicsExtractor graphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
+	protected void wheels(GuiGraphicsExtractor graphics, @Nullable ExtraWheelAttachment extraWheelAttachment) {
 		StaminaWheelRenderState.drawMainWheel(graphics, this.mainWheel, this.debug);
 
 		if (this.extraWheel.alpha() > 0 && this.extraWheel.stamina() > 0 && extraWheelAttachment != null) {

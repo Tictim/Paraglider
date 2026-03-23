@@ -7,9 +7,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.Bargain;
 import tictim.paraglider.api.bargain.BargainType;
 import tictim.paraglider.api.vessel.VesselContainer;
@@ -22,6 +22,7 @@ import java.util.*;
  *
  * @see BargainHandler#initiate(Player, Identifier, BlockPos, Identifier, Vec3)
  */
+@NullMarked
 public final class BargainContext {
 	private final ServerPlayer player;
 	private final int sessionId;
@@ -40,11 +41,11 @@ public final class BargainContext {
 	private boolean catalogRefreshScheduled;
 	private boolean finished;
 
-	public BargainContext(@NotNull ServerPlayer player,
+	public BargainContext(ServerPlayer player,
 	                      int sessionId,
-	                      @NotNull BargainType type,
-	                      @NotNull Identifier typeId,
-	                      @NotNull Map<@NotNull Identifier, @NotNull Bargain> bargains,
+	                      BargainType type,
+	                      Identifier typeId,
+	                      Map<Identifier, Bargain> bargains,
 	                      @Nullable Identifier advancement,
 	                      @Nullable Vec3 lookAt) {
 		this.player = Objects.requireNonNull(player);
@@ -56,19 +57,19 @@ public final class BargainContext {
 		this.lookAt = lookAt;
 	}
 
-	public @NotNull ServerPlayer player() {
+	public ServerPlayer player() {
 		return player;
 	}
 	public int sessionId() {
 		return sessionId;
 	}
-	public @NotNull BargainType type() {
+	public BargainType type() {
 		return type;
 	}
-	public @NotNull Identifier typeId() {
+	public Identifier typeId() {
 		return typeId;
 	}
-	public @NotNull @Unmodifiable Map<@NotNull Identifier, @NotNull Bargain> bargains() {
+	public @Unmodifiable Map<Identifier, Bargain> bargains() {
 		return Collections.unmodifiableMap(bargains);
 	}
 	public boolean isFinished() {
@@ -142,7 +143,7 @@ public final class BargainContext {
 		}
 	}
 
-	public @NotNull List<@NotNull BargainCatalog> makeCatalog() {
+	public List<BargainCatalog> makeCatalog() {
 		List<BargainCatalog> demands = new ArrayList<>();
 		for (var e : this.bargains.entrySet()) {
 			Bargain bargain = e.getValue();

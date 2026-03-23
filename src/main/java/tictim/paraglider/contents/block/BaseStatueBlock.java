@@ -13,11 +13,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
+@NullMarked
 public abstract class BaseStatueBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
 	public BaseStatueBlock(Properties properties) {
 		super(properties);
@@ -35,15 +36,15 @@ public abstract class BaseStatueBlock extends HorizontalDirectionalBlock impleme
 				.setValue(WATERLOGGED, fluidState.is(Fluids.WATER));
 	}
 
-	@Override protected @NotNull BlockState updateShape(
-			@NotNull BlockState state,
-			@NotNull LevelReader level,
-			@NotNull ScheduledTickAccess scheduledTickAccess,
-			@NotNull BlockPos pos,
-			@NotNull Direction direction,
-			@NotNull BlockPos neighborPos,
-			@NotNull BlockState neighborState,
-			@NotNull RandomSource random
+	@Override protected BlockState updateShape(
+			BlockState state,
+			LevelReader level,
+			ScheduledTickAccess scheduledTickAccess,
+			BlockPos pos,
+			Direction direction,
+			BlockPos neighborPos,
+			BlockState neighborState,
+			RandomSource random
 	) {
 		if (state.getValue(WATERLOGGED)) {
 			scheduledTickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
@@ -52,7 +53,7 @@ public abstract class BaseStatueBlock extends HorizontalDirectionalBlock impleme
 		return state;
 	}
 
-	@Override protected @NotNull FluidState getFluidState(BlockState state) {
+	@Override protected FluidState getFluidState(BlockState state) {
 		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(true) : super.getFluidState(state);
 	}
 }

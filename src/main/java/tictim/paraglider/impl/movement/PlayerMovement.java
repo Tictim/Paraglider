@@ -3,8 +3,8 @@ package tictim.paraglider.impl.movement;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
@@ -14,6 +14,7 @@ import tictim.paraglider.wind.WindLogic;
 
 import java.util.Objects;
 
+@NullMarked
 public abstract class PlayerMovement implements Movement {
 	private final Player player;
 	private @Nullable PlayerState state;
@@ -21,15 +22,15 @@ public abstract class PlayerMovement implements Movement {
 	private boolean staminaInitialized;
 	private @Nullable Stamina stamina;
 
-	public PlayerMovement(@NotNull Player player) {
+	public PlayerMovement(Player player) {
 		this.player = Objects.requireNonNull(player, "player == null");
 	}
 
-	public @NotNull Player player() {
+	public Player player() {
 		return player;
 	}
 
-	public final @NotNull Stamina stamina() {
+	public final Stamina stamina() {
 		if (!this.staminaInitialized) {
 			this.stamina = Objects.requireNonNull(createCustomStamina(), "createCustomStamina() returned null");
 			this.staminaInitialized = true;
@@ -37,11 +38,11 @@ public abstract class PlayerMovement implements Movement {
 		return Objects.requireNonNull(this.stamina);
 	}
 
-	protected abstract @NotNull Stamina createCustomStamina();
+	protected abstract Stamina createCustomStamina();
 
 	protected abstract boolean isRemote();
 
-	@Override public final @NotNull PlayerState state() {
+	@Override public final PlayerState state() {
 		if (this.state != null) return this.state;
 		PlayerStateMap stateMap = isRemote() ?
 				ParagliderMod.instance().getPlayerStateMap() :
@@ -49,7 +50,7 @@ public abstract class PlayerMovement implements Movement {
 		return stateMap.getIdleState();
 	}
 
-	protected final void setState(@NotNull PlayerState state) {
+	protected final void setState(PlayerState state) {
 		this.state = state;
 	}
 

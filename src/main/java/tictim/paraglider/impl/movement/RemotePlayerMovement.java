@@ -2,8 +2,8 @@ package tictim.paraglider.impl.movement;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.movement.PlayerState;
@@ -11,15 +11,16 @@ import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.stamina.StaminaEfficiencyLogic;
 import tictim.paraglider.network.SyncMovementHandle;
 
+@NullMarked
 public class RemotePlayerMovement extends PlayerMovement implements SyncMovementHandle {
 	private int recoveryDelay;
 	private double staminaEfficiency;
 
-	public RemotePlayerMovement(@NotNull Player player) {
+	public RemotePlayerMovement(Player player) {
 		super(player);
 	}
 
-	@Override protected @NotNull Stamina createCustomStamina() {
+	@Override protected Stamina createCustomStamina() {
 		return ParagliderAPI.staminaFactory().createRemoteInstance(player());
 	}
 
@@ -29,7 +30,7 @@ public class RemotePlayerMovement extends PlayerMovement implements SyncMovement
 
 	@Override public void update() {}
 
-	@Override public void syncMovement(@NotNull Identifier stateId, int recoveryDelay, double efficiency) {
+	@Override public void syncMovement(Identifier stateId, int recoveryDelay, double efficiency) {
 		PlayerStateMap stateMap = ParagliderMod.instance().getPlayerStateMap();
 		PlayerState state = stateMap.getState(stateId);
 		setState(state == null ? stateMap.getIdleState() : state);

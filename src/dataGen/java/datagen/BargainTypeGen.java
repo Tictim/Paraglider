@@ -3,7 +3,7 @@ package datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.JsonCodecProvider;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.bargain.BargainDialog;
 import tictim.paraglider.api.bargain.BargainDialog.Dialog;
 import tictim.paraglider.api.bargain.BargainType;
@@ -16,8 +16,9 @@ import static tictim.paraglider.api.ParagliderAPI.MODID;
 import static tictim.paraglider.api.bargain.ParagliderBargainTags.*;
 import static tictim.paraglider.api.bargain.ParagliderFailReasons.*;
 
+@NullMarked
 public final class BargainTypeGen extends JsonCodecProvider<BargainType> {
-	public BargainTypeGen(@NotNull PackOutput output, @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider) {
+	public BargainTypeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, PackOutput.Target.DATA_PACK, MODID + "/bargain_types", BargainType.CODEC, lookupProvider, MODID);
 	}
 

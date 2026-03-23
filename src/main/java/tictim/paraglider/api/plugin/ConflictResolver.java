@@ -1,6 +1,6 @@
 package tictim.paraglider.api.plugin;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Interface for resolving conflicting actions between one of more plugins.
@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @param <A> Type of the action
  * @see #resolveConflict(Object, PluginAction[])
  */
+@NullMarked
 @FunctionalInterface
 public interface ConflictResolver<P extends ParagliderPluginBase, A> {
 	/**
@@ -21,7 +22,7 @@ public interface ConflictResolver<P extends ParagliderPluginBase, A> {
 	 * @return Implementations of {@link ConflictResolver} that proceeds with all conflicts.
 	 */
 	@SuppressWarnings("unchecked")
-	static <P extends ParagliderPluginBase, A> @NotNull ConflictResolver<P, A> proceed() {
+	static <P extends ParagliderPluginBase, A> ConflictResolver<P, A> proceed() {
 		return (ConflictResolver<P, A>)Internal.ALWAYS_PROCEED;
 	}
 	/**
@@ -30,7 +31,7 @@ public interface ConflictResolver<P extends ParagliderPluginBase, A> {
 	 * @return Implementations of {@link ConflictResolver} that aborts all conflicts.
 	 */
 	@SuppressWarnings("unchecked")
-	static <P extends ParagliderPluginBase, A> @NotNull ConflictResolver<P, A> abort() {
+	static <P extends ParagliderPluginBase, A> ConflictResolver<P, A> abort() {
 		return (ConflictResolver<P, A>)Internal.ALWAYS_ABORT;
 	}
 	/**
@@ -39,7 +40,7 @@ public interface ConflictResolver<P extends ParagliderPluginBase, A> {
 	 * @return Implementations of {@link ConflictResolver} that produces error with all conflicts.
 	 */
 	@SuppressWarnings("unchecked")
-	static <P extends ParagliderPluginBase, A> @NotNull ConflictResolver<P, A> error() {
+	static <P extends ParagliderPluginBase, A> ConflictResolver<P, A> error() {
 		return (ConflictResolver<P, A>)Internal.ALWAYS_ERROR;
 	}
 
@@ -55,7 +56,7 @@ public interface ConflictResolver<P extends ParagliderPluginBase, A> {
 	 * @return Action to be taken against previously made change
 	 * @see Resolution
 	 */
-	@NotNull Resolution resolveConflict(@NotNull A action, @NotNull PluginAction<? extends P, ? extends A> @NotNull [] conflictingPlugins);
+	Resolution resolveConflict(A action, PluginAction<? extends P, ? extends A>[] conflictingPlugins);
 
 	/**
 	 * Specifies the action to be taken against previously made change.

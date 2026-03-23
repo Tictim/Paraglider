@@ -4,10 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Locale;
 
+@NullMarked
 public sealed interface StaminaWheelPosition {
 	StaminaWheelPosition DEFAULT = new ScreenProportion((427 - 100) / 854.0, (240 - 15) / 480.0);
 
@@ -71,7 +72,7 @@ public sealed interface StaminaWheelPosition {
 			};
 		}
 
-		@Override public @NotNull String getSerializedName() {
+		@Override public String getSerializedName() {
 			return this.serializedName;
 		}
 	}

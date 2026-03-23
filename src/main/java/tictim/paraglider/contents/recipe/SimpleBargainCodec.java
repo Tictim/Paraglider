@@ -10,7 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.network.NetUtils;
 
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+@NullMarked
 public class SimpleBargainCodec {
 	private SimpleBargainCodec() {}
 
@@ -39,11 +40,11 @@ public class SimpleBargainCodec {
 			offers.items, offers.heartContainers, offers.staminaVessels, offers.essences,
 			tags)));
 
-	public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull SimpleBargain> STREAM_CODEC = StreamCodec.of(
+	public static final StreamCodec<RegistryFriendlyByteBuf, SimpleBargain> STREAM_CODEC = StreamCodec.of(
 			SimpleBargainCodec::toNetwork, SimpleBargainCodec::fromNetwork
 	);
 
-	private static @NotNull SimpleBargain fromNetwork(@NotNull RegistryFriendlyByteBuf buffer) {
+	private static SimpleBargain fromNetwork(RegistryFriendlyByteBuf buffer) {
 		Identifier bargainType = buffer.readIdentifier();
 
 		List<SizedIngredient> itemDemands = new ArrayList<>();
@@ -77,7 +78,7 @@ public class SimpleBargainCodec {
 				userTags);
 	}
 
-	private static void toNetwork(@NotNull RegistryFriendlyByteBuf buffer, @NotNull SimpleBargain recipe) {
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, SimpleBargain recipe) {
 		buffer.writeIdentifier(recipe.getBargainType());
 
 		List<SizedIngredient> itemDemands = recipe.getItemDemands();
@@ -120,7 +121,7 @@ public class SimpleBargainCodec {
 	}
 
 	private record OfferComponent(
-			@NotNull List<ItemStackTemplate> items,
+			List<ItemStackTemplate> items,
 			int heartContainers,
 			int staminaVessels,
 			int essences

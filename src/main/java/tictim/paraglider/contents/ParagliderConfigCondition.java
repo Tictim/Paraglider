@@ -3,22 +3,23 @@ package tictim.paraglider.contents;
 import com.mojang.serialization.MapCodec;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.config.FeatureCfg;
 
 import java.util.Locale;
 
+@NullMarked
 public enum ParagliderConfigCondition implements ICondition {
 	HEART_CONTAINER_ENABLED,
 	STAMINA_VESSEL_ENABLED;
 
 	private final MapCodec<ParagliderConfigCondition> codec = MapCodec.unit(this);
 
-	@Override public @NotNull MapCodec<? extends ICondition> codec() {
+	@Override public MapCodec<? extends ICondition> codec() {
 		return codec;
 	}
 
-	@Override public boolean test(@NotNull IContext context) {
+	@Override public boolean test(IContext context) {
 		return switch (ParagliderConfigCondition.this) {
 			case HEART_CONTAINER_ENABLED -> FeatureCfg.get().enableHeartContainers();
 			case STAMINA_VESSEL_ENABLED -> FeatureCfg.get().enableStaminaVessels();

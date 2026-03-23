@@ -4,16 +4,17 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.bargain.BargainCatalog;
 
 import java.util.List;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
+@NullMarked
 public record SyncCatalogMsg(
 		int sessionId,
-		@NotNull List<@NotNull BargainCatalog> catalog
+		List<BargainCatalog> catalog
 ) implements CustomPacketPayload {
 	public static final Type<SyncCatalogMsg> TYPE = new Type<>(id("sync_catalog"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SyncCatalogMsg> CODEC = StreamCodec.composite(
@@ -22,7 +23,7 @@ public record SyncCatalogMsg(
 			SyncCatalogMsg::new
 	);
 
-	@Override public @NotNull Type<? extends CustomPacketPayload> type() {
+	@Override public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

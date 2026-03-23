@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.bargain.Bargain;
@@ -22,6 +22,7 @@ import tictim.paraglider.network.message.SetParaglidingMsg;
 
 import static tictim.paraglider.ParagliderUtils.DIALOG_RNG;
 
+@NullMarked
 public final class ServerPacketHandler {
 	private ServerPacketHandler() {}
 
@@ -69,7 +70,7 @@ public final class ServerPacketHandler {
 		if (bargainContext != null && bargainContext.sessionId() == msg.sessionId()) bargainContext.markFinished();
 	}
 
-	private static void trace(@NotNull Kind kind, @NotNull Player player, @NotNull CustomPacketPayload msg) {
+	private static void trace(Kind kind, Player player, CustomPacketPayload msg) {
 		if (kind.isTraceEnabled()) ParagliderMod.LOGGER.debug("Received {} from client {}", msg, player);
 	}
 }

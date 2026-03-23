@@ -1,6 +1,6 @@
 package tictim.paraglider.api.plugin;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Objects;
 
@@ -12,9 +12,10 @@ import java.util.Objects;
  * @param <P>    Plugin.
  * @param <A>    Action.
  */
+@NullMarked
 public record PluginAction<P extends ParagliderPluginBase, A>(
-		@NotNull PluginInstance<P> plugin,
-		@NotNull A action
+		PluginInstance<P> plugin,
+		A action
 ) {
 	public PluginAction {
 		Objects.requireNonNull(plugin, "plugin == null");

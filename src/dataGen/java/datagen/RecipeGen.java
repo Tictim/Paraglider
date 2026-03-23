@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.bargain.ParagliderBargainTypes;
 import tictim.paraglider.contents.Contents;
@@ -28,8 +28,9 @@ import java.util.concurrent.CompletableFuture;
 import static datagen.builder.CosmeticRecipeBuilder.cosmetic;
 import static net.minecraft.data.recipes.SimpleCookingRecipeBuilder.*;
 
+@NullMarked
 public class RecipeGen extends RecipeProvider {
-	public RecipeGen(@NotNull HolderLookup.Provider registries, @NotNull RecipeOutput output) {
+	public RecipeGen(HolderLookup.Provider registries, RecipeOutput output) {
 		super(registries, output);
 	}
 
@@ -153,13 +154,13 @@ public class RecipeGen extends RecipeProvider {
 			super(output, registries);
 		}
 
-		@Override protected @NotNull RecipeProvider createRecipeProvider(
-				HolderLookup.@NotNull Provider registries, @NotNull RecipeOutput output
+		@Override protected RecipeProvider createRecipeProvider(
+				HolderLookup.Provider registries, RecipeOutput output
 		) {
 			return new RecipeGen(registries, output);
 		}
 
-		@Override public @NotNull String getName() {
+		@Override public String getName() {
 			return "Paraglider recipes";
 		}
 	}

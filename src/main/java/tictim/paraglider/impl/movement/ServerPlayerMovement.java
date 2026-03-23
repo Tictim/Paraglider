@@ -5,8 +5,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.api.ParagliderAPI;
@@ -29,6 +29,7 @@ import java.util.ArrayDeque;
 
 import static tictim.paraglider.impl.movement.PlayerMovementValues.*;
 
+@NullMarked
 public class ServerPlayerMovement extends PlayerMovement implements PlayerStateCondition.Context {
 	private boolean resync;
 	private boolean heartContainerChanged = true;
@@ -44,7 +45,7 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 	private boolean canRideUpdraft;
 	private boolean paragliding;
 
-	public ServerPlayerMovement(@NotNull ServerPlayer player) {
+	public ServerPlayerMovement(ServerPlayer player) {
 		super(player);
 
 		SimpleVesselContainer vessels = player.getData(Contents.get().vesselContainer());
@@ -60,11 +61,11 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		});
 	}
 
-	@Override public @NotNull ServerPlayer player() {
+	@Override public ServerPlayer player() {
 		return (ServerPlayer)super.player();
 	}
 
-	@Override protected @NotNull Stamina createCustomStamina() {
+	@Override protected Stamina createCustomStamina() {
 		return ParagliderAPI.staminaFactory().createServerInstance(player());
 	}
 
@@ -85,11 +86,11 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		return StaminaEfficiencyLogic.applyEfficiency(state().staminaDelta(), this.staminaEfficiency);
 	}
 
-	@Override public @NotNull Movement movement() {
+	@Override public Movement movement() {
 		return this;
 	}
 
-	@Override public @NotNull PlayerState prevState() {
+	@Override public PlayerState prevState() {
 		return state(); // for PlayerStateCondition the "current" state would be the "previous" state
 	}
 
@@ -307,7 +308,7 @@ public class ServerPlayerMovement extends PlayerMovement implements PlayerStateC
 		this.resync = true;
 	}
 
-	protected void spawnParticle(@NotNull ParticleOptions particle, int count) {
+	protected void spawnParticle(ParticleOptions particle, int count) {
 		player().level().sendParticles(particle,
 				player().getX(), player().getY(.5), player().getZ(),
 				count, 1, 2, 1, 0);

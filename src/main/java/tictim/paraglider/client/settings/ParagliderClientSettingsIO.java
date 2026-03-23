@@ -3,14 +3,14 @@ package tictim.paraglider.client.settings;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.minecraft.util.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.Util;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderClientMod;
 import tictim.paraglider.ParagliderMod;
 
@@ -22,17 +22,18 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+@NullMarked
 public class ParagliderClientSettingsIO {
 	public static final Path FILEPATH = FMLPaths.GAMEDIR.get().resolve("paragliderSettings.nbt");
 
-	public static void save(@NotNull ParagliderClientSettings settings, @Nullable BooleanConsumer callback) {
+	public static void save(ParagliderClientSettings settings, @Nullable BooleanConsumer callback) {
 		Util.ioPool().execute(() -> {
 			boolean result = saveInternal(settings);
 			if (callback != null) callback.accept(result);
 		});
 	}
 
-	private static boolean saveInternal(@NotNull ParagliderClientSettings settings) {
+	private static boolean saveInternal(ParagliderClientSettings settings) {
 		DataResult<Tag> result = ParagliderClientSettings.CODEC.encodeStart(NbtOps.INSTANCE, settings);
 
 		return result.mapOrElse(t -> {

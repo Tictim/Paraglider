@@ -12,14 +12,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.bargain.ParagliderBargainTypes;
 
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 public class TestRecipeGen extends RecipeProvider {
-	public TestRecipeGen(@NotNull HolderLookup.Provider registries, @NotNull RecipeOutput output) {
+	public TestRecipeGen(HolderLookup.Provider registries, RecipeOutput output) {
 		super(registries, output);
 	}
 
@@ -107,13 +108,13 @@ public class TestRecipeGen extends RecipeProvider {
 			super(output, registries);
 		}
 
-		@Override protected @NotNull RecipeProvider createRecipeProvider(
-				HolderLookup.@NotNull Provider registries, @NotNull RecipeOutput output
+		@Override protected RecipeProvider createRecipeProvider(
+				HolderLookup.Provider registries, RecipeOutput output
 		) {
 			return new TestRecipeGen(registries, output);
 		}
 
-		@Override public @NotNull String getName() {
+		@Override public String getName() {
 			return "Paraglider test recipes";
 		}
 	}

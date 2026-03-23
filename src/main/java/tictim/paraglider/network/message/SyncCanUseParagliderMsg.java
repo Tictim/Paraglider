@@ -4,10 +4,11 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import static tictim.paraglider.api.ParagliderAPI.id;
 
+@NullMarked
 public record SyncCanUseParagliderMsg(
 		boolean canUseParaglider,
 		boolean canRideUpdraft
@@ -19,7 +20,7 @@ public record SyncCanUseParagliderMsg(
 			SyncCanUseParagliderMsg::new
 	);
 
-	@Override public @NotNull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+	@Override public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
 		return TYPE;
 	}
 }

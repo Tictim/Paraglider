@@ -8,12 +8,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+@NullMarked
 public enum VesselSlotDisplay implements SlotDisplay {
 	HEART_CONTAINER(() -> Contents.get().heartContainer()),
 	STAMINA_VESSEL(() -> Contents.get().staminaVessel()),
@@ -28,7 +29,7 @@ public enum VesselSlotDisplay implements SlotDisplay {
 		this.item = item;
 	}
 
-	@Override public <T> @NotNull Stream<T> resolve(@NotNull ContextMap context, @NotNull DisplayContentsFactory<T> output) {
+	@Override public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> output) {
 		if (output instanceof DisplayContentsFactory.ForStacks<T> forStacks) {
 			return Stream.of(new ItemStack(this.item.get())).map(forStacks::forStack);
 		}
@@ -36,7 +37,7 @@ public enum VesselSlotDisplay implements SlotDisplay {
 		return Stream.empty();
 	}
 
-	@Override public @NotNull Type<? extends SlotDisplay> type() {
+	@Override public Type<? extends SlotDisplay> type() {
 		return this.type;
 	}
 

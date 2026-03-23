@@ -14,17 +14,18 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType.St
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@NullMarked
 public class BaseHornedStatuePiece extends TemplateStructurePiece {
-	public BaseHornedStatuePiece(@NotNull StructurePieceType type,
-	                             @NotNull StructureTemplateManager structureManager,
-	                             @NotNull Identifier location,
-	                             @NotNull BlockPos templatePos) {
+	public BaseHornedStatuePiece(StructurePieceType type,
+	                             StructureTemplateManager structureManager,
+	                             Identifier location,
+	                             BlockPos templatePos) {
 		super(type,
 				0,
 				structureManager,
@@ -33,20 +34,20 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 				new StructurePlaceSettings().addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK),
 				templatePos);
 	}
-	public BaseHornedStatuePiece(@NotNull StructurePieceType type,
-	                             @NotNull CompoundTag tag,
-	                             @NotNull StructureTemplateManager structureManager,
-	                             @NotNull Function<Identifier, StructurePlaceSettings> placeSettingsFactory,
+	public BaseHornedStatuePiece(StructurePieceType type,
+	                             CompoundTag tag,
+	                             StructureTemplateManager structureManager,
+	                             Function<Identifier, StructurePlaceSettings> placeSettingsFactory,
 	                             boolean savePivot) {
 		super(type, tag, structureManager, placeSettingsFactory);
 		this.savePivot = savePivot;
 	}
 
-	public static @NotNull StructureTemplateType createType(@NotNull Supplier<StructurePieceType> type) {
+	public static StructureTemplateType createType(Supplier<StructurePieceType> type) {
 		return createType(type, null);
 	}
 
-	public static @NotNull StructureTemplateType createType(@NotNull Supplier<StructurePieceType> type, @Nullable BlockPos pivot) {
+	public static StructureTemplateType createType(Supplier<StructurePieceType> type, @Nullable BlockPos pivot) {
 		return (templateManager, tag) -> {
 			var oRot = tag.getString("Rot");
 			var oRotPivot = tag.read("RotPivot", BlockPos.CODEC);
@@ -72,20 +73,20 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 		};
 	}
 
-	public @NotNull BaseHornedStatuePiece rot(@NotNull BlockPos pivot, @NotNull Rotation rot) {
+	public BaseHornedStatuePiece rot(BlockPos pivot, Rotation rot) {
 		return rot(pivot, rot, true);
 	}
 
 	private boolean savePivot;
 
-	public @NotNull BaseHornedStatuePiece rot(@NotNull BlockPos pivot, @NotNull Rotation rot, boolean savePivot) {
+	public BaseHornedStatuePiece rot(BlockPos pivot, Rotation rot, boolean savePivot) {
 		this.placeSettings.setRotationPivot(pivot).setRotation(rot);
 		this.savePivot = savePivot;
 		return this;
 	}
 
 	@Override
-	protected void addAdditionalSaveData(@NotNull StructurePieceSerializationContext context, @NotNull CompoundTag tag) {
+	protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
 		super.addAdditionalSaveData(context, tag);
 		if (getRotation() != Rotation.NONE) {
 			tag.putString("Rot", getRotation().name());
@@ -95,9 +96,9 @@ public class BaseHornedStatuePiece extends TemplateStructurePiece {
 	}
 
 	@Override
-	protected void handleDataMarker(@NotNull String function,
-	                                @NotNull BlockPos pos,
-	                                @NotNull ServerLevelAccessor accessor,
-	                                @NotNull RandomSource random,
-	                                @NotNull BoundingBox boundingBox) {}
+	protected void handleDataMarker(String function,
+	                                BlockPos pos,
+	                                ServerLevelAccessor accessor,
+	                                RandomSource random,
+	                                BoundingBox boundingBox) {}
 }

@@ -6,19 +6,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.vessel.VesselContainer;
 
+@NullMarked
 public abstract class VesselItem extends Item {
-	public VesselItem(@NotNull Properties properties) {
+	public VesselItem(Properties properties) {
 		super(properties);
 	}
 
-	@Override public boolean isFoil(@NotNull ItemStack stack) {
+	@Override public boolean isFoil(ItemStack stack) {
 		return true;
 	}
 
-	@Override public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+	@Override public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		VesselContainer vessels = VesselContainer.get(player);
 		if (give(vessels, true, false)) {

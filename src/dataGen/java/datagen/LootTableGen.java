@@ -7,13 +7,14 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.contents.Contents;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 public class LootTableGen extends LootTableProvider {
 	public LootTableGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, Set.of(), List.of(new SubProviderEntry(
@@ -36,7 +37,7 @@ public class LootTableGen extends LootTableProvider {
 			dropSelf(contents.hornedStatue());
 		}
 
-		@Override protected @NotNull Iterable<Block> getKnownBlocks() {
+		@Override protected Iterable<Block> getKnownBlocks() {
 			return Contents.get().blocks.getEntries().stream()
 					.map(h -> (Block)h.get())
 					.toList();

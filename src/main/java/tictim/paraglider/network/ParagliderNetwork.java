@@ -7,8 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderMod;
 import tictim.paraglider.bargain.BargainCatalog;
 import tictim.paraglider.bargain.BargainContext;
@@ -17,57 +17,58 @@ import tictim.paraglider.wind.WindChunk;
 
 import java.util.List;
 
+@NullMarked
 public interface ParagliderNetwork {
-	static @NotNull ParagliderNetwork get() {
+	static ParagliderNetwork get() {
 		return ParagliderMod.instance().getNetwork();
 	}
 
 	// movement
 
-	void syncStateMap(@NotNull ServerPlayer player, @NotNull PlayerStateMap stateMap);
-	void syncStateMapToAll(@NotNull PlayerStateMap stateMap);
+	void syncStateMap(ServerPlayer player, PlayerStateMap stateMap);
+	void syncStateMapToAll(PlayerStateMap stateMap);
 
-	void syncMovement(@NotNull ServerPlayer player,
-	                  @NotNull Identifier state,
+	void syncMovement(ServerPlayer player,
+	                  Identifier state,
 	                  double stamina,
 	                  double extraStamina,
 	                  boolean depleted,
 	                  int recoveryDelay,
 	                  double efficiency);
 
-	void syncRemoteMovement(@NotNull Entity entity, @NotNull Identifier state);
-	void syncRemoteMovement(@NotNull Entity entity, @NotNull ServerPlayer target, @NotNull Identifier state);
+	void syncRemoteMovement(Entity entity, Identifier state);
+	void syncRemoteMovement(Entity entity, ServerPlayer target, Identifier state);
 
-	void syncVessels(@NotNull ServerPlayer player,
+	void syncVessels(ServerPlayer player,
 	                 double stamina,
 	                 double extraStamina,
 	                 boolean depleted,
 	                 int heartContainers,
 	                 int staminaVessels);
 
-	void syncCanUseParaglider(@NotNull ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft);
+	void syncCanUseParaglider(ServerPlayer player, boolean canUseParaglider, boolean canRideUpdraft);
 
-	void setParaglidingToClient(@NotNull ServerPlayer player, boolean paragliding);
+	void setParaglidingToClient(ServerPlayer player, boolean paragliding);
 	void setParaglidingToServer(boolean paragliding);
 
 	void applyParagliderItemCooldown();
 
 	// bargain
 
-	void initBargain(@NotNull BargainContext ctx, @Nullable Component initialDialog);
+	void initBargain(BargainContext ctx, @Nullable Component initialDialog);
 
-	void syncBargainCatalog(@NotNull BargainContext ctx, @NotNull List<BargainCatalog> catalog);
+	void syncBargainCatalog(BargainContext ctx, List<BargainCatalog> catalog);
 
-	void syncBargainLookAt(@NotNull BargainContext ctx, @Nullable Vec3 lookAt);
+	void syncBargainLookAt(BargainContext ctx, @Nullable Vec3 lookAt);
 
-	void displayBargainDialog(@NotNull BargainContext ctx, @NotNull Component dialog);
+	void displayBargainDialog(BargainContext ctx, Component dialog);
 
-	void bargain(int sessionId, @NotNull Identifier bargain);
+	void bargain(int sessionId, Identifier bargain);
 
-	void bargainEndToClient(@NotNull BargainContext ctx);
+	void bargainEndToClient(BargainContext ctx);
 	void bargainEndToServer(int sessionId);
 
 	// wind
 
-	void syncWind(@NotNull MinecraftServer server, @NotNull LevelChunk chunk, @NotNull WindChunk windChunk);
+	void syncWind(MinecraftServer server, LevelChunk chunk, WindChunk windChunk);
 }

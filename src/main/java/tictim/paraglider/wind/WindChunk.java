@@ -5,11 +5,12 @@ import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.ChunkPos;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Objects;
 
+@NullMarked
 public final class WindChunk {
 	public static final StreamCodec<FriendlyByteBuf, WindChunk> STREAM_CODEC =
 			StreamCodec.of((buf, windChunk) -> windChunk.write(buf), WindChunk::new);
@@ -19,10 +20,10 @@ public final class WindChunk {
 
 	private boolean removed;
 
-	public WindChunk(@NotNull ChunkPos chunkPos) {
+	public WindChunk(ChunkPos chunkPos) {
 		this.chunkPos = Objects.requireNonNull(chunkPos);
 	}
-	public WindChunk(@NotNull FriendlyByteBuf buf) {
+	public WindChunk(FriendlyByteBuf buf) {
 		this.chunkPos = buf.readChunkPos();
 		for (int i = buf.readVarInt(); i > 0; i--) {
 			byte xz = buf.readByte();
@@ -34,7 +35,7 @@ public final class WindChunk {
 		return this.nodes.get(encode(x, z));
 	}
 
-	public void putNode(byte xz, @NotNull WindNode node) {
+	public void putNode(byte xz, WindNode node) {
 		this.nodes.put(xz, node);
 	}
 	public void removeAllNodesInXZ(int x, int z) {
@@ -74,7 +75,7 @@ public final class WindChunk {
 		}
 	}
 
-	public void write(@NotNull FriendlyByteBuf buf) {
+	public void write(FriendlyByteBuf buf) {
 		buf.writeChunkPos(this.chunkPos);
 		buf.writeVarInt(this.nodes.size());
 		for (var e : this.nodes.byte2ObjectEntrySet()) {

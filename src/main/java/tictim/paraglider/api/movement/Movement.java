@@ -1,13 +1,14 @@
 package tictim.paraglider.api.movement;
 
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 
 /**
  * Interface providing access to movement state of the player.
  */
+@NullMarked
 public interface Movement {
 	/**
 	 * Get a movement instance bound to the player.
@@ -15,14 +16,14 @@ public interface Movement {
 	 * @param player Player
 	 * @return A movement instance bound to the player
 	 */
-	static @NotNull Movement get(@NotNull Player player) {
+	static Movement get(Player player) {
 		return ParagliderAPI.movementSupplier().apply(player);
 	}
 
 	/**
 	 * @return Current state of this movement instance
 	 */
-	@NotNull PlayerState state();
+	PlayerState state();
 
 	/**
 	 * @return Recovery delay, in ticks; state-based stamina regeneration will not be applied when this value is greater

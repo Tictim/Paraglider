@@ -4,12 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.stamina.Stamina;
 
 import static tictim.paraglider.client.render.EffectTimer.UpdateMode.*;
 import static tictim.paraglider.client.render.StaminaWheelConstants.*;
 
+@NullMarked
 public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 	private final EffectTimer fullAnim = new EffectTimer();
 	private final EffectTimer outerWheelFillAnim = new EffectTimer(OUTER_WHEEL_FILL_DURATION);
@@ -52,7 +53,7 @@ public class BargainScreenStaminaWheelRenderer extends StaminaWheelRenderer {
 		this.full = this.gainedStamina && this.stamina >= maxStamina;
 	}
 
-	@Override protected void makeWheel(@NotNull Player player, float partialTicks) {
+	@Override protected void makeWheel(Player player, float partialTicks) {
 		this.mainWheel.setProperties(this.stamina, Math.max(this.stamina, this.maxStamina));
 
 		int wheelIndex = (int)Math.ceil(this.mainWheel.staminaWheelPos());

@@ -6,21 +6,22 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.contents.Contents;
 import tictim.paraglider.contents.ParagliderTags;
 
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 public class ItemTagGen extends BlockTagCopyingItemTagProvider {
-	public ItemTagGen(@NotNull PackOutput output,
-	                  @NotNull CompletableFuture<HolderLookup.Provider> lookupProvider,
-	                  @NotNull CompletableFuture<TagsProvider.TagLookup<Block>> blockTags) {
+	public ItemTagGen(PackOutput output,
+	                  CompletableFuture<HolderLookup.Provider> lookupProvider,
+	                  CompletableFuture<TagsProvider.TagLookup<Block>> blockTags) {
 		super(output, lookupProvider, blockTags, ParagliderAPI.MODID);
 	}
 
-	@Override protected void addTags(@NotNull HolderLookup.Provider provider) {
+	@Override protected void addTags(HolderLookup.Provider provider) {
 		copy(ParagliderTags.Blocks.STATUES, ParagliderTags.STATUES);
 		copy(ParagliderTags.Blocks.STATUES_GODDESS, ParagliderTags.STATUES_GODDESS);
 
