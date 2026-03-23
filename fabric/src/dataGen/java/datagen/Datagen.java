@@ -16,7 +16,8 @@ public class Datagen implements DataGeneratorEntrypoint{
 		pack.addProvider(AdvancementGen::new);
 		pack.addProvider(BargainTypeGen::new);
 		pack.addProvider(BiomeTagGen::new);
-		pack.addProvider(ItemTagGen::new);
+		BlockTagGen blockTagGen = pack.addProvider(BlockTagGen::new);
+		pack.addProvider((out, p) -> new ItemTagGen(out, p, blockTagGen));
 		pack.addProvider(LootTableProvider::new);
 		pack.addProvider(RecipeGen::new);
 	}

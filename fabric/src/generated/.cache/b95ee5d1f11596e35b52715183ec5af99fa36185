@@ -1,0 +1,4 @@
+// 1.20.1	2026-03-24T02:02:09.384406347	Paragliders/Tags for minecraft:block
+02d36d4a97e48f6229de72788f8a2e1e62b2b386 data/minecraft/tags/blocks/mineable/pickaxe.json
+ca11481cfdf4c604f97f129630107ff41304613e data/paraglider/tags/blocks/statues/goddess.json
+d334ec3648cf97ab7c89ca5b8f17e8198659c1b4 data/paraglider/tags/blocks/statues.json

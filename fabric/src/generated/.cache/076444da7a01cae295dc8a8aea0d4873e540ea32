@@ -1,4 +1,4 @@
-// 1.20.1	2023-08-30T11:58:26.987004	Paragliders/Tags for minecraft:item
-8a23702b05296c8af5014d6aa6e9265ded85c7d9 data\paraglider\tags\items\statues.json
-bfd4d97811790116808dbcfc7f629d0dcd28722d data\paraglider\tags\items\paragliders.json
-8a23702b05296c8af5014d6aa6e9265ded85c7d9 data\paraglider\tags\items\statues\goddess.json
+// 1.20.1	2026-03-24T02:02:09.384607555	Paragliders/Tags for minecraft:item
+ca11481cfdf4c604f97f129630107ff41304613e data/paraglider/tags/items/statues/goddess.json
+d334ec3648cf97ab7c89ca5b8f17e8198659c1b4 data/paraglider/tags/items/statues.json
+bfd4d97811790116808dbcfc7f629d0dcd28722d data/paraglider/tags/items/paragliders.json
