@@ -1,7 +1,7 @@
 package tictim.paraglider.api.vessel;
 
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 
 /**
@@ -13,6 +13,7 @@ import tictim.paraglider.api.ParagliderAPI;
  * Note that essences are not synced to clients; only heart containers and stamina vessels are synced.
  * </p>
  */
+@NullMarked
 public interface VesselContainer {
 	/**
 	 * Get a vessel container instance bound to the player.
@@ -20,7 +21,7 @@ public interface VesselContainer {
 	 * @param player Player
 	 * @return A vessel container instance bound to the player
 	 */
-	static @NotNull VesselContainer get(@NotNull Player player) {
+	static VesselContainer get(Player player) {
 		return ParagliderAPI.vesselContainerSupplier().apply(player);
 	}
 
@@ -49,7 +50,7 @@ public interface VesselContainer {
 	 *                   successful non-simulation actions.
 	 * @return Whether the action succeed
 	 */
-	@NotNull SetResult setHeartContainer(int amount, boolean simulate, boolean playEffect);
+	SetResult setHeartContainer(int amount, boolean simulate, boolean playEffect);
 
 	/**
 	 * Attempt to set the amount of Stamina Vessels to {@code amount}. The state is only changed when the return
@@ -63,7 +64,7 @@ public interface VesselContainer {
 	 *                   successful non-simulation actions.
 	 * @return Whether the action succeed
 	 */
-	@NotNull SetResult setStaminaVessel(int amount, boolean simulate, boolean playEffect);
+	SetResult setStaminaVessel(int amount, boolean simulate, boolean playEffect);
 
 	/**
 	 * Attempt to set the amount of Essences to {@code amount}. The state is only changed when the return
@@ -77,7 +78,7 @@ public interface VesselContainer {
 	 *                   successful non-simulation actions.
 	 * @return Whether the action succeed
 	 */
-	@NotNull SetResult setEssence(int amount, boolean simulate, boolean playEffect);
+	SetResult setEssence(int amount, boolean simulate, boolean playEffect);
 
 	/**
 	 * Attempt to give this container Heart Containers to the maximum amount of {@code amount}.
@@ -158,14 +159,14 @@ public interface VesselContainer {
 	 *
 	 * @param onChangeListener Listener
 	 */
-	void onChange(@NotNull OnChangeListener onChangeListener);
+	void onChange(OnChangeListener onChangeListener);
 
 	/**
 	 * Remove event listener.
 	 *
 	 * @param onChangeListener Listener
 	 */
-	void unregisterOnChange(@NotNull OnChangeListener onChangeListener);
+	void unregisterOnChange(OnChangeListener onChangeListener);
 
 	/**
 	 * Result of the various setter actions in {@link VesselContainer}.
@@ -210,6 +211,6 @@ public interface VesselContainer {
 		 *                   decreased
 		 * @param playEffect The {@code playEffect} value passed onto the action
 		 */
-		void onChange(@NotNull ActionType actionType, int change, boolean playEffect);
+		void onChange(ActionType actionType, int change, boolean playEffect);
 	}
 }

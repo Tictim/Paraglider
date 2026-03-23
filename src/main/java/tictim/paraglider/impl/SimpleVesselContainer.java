@@ -3,8 +3,8 @@ package tictim.paraglider.impl;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.config.Cfg;
 
@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Standard implementation of {@link VesselContainer}.
  */
+@NullMarked
 public class SimpleVesselContainer implements VesselContainer {
 	public static final MapCodec<SimpleVesselContainer> CODEC = RecordCodecBuilder.mapCodec(b -> b.group(
 			Codec.INT.fieldOf("heartContainers").forGetter(SimpleVesselContainer::heartContainer),
@@ -44,7 +45,7 @@ public class SimpleVesselContainer implements VesselContainer {
 		return essence;
 	}
 
-	@Override public @NotNull SetResult setHeartContainer(int amount, boolean simulate, boolean playEffect) {
+	@Override public SetResult setHeartContainer(int amount, boolean simulate, boolean playEffect) {
 		if (amount < 0) return SetResult.TOO_LOW;
 		if (amount > Cfg.get().maxHeartContainers()) return SetResult.TOO_HIGH;
 		int change = amount - this.heartContainer;
@@ -56,7 +57,7 @@ public class SimpleVesselContainer implements VesselContainer {
 		return SetResult.OK;
 	}
 
-	@Override public @NotNull SetResult setStaminaVessel(int amount, boolean simulate, boolean playEffect) {
+	@Override public SetResult setStaminaVessel(int amount, boolean simulate, boolean playEffect) {
 		if (amount < 0) return SetResult.TOO_LOW;
 		if (amount > Cfg.get().maxStaminaVessels()) return SetResult.TOO_HIGH;
 		int change = amount - this.staminaVessel;
@@ -68,7 +69,7 @@ public class SimpleVesselContainer implements VesselContainer {
 		return SetResult.OK;
 	}
 
-	@Override public @NotNull SetResult setEssence(int amount, boolean simulate, boolean playEffect) {
+	@Override public SetResult setEssence(int amount, boolean simulate, boolean playEffect) {
 		if (amount < 0) return SetResult.TOO_LOW;
 		int change = amount - this.essence;
 		if (change == 0) return SetResult.NO_CHANGE;
@@ -139,7 +140,7 @@ public class SimpleVesselContainer implements VesselContainer {
 		return amount;
 	}
 
-	protected void onChange(@NotNull ActionType actionType, int change, boolean playEffect) {
+	protected void onChange(ActionType actionType, int change, boolean playEffect) {
 		if (this.listeners != null) {
 			for (OnChangeListener listener : this.listeners) {
 				listener.onChange(actionType, change, playEffect);
@@ -147,12 +148,12 @@ public class SimpleVesselContainer implements VesselContainer {
 		}
 	}
 
-	@Override public void onChange(@NotNull OnChangeListener onChangeListener) {
+	@Override public void onChange(OnChangeListener onChangeListener) {
 		if (this.listeners == null) this.listeners = new ArrayList<>();
 		this.listeners.add(onChangeListener);
 	}
 
-	@Override public void unregisterOnChange(@NotNull OnChangeListener onChangeListener) {
+	@Override public void unregisterOnChange(OnChangeListener onChangeListener) {
 		if (this.listeners != null) this.listeners.remove(onChangeListener);
 	}
 

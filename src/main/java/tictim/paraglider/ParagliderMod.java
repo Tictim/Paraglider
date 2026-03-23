@@ -22,8 +22,8 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.api.bargain.BargainPreview;
 import tictim.paraglider.api.bargain.BargainType;
@@ -46,13 +46,14 @@ import tictim.paraglider.plugin.ParagliderPluginLoader;
 import tictim.paraglider.wind.WindSource;
 import tictim.paraglider.wind.WindSourceRegistry;
 
+@NullMarked
 @Mod(ParagliderAPI.MODID)
 public class ParagliderMod {
 	public static final Logger LOGGER = LogManager.getLogger("Paraglider");
 
-	private static ParagliderMod instance;
+	private static @Nullable ParagliderMod instance;
 
-	public static @NotNull ParagliderMod instance() {
+	public static ParagliderMod instance() {
 		if (instance == null) throw new IllegalStateException("Mod instance not ready yet");
 		return instance;
 	}
@@ -166,31 +167,31 @@ public class ParagliderMod {
 		this.network = new ParagliderNetworkImpl(eventBus);
 	}
 
-	public @NotNull Cfg getConfig() {
+	public Cfg getConfig() {
 		return this.config;
 	}
 
-	public @NotNull DebugCfg getDebugConfig() {
+	public DebugCfg getDebugConfig() {
 		return this.commonCfg;
 	}
 
-	public @NotNull FeatureCfg getFeatureConfig() {
+	public FeatureCfg getFeatureConfig() {
 		return this.commonCfg;
 	}
 
-	public @NotNull Contents getContents() {
+	public Contents getContents() {
 		return this.contents;
 	}
 
-	public @NotNull ParagliderNetwork getNetwork() {
+	public ParagliderNetwork getNetwork() {
 		return this.network;
 	}
 
-	public @NotNull ParagliderPluginLoader getPluginLoader() {
+	public ParagliderPluginLoader getPluginLoader() {
 		return this.pluginLoader;
 	}
 
-	public @NotNull PlayerStateMap getPlayerStateMap() {
+	public PlayerStateMap getPlayerStateMap() {
 		if (this.client != null) {
 			PlayerStateMap m = this.client.getSyncedStateMap();
 			if (m != null) return m;
@@ -198,19 +199,19 @@ public class ParagliderMod {
 		return getLocalPlayerStateMap();
 	}
 
-	public @NotNull PlayerStateMap getLocalPlayerStateMap() {
+	public PlayerStateMap getLocalPlayerStateMap() {
 		return this.stateMapConfig.stateMap();
 	}
 
-	public @NotNull PlayerStateConnectionMap getPlayerConnectionMap() {
+	public PlayerStateConnectionMap getPlayerConnectionMap() {
 		return this.connectionMap;
 	}
 
-	public @NotNull PlayerStateMapConfig getPlayerStateMapConfig() {
+	public PlayerStateMapConfig getPlayerStateMapConfig() {
 		return this.stateMapConfig;
 	}
 
-	public @NotNull WindSourceRegistry windSourceRegistry() {
+	public WindSourceRegistry windSourceRegistry() {
 		return this.windSourceRegistry;
 	}
 

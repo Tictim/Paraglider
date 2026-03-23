@@ -1,7 +1,7 @@
 package tictim.paraglider.api;
 
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.stamina.StaminaPlugin;
 
 import java.util.function.Supplier;
@@ -14,6 +14,7 @@ import java.util.function.Supplier;
  *
  * @see tictim.paraglider.api.stamina.StaminaPlugin.StaminaEfficiencyLogicRegister#registerAttribute(Supplier, StaminaPlugin.AttributeEfficiencyCondition)
  */
+@NullMarked
 public class StaminaEfficiencyAttribute extends Attribute {
 	public StaminaEfficiencyAttribute(String descriptionId) {
 		// default value is "1" because it enables use of ADD_MULTIPLIED_BASE
@@ -21,12 +22,12 @@ public class StaminaEfficiencyAttribute extends Attribute {
 		super(descriptionId, 1);
 	}
 
-	@Override public @NotNull StaminaEfficiencyAttribute setSyncable(boolean watch) {
+	@Override public StaminaEfficiencyAttribute setSyncable(boolean watch) {
 		super.setSyncable(watch);
 		return this;
 	}
 
-	@Override public @NotNull StaminaEfficiencyAttribute setSentiment(@NotNull Sentiment sentiment) {
+	@Override public StaminaEfficiencyAttribute setSentiment(Sentiment sentiment) {
 		super.setSentiment(sentiment);
 		return this;
 	}

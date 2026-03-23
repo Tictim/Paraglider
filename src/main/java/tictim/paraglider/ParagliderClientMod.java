@@ -22,8 +22,8 @@ import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import org.lwjgl.glfw.GLFW;
 import tictim.paraglider.api.ParagliderAPI;
 import tictim.paraglider.client.ParagliderGuiLayers;
@@ -38,11 +38,12 @@ import tictim.paraglider.impl.stamina.StaminaLoader;
 
 import java.util.Objects;
 
+@NullMarked
 @Mod(value = ParagliderAPI.MODID, dist = Dist.CLIENT)
 public class ParagliderClientMod implements ParagliderMod.IClient {
-	private static ParagliderClientMod instance;
+	private static @Nullable ParagliderClientMod instance;
 
-	public static @NotNull ParagliderClientMod instance() {
+	public static ParagliderClientMod instance() {
 		if (instance == null) throw new IllegalStateException("No client");
 		return instance;
 	}
@@ -87,7 +88,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 
 		eventBus.addListener((RegisterRenderStateModifiersEvent event) -> {
 			event.registerEntityModifier(
-					new TypeToken<@NotNull AvatarRenderer<?>>() {},
+					new TypeToken<AvatarRenderer<?>>() {},
 					(p, s) -> {
 						ItemStack stack = p.getMainHandItem();
 						if (stack.is(ParagliderTags.PARAGLIDERS) && ParagliderUtils.getCaps(stack).isParagliding(stack)) {
@@ -111,7 +112,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		ParagliderClientSettingsIO.load(null);
 	}
 
-	public @NotNull ParagliderClientSettings getSettings() {
+	public ParagliderClientSettings getSettings() {
 		return Objects.requireNonNullElse(this.clientSettings, ParagliderClientSettings.DEFAULT);
 	}
 
@@ -119,7 +120,7 @@ public class ParagliderClientMod implements ParagliderMod.IClient {
 		this.clientSettings = settings;
 	}
 
-	public @NotNull KeyMapping getParagliderSettingsKey() {
+	public KeyMapping getParagliderSettingsKey() {
 		if (this.paragliderSettingsKey == null)
 			throw new IllegalStateException("paragliderSettingsKey is not available yet");
 		return this.paragliderSettingsKey;

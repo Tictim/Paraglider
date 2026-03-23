@@ -8,8 +8,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public record WindSource(@NotNull List<Condition> conditions, int height) {
+@NullMarked
+public record WindSource(List<Condition> conditions, int height) {
 	public static final int DEFAULT_HEIGHT = 10;
 
 	public static final Codec<WindSource> CODEC = RecordCodecBuilder.create(b -> b.group(
@@ -38,8 +39,8 @@ public record WindSource(@NotNull List<Condition> conditions, int height) {
 	}
 
 	public void check(
-			@Nullable Consumer<@NotNull String> warnings,
-			@Nullable Consumer<@NotNull String> errors) {
+			@Nullable Consumer<String> warnings,
+			@Nullable Consumer<String> errors) {
 		if (this.conditions.isEmpty() && errors != null) {
 			errors.accept("No conditions");
 		}
@@ -64,7 +65,7 @@ public record WindSource(@NotNull List<Condition> conditions, int height) {
 				}
 		);
 
-		void check(int index, @Nullable Consumer<@NotNull String> warnings, @Nullable Consumer<@NotNull String> errors);
+		void check(int index, @Nullable Consumer<String> warnings, @Nullable Consumer<String> errors);
 	}
 
 	public record BlockStateCondition(
@@ -89,8 +90,8 @@ public record WindSource(@NotNull List<Condition> conditions, int height) {
 
 		@Override public void check(
 				int index,
-				@Nullable Consumer<@NotNull String> warnings,
-				@Nullable Consumer<@NotNull String> errors) {
+				@Nullable Consumer<String> warnings,
+				@Nullable Consumer<String> errors) {
 			if (this.block.isEmpty() && errors != null) {
 				errors.accept("No blocks in condition #" + index);
 			}
@@ -108,8 +109,8 @@ public record WindSource(@NotNull List<Condition> conditions, int height) {
 
 		@Override public void check(
 				int index,
-				@Nullable Consumer<@NotNull String> warnings,
-				@Nullable Consumer<@NotNull String> errors) {
+				@Nullable Consumer<String> warnings,
+				@Nullable Consumer<String> errors) {
 			if (this.tags.isEmpty() && errors != null) {
 				errors.accept("No tags in condition #" + index);
 			}
