@@ -1,120 +1,73 @@
 package tictim.paraglider.wind;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.ParagliderUtils;
+import tictim.paraglider.contents.ParagliderTags;
+import tictim.paraglider.network.ParagliderNetwork;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
-public final class Wind {
+@NullMarked
+public final class WindLogic {
+	private WindLogic() {}
+
 	private static final int XZ_RAD_HALF = 4;
 	private static final int GROUND_Y_MIN = -2;
 	private static final int GROUND_Y_MAX = 4;
 	private static final int PARAGLIDING_Y_MAX = 1;
 
-	private static final Map<LevelAccessor, Wind> windInstances = new Object2ObjectOpenHashMap<>();
+	private static final BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos();
 
-	public static void registerLevel(@NotNull LevelAccessor level) {
-		windInstances.computeIfAbsent(level, l -> new Wind());
-	}
-	public static void unregisterLevel(@NotNull LevelAccessor level) {
-		windInstances.remove(level);
-	}
+	public static void updateWind(Level level) {
+		WindLevel wind = WindLevel.of(level);
+		if (wind == null) return;
 
-	public static @Nullable Wind of(@NotNull LevelAccessor level) {
-		return windInstances.get(level);
-	}
-
-	private final Long2ObjectMap<WindChunk> windChunks = new Long2ObjectOpenHashMap<>();
-	private final LongSet dirtyWindChunks = new LongOpenHashSet();
-
-	private final BlockPos.MutableBlockPos mpos = new BlockPos.MutableBlockPos();
-
-	private @Nullable WindChunk windChunkCache;
-
-	private Wind() {}
-
-	public @NotNull @Unmodifiable Collection<@NotNull WindChunk> windChunks() {
-		return Collections.unmodifiableCollection(this.windChunks.values());
-	}
-	public @NotNull LongSet dirtyWindChunks() {
-		return this.dirtyWindChunks;
-	}
-
-	public @Nullable WindChunk getChunk(@NotNull ChunkPos chunkPos) {
-		return getChunk(chunkPos.x(), chunkPos.z());
-	}
-	public @Nullable WindChunk getChunk(int chunkX, int chunkZ) {
-		return getChunk(ChunkPos.pack(chunkX, chunkZ));
-	}
-	public @Nullable WindChunk getChunk(long chunkPos) {
-		return this.windChunks.get(chunkPos);
-	}
-
-	public @NotNull WindChunk getOrCreate(@NotNull ChunkPos chunkPos) {
-		return getOrCreate(chunkPos.pack());
-	}
-	public @NotNull WindChunk getOrCreate(int chunkX, int chunkZ) {
-		return getOrCreate(ChunkPos.pack(chunkX, chunkZ));
-	}
-	public @NotNull WindChunk getOrCreate(long chunkPos) {
-		return this.windChunks.computeIfAbsent(chunkPos, cp -> new WindChunk(ChunkPos.unpack(cp)));
-	}
-
-	public @Nullable WindChunk remove(int chunkX, int chunkZ) {
-		return remove(ChunkPos.pack(chunkX, chunkZ));
-	}
-	public @Nullable WindChunk remove(@NotNull ChunkPos chunkPos) {
-		return remove(chunkPos.pack());
-	}
-	public @Nullable WindChunk remove(long chunkPos) {
-		WindChunk removed = this.windChunks.remove(chunkPos);
-		if (removed != null) removed.setRemoved();
-		return removed;
-	}
-
-	public void put(@NotNull WindChunk windChunk) {
-		if (windChunk.isRemoved()) throw new IllegalArgumentException("Cannot add back a removed wind chunk!");
-		this.windChunks.put(windChunk.chunkPos.pack(), windChunk);
-	}
-
-	public void writeWind(int x, int y, int z, int height, long gameTime) {
-		long chunkPos = ChunkPos.pack(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
-		if (this.windChunkCache == null || this.windChunkCache.isRemoved() || this.windChunkCache.chunkPos.pack() != chunkPos) {
-			this.windChunkCache = getOrCreate(chunkPos);
+		long gameTime = level.getGameTime();
+		if (gameTime % 4 == 0) {
+			List<? extends Player> players = level.players();
+			for (Player player : players) {
+				if (player.getMainHandItem().is(ParagliderTags.PARAGLIDERS)) {
+					placeAround(wind, player);
+				}
+			}
 		}
-		if (this.windChunkCache.add(x, y, z, height, gameTime)) {
-			dirtyWindChunks().add(chunkPos);
+
+		checkPlacedWind(wind, level);
+
+		if (level instanceof ServerLevel serverLevel) {
+			for (var it = wind.dirtyWindChunks().iterator(); it.hasNext(); ) {
+				long chunkPos = it.nextLong();
+				WindChunk windChunk = wind.getChunk(chunkPos);
+				if (windChunk == null) continue; // ???
+				LevelChunk chunk = level.getChunk(ChunkPos.getX(chunkPos), ChunkPos.getZ(chunkPos));
+				ParagliderNetwork.get().syncWind(serverLevel.getServer(), chunk, windChunk);
+			}
 		}
+
+		wind.dirtyWindChunks().clear();
 	}
 
 	/**
 	 * Scans blocks around player and update wind chunks. Scan range is predefined.
 	 */
-	public void placeAround(@NotNull Player player) {
+	private static void placeAround(WindLevel wind, Player player) {
 		int x = Mth.floor(player.getX());
 		int y = Mth.floor(player.getY());
 		int z = Mth.floor(player.getZ());
 
-		place(player.level(),
+		place(wind, player.level(),
 				x - XZ_RAD_HALF, y + (player.onGround() ? GROUND_Y_MIN : -WindSourceRegistry.get().maxWindHeight() - 1), z - XZ_RAD_HALF,
 				x + XZ_RAD_HALF, y + (player.onGround() ? GROUND_Y_MAX : PARAGLIDING_Y_MAX), z + XZ_RAD_HALF);
 	}
@@ -122,7 +75,7 @@ public final class Wind {
 	/**
 	 * Scans blocks in range and update wind chunks.
 	 */
-	private void place(@NotNull Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	private static void place(WindLevel wind, Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				if (!level.getChunkSource().hasChunk(
@@ -134,9 +87,9 @@ public final class Wind {
 				int windSourceHeight = 0;
 
 				for (int y = minY; true; y++) {
-					this.mpos.set(x, y, z);
-					BlockState state = level.getBlockState(this.mpos);
-					FluidState fluidState = level.getFluidState(this.mpos);
+					mpos.set(x, y, z);
+					BlockState state = level.getBlockState(mpos);
+					FluidState fluidState = level.getFluidState(mpos);
 					int blockStateWindSourceHeight = WindSourceRegistry.get().getWindSourceHeight(state);
 
 					if (foundWindSource) {
@@ -144,8 +97,8 @@ public final class Wind {
 						if (height > windSourceHeight || // go 1 block beyond to provide margin for top part
 								blockStateWindSourceHeight > 0 ||
 								!fluidState.isEmpty() ||
-								!ParagliderUtils.windCanPassThrough(level, this.mpos, state)) {
-							if (height > 1) writeWind(x, windSourceY, z, height, level.getGameTime());
+								!ParagliderUtils.windCanPassThrough(level, mpos, state)) {
+							if (height > 1) wind.write(x, windSourceY, z, height, level.getGameTime());
 							foundWindSource = false;
 						} else continue;
 					}
@@ -165,15 +118,15 @@ public final class Wind {
 	 * Checks if placed wind is still valid - that is still having wind source at root position, and isn't expired yet.
 	 * All invalid winds will be removed.
 	 */
-	public void checkPlacedWind(@NotNull Level level) {
-		for (WindChunk windChunk : windChunks()) {
+	private static void checkPlacedWind(WindLevel wind, Level level) {
+		for (WindChunk windChunk : wind.chunks()) {
 			var it = windChunk.nodes.byte2ObjectEntrySet().iterator();
 			while (it.hasNext()) {
 				var e = it.next();
 				byte xz = e.getByteKey();
 				WindNode node = e.getValue();
 
-				WindNode updated = validate(windChunk, xz, node, level);
+				WindNode updated = validate(wind, windChunk, xz, node, level);
 				if (updated != node) {
 					if (updated == null) it.remove();
 					else windChunk.nodes.put(xz, updated);
@@ -187,33 +140,33 @@ public final class Wind {
 	 *
 	 * @return Instance of valid wind node; could be {@code null} if there's no valid wind nodes.
 	 */
-	private @Nullable WindNode validate(@NotNull WindChunk windChunk, byte xz, @NotNull WindNode node, @NotNull Level level) {
+	private static @Nullable WindNode validate(WindLevel wind, WindChunk windChunk, byte xz, WindNode node, Level level) {
 		long gameTime = level.getGameTime();
 
 		if (node.updatedTime != gameTime) {
 			if (node.isExpired(gameTime) ||
 					WindSourceRegistry.get().getWindSourceHeight(level.getBlockState(
 							mpos.set(windChunk.x(xz), node.y, windChunk.z(xz)))) <= 0) {
-				dirtyWindChunks().add(windChunk.chunkPos.pack());
-				return node.next != null ? validate(windChunk, xz, node.next, level) : null;
+				wind.dirtyWindChunks().add(windChunk.chunkPos.pack());
+				return node.next != null ? validate(wind, windChunk, xz, node.next, level) : null;
 			}
 			node.updatedTime = gameTime;
 		}
 
 		if (node.next != null)
-			node.next = validate(windChunk, xz, node.next, level);
+			node.next = validate(wind, windChunk, xz, node.next, level);
 		return node;
 	}
 
-	public static double getWindAbove(@NotNull Level level, @NotNull AABB boundingBox) {
+	public static double getWindAbove(Level level, AABB boundingBox) {
 		int maxWindY = getMaxWindY(level,
 				Mth.floor(boundingBox.minX), Mth.floor(boundingBox.minY), Mth.floor(boundingBox.minZ),
 				Mth.ceil(boundingBox.maxX) - 1, Mth.ceil(boundingBox.maxY) - 1, Mth.ceil(boundingBox.maxZ) - 1);
 		return Math.max(0, (double)maxWindY - boundingBox.minY);
 	}
 
-	private static int getMaxWindY(@NotNull Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		Wind wind = of(level);
+	private static int getMaxWindY(Level level, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		WindLevel wind = WindLevel.of(level);
 		if (wind == null) return 0;
 
 		int chunkXStart = minX >> 4;

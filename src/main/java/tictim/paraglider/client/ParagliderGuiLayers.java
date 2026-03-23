@@ -17,7 +17,7 @@ import tictim.paraglider.client.settings.ParagliderClientSettings;
 import tictim.paraglider.client.settings.StaminaWheelPosition;
 import tictim.paraglider.config.DebugCfg;
 import tictim.paraglider.impl.movement.ClientPlayerMovement;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLogic;
 
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
@@ -82,7 +82,7 @@ public final class ParagliderGuiLayers {
 		}
 		consumer.accept("Recovery Delay: " + state.recoveryDelay());
 		if (state.hasFlag(ParagliderPlayerStates.Flags.ASCENDING)) {
-			consumer.accept("Wind height above: " + D2.format(Wind.getWindAbove(p.level(), p.getBoundingBox())));
+			consumer.accept("Wind height above: " + D2.format(WindLogic.getWindAbove(p.level(), p.getBoundingBox())));
 		}
 
 		String staminaText = (stamina.isDepleted() ? ChatFormatting.RED : "") + "Stamina: " +

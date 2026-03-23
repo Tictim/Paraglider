@@ -12,7 +12,7 @@ import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.api.vessel.VesselContainer;
 import tictim.paraglider.client.screen.BargainScreen;
 import tictim.paraglider.network.message.*;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLevel;
 
 public final class ClientPacketHandler {
 	private ClientPacketHandler() {}
@@ -117,10 +117,10 @@ public final class ClientPacketHandler {
 
 	public static void handleSyncWind(SyncWindMsg msg) {
 		trace(Kind.WIND, msg);
-		ClientLevel world = Minecraft.getInstance().level;
-		if (world == null) return;
-		Wind wind = Wind.of(world);
-		if (wind != null) wind.put(msg.windChunk());
+		ClientLevel level = Minecraft.getInstance().level;
+		if (level == null) return;
+		WindLevel wind = WindLevel.of(level);
+		if (wind != null) wind.putChunk(msg.windChunk());
 	}
 
 	private static void trace(@NotNull Kind kind, @NotNull CustomPacketPayload msg) {

@@ -11,7 +11,7 @@ import tictim.paraglider.client.settings.ParagliderClientSettings;
 import tictim.paraglider.network.ParagliderNetwork;
 import tictim.paraglider.network.SyncCanUseParagliderHandle;
 import tictim.paraglider.network.SyncClientParaglidingHandle;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLogic;
 
 import static tictim.paraglider.impl.movement.PlayerMovementValues.AUTO_PARAGLIDING_FALL_DISTANCE;
 
@@ -73,7 +73,7 @@ public class ClientPlayerMovement extends RemotePlayerMovement implements SyncCl
 				ParagliderClientSettings.get().autoParagliding() &&
 				!this.clientParagliding &&
 				(this.accumulatedFallDistance >= AUTO_PARAGLIDING_FALL_DISTANCE ||
-						Wind.getWindAbove(player().level(), player().getBoundingBox()) > 0.0)) {
+						WindLogic.getWindAbove(player().level(), player().getBoundingBox()) > 0.0)) {
 			useParaglider();
 			if (this.clientParagliding) {
 				ParagliderUtils.applyParagliderItemCooldown(player());

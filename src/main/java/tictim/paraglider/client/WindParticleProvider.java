@@ -11,7 +11,7 @@ import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tictim.paraglider.api.ParagliderAPI;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLogic;
 
 public class WindParticleProvider implements ParticleProvider<SimpleParticleType> {
 	public static final Identifier PARTICLE_TYPE_ID = ParagliderAPI.id("wind");
@@ -50,7 +50,7 @@ public class WindParticleProvider implements ParticleProvider<SimpleParticleType
 
 		@Override public void tick() {
 			if (!this.outsideWind) {
-				double windAbove = Wind.getWindAbove(this.level, getBoundingBox());
+				double windAbove = WindLogic.getWindAbove(this.level, getBoundingBox());
 				if (windAbove > 1) {
 					this.lifetime++;
 					this.yd = 0.5;

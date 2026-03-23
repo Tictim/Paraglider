@@ -10,7 +10,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import tictim.paraglider.ParagliderUtils;
 import tictim.paraglider.client.WindParticleProvider;
 import tictim.paraglider.client.settings.ParagliderClientSettings;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLevel;
 import tictim.paraglider.wind.WindChunk;
 import tictim.paraglider.wind.WindNode;
 
@@ -31,7 +31,7 @@ public final class WindParticleEventHandler {
 		if (Minecraft.getInstance().isPaused()) return;
 		ClientLevel level = Minecraft.getInstance().level;
 		if (level == null) return;
-		Wind wind = Wind.of(level);
+		WindLevel wind = WindLevel.of(level);
 		if (wind == null) return;
 
 		windParticleState += ParagliderClientSettings.get().windParticleFrequency();
@@ -39,7 +39,7 @@ public final class WindParticleEventHandler {
 		if (s2 >= 0) windParticleState = s2;
 		else return;
 
-		for (WindChunk windChunk : wind.windChunks()) {
+		for (WindChunk windChunk : wind.chunks()) {
 			for (var e : windChunk.nodes.byte2ObjectEntrySet()) {
 				byte xz = e.getByteKey();
 				WindNode node = e.getValue();

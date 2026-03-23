@@ -13,7 +13,7 @@ import tictim.paraglider.api.plugin.ParagliderPlugin;
 import tictim.paraglider.api.stamina.StaminaPlugin;
 import tictim.paraglider.config.Cfg;
 import tictim.paraglider.contents.Contents;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLogic;
 
 import static tictim.paraglider.api.movement.ParagliderPlayerStates.*;
 
@@ -49,7 +49,7 @@ public class ParagliderDefaultPlugin implements MovementPlugin, StaminaPlugin {
 		register.connect(IDLE, PARAGLIDING, c -> c.paragliding(), PARAGLIDING_PRIORITY);
 
 		register.connect(PARAGLIDING, PANIC_PARAGLIDING, c -> !c.player().isCreative() && c.stamina().isDepleted());
-		register.connect(PARAGLIDING, ASCENDING, c -> Cfg.get().updraft() && Wind.getWindAbove(c.player().level(), c.player().getBoundingBox()) > 0);
+		register.connect(PARAGLIDING, ASCENDING, c -> Cfg.get().updraft() && WindLogic.getWindAbove(c.player().level(), c.player().getBoundingBox()) > 0);
 
 		register.connect(IDLE, RUNNING, c -> c.player().isSprinting() &&
 				(!c.player().isUsingItem() || c.player()

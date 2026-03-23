@@ -10,7 +10,7 @@ import tictim.paraglider.api.movement.Movement;
 import tictim.paraglider.api.movement.PlayerState;
 import tictim.paraglider.api.stamina.Stamina;
 import tictim.paraglider.config.Cfg;
-import tictim.paraglider.wind.Wind;
+import tictim.paraglider.wind.WindLogic;
 
 import java.util.Objects;
 
@@ -60,7 +60,7 @@ public abstract class PlayerMovement implements Movement {
 
 		Player player = player();
 		Vec3 m = player.getDeltaMovement();
-		double wind = canRideUpdraft && Cfg.get().updraft() ? Wind.getWindAbove(player.level(), player.getBoundingBox()) : 0.0;
+		double wind = canRideUpdraft && Cfg.get().updraft() ? WindLogic.getWindAbove(player.level(), player.getBoundingBox()) : 0.0;
 		double dy;
 
 		if (wind > 0.0) {
