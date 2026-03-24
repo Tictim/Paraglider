@@ -73,6 +73,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@Override protected void init() {
+		//noinspection ConstantValue
 		if (this.staminaWheelWidget == null) {
 			this.staminaWheelWidget = new StaminaWheelWidget(this);
 			this.staminaWheelWidget.setWheelPos(this.initialPos);
@@ -185,6 +186,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 
 		// help / save button widget
 
+		//noinspection DataFlowIssue
 		int textWidth = Arrays.stream(this.helpText).mapToInt(e -> this.font.width(e)).max().orElse(0) + 6 + 48;
 		int textHeight = Math.max(this.helpText.length * this.font.lineHeight, 40 + 2) + 4;
 		int textX = wheelAtRight ? 0 : this.width - textWidth;

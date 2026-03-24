@@ -141,7 +141,7 @@ public class PlayerStateMapConfig {
 			Identifier id = e.getKey();
 			PlayerState state = e.getValue();
 
-			Config config = this.configSpecs.get(id);
+			Config config = Objects.requireNonNull(this.configSpecs.get(id));
 
 			double staminaDelta = config.staminaDelta.get();
 			int recoveryDelay = config.recoveryDelay.get();

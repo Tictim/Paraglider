@@ -27,6 +27,7 @@ import tictim.paraglider.plugin.ParagliderPluginLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static tictim.paraglider.plugin.ParagliderPluginUtils.*;
 
 @NullMarked
@@ -98,18 +99,18 @@ public final class PlayerStateMapLoader {
 		for (PluginInstance<MovementPlugin> plugin : plugins) {
 			plugin.instance().registerNewStates(new PlayerStateRegister() {
 				@Override public void register(Identifier id, double defaultStaminaDelta, Identifier... flags) {
-					Objects.requireNonNull(id, "id == null");
-					Objects.requireNonNull(flags, "flags == null");
+					requireNonNull(id, "id == null");
+					requireNonNull(flags, "flags == null");
 					if (Double.isNaN(defaultStaminaDelta))
 						throw new IllegalArgumentException("defaultStaminaDelta is NaN");
 
-					for (Identifier flag : flags) Objects.requireNonNull(flag);
+					for (Identifier flag : flags) requireNonNull(flag);
 					idToCountMap.put(id, idToCountMap.getInt(id) + 1);
 					newStates.add(new PluginAction<>(plugin, new NewState.Regular(id, defaultStaminaDelta, Set.of(flags))));
 				}
 
 				@Override public void registerSyntheticState(Identifier id) {
-					Objects.requireNonNull(id, "id == null");
+					requireNonNull(id, "id == null");
 					idToCountMap.put(id, idToCountMap.getInt(id) + 1);
 					newStates.add(new PluginAction<>(plugin, new NewState.Synthetic(id)));
 				}
@@ -147,11 +148,11 @@ public final class PlayerStateMapLoader {
 				}
 
 				@Override public boolean exists(Identifier id) {
-					return states.containsKey(Objects.requireNonNull(id, "id == null"));
+					return states.containsKey(requireNonNull(id, "id == null"));
 				}
 
 				@Override public void changeDefaultStaminaDelta(Identifier id, double defaultStaminaDelta) {
-					Objects.requireNonNull(id, "id == null");
+					requireNonNull(id, "id == null");
 					if (Double.isNaN(defaultStaminaDelta))
 						throw new IllegalArgumentException("defaultStaminaDelta is NaN");
 
@@ -164,25 +165,25 @@ public final class PlayerStateMapLoader {
 				}
 
 				@Override public void addFlags(Identifier id, Identifier... flags) {
-					Objects.requireNonNull(id, "id == null");
-					Objects.requireNonNull(flags, "flags == null");
+					requireNonNull(id, "id == null");
+					requireNonNull(flags, "flags == null");
 					State state = states.get(id);
 					if (state == null) throw new NoSuchElementException("No state with ID " + id + " exists");
 					if (state.synthetic)
 						throw new IllegalStateException("Cannot change flags of synthetic state " + id);
 					Set<Identifier> set = flagAdditions.computeIfAbsent(id, $ -> new ObjectOpenHashSet<>());
-					for (Identifier flag : flags) set.add(Objects.requireNonNull(flag));
+					for (Identifier flag : flags) set.add(requireNonNull(flag));
 				}
 
 				@Override public void removeFlags(Identifier id, Identifier... flags) {
-					Objects.requireNonNull(id, "id == null");
-					Objects.requireNonNull(flags, "flags == null");
+					requireNonNull(id, "id == null");
+					requireNonNull(flags, "flags == null");
 					State state = states.get(id);
 					if (state == null) throw new NoSuchElementException("No state with ID " + id + " exists");
 					if (state.synthetic)
 						throw new IllegalStateException("Cannot change flags of synthetic state " + id);
 					Set<Identifier> set = flagRemovals.computeIfAbsent(id, $ -> new ObjectOpenHashSet<>());
-					for (Identifier flag : flags) set.add(Objects.requireNonNull(flag));
+					for (Identifier flag : flags) set.add(requireNonNull(flag));
 				}
 			});
 		}
@@ -225,14 +226,14 @@ public final class PlayerStateMapLoader {
 		}
 
 		for (var pa : staminaDeltaChanges) {
-			states.get(pa.action().id()).defaultStaminaDelta = pa.action().defaultStaminaDelta();
+			requireNonNull(states.get(pa.action().id())).defaultStaminaDelta = pa.action().defaultStaminaDelta();
 		}
 
 		for (var e : flagRemovals.entrySet()) {
-			states.get(e.getKey()).flags.removeAll(e.getValue());
+			requireNonNull(states.get(e.getKey())).flags.removeAll(e.getValue());
 		}
 		for (var e : flagAdditions.entrySet()) {
-			states.get(e.getKey()).flags.addAll(e.getValue());
+			requireNonNull(states.get(e.getKey())).flags.addAll(e.getValue());
 		}
 	}
 
@@ -251,33 +252,33 @@ public final class PlayerStateMapLoader {
 				}
 
 				@Override public boolean exists(Identifier id) {
-					return states.containsKey(Objects.requireNonNull(id, "id == null"));
+					return states.containsKey(requireNonNull(id, "id == null"));
 				}
 
 				@Override public void connect(Identifier parent,
 				                              Identifier state,
 				                              PlayerStateCondition condition,
 				                              double priority) {
-					Objects.requireNonNull(condition, "condition == null");
-					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
+					requireNonNull(condition, "condition == null");
+					if (!states.containsKey(requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
-					if (!states.containsKey(Objects.requireNonNull(state, "state == null")))
+					if (!states.containsKey(requireNonNull(state, "state == null")))
 						throw new NoSuchElementException("No state with ID " + state + " exists");
 					if (parent.equals(state)) return; // does nothing
 					connections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Connect(condition, state, priority));
 				}
 
 				@Override public void disconnect(Identifier parent, Identifier state, @Nullable Double priority) {
-					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
+					if (!states.containsKey(requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
-					if (!states.containsKey(Objects.requireNonNull(state, "state == null")))
+					if (!states.containsKey(requireNonNull(state, "state == null")))
 						throw new NoSuchElementException("No state with ID " + state + " exists");
 					if (parent.equals(state)) return; // does nothing
 					disconnections.computeIfAbsent(parent, $ -> new ArrayList<>()).add(new Disconnect(state, priority));
 				}
 
 				@Override public void setFallback(Identifier parent, @Nullable Identifier fallback, double priority) {
-					if (!states.containsKey(Objects.requireNonNull(parent, "parent == null")))
+					if (!states.containsKey(requireNonNull(parent, "parent == null")))
 						throw new NoSuchElementException("No state with ID " + parent + " exists");
 					if (fallback != null && !states.containsKey(fallback))
 						throw new NoSuchElementException("No state with ID " + fallback + " exists");
@@ -352,13 +353,13 @@ public final class PlayerStateMapLoader {
 				});
 			}
 			list.sort(Comparator.comparingDouble(Connect::priority).reversed());
-			State state = states.get(e.getKey());
+			State state = requireNonNull(states.get(e.getKey()));
 			for (Connect c : list) state.connections.add(new Connection(c.condition, c.state));
 		}
 
 		for (var e : fallbacks.entrySet()) {
 			if (!e.getValue().isEmpty())
-				states.get(e.getKey()).fallbackConnection = e.getValue().get(0).action().fallback();
+				requireNonNull(states.get(e.getKey())).fallbackConnection = e.getValue().get(0).action().fallback();
 		}
 	}
 
@@ -407,7 +408,7 @@ public final class PlayerStateMapLoader {
 						yield null;
 					}
 					this.circularLoopCheckStatus = CheckStatus.CHECKING;
-					List<State> circularLoop = states.get(this.fallbackConnection).checkCircularLoop(states);
+					List<State> circularLoop = requireNonNull(states.get(this.fallbackConnection)).checkCircularLoop(states);
 					if (circularLoop != null) {
 						if (circularLoop.size() <= 1 ||
 								circularLoop.get(circularLoop.size() - 1) != circularLoop.get(0)) {

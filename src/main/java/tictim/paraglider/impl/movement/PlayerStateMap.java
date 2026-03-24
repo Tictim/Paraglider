@@ -89,7 +89,7 @@ public final class PlayerStateMap {
 			PlayerState s1 = stateMap1.states.get(key);
 			PlayerState s2 = stateMap2.states.get(key);
 
-			if (!s1.equals(s2)) return false;
+			if (!Objects.equals(s1, s2)) return false;
 		}
 
 		return true;
