@@ -226,6 +226,18 @@ public abstract class StaminaWheelRenderer {
 		SECOND,
 		THIRD,
 		EXTRA_1,
-		EXTRA_2,
+		EXTRA_2;
+
+		public boolean isExtra() {
+			return this == EXTRA_1 || this == EXTRA_2;
+		}
+
+		public static WheelLevel mainWheel(int index) {
+			return switch (index) {
+				case 0 -> WheelLevel.FIRST;
+				case 1 -> WheelLevel.SECOND;
+				default -> WheelLevel.THIRD;
+			};
+		}
 	}
 }

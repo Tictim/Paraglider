@@ -13,6 +13,7 @@ import org.joml.Matrix3x2f;
 import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.client.ParagliderRenderTypes;
 import tictim.paraglider.client.render.StaminaWheelConstants;
+import tictim.paraglider.client.render.StaminaWheelRenderer.WheelLevel;
 import tictim.paraglider.client.render.StaminaWheelState;
 
 import java.util.ArrayList;
@@ -27,10 +28,14 @@ public record StaminaWheelRenderState(
 		Matrix3x2f pose,
 		TextureSetup textureSetup,
 		List<VertexData> vertexData,
-		StaminaWheelRenderState.Sprite sprite,
+		WheelLevel wheelLevel,
+		int spriteIndex,
 		int radius,
 		boolean debug
 ) implements GuiElementRenderState {
+	private static final int WIDTH = 20 * 5;
+	private static final int HEIGHT = 20 * 3;
+
 	public static void drawMainWheel(
 			GuiGraphicsExtractor grpahics,
 			StaminaWheelState wheel,
@@ -41,29 +46,17 @@ public record StaminaWheelRenderState(
 		int wheels = (int)Math.ceil(wheelPos);
 
 		float maxWheelEnd = wheels > 3 ? 1 : wheelPos - wheels + 1;
+		WheelLevel wheelLevel = WheelLevel.mainWheel(wheels - 1);
 
-		submit(grpahics, backgroundVertexData(false, maxWheelEnd, wheel.alpha()), switch (wheels) {
-			case 1 -> Sprite.BG_1;
-			case 2 -> Sprite.BG_2;
-			default -> Sprite.BG_3;
-		}, WHEEL_RADIUS, debug);
-
-		submit(grpahics, backgroundVertexData(true, maxWheelEnd, wheel.alpha()), switch (wheels) {
-			case 1 -> Sprite.BG_END_1;
-			case 2 -> Sprite.BG_END_2;
-			default -> Sprite.BG_END_3;
-		}, WHEEL_RADIUS, debug);
+		submit(grpahics, backgroundVertexData(false, maxWheelEnd, wheel.alpha()), wheelLevel, 0, WHEEL_RADIUS, debug);
+		submit(grpahics, backgroundVertexData(true, maxWheelEnd, wheel.alpha()), wheelLevel, 1, WHEEL_RADIUS, debug);
 
 		int l = Math.min(3, wheels);
 		for (int i = 0; i < l; i++) {
 			submit(grpahics, toVertexData(wheel, switch (i) {
 				case 0, 1 -> i;
 				default -> Math.max(2, (int)Math.ceil(wheel.staminaWheelPos()) - 1);
-			}), switch (i) {
-				case 0 -> Sprite.FG_1;
-				case 1 -> Sprite.FG_2;
-				default -> Sprite.FG_3;
-			}, WHEEL_RADIUS, debug);
+			}), wheelLevel, 2 + i, WHEEL_RADIUS, debug);
 		}
 	}
 
@@ -74,14 +67,15 @@ public record StaminaWheelRenderState(
 			boolean debug) {
 		if (wheel.alpha() <= 0) return;
 
-		submit(graphics, backgroundVertexData(false, 1, wheel.alpha()), Sprite.BG_EX, EXTRA_WHEEL_RADIUS, debug);
-		submit(graphics, toVertexData(wheel, -1 - index), Sprite.FG_EX, EXTRA_WHEEL_RADIUS, debug);
+		submit(graphics, backgroundVertexData(false, 1, wheel.alpha()), WheelLevel.EXTRA_1, 0, EXTRA_WHEEL_RADIUS, debug);
+		submit(graphics, toVertexData(wheel, -1 - index), WheelLevel.EXTRA_1, 1, EXTRA_WHEEL_RADIUS, debug);
 	}
 
 	public static void submit(
 			GuiGraphicsExtractor graphics,
 			List<VertexData> vertexData,
-			Sprite sprite,
+			WheelLevel wheelLevel,
+			int spriteIndex,
 			int radius,
 			boolean debug) {
 		if (vertexData.size() < 2) return;
@@ -92,12 +86,12 @@ public record StaminaWheelRenderState(
 		TextureSetup textureSetup = TextureSetup.singleTexture(t.getTextureView(), t.getSampler());
 
 		graphics.submitGuiElementRenderState(new StaminaWheelRenderState(
-				pose, textureSetup, vertexData, sprite, radius, false
+				pose, textureSetup, vertexData, wheelLevel, spriteIndex, radius, false
 		));
 
 		if (debug) {
 			graphics.submitGuiElementRenderState(new StaminaWheelRenderState(
-					pose, textureSetup, vertexData, sprite, radius, true
+					pose, textureSetup, vertexData, wheelLevel, spriteIndex, radius, true
 			));
 		}
 	}
@@ -195,8 +189,36 @@ public record StaminaWheelRenderState(
 
 	private void vert(VertexConsumer vc, float x, float y, float u, float v, int color) {
 		vc.addVertexWith2DPose(pose, x, y);
-		if (!debug) vc.setUv(sprite.u(u), sprite.v(v));
+		if (!debug) vc.setUv(u(u), v(v));
 		vc.setColor(color);
+	}
+
+	public float u(float u) {
+		float uMin, uMax;
+
+		if (wheelLevel.isExtra()) {
+			uMin = WIDTH - 20 + spriteIndex * 10;
+			uMax = WIDTH - 10 + spriteIndex * 10;
+		} else {
+			uMin = spriteIndex * 20;
+			uMax = (spriteIndex + 1) * 20;
+		}
+
+		return lerp(u * 0.998f + 0.001f, uMin, uMax) / WIDTH;
+	}
+
+	public float v(float v) {
+		float vMin, vMax;
+
+		if (wheelLevel.isExtra()) {
+			vMin = 0;
+			vMax = 10;
+		} else {
+			vMin = wheelLevel.ordinal() * 20;
+			vMax = (wheelLevel.ordinal() + 1) * 20;
+		}
+
+		return lerp(v * 0.998f + 0.001f, vMax, vMin) / HEIGHT;
 	}
 
 	@Override public RenderPipeline pipeline() {
@@ -219,24 +241,4 @@ public record StaminaWheelRenderState(
 	}
 
 	public record VertexData(float point, int color) {}
-
-	public enum Sprite {
-		BG_1, FG_1, BG_END_1,
-		BG_2, FG_2, BG_END_2,
-		BG_3, FG_3, BG_END_3,
-		BG_EX, FG_EX;
-
-		public float u(float u) {
-			float uMin = (this.ordinal() % 3) / 3f;
-			float uMax = uMin + (ordinal() < 9 ? 1 / 3f : 1 / 6f);
-			return lerp(u * 0.998f + 0.001f, uMin, uMax);
-		}
-
-		public float v(float v) {
-			//noinspection IntegerDivisionInFloatingPointContext
-			float vMin = (this.ordinal() / 3 * 2) / 7f;
-			float vMax = vMin + (ordinal() < 9 ? 2 / 7f : 1 / 7f);
-			return lerp(v * 0.998f + 0.001f, vMin, vMax);
-		}
-	}
 }
