@@ -15,15 +15,14 @@ import tictim.paraglider.contents.Contents;
 
 @NullMarked
 public class SpiritOrbLoot extends LootModifier {
-	public static final MapCodec<SpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
-			b.group(Codec.INT.fieldOf("count").forGetter(m -> m.count))
-					.and(codecStart(b).t1())
-					.apply(b, SpiritOrbLoot::new));
+	public static final MapCodec<SpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b -> codecStart(b)
+			.and(Codec.INT.fieldOf("count").forGetter(m -> m.count))
+			.apply(b, SpiritOrbLoot::new));
 
 	private final int count;
 
-	public SpiritOrbLoot(int count, LootItemCondition... conditions) {
-		super(conditions);
+	public SpiritOrbLoot(LootItemCondition[] conditions, int priority, int count) {
+		super(conditions, priority);
 		this.count = count;
 	}
 

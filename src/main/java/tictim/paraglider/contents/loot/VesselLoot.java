@@ -15,15 +15,14 @@ import tictim.paraglider.ParagliderUtils;
 
 @NullMarked
 public class VesselLoot extends LootModifier {
-	public static final MapCodec<VesselLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
-			b.group(Codec.INT.fieldOf("count").forGetter(m -> m.count))
-					.and(codecStart(b).t1())
-					.apply(b, VesselLoot::new));
+	public static final MapCodec<VesselLoot> CODEC = RecordCodecBuilder.mapCodec(b -> codecStart(b)
+			.and(Codec.INT.fieldOf("count").forGetter(m -> m.count))
+			.apply(b, VesselLoot::new));
 
 	private final int count;
 
-	public VesselLoot(int count, LootItemCondition... conditions) {
-		super(conditions);
+	public VesselLoot(LootItemCondition[] conditions, int priority, int count) {
+		super(conditions, priority);
 		this.count = count;
 	}
 

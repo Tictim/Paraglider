@@ -9,10 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
+import net.minecraft.world.level.storage.loot.predicates.*;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -32,43 +29,64 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		var entities = registries.lookupOrThrow(Registries.ENTITY_TYPE);
 
 		add("totw_reworked/chest", new ParagliderLoot(
-				false,
-				LootTableIdCondition.builder(Identifier.fromNamespaceAndPath("totw_reworked", "tower_chest")).build()
+				new LootItemCondition[]{
+						LootTableIdCondition.builder(Identifier.fromNamespaceAndPath("totw_reworked", "tower_chest")).build(),
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				false
 		));
 		add("totw_reworked/ocean_chest", new ParagliderLoot(
-				true,
-				LootTableIdCondition.builder(Identifier.fromNamespaceAndPath("totw_reworked", "ocean_tower_chest")).build()
+				new LootItemCondition[]{
+						LootTableIdCondition.builder(Identifier.fromNamespaceAndPath("totw_reworked", "ocean_tower_chest")).build(),
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				true
 		));
 
 		add("wither", new VesselLoot(
-				1,
-				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-						EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
-				LootItemKilledByPlayerCondition.killedByPlayer().build(),
-				ParagliderLootConditions.WITHER_DROPS_VESSEL
+				new LootItemCondition[]{
+						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
+						LootItemKilledByPlayerCondition.killedByPlayer().build(),
+						ParagliderLootConditions.WITHER_DROPS_VESSEL
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				1
 		));
 
 		add("elder_guardian", new SpiritOrbLoot(
-				1,
-				LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-						EntityPredicate.Builder.entity().of(entities, EntityType.ELDER_GUARDIAN)).build(),
-				LootItemKilledByPlayerCondition.killedByPlayer().build(),
-				ParagliderLootConditions.ELDER_GUARDIAN_DROPS_SPIRIT_ORB
+				new LootItemCondition[]{
+						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.entity().of(entities, EntityType.ELDER_GUARDIAN)).build(),
+						LootItemKilledByPlayerCondition.killedByPlayer().build(),
+						ParagliderLootConditions.ELDER_GUARDIAN_DROPS_SPIRIT_ORB
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				1
 		));
 
 		addSpiritOrbItemModifier("spawner", new ConfigurableSpiritOrbLoot(
-				ConfigurableSpiritOrbLoot.Type.SPAWNER,
-				LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SPAWNER).build()
+				new LootItemCondition[]{
+						LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.SPAWNER).build()
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				ConfigurableSpiritOrbLoot.Type.SPAWNER
 		));
 
 		addSpiritOrbItemModifier("trial_reward", new ConfigurableSpiritOrbLoot(
-				ConfigurableSpiritOrbLoot.Type.TRIAL,
-				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD.identifier()).build()
+				new LootItemCondition[]{
+						LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD.identifier()).build()
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				ConfigurableSpiritOrbLoot.Type.TRIAL
 		));
 
 		addSpiritOrbItemModifier("ominous_trial_reward", new ConfigurableSpiritOrbLoot(
-				ConfigurableSpiritOrbLoot.Type.OMINOUS_TRIAL,
-				LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS.identifier()).build()
+				new LootItemCondition[]{
+						LootTableIdCondition.builder(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS.identifier()).build()
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				ConfigurableSpiritOrbLoot.Type.OMINOUS_TRIAL
 		));
 
 		addChestSpiritOrbItemModifier("underwater_ruin_big", .25f);
@@ -90,17 +108,23 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 
 	private void addChestSpiritOrbItemModifier(String chestLootTableName, float chance) {
 		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
-				1,
-				ParagliderLootConditions.SPIRIT_ORB_LOOTS,
-				LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/" + chestLootTableName)).build(),
-				LootItemRandomChanceCondition.randomChance(chance).build()
+				new LootItemCondition[]{
+						ParagliderLootConditions.SPIRIT_ORB_LOOTS,
+						LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/" + chestLootTableName)).build(),
+						LootItemRandomChanceCondition.randomChance(chance).build()
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				1
 		));
 	}
 	private void addChestSpiritOrbItemModifier(String chestLootTableName) {
 		addSpiritOrbItemModifier(chestLootTableName, new SpiritOrbLoot(
-				1,
-				ParagliderLootConditions.SPIRIT_ORB_LOOTS,
-				LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/" + chestLootTableName)).build()
+				new LootItemCondition[]{
+						ParagliderLootConditions.SPIRIT_ORB_LOOTS,
+						LootTableIdCondition.builder(Identifier.withDefaultNamespace("chests/" + chestLootTableName)).build()
+				},
+				IGlobalLootModifier.DEFAULT_PRIORITY,
+				1
 		));
 	}
 

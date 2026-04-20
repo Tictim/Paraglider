@@ -18,15 +18,14 @@ import java.util.Locale;
 
 @NullMarked
 public class ConfigurableSpiritOrbLoot extends LootModifier {
-	public static final MapCodec<ConfigurableSpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
-			b.group(StringRepresentable.fromEnum(Type::values).fieldOf("lootType").forGetter(m -> m.type))
-					.and(codecStart(b).t1())
-					.apply(b, ConfigurableSpiritOrbLoot::new));
+	public static final MapCodec<ConfigurableSpiritOrbLoot> CODEC = RecordCodecBuilder.mapCodec(b -> codecStart(b)
+			.and(StringRepresentable.fromEnum(Type::values).fieldOf("lootType").forGetter(m -> m.type))
+			.apply(b, ConfigurableSpiritOrbLoot::new));
 
 	private final Type type;
 
-	public ConfigurableSpiritOrbLoot(Type type, LootItemCondition... conditions) {
-		super(conditions);
+	public ConfigurableSpiritOrbLoot(LootItemCondition[] conditions, int priority, Type type) {
+		super(conditions, priority);
 		this.type = type;
 	}
 

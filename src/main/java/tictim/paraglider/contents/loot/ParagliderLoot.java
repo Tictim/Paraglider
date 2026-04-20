@@ -23,15 +23,14 @@ import static tictim.paraglider.config.Cfg.TotwCompatConfigOption.*;
 
 @NullMarked
 public class ParagliderLoot extends LootModifier {
-	public static final MapCodec<ParagliderLoot> CODEC = RecordCodecBuilder.mapCodec(b ->
-			b.group(Codec.BOOL.fieldOf("dekuLeaf").forGetter(m -> m.dekuLeaf))
-					.and(codecStart(b).t1())
-					.apply(b, ParagliderLoot::new));
+	public static final MapCodec<ParagliderLoot> CODEC = RecordCodecBuilder.mapCodec(b -> codecStart(b)
+			.and(Codec.BOOL.fieldOf("dekuLeaf").forGetter(m -> m.dekuLeaf))
+			.apply(b, ParagliderLoot::new));
 
 	public final boolean dekuLeaf;
 
-	public ParagliderLoot(boolean dekuLeaf, LootItemCondition... conditions) {
-		super(conditions);
+	public ParagliderLoot(LootItemCondition[] conditions, int priority, boolean dekuLeaf) {
+		super(conditions, priority);
 		this.dekuLeaf = dekuLeaf;
 	}
 
