@@ -135,7 +135,7 @@ public final class ParagliderCommands {
 	                                @Nullable BlockPos pos,
 	                                @Nullable Identifier advancement,
 	                                @Nullable Vec3 lookAt) {
-		if (BargainTypeRegistry.getFromID(player.level(), bargainType) == null) {
+		if (BargainTypeRegistry.getFromID(player.registryAccess(), bargainType) == null) {
 			source.sendFailure(Component.translatable("commands.paraglider.bargain.start.invalid_bargain_type", bargainType));
 			return -1;
 		}

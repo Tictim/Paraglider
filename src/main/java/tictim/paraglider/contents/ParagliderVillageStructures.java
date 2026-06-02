@@ -1,10 +1,10 @@
 package tictim.paraglider.contents;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -24,28 +24,26 @@ import static tictim.paraglider.api.ParagliderAPI.MODID;
 public final class ParagliderVillageStructures {
 	private ParagliderVillageStructures() {}
 
-	public static void addVillageStructures(RegistryAccess registryAccess) {
+	public static void addVillageStructures(HolderLookup.Provider registryAccess) {
 		if (!FeatureCfg.get().enableVillageStructures()) return;
 
-		Registry<StructureTemplatePool> reg = registryAccess.lookupOrThrow(Registries.TEMPLATE_POOL);
-
 		ParagliderMod.LOGGER.debug("Start adding village structures");
-		appendPool(reg, Identifier.withDefaultNamespace("village/desert/houses"),
+		appendPool(registryAccess, Identifier.withDefaultNamespace("village/desert/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":gerudo_village_goddess_statue"), 1),
 				Pair.of(StructurePoolElement.legacy(MODID + ":desert_village_horned_statue"), 1)
 		);
-		appendPool(reg, Identifier.withDefaultNamespace("village/plains/houses"),
+		appendPool(registryAccess, Identifier.withDefaultNamespace("village/plains/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":hateno_village_goddess_statue"), 1),
 				Pair.of(StructurePoolElement.legacy(MODID + ":plains_village_horned_statue"), 1)
 		);
-		appendPool(reg, Identifier.withDefaultNamespace("village/savanna/houses"),
+		appendPool(registryAccess, Identifier.withDefaultNamespace("village/savanna/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":rito_village_goddess_statue"), 3),
 				Pair.of(StructurePoolElement.legacy(MODID + ":savanna_village_horned_statue"), 1)
 		);
-		appendPool(reg, Identifier.withDefaultNamespace("village/snowy/houses"),
+		appendPool(registryAccess, Identifier.withDefaultNamespace("village/snowy/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":snowy_village_horned_statue"), 1)
 		);
-		appendPool(reg, Identifier.withDefaultNamespace("village/taiga/houses"),
+		appendPool(registryAccess, Identifier.withDefaultNamespace("village/taiga/houses"),
 				Pair.of(StructurePoolElement.legacy(MODID + ":kakariko_village_goddess_statue"), 3),
 				Pair.of(StructurePoolElement.legacy(MODID + ":taiga_village_horned_statue"), 1)
 		);
@@ -55,11 +53,11 @@ public final class ParagliderVillageStructures {
 
 	@SafeVarargs
 	private static void appendPool(
-			Registry<StructureTemplatePool> templatePoolRegistry,
+			HolderLookup.Provider registryAccess,
 			Identifier id,
 			Pair<Function<StructureTemplatePool.Projection, ? extends StructurePoolElement>, Integer>... elementToWeight
 	) {
-		var oPool = templatePoolRegistry.get(id);
+		var oPool = registryAccess.get(ResourceKey.create(Registries.TEMPLATE_POOL, id));
 		if (oPool.isEmpty()) {
 			ParagliderMod.LOGGER.warn("Template pool '{}' doesn't exist", id);
 			return;
@@ -91,18 +89,12 @@ public final class ParagliderVillageStructures {
 	}
 
 	public static final class ReloadListener extends SimplePreparableReloadListener<Void> {
-		private final RegistryAccess registryAccess;
-
-		public ReloadListener(RegistryAccess registryAccess) {
-			this.registryAccess = registryAccess;
-		}
-
 		@Override protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
 			return null;
 		}
 
 		@Override protected void apply(Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
-			addVillageStructures(this.registryAccess);
+			addVillageStructures(getRegistryLookup());
 		}
 	}
 }

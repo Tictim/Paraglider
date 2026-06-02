@@ -132,19 +132,17 @@ public class ParagliderMod {
 
 		NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> event.getDispatcher().register(ParagliderCommands.register()));
 		NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> this.stateMapConfig.removeCallbacks());
-		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent event) -> {
-			if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
-				WindSourceRegistry.get().computeWindSource(event.getLookupProvider());
-			}
+		NeoForge.EVENT_BUS.addListener((TagsUpdatedEvent.ServerDataLoad event) -> {
+			WindSourceRegistry.get().computeWindSource(event.getRegistries());
 		});
 
 		NeoForge.EVENT_BUS.addListener((AddServerReloadListenersEvent event) -> {
 			event.addListener(ParagliderAPI.id("wind_source_registry"),
-					new WindSourceRegistry.ReloadListener(this.windSourceRegistry, event.getRegistryAccess()));
+					new WindSourceRegistry.ReloadListener(this.windSourceRegistry));
 			event.addListener(ParagliderAPI.id("village_structure_injector"),
-					new ParagliderVillageStructures.ReloadListener(event.getRegistryAccess()));
+					new ParagliderVillageStructures.ReloadListener());
 			event.addListener(ParagliderAPI.id("bargain_recipe_checker"),
-					new BargainRecipeChecker(event.getRegistryAccess(), event.getServerResources().getRecipeManager()));
+					new BargainRecipeChecker(event.getServerResources().getRecipeManager()));
 		});
 
 		NeoForge.EVENT_BUS.addListener((RegisterBrewingRecipesEvent event) -> {

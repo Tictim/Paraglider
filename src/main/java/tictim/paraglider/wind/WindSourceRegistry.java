@@ -2,7 +2,6 @@ package tictim.paraglider.wind;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -41,19 +40,17 @@ public class WindSourceRegistry {
 
 	public static final class ReloadListener extends SimplePreparableReloadListener<Void> {
 		private final WindSourceRegistry windSourceRegistry;
-		private final RegistryAccess registryAccess;
 
-		public ReloadListener(WindSourceRegistry windSourceRegistry, RegistryAccess registryAccess) {
+		public ReloadListener(WindSourceRegistry windSourceRegistry) {
 			this.windSourceRegistry = windSourceRegistry;
-			this.registryAccess = registryAccess;
 		}
 
-		@Override protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+		@Override protected Void prepare(ResourceManager manager, ProfilerFiller profiler) {
 			return null;
 		}
 
-		@Override protected void apply(Void object, ResourceManager resourceManager, ProfilerFiller profiler) {
-			this.windSourceRegistry.computeWindSource(this.registryAccess);
+		@Override protected void apply(Void preparations, ResourceManager manager, ProfilerFiller profiler) {
+			this.windSourceRegistry.computeWindSource(getRegistryLookup());
 		}
 	}
 }

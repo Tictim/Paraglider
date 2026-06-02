@@ -60,7 +60,7 @@ public final class BargainHandler {
 		Objects.requireNonNull(player, "player == null");
 		if (!(player instanceof ServerPlayer serverPlayer)) return false;
 
-		BargainType type = BargainTypeRegistry.getFromID(serverPlayer.level(),
+		BargainType type = BargainTypeRegistry.getFromID(serverPlayer.registryAccess(),
 				Objects.requireNonNull(bargainType, "bargainType == null"));
 		if (type == null) return false;
 
