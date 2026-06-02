@@ -39,7 +39,7 @@ public class ServerConfig implements Cfg {
 		updraft = b.comment("""
 						If true, wind sources will generate updrafts that interact with Paraglider.
 						Wind sources and strength (i.e. height) of the updraft created can be adjusted with datapacks.
-						See online docs for more information: (work in progress)""")
+						See online docs for more information: https://github.com/Tictim/Paraglider/wiki/Datapack:-Wind-Source""")
 				.define("updraft", true);
 
 		paraglidingSpeed = b.comment("""
