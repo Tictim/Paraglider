@@ -93,7 +93,7 @@ public class CosmeticRecipe extends NormalCraftingRecipe {
 			if (stack.isEmpty()) continue;
 
 			if (this.input.test(stack) && !this.result.is(stack.getItem())) {
-				return this.result.apply(stack.count(), stack.getComponentsPatch());
+				return this.result.apply(1, stack.getComponentsPatch());
 			}
 		}
 
