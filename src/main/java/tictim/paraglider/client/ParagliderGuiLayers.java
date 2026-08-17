@@ -29,7 +29,7 @@ public final class ParagliderGuiLayers {
 	public static void staminaWheel(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null ||
-				mc.screen instanceof DisableStaminaRender ||
+				mc.gui.screen() instanceof DisableStaminaRender ||
 				!ParagliderUtils.renderStaminaWheel(mc.player)) return;
 
 		ParagliderClientSettings settings = ParagliderClientSettings.get();

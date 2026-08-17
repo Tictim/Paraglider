@@ -40,7 +40,6 @@ public final class ParagliderEventHandler {
 
 	static {
 		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteract event) -> onPlayerInteract(event));
-		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteractSpecific event) -> onPlayerInteract(event));
 		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.RightClickBlock event) -> onPlayerInteract(event));
 		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.RightClickEmpty event) -> onPlayerInteract(event));
 		NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.RightClickItem event) -> onPlayerInteract(event));

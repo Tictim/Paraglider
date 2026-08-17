@@ -21,13 +21,14 @@ public class ItemTagGen extends BlockTagCopyingItemTagProvider {
 		super(output, lookupProvider, blockTags, ParagliderAPI.MODID);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override protected void addTags(HolderLookup.Provider provider) {
 		copy(ParagliderTags.Blocks.STATUES, ParagliderTags.STATUES);
 		copy(ParagliderTags.Blocks.STATUES_GODDESS, ParagliderTags.STATUES_GODDESS);
 
 		Contents contents = Contents.get();
 
-		tag(ItemTags.CAULDRON_CAN_REMOVE_DYE).add(contents.paraglider(), contents.dekuLeaf());
-		tag(ParagliderTags.PARAGLIDERS).add(contents.paraglider(), contents.dekuLeaf());
+		tag(ItemTags.CAULDRON_CAN_REMOVE_DYE).add(contents.paraglider.getKey(), contents.dekuLeaf.getKey());
+		tag(ParagliderTags.PARAGLIDERS).add(contents.paraglider.getKey(), contents.dekuLeaf.getKey());
 	}
 }

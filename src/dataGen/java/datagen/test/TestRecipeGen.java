@@ -71,24 +71,12 @@ public class TestRecipeGen extends RecipeProvider {
 				.demand(Items.IRON_INGOT, 10)
 				.offer(Items.DIRT, 1)
 				.save(this.output, id("bargain_test/11"));
-		new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE)
-				.demand(Ingredient.of(Blocks.COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.EXPOSED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.WEATHERED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.OXIDIZED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.WAXED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.WAXED_EXPOSED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.WAXED_WEATHERED_COPPER_GRATE), 64)
-				.demand(Ingredient.of(Blocks.WAXED_OXIDIZED_COPPER_GRATE), 64)
-				.offer(Blocks.COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.EXPOSED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.WEATHERED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.OXIDIZED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.WAXED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.WAXED_EXPOSED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.WAXED_WEATHERED_COPPER_GRATE.asItem(), 64)
-				.offer(Blocks.WAXED_OXIDIZED_COPPER_GRATE.asItem(), 64)
-				.save(this.output, id("bargain_test/things"));
+		{
+			var b = new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE);
+			Blocks.COPPER_GRATE.forEach(block -> b.demand(Ingredient.of(block), 64));
+			Blocks.COPPER_GRATE.forEach(block -> b.offer(block.asItem(), 64));
+			b.save(this.output, id("bargain_test/things"));
+		}
 		new StatueBargainBuilder(ParagliderBargainTypes.GODDESS_STATUE)
 				.demand(Ingredient.of(Items.STICK), 1)
 				.offerHeartContainer(2)

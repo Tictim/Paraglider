@@ -1,6 +1,6 @@
 package tictim.paraglider;
 
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -112,12 +112,12 @@ public class ParagliderMod {
 		});
 
 		eventBus.addListener((EntityAttributeModificationEvent event) -> {
-			event.add(EntityType.PLAYER, this.contents.maxStamina());
-			event.add(EntityType.PLAYER, this.contents.staminaEfficiency());
-			event.add(EntityType.PLAYER, this.contents.staminaRecovery());
-			event.add(EntityType.PLAYER, this.contents.paraglidingStaminaEfficiency());
-			event.add(EntityType.PLAYER, this.contents.runningStaminaEfficiency());
-			event.add(EntityType.PLAYER, this.contents.swimmingStaminaEfficiency());
+			event.add(EntityTypes.PLAYER, this.contents.maxStamina());
+			event.add(EntityTypes.PLAYER, this.contents.staminaEfficiency());
+			event.add(EntityTypes.PLAYER, this.contents.staminaRecovery());
+			event.add(EntityTypes.PLAYER, this.contents.paraglidingStaminaEfficiency());
+			event.add(EntityTypes.PLAYER, this.contents.runningStaminaEfficiency());
+			event.add(EntityTypes.PLAYER, this.contents.swimmingStaminaEfficiency());
 		});
 
 		NeoForge.EVENT_BUS.addListener((ServerAboutToStartEvent event) -> {

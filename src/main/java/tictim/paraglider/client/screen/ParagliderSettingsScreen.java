@@ -77,7 +77,7 @@ public class ParagliderSettingsScreen extends Screen {
 	@Override protected void init() {
 		Button staminaWheelSettingsButton = Button
 				.builder(Component.translatable("paraglider.settings.stamina_wheel_settings"),
-						b -> Objects.requireNonNull(this.minecraft).setScreen(new StaminaWheelSettingScreen(this)))
+						b -> this.minecraft.gui.setScreen(new StaminaWheelSettingScreen(this)))
 				.size(128, 20)
 				.build();
 

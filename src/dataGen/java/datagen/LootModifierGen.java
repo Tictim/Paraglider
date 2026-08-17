@@ -1,11 +1,11 @@
 package datagen;
 
-import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -46,7 +46,7 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		add("wither", new VesselLoot(
 				new LootItemCondition[]{
 						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.entity().of(entities, EntityType.WITHER)).build(),
+								EntityPredicate.Builder.entity().of(entities, EntityTypes.WITHER)).build(),
 						LootItemKilledByPlayerCondition.killedByPlayer().build(),
 						ParagliderLootConditions.WITHER_DROPS_VESSEL
 				},
@@ -57,7 +57,7 @@ public class LootModifierGen extends GlobalLootModifierProvider {
 		add("elder_guardian", new SpiritOrbLoot(
 				new LootItemCondition[]{
 						LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.entity().of(entities, EntityType.ELDER_GUARDIAN)).build(),
+								EntityPredicate.Builder.entity().of(entities, EntityTypes.ELDER_GUARDIAN)).build(),
 						LootItemKilledByPlayerCondition.killedByPlayer().build(),
 						ParagliderLootConditions.ELDER_GUARDIAN_DROPS_SPIRIT_ORB
 				},

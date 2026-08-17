@@ -2,8 +2,9 @@ package datagen;
 
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -19,9 +20,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.advancements.Advancement.Builder.advancement;
-import static net.minecraft.advancements.criterion.ImpossibleTrigger.TriggerInstance;
-import static net.minecraft.advancements.criterion.InventoryChangeTrigger.TriggerInstance.hasItems;
-import static net.minecraft.advancements.criterion.ItemPredicate.Builder.item;
+import static net.minecraft.advancements.predicates.ItemPredicate.Builder.item;
+import static net.minecraft.advancements.triggers.InventoryChangeTrigger.TriggerInstance.hasItems;
 import static tictim.paraglider.api.ParagliderAPI.MODID;
 
 public class AdvancementGen extends AdvancementProvider {
@@ -91,7 +91,7 @@ public class AdvancementGen extends AdvancementProvider {
 	}
 
 	private static Criterion<?> impossibleCriterion() {
-		return CriteriaTriggers.IMPOSSIBLE.createCriterion(new TriggerInstance());
+		return CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance());
 	}
 
 }

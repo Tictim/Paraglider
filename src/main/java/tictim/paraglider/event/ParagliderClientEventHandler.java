@@ -33,14 +33,14 @@ public final class ParagliderClientEventHandler {
 	@SubscribeEvent
 	public static void beforeCrosshairRender(RenderGuiLayerEvent.Pre event) {
 		if (event.getName().equals(VanillaGuiLayers.CROSSHAIR) &&
-				Minecraft.getInstance().screen instanceof BargainScreen)
+				Minecraft.getInstance().gui.screen() instanceof BargainScreen)
 			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
 	public static void onClientTick(ClientTickEvent.Post event) {
-		if (Minecraft.getInstance().screen == null && ParagliderClientMod.instance().getParagliderSettingsKey().consumeClick()) {
-			Minecraft.getInstance().setScreen(new ParagliderSettingsScreen());
+		if (Minecraft.getInstance().gui.screen() == null && ParagliderClientMod.instance().getParagliderSettingsKey().consumeClick()) {
+			Minecraft.getInstance().gui.setScreen(new ParagliderSettingsScreen());
 		}
 	}
 

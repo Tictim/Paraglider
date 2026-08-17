@@ -2,8 +2,8 @@ package datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import org.jspecify.annotations.NullMarked;
 import tictim.paraglider.api.ParagliderAPI;
@@ -19,33 +19,29 @@ public class BlockTagGen extends BlockTagsProvider {
 		super(output, lookupProvider, ParagliderAPI.MODID);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override protected void addTags(HolderLookup.Provider provider) {
 		Contents contents = Contents.get();
-		tag(BlockTags.MINEABLE_WITH_PICKAXE)
-				.add(contents.goddessStatue(),
-						contents.kakarikoGoddessStatue(),
-						contents.goronGoddessStatue(),
-						contents.ritoGoddessStatue(),
-						contents.hornedStatue());
+		tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
+				contents.goddessStatue.getKey(),
+				contents.kakarikoGoddessStatue.getKey(),
+				contents.goronGoddessStatue.getKey(),
+				contents.ritoGoddessStatue.getKey(),
+				contents.hornedStatue.getKey());
 
 		tag(ParagliderTags.Blocks.STATUES_GODDESS).add(
-				contents.goddessStatue(),
-				contents.kakarikoGoddessStatue(),
-				contents.goronGoddessStatue(),
-				contents.ritoGoddessStatue());
+				contents.goddessStatue.getKey(),
+				contents.kakarikoGoddessStatue.getKey(),
+				contents.goronGoddessStatue.getKey(),
+				contents.ritoGoddessStatue.getKey());
 		tag(ParagliderTags.Blocks.STATUES)
-				.add(contents.hornedStatue())
+				.add(contents.hornedStatue.getKey())
 				.addTag(ParagliderTags.Blocks.STATUES_GODDESS);
 
-		tag(ParagliderTags.Blocks.WIND_CAN_PASS_THROUGH).add(
-				Blocks.COPPER_GRATE,
-				Blocks.EXPOSED_COPPER_GRATE,
-				Blocks.WEATHERED_COPPER_GRATE,
-				Blocks.OXIDIZED_COPPER_GRATE,
-				Blocks.WAXED_COPPER_GRATE,
-				Blocks.WAXED_EXPOSED_COPPER_GRATE,
-				Blocks.WAXED_WEATHERED_COPPER_GRATE,
-				Blocks.WAXED_OXIDIZED_COPPER_GRATE
+		tag(ParagliderTags.Blocks.WIND_CAN_PASS_THROUGH).addAll(
+				BlockItemIds.COPPER_GRATE.asList().stream()
+						.map(id -> id.block())
+						.toList()
 		);
 	}
 }

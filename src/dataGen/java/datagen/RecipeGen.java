@@ -8,6 +8,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CookingBookCategory;
@@ -104,7 +105,7 @@ public class RecipeGen extends RecipeProvider {
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/goron_goddess_statue"));
 		cosmetic(RecipeCategory.MISC, contents.ritoGoddessStatueItem(),
-				tag(ParagliderTags.STATUES_GODDESS), tag(ItemTags.FLOWERS))
+				tag(ParagliderTags.STATUES_GODDESS), tag(BlockItemTags.FLOWERS.item()))
 				.unlockedBy("has_goddess_statue", has(ParagliderTags.STATUES_GODDESS))
 				.save(this.output, id("cosmetic/rito_goddess_statue"));
 

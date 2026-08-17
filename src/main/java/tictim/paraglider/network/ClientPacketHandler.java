@@ -79,13 +79,13 @@ public final class ClientPacketHandler {
 	public static void handleBargainInit(BargainInitMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		mc.setScreen(new BargainScreen(msg.sessionId(), msg.catalog(), msg.lookAt().orElse(null), msg.dialog().orElse(null)));
+		mc.gui.setScreen(new BargainScreen(msg.sessionId(), msg.catalog(), msg.lookAt().orElse(null), msg.dialog().orElse(null)));
 	}
 
 	public static void handleSyncCatalog(SyncCatalogMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
+		if (mc.gui.screen() instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
 			bargainScreen.setCatalog(msg.catalog());
 		}
 	}
@@ -93,7 +93,7 @@ public final class ClientPacketHandler {
 	public static void handleSyncLookAt(SyncLookAtMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
+		if (mc.gui.screen() instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
 			bargainScreen.setLookAt(msg.lookAt().orElse(null));
 		}
 	}
@@ -101,7 +101,7 @@ public final class ClientPacketHandler {
 	public static void handleBargainDialog(BargainDialogMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
+		if (mc.gui.screen() instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
 			bargainScreen.setDialog(msg.dialog());
 		}
 	}
@@ -109,8 +109,8 @@ public final class ClientPacketHandler {
 	public static void handleBargainEnd(BargainEndMsg msg) {
 		trace(Kind.BARGAIN, msg);
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.screen instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
-			mc.setScreen(null);
+		if (mc.gui.screen() instanceof BargainScreen bargainScreen && bargainScreen.sessionId == msg.sessionId()) {
+			mc.gui.setScreen(null);
 		}
 	}
 

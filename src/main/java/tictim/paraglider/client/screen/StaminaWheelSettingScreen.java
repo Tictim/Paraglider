@@ -241,7 +241,7 @@ public class StaminaWheelSettingScreen extends Screen implements DisableStaminaR
 	}
 
 	@Override public void onClose() {
-		this.minecraft.setScreen(this.parent);
+		this.minecraft.gui.setScreen(this.parent);
 	}
 
 	private void applyPreset(StaminaWheelPosition staminaWheelPosition, ExtraWheelAttachment extraWheelAttachment) {
